@@ -599,16 +599,28 @@ export function renamePatient(oldName: string, newName: string) {
   }
 }
 
-export function getSubmissions() {
+export function getSubmissions(): Submission[] {
   if (typeof window === "undefined") return demoSubmissions;
   try {
-    const stored = JSON.parse(
-      window.localStorage.getItem(STORAGE.submissions) ?? "[]",
-    ) as Submission[];
-    return [
-      ...stored,
-      ...demoSubmissions.filter((demo) => !stored.some((item) => item.id === demo.id)),
-    ];
+    const raw = window.localStorage.getItem(STORAGE.submissions);
+    let stored: Submission[];
+    if (!raw) {
+      // First visit: seed localStorage with demo data so mutations work
+      stored = [...demoSubmissions];
+      window.localStorage.setItem(STORAGE.submissions, JSON.stringify(stored));
+    } else {
+      stored = JSON.parse(raw) as Submission[];
+      // Ensure any new demo entries are merged in
+      const merged = [
+        ...stored,
+        ...demoSubmissions.filter((demo) => !stored.some((item) => item.id === demo.id)),
+      ];
+      if (merged.length > stored.length) {
+        window.localStorage.setItem(STORAGE.submissions, JSON.stringify(merged));
+      }
+      stored = merged;
+    }
+    return stored;
   } catch {
     return demoSubmissions;
   }
