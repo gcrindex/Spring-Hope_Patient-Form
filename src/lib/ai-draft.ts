@@ -1,36 +1,5 @@
 import { z } from "zod";
 
-// ==========================================
-// 1. CONFIG & ENVIRONMENT CHECKERS
-// ==========================================
-export function getAiConfig() {
-  const env = import.meta.env as Record<string, string | undefined>;
-
-  const apiKey =
-    env["VITE_PESATROUTER_API_KEY"] ||
-    env["sk-pesat-96696179c01627549176f9e496eddd17493feb706c3db081"];
-
-  const baseUrl =
-    env["VITE_PESATROUTER_BASE_URL"] ||
-    env["PESATROUTER_BASE_URL"] ||
-    "https://api.pesatrouter.com/v1";
-
-  const model = env["VITE_PESATROUTER_MODEL"] || env["PESATROUTER_MODEL"] || "pesat-flash";
-
-  if (!apiKey) {
-    return null;
-  }
-
-  return { apiKey, baseUrl, model };
-}
-
-export function isAiConfigured(): boolean {
-  return getAiConfig() !== null;
-}
-
-// ==========================================
-// 2. ZOD SCHEMAS & TYPES
-// ==========================================
 export const localizedTextSchema = z.object({
   en: z.string().min(1).max(500),
   id: z.string().min(1).max(500),
@@ -74,11 +43,6 @@ export const aiConversationSchema = z.object({
     .max(12),
 });
 
-export type AIConversation = z.infer<typeof aiConversationSchema>;
-
-// ==========================================
-// 3. UTILITY FUNCTIONS
-// ==========================================
 export function extractJsonObject(input: string) {
   const trimmed = input.trim();
   const unfenced = trimmed
