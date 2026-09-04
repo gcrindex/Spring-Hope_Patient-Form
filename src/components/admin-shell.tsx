@@ -15,7 +15,7 @@ import { Link } from "@tanstack/react-router";
 import { BrandMark } from "./brand";
 import { LanguageSwitcher } from "./language-switcher";
 import { adminI18n } from "../lib/translations";
-import { getStoredLanguage, setStoredLanguage, type Language } from "../lib/patientform";
+import { getStoredLanguage, onLanguageChange, setStoredLanguage, type Language } from "../lib/patientform";
 import { useState, useEffect } from "react";
 
 export type AdminNavKey = "overview" | "forms" | "submissions" | "patients" | "analytics";
@@ -37,10 +37,13 @@ export function AdminShell({
   language?: Language;
   onLanguage?: (lang: Language) => void;
 }) {
-  const [internalLang, setInternalLang] = useState<Language>("en");
+  const [internalLang, setInternalLang] = useState<Language>(() => getStoredLanguage());
 
   useEffect(() => {
+    // Sync if localStorage changes from another tab/component
+    const unsubscribe = onLanguageChange(setInternalLang);
     setInternalLang(getStoredLanguage());
+    return unsubscribe;
   }, []);
 
   const lang = controlledLang ?? internalLang;
@@ -96,17 +99,14 @@ export function AdminShell({
           </nav>
         </div>
         <div className="admin-sidebar-bottom">
-          <button
-            className="admin-nav-item"
-            type="button"
-            disabled
-            aria-disabled="true"
-            title="Planned for a later MVP"
+          <Link
+            to="/admin"
+            search={{ view: "settings" }}
+            className={`admin-nav-item ${activeNav === "settings" ? "active" : ""}`}
           >
             <Settings size={19} />
             <span>{t.settings}</span>
-            <small>{t.planned}</small>
-          </button>
+          </Link>
           <div className="admin-profile">
             <div className="admin-avatar">MV</div>
             <div className="min-w-0 flex-1">

@@ -63,6 +63,13 @@ export const adminI18n: Record<
     reviewNeeded: string;
     scheduled: string;
     completed: string;
+    deleteAction: string;
+    confirmDelete: string;
+    changeStatus: string;
+    editTriage: string;
+    editName: string;
+    newNameLabel: string;
+    saveName: string;
     // Analytics view
     analyticsTitle: string;
     analyticsDesc: string;
@@ -132,6 +139,13 @@ export const adminI18n: Record<
     reviewNeeded: "Review needed",
     scheduled: "Scheduled",
     completed: "Completed",
+    deleteAction: "Delete",
+    confirmDelete: "Are you sure you want to delete this submission?",
+    changeStatus: "Update Status",
+    editTriage: "Triage Status",
+    editName: "Edit Name",
+    newNameLabel: "New Patient Name",
+    saveName: "Save Name",
     analyticsTitle: "Clinical Assessment Analytics",
     analyticsDesc: "Screening distribution, response times and patient interaction metrics.",
     riskDistribution: "Risk Distribution",
@@ -199,6 +213,13 @@ export const adminI18n: Record<
     reviewNeeded: "Perlu ditinjau",
     scheduled: "Terjadwal",
     completed: "Selesai",
+    deleteAction: "Hapus",
+    confirmDelete: "Yakin ingin menghapus data ini?",
+    changeStatus: "Ubah Status",
+    editTriage: "Status Triase",
+    editName: "Ubah Nama",
+    newNameLabel: "Nama Pasien Baru",
+    saveName: "Simpan Nama",
     analyticsTitle: "Analisis Penilaian Klinis",
     analyticsDesc: "Distribusi skrining, waktu respons, dan metrik interaksi pasien.",
     riskDistribution: "Distribusi Risiko",
@@ -266,6 +287,13 @@ export const adminI18n: Record<
     reviewNeeded: "待审核",
     scheduled: "已预约",
     completed: "已完成",
+    deleteAction: "删除",
+    confirmDelete: "确认删除该记录？此操作不可撤销。",
+    changeStatus: "更新状态",
+    editTriage: "分诊状态",
+    editName: "修改姓名",
+    newNameLabel: "新患者姓名",
+    saveName: "保存姓名",
     analyticsTitle: "临床评估数据分析",
     analyticsDesc: "筛查风险分布、响应时间与患者交互指标。",
     riskDistribution: "风险分布",

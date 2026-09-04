@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { BrandMark } from "../components/brand";
 import { LanguageSwitcher } from "../components/language-switcher";
-import { getStoredLanguage, setStoredLanguage, type Language } from "../lib/patientform";
+import { getStoredLanguage, onLanguageChange, setStoredLanguage, type Language } from "../lib/patientform";
 import { landingI18n } from "../lib/translations";
 
 export const Route = createFileRoute("/")({
@@ -34,8 +34,12 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const [language, setLanguage] = useState<Language>("en");
-  useEffect(() => { setLanguage(getStoredLanguage()); }, []);
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+
+  useEffect(() => {
+    setLanguage(getStoredLanguage());
+    return onLanguageChange(setLanguage);
+  }, []);
 
   const handleLang = (next: Language) => {
     setStoredLanguage(next);
@@ -162,8 +166,8 @@ function LandingPage() {
           </div>
           <div className="experience-grid">
             <article className="feature-card feature-card-large">
-              <div className="feature-icon"><Smartphone size={21} /></div>
-              <div>
+              <div className="feature-card-text-col">
+                <div className="feature-icon"><Smartphone size={21} /></div>
                 <span className="feature-label">{t.f1Label}</span>
                 <h3>{t.f1Title}</h3>
                 <p>{t.f1Desc}</p>

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AdminShell } from "../components/admin-shell";
-import { kneePainForm, type Question, type QuestionType } from "../lib/patientform";
+import { kneePainForm, getStoredLanguage, onLanguageChange, type Language, type Question, type QuestionType } from "../lib/patientform";
 import type { AIDraftForm } from "../lib/ai-draft";
 import { AdminAuthGuard } from "../components/admin-auth-guard";
 
@@ -35,11 +35,19 @@ const typeLabels: Record<QuestionType, string> = {
 };
 
 function FormsBuilder() {
-  const [formTitle, setFormTitle] = useState(kneePainForm.title.en);
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+  const [formTitle, setFormTitle] = useState(() => kneePainForm.title[getStoredLanguage()] ?? kneePainForm.title.en);
   const [questions, setQuestions] = useState<Question[]>(kneePainForm.questions);
   const [selectedId, setSelectedId] = useState(questions[0]?.id ?? "");
   const selected = questions.find((question) => question.id === selectedId) ?? questions[0];
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    return onLanguageChange((l) => {
+      setLanguage(l);
+      setFormTitle(kneePainForm.title[l] ?? kneePainForm.title.en);
+    });
+  }, []);
 
   useEffect(() => {
     const raw = window.sessionStorage.getItem("pf_ai_form_draft");

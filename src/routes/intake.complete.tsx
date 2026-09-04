@@ -29,7 +29,7 @@ export const Route = createFileRoute("/intake/complete")({
 });
 
 function CompletionPage() {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
   const [answers, setAnswers] = useState<Record<string, string | number>>({});
   const [saved, setSaved] = useState(false);
   useEffect(() => {

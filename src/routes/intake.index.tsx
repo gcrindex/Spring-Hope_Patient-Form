@@ -41,7 +41,7 @@ export const Route = createFileRoute("/intake/")({
 
 function IntakeStart() {
   const navigate = useNavigate();
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
   const [name, setName] = useState("");
   const [showPaperModal, setShowPaperModal] = useState(false);
   const [paperFile, setPaperFile] = useState<File | null>(null);

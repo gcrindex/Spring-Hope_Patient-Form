@@ -31,6 +31,8 @@ export type AssessmentForm = {
 
 export type Answers = Record<string, string | number>;
 
+export type TriageStatus = "review" | "scheduled" | "completed";
+
 export type Submission = {
   id: string;
   formId: string;
@@ -39,6 +41,7 @@ export type Submission = {
   answers: Answers;
   score: number;
   risk: RiskLevel;
+  triageStatus?: TriageStatus;
 };
 
 export const languages: Array<{ value: Language; short: string; label: string; locale: string }> = [
@@ -477,6 +480,16 @@ const STORAGE = {
   pendingPapers: "pf_pending_papers",
 };
 
+type LanguageListener = (lang: Language) => void;
+const languageListeners = new Set<LanguageListener>();
+
+export function onLanguageChange(fn: LanguageListener) {
+  languageListeners.add(fn);
+  return () => {
+    languageListeners.delete(fn);
+  };
+}
+
 export function getStoredLanguage(): Language {
   if (typeof window === "undefined") return "en";
   const value = window.localStorage.getItem(STORAGE.language);
@@ -484,7 +497,10 @@ export function getStoredLanguage(): Language {
 }
 
 export function setStoredLanguage(language: Language) {
-  if (typeof window !== "undefined") window.localStorage.setItem(STORAGE.language, language);
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE.language, language);
+    languageListeners.forEach((fn) => fn(language));
+  }
 }
 
 export function getPatientName() {
@@ -536,6 +552,50 @@ export function saveSubmission(submission: Submission) {
     window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
   } catch {
     window.localStorage.setItem(STORAGE.submissions, JSON.stringify([submission]));
+  }
+}
+
+export function deleteSubmission(id: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const existing = JSON.parse(
+      window.localStorage.getItem(STORAGE.submissions) ?? "[]",
+    ) as Submission[];
+    const next = existing.filter((item) => item.id !== id);
+    window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
+  } catch {
+    window.localStorage.setItem(STORAGE.submissions, "[]");
+  }
+}
+
+export function updateTriageStatus(id: string, triageStatus: TriageStatus) {
+  if (typeof window === "undefined") return;
+  try {
+    const existing = JSON.parse(
+      window.localStorage.getItem(STORAGE.submissions) ?? "[]",
+    ) as Submission[];
+    const next = existing.map((item) =>
+      item.id === id ? { ...item, triageStatus } : item,
+    );
+    window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
+  } catch {
+    // silently fail
+  }
+}
+
+export function renamePatient(oldName: string, newName: string) {
+  if (typeof window === "undefined") return;
+  if (!newName.trim() || oldName === newName) return;
+  try {
+    const existing = JSON.parse(
+      window.localStorage.getItem(STORAGE.submissions) ?? "[]",
+    ) as Submission[];
+    const next = existing.map((item) =>
+      item.patientName === oldName ? { ...item, patientName: newName.trim() } : item,
+    );
+    window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
+  } catch {
+    // silently fail
   }
 }
 

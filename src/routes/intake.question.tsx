@@ -36,9 +36,9 @@ export const Route = createFileRoute("/intake/question")({
 
 function QuestionPage() {
   const navigate = useNavigate();
-  const [language, setLanguage] = useState<Language>("en");
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({});
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+  const [index, setIndex] = useState(() => Math.min(getStoredQuestionIndex(), kneePainForm.questions.length - 1));
+  const [answers, setAnswers] = useState<Answers>(() => getStoredAnswers());
   const [voiceMappedLabel, setVoiceMappedLabel] = useState("");
   const [voiceIssue, setVoiceIssue] = useState("");
   const question = kneePainForm.questions[index];
