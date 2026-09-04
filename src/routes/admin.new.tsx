@@ -136,7 +136,6 @@ function AICard({ onBack }: { onBack: () => void }) {
     const content = (override ?? input).trim();
     if (!content || loading) return;
     setError("");
-    setDraft(null);
     const next = [...messages, { role: "user" as const, content }];
     setMessages(next);
     setInput("");
@@ -148,15 +147,19 @@ function AICard({ onBack }: { onBack: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "chat", messages: next.slice(-10) }),
       });
-      const result = await res.json() as { success: boolean; form?: AIDraftForm; message?: string };
+      const result = await res.json() as { success: boolean; type?: "chat" | "draft"; form?: AIDraftForm; message?: string };
       if (!res.ok || !result.success) {
         const msg = result.message || "AI Assistant is unavailable.";
         setError(msg);
         setMessages((c) => [...c, { role: "assistant", content: msg }]);
         return;
       }
-      setDraft(result.form!);
-      setMessages((c) => [...c, { role: "assistant", content: `Draft ready: ${result.form!.title.en}. Review before using.` }]);
+      if (result.type === "draft" && result.form) {
+        setDraft(result.form);
+        setMessages((c) => [...c, { role: "assistant", content: result.message || `Draft ready: ${result.form!.title.en}. Review before using.` }]);
+      } else {
+        setMessages((c) => [...c, { role: "assistant", content: result.message || "Could you describe the assessment you need?" }]);
+      }
     } catch {
       const msg = "Couldn't reach AI Assistant. Check the server configuration.";
       setError(msg);
@@ -196,7 +199,7 @@ function AICard({ onBack }: { onBack: () => void }) {
                 <p>{m.content}</p>
               </div>
             ))}
-            {loading && <div className="ai-message ai-message-assistant"><span><LoaderCircle size={15} className="ai-spin" /></span><p>Building the draft…</p></div>}
+            {loading && <div className="ai-message ai-message-assistant"><span><LoaderCircle size={15} className="ai-spin" /></span><p>Thinking…</p></div>}
           </div>
           {error && <div className="ai-inline-error"><AlertCircle size={17} /><span>{error}</span></div>}
           <div className={`ai-composer ${voice.state === "listening" ? "is-listening" : ""}`}>
@@ -209,7 +212,7 @@ function AICard({ onBack }: { onBack: () => void }) {
                 ) : (
                   <button type="button" className="admin-soft-button" onClick={() => { setError(""); voice.start(); }}><Mic size={16} /> Voice</button>
                 )}
-                <button type="button" className="admin-primary-button" disabled={!input.trim() || loading} onClick={() => send()}><Send size={16} /> Generate</button>
+                <button type="button" className="admin-primary-button" disabled={!input.trim() || loading} onClick={() => send()}><Send size={16} /> Send</button>
               </div>
             </div>
           </div>

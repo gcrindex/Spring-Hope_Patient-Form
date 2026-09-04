@@ -28,7 +28,14 @@ export const Route = createFileRoute("/admin/new/ai")({
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type ApiResult =
-  | { success: true; form: AIDraftForm; provider: string; model: string }
+  | {
+      success: true;
+      type: "chat" | "draft";
+      message?: string;
+      form?: AIDraftForm;
+      provider: string;
+      model: string;
+    }
   | { success: false; error: string; message: string };
 
 const suggestions = [
@@ -60,7 +67,6 @@ function AIAssistant() {
     const content = (override ?? input).trim();
     if (!content || loading) return;
     setError("");
-    setDraft(null);
     const nextMessages: ChatMessage[] = [...messages, { role: "user", content }];
     setMessages(nextMessages);
     setInput("");
@@ -80,14 +86,27 @@ function AIAssistant() {
         setMessages((current) => [...current, { role: "assistant", content: message }]);
         return;
       }
-      setDraft(result.form);
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content: `Draft ready: ${result.form.title.en}. Review the questions before using it.`,
-        },
-      ]);
+      if (result.type === "draft" && result.form) {
+        const draftForm = result.form;
+        setDraft(draftForm);
+        setMessages((current) => [
+          ...current,
+          {
+            role: "assistant",
+            content:
+              result.message ??
+              `Draft ready: ${draftForm.title.en}. Review the questions before using it.`,
+          },
+        ]);
+      } else {
+        setMessages((current) => [
+          ...current,
+          {
+            role: "assistant",
+            content: result.message ?? "Could you describe the assessment you need?",
+          },
+        ]);
+      }
     } catch {
       const message = "Couldn’t reach AI Assistant. Check the server configuration and try again.";
       setError(message);
@@ -162,7 +181,7 @@ function AIAssistant() {
                 <span>
                   <LoaderCircle size={15} className="ai-spin" />
                 </span>
-                <p>Building the draft…</p>
+                <p>Thinking…</p>
               </div>
             )}
           </div>
@@ -209,7 +228,7 @@ function AIAssistant() {
                   disabled={!input.trim() || loading}
                   onClick={() => send()}
                 >
-                  <Send size={16} /> Generate
+                  <Send size={16} /> Send
                 </button>
               </div>
             </div>
