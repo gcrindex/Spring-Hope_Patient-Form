@@ -7,7 +7,7 @@ import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import { getStoredLanguage, localeFor, setStoredLanguage, type Language } from "../lib/patientform";
 
 export const Route = createFileRoute("/intake/microphone")({
-  head: () => ({ meta: [{ title: "Voice check — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "Voice check — 9forms.com" }] }),
   component: MicrophoneCheck,
 });
 

@@ -9,7 +9,7 @@ import {
   RotateCcw,
   ShieldAlert,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import {
   calculateScore,
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/intake/complete")({
   validateSearch: (search: Record<string, unknown>) => ({
     form: (search.form as string) || undefined,
   }),
-  head: () => ({ meta: [{ title: "Formulir Selesai — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "Formulir Selesai — 9forms.com" }] }),
   component: CompletionPage,
 });
 
