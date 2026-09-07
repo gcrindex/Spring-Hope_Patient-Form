@@ -46,7 +46,14 @@ export function PatientShell({
       </header>
       <main className="patient-main">{children}</main>
       <footer className="patient-footer-note">
-        <ShieldCheck size={14} /> Voice is optional. Manual answers always work.
+        <ShieldCheck size={14} className="flex-shrink-0" />
+        <span>
+          {language === "id"
+            ? "Input suara opsional. Pilihan sentuh selalu dapat digunakan."
+            : language === "zh"
+              ? "语音输入为可选功能，触屏点击随时可用。"
+              : "Voice is optional. Manual answers always work."}
+        </span>
       </footer>
     </div>
   );

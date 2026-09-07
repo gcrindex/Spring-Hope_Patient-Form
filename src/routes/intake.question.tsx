@@ -269,17 +269,17 @@ function QuestionPage() {
             type="button"
             className={`sleek-voice-toggle ${voiceAuto ? "active" : ""}`}
             onClick={toggleVoiceMode}
-            title={voiceAuto ? "Mode Suara Aktif" : "Aktifkan Mode Suara"}
+            title={voiceAuto ? (language === "id" ? "Mode Suara Aktif" : language === "zh" ? "语音模式已开启" : "Voice Mode Active") : (language === "id" ? "Aktifkan Mode Suara" : language === "zh" ? "开启语音模式" : "Enable Voice Mode")}
           >
             {voiceAuto ? (
               <>
                 <span className="sleek-live-dot" />
-                <span>{language === "id" ? "Suara Aktif" : "Voice Active"}</span>
+                <span>{language === "id" ? "Suara Aktif" : language === "zh" ? "语音开启" : "Voice Active"}</span>
               </>
             ) : (
               <>
                 <MicOff size={16} strokeWidth={2.3} />
-                <span>{language === "id" ? "Pakai Suara" : "Use Voice"}</span>
+                <span>{language === "id" ? "Pakai Suara" : language === "zh" ? "使用语音" : "Use Voice"}</span>
               </>
             )}
           </button>
@@ -299,12 +299,16 @@ function QuestionPage() {
               {voice.state === "listening"
                 ? language === "id"
                   ? "Mendengarkan ucapan Anda..."
-                  : "Listening to your voice..."
+                  : language === "zh"
+                    ? "正在聆听您的回答..."
+                    : "Listening to your voice..."
                 : voice.state === "recognized" || voiceMappedLabel
                   ? `"${voiceMappedLabel || voice.transcript}"`
                   : language === "id"
                     ? "Mikrofon aktif — siap mendengarkan"
-                    : "Mic active — speak anytime"}
+                    : language === "zh"
+                      ? "麦克风已开启 — 请随时作答"
+                      : "Mic active — speak anytime"}
             </span>
           </div>
         )}
@@ -338,10 +342,14 @@ function QuestionPage() {
                 {index === activeForm.questions.length - 1
                   ? language === "id"
                     ? "Selesai & Kirim"
-                    : "Finish & Submit"
+                    : language === "zh"
+                      ? "完成并提交"
+                      : "Finish & Submit"
                   : language === "id"
                     ? "Lanjut"
-                    : "Continue"}
+                    : language === "zh"
+                      ? "继续"
+                      : "Continue"}
               </span>
               <ArrowRight size={18} />
             </button>
@@ -406,14 +414,20 @@ function SleekQuestionInput({
             {numeric === 0
               ? language === "id"
                 ? "Tidak Nyeri"
-                : "No Pain"
+                : language === "zh"
+                  ? "无痛"
+                  : "No Pain"
               : numeric >= 8
                 ? language === "id"
                   ? "Nyeri Berat"
-                  : "Severe Pain"
+                  : language === "zh"
+                    ? "重度疼痛"
+                    : "Severe Pain"
                 : language === "id"
                   ? "Nyeri Sedang"
-                  : "Moderate Pain"}
+                  : language === "zh"
+                    ? "中度疼痛"
+                    : "Moderate Pain"}
           </span>
         </div>
 
@@ -432,8 +446,8 @@ function SleekQuestionInput({
         </div>
 
         <div className="sleek-scale-endpoints">
-          <span>{language === "id" ? "0 = Bebas Nyeri" : "0 = No pain"}</span>
-          <span>{language === "id" ? "10 = Sangat Sakit" : "10 = Worst pain"}</span>
+          <span>{language === "id" ? "0 = Bebas Nyeri" : language === "zh" ? "0 = 无痛" : "0 = No pain"}</span>
+          <span>{language === "id" ? "10 = Sangat Sakit" : language === "zh" ? "10 = 最严重疼痛" : "10 = Worst pain"}</span>
         </div>
       </div>
     );
@@ -448,7 +462,7 @@ function SleekQuestionInput({
         value={typeof value === "string" ? value : ""}
         onChange={(e) => onSelect(e.target.value, false)}
         placeholder={
-          language === "id" ? "Ketik nama atau sebutkan lewat suara…" : "Type name or speak aloud…"
+          language === "id" ? "Ketik jawaban atau sebutkan lewat suara…" : language === "zh" ? "输入内容或直接语音作答…" : "Type answer or speak aloud…"
         }
         autoFocus
       />

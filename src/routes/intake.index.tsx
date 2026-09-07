@@ -87,16 +87,28 @@ function IntakeStart() {
             className={`sleek-segment-item ${activeForm.id === newPatientForm.id ? "active" : ""}`}
             onClick={() => switchForm(newPatientForm.id)}
           >
-            <HeartHandshake size={15} />
-            <span>Demo 1: Pasien Baru</span>
+            <HeartHandshake size={15} className="flex-shrink-0" />
+            <span>
+              {language === "id"
+                ? "Demo 1: Pasien Baru"
+                : language === "zh"
+                  ? "示例 1: 新患者"
+                  : "Demo 1: New Patient"}
+            </span>
           </button>
           <button
             type="button"
             className={`sleek-segment-item ${activeForm.id === kneePainForm.id ? "active" : ""}`}
             onClick={() => switchForm(kneePainForm.id)}
           >
-            <Stethoscope size={15} />
-            <span>Demo 2: Nyeri Lutut</span>
+            <Stethoscope size={15} className="flex-shrink-0" />
+            <span>
+              {language === "id"
+                ? "Demo 2: Nyeri Lutut"
+                : language === "zh"
+                  ? "示例 2: 膝痛评估"
+                  : "Demo 2: Knee Pain"}
+            </span>
           </button>
         </div>
 
