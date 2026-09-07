@@ -728,16 +728,36 @@ export function matchOptionTranscript(question: Question, transcript: string, la
   const normalized = normalizeSpeech(transcript);
   const options = question.options;
 
-  // 1. Option Letter Matching (e.g. "A", "opsi A", "pilihan B", "jawaban C")
-  const letterMatch = normalized.match(/(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])\b/i);
-  if (letterMatch) {
-    const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
-    if (charCode >= 0 && charCode < options.length) {
-      return [options[charCode]];
+  // 1. Direct whole word match with any candidate / alias
+  for (const option of options) {
+    const candidates = [
+      option.label[language],
+      option.label.en,
+      ...(option.aliases?.[language] ?? []),
+      ...(option.aliases?.en ?? []),
+    ];
+    for (const cand of candidates) {
+      const c = normalizeSpeech(cand);
+      if (normalized === c) return [option];
     }
   }
 
-  // 2. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua")
+  // 2. Option Letter Matching (e.g. "A", "opsi A", "pilihan B", "jawaban C")
+  // Only trigger if transcript is concise (<= 3 words) to avoid false positive on random letter 'a' in sentences
+  const tokenCount = normalized.split(/\s+/).length;
+  if (tokenCount <= 3) {
+    const letterMatch = normalized.match(
+      /^(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])$/i,
+    );
+    if (letterMatch) {
+      const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
+      if (charCode >= 0 && charCode < options.length) {
+        return [options[charCode]];
+      }
+    }
+  }
+
+  // 3. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua")
   const ordinalMap: Record<string, number> = {
     pertama: 0,
     kesatu: 0,
@@ -760,7 +780,6 @@ export function matchOptionTranscript(question: Question, transcript: string, la
   for (const [phrase, idx] of Object.entries(ordinalMap)) {
     const regex = new RegExp(`\\b${phrase}\\b`, "i");
     if (regex.test(normalized) && idx < options.length) {
-      // Check if it's explicitly an ordinal/option reference
       if (
         normalized === phrase ||
         normalized.includes("pilihan") ||
@@ -775,11 +794,10 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   }
 
-  // 3. Binary Yes / No Questions
+  // 4. Binary Yes / No Questions
   const hasYesOption = options.some((o) => o.value === "yes");
   const hasNoOption = options.some((o) => o.value === "no");
   if (hasYesOption && hasNoOption) {
-    // Check negative first (e.g. "tidak pernah" contains affirmative "pernah")
     const noRegex =
       /\b(tidak|nggak|ngga|enggak|gak|ga|bukan|belum|tak|tanpa|aman|normal|lancar|no|nope|nah|never|none|without|没有|不是|不|否|无)\b/i;
     const yesRegex =
@@ -795,7 +813,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   }
 
-  // 4. Age Questions (e.g. "q_age", or prompt asking for age/umur)
+  // 5. Age Questions (e.g. "q_age", or prompt asking for age/umur)
   const isAgeQuestion =
     question.id.includes("age") ||
     question.prompt.en.toLowerCase().includes("old") ||
@@ -805,7 +823,9 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     const ageNum = parseScaleTranscript(transcript, language, 120);
     if (ageNum !== null && ageNum > 0) {
       if (ageNum < 30) {
-        const opt = options.find((o) => o.value === "lt-30" || o.value.includes("30"));
+        const opt = options.find(
+          (o) => o.value === "under-30" || o.value === "lt-30" || o.value.includes("30"),
+        );
         if (opt) return [opt];
       } else if (ageNum <= 44) {
         const opt = options.find((o) => o.value === "30-44");
@@ -820,7 +840,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   }
 
-  // 5. Duration Questions (e.g. "q_duration", or prompt asking for length of pain/gejala)
+  // 6. Duration Questions
   const isDurationQuestion =
     question.id.includes("duration") ||
     question.prompt.en.toLowerCase().includes("how long") ||
@@ -844,7 +864,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   }
 
-  // 6. Keyword & Substring Scoring across all Option Labels & Aliases
+  // 7. Robust Fuzzy/Substring Scoring across all Option Labels & Aliases
   const words = normalized.split(/\s+/).filter((w) => w.length > 1);
   let bestScore = 0;
   let bestOption = options[0];
@@ -860,13 +880,13 @@ export function matchOptionTranscript(question: Question, transcript: string, la
 
     candidates.forEach((cand) => {
       const c = normalizeSpeech(cand);
-      if (normalized === c) score += 10;
-      else if (normalized.includes(c) && c.length >= 3) score += 6;
-      else if (c.includes(normalized) && normalized.length >= 3) score += 4;
+      if (normalized === c) score += 12;
+      else if (normalized.includes(c) && c.length >= 3) score += 8;
+      else if (c.includes(normalized) && normalized.length >= 3) score += 6;
 
       words.forEach((w) => {
-        if (c.split(/\s+/).some((cw) => cw === w)) score += 3;
-        else if (c.includes(w) && w.length >= 4) score += 1;
+        if (c.split(/\s+/).some((cw) => cw === w)) score += 4;
+        else if (c.includes(w) && w.length >= 3) score += 2;
       });
     });
 
@@ -876,7 +896,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   });
 
-  if (bestScore >= 3) {
+  if (bestScore >= 2) {
     return [bestOption];
   }
 
