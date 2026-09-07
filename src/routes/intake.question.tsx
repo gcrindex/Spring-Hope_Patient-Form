@@ -121,11 +121,18 @@ function QuestionPage() {
         return next;
       });
 
+      // If user inputs/speaks a name, immediately save it to patientName storage
+      if (typeof value === "string" && (question.id.includes("name") || question.type === "text")) {
+        if (value.trim()) {
+          setPatientName(value.trim());
+        }
+      }
+
       if (autoAdvance) {
         triggerAutoAdvance();
       }
     },
-    [question?.id, triggerAutoAdvance],
+    [question?.id, question?.type, triggerAutoAdvance],
   );
 
   const handleVoiceFinal = useCallback(
@@ -133,10 +140,13 @@ function QuestionPage() {
       setVoiceIssue("");
       if (!question) return;
 
-      if (question.type === "text") {
+      if (question.type === "text" || question.id.includes("name")) {
         const cleaned = transcript.trim();
         updateAnswer(cleaned, false);
         setVoiceMappedLabel(cleaned);
+        if (cleaned) {
+          setPatientName(cleaned);
+        }
         return;
       }
 

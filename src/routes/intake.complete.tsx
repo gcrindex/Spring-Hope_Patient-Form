@@ -53,7 +53,32 @@ function CompletionPage() {
 
   const score = useMemo(() => calculateScore(answers, activeForm), [answers, activeForm]);
   const risk = getRisk(score);
-  const name = getPatientName() || (language === "id" ? "Pasien" : "Patient");
+
+  const name = useMemo(() => {
+    // 1. Look for answer in name question (e.g. q_np_name, q_name, or any key containing name)
+    const answerNameEntry = Object.entries(answers).find(
+      ([k, v]) => (k.includes("name") || k === "q_np_name") && typeof v === "string" && v.trim(),
+    );
+    if (answerNameEntry && typeof answerNameEntry[1] === "string" && answerNameEntry[1].trim()) {
+      return answerNameEntry[1].trim();
+    }
+
+    // 2. Look for stored patient name
+    const stored = getPatientName();
+    if (
+      stored &&
+      stored.trim() &&
+      stored !== "Pasien" &&
+      stored !== "Patient" &&
+      stored !== "Pasien Baru" &&
+      stored !== "新患者"
+    ) {
+      return stored.trim();
+    }
+
+    // 3. Fallback to generic "Pasien" / "Patient"
+    return language === "id" ? "Pasien" : language === "zh" ? "患者" : "Patient";
+  }, [answers, language]);
 
   const setLang = (next: Language) => {
     setLanguage(next);

@@ -88,12 +88,11 @@ function IntakeStart() {
   };
 
   const start = (withVoice = false) => {
-    const finalName =
-      name.trim() ||
-      (language === "id" ? "Pasien Baru" : language === "zh" ? "新患者" : "New Patient");
-    setPatientName(finalName);
-    setVoiceAutoMode(withVoice || useVoiceFirst);
     resetAssessment();
+    if (name && name.trim()) {
+      setPatientName(name.trim());
+    }
+    setVoiceAutoMode(withVoice || useVoiceFirst);
     setStoredQuestionIndex(0);
     navigate({ to: "/intake/question", search: { form: activeForm.id } });
   };
