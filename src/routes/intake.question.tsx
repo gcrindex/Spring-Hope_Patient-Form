@@ -193,7 +193,7 @@ function QuestionPage() {
         } catch {
           // ignore already started
         }
-      }, 350);
+      }, 150);
     }
 
     return () => {

@@ -51,6 +51,12 @@ export function useSpeechRecognition({
   const restartTimerRef = useRef<number | null>(null);
   const shouldListenRef = useRef(false);
   const sessionRef = useRef(0);
+  const onFinalRef = useRef(onFinal);
+  const localeRef = useRef(locale);
+
+  onFinalRef.current = onFinal;
+  localeRef.current = locale;
+
   const [state, setState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<VoiceError>(null);
@@ -109,8 +115,7 @@ export function useSpeechRecognition({
       }
 
       const recognition = new Recognition();
-      recognition.lang = locale;
-      // Note: Chrome/Edge desktop handles recognition most reliably in continuous false + auto-restart mode
+      recognition.lang = localeRef.current;
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.maxAlternatives = 3;
@@ -147,10 +152,9 @@ export function useSpeechRecognition({
             if (currentSession !== sessionRef.current) return;
             completionTimerRef.current = null;
             setState("recognized");
-            onFinal(final.trim(), confidence);
-          }, 250);
+            onFinalRef.current(final.trim(), confidence);
+          }, 200);
         } else if (interim.trim()) {
-          // If the user speaks and browser takes time to mark final, debounce on interim
           if (completionTimerRef.current !== null && typeof window !== "undefined") {
             window.clearTimeout(completionTimerRef.current);
           }
@@ -158,8 +162,8 @@ export function useSpeechRecognition({
             if (currentSession !== sessionRef.current) return;
             completionTimerRef.current = null;
             setState("recognized");
-            onFinal(interim.trim(), confidence || 0.8);
-          }, 600);
+            onFinalRef.current(interim.trim(), confidence || 0.8);
+          }, 550);
         }
       };
 
@@ -172,9 +176,9 @@ export function useSpeechRecognition({
           setState("error");
           setError("permission-denied");
         } else if (reason === "no-speech") {
-          // Normal senior thinking pause: do NOT set fatal error state
+          // Normal pause, keep listening state active
         } else if (reason === "aborted") {
-          // Expected on question switch or unmount
+          // Expected on navigation
         } else {
           if (!keepAlive) {
             setState("error");
@@ -187,7 +191,6 @@ export function useSpeechRecognition({
         if (currentSession !== sessionRef.current) return;
         recognitionRef.current = null;
 
-        // Auto keep-alive: revive recognition seamlessly if still in voice mode
         if (shouldListenRef.current && keepAlive) {
           setState("listening");
           if (restartTimerRef.current !== null && typeof window !== "undefined") {
@@ -197,7 +200,7 @@ export function useSpeechRecognition({
             if (shouldListenRef.current && currentSession === sessionRef.current) {
               launch(currentSession);
             }
-          }, 120);
+          }, 100);
         } else {
           setState((current) => (current === "listening" ? "idle" : current));
         }
@@ -213,11 +216,11 @@ export function useSpeechRecognition({
             if (shouldListenRef.current && currentSession === sessionRef.current) {
               launch(currentSession);
             }
-          }, 250);
+          }, 200);
         }
       }
     },
-    [Recognition, keepAlive, locale, onFinal],
+    [Recognition, keepAlive],
   );
 
   const start = useCallback(() => {
