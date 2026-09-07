@@ -21,17 +21,15 @@ export function PatientShell({
 }) {
   return (
     <div className="patient-page">
-      <div className="patient-glow patient-glow-one" />
-      <div className="patient-glow patient-glow-two" />
       <header className="patient-header">
         <div className="patient-header-inner">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {onBack && (
               <button type="button" className="patient-back" onClick={onBack} aria-label="Back">
-                <ArrowLeft size={20} />
+                <ArrowLeft size={22} strokeWidth={2.5} />
               </button>
             )}
-            <BrandMark />
+            <BrandMark inverse />
           </div>
           <LanguageSwitcher value={language} onChange={onLanguage} compact />
         </div>
@@ -43,7 +41,6 @@ export function PatientShell({
                 style={{ width: `${Math.max(4, Math.min(100, progress))}%` }}
               />
             </div>
-            {stepLabel && <span className="patient-progress-label">{stepLabel}</span>}
           </div>
         )}
       </header>

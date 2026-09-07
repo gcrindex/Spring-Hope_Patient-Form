@@ -251,13 +251,6 @@ function LandingPage() {
                 <p>{t.f1Desc}</p>
               </div>
               <div className="mini-question-demo">
-                <span>
-                  {language === "id"
-                    ? "Pertanyaan 2 dari 7"
-                    : language === "zh"
-                      ? "第 2 题 / 共 7 题"
-                      : "Question 2 of 7"}
-                </span>
                 <strong>
                   {language === "id"
                     ? "Sudah berapa lama Anda mengalami nyeri lutut?"

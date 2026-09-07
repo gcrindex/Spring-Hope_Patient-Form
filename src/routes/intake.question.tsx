@@ -257,18 +257,14 @@ function QuestionPage() {
       onLanguage={setLang}
       onBack={goBack}
       progress={progressPercent}
-      stepLabel={`${stepNumber} / ${totalNumber}`}
     >
       <div
         className="patient-card question-card sleek-question-card patient-enter"
         key={question.id}
       >
-        {/* Minimal, elegant top bar */}
+        {/* Top bar with Use Voice button */}
         <div className="sleek-q-header">
-          <span className="sleek-step-badge">
-            {stepNumber} <span className="sleek-step-sep">/</span> {totalNumber}
-          </span>
-
+          <div />
           <button
             type="button"
             className={`sleek-voice-toggle ${voiceAuto ? "active" : ""}`}
@@ -278,11 +274,11 @@ function QuestionPage() {
             {voiceAuto ? (
               <>
                 <span className="sleek-live-dot" />
-                <span>{language === "id" ? "Suara Aktif" : "Voice On"}</span>
+                <span>{language === "id" ? "Suara Aktif" : "Voice Active"}</span>
               </>
             ) : (
               <>
-                <MicOff size={13} />
+                <MicOff size={16} strokeWidth={2.3} />
                 <span>{language === "id" ? "Pakai Suara" : "Use Voice"}</span>
               </>
             )}

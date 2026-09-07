@@ -149,16 +149,19 @@ function BuilderLandingPage() {
                       src="/logo-mark.webp"
                       alt="9forms"
                       style={{
-                        width: 18,
-                        height: 18,
+                        width: 22,
+                        height: 22,
                         display: "inline-block",
                         verticalAlign: "middle",
-                        marginRight: 4,
+                        marginRight: 6,
                       }}
                     />{" "}
-                    9forms.com
+                    9forms
                   </span>
-                  <span className="sf-mock-step">2 / 4</span>
+                  <div className="sf-mock-voice-pill">
+                    <Mic size={13} />
+                    <span>Use Voice</span>
+                  </div>
                 </div>
                 <div className="sf-mock-progress">
                   <span style={{ width: "50%" }} />
