@@ -107,6 +107,230 @@ export const copy = {
   },
 } satisfies Record<Language, Record<string, string>>;
 
+export const newPatientForm: AssessmentForm = {
+  id: "new-patient-intake",
+  title: {
+    en: "New Patient Registration",
+    id: "Pendaftaran Pasien Baru",
+    zh: "新患者初诊登记",
+  },
+  description: {
+    en: "Quick, large-button guided intake designed for elderly & first-time patients.",
+    id: "Formulir ramah lansia berhuruf besar dan tombol mudah untuk pasien pertama kali.",
+    zh: "专为长者设计的清晰大字号初诊导引表单。",
+  },
+  status: "published",
+  questions: [
+    {
+      id: "q_np_who",
+      type: "choice",
+      prompt: {
+        en: "Who is this visit for?",
+        id: "Pemeriksaan ini untuk siapa?",
+        zh: "这次看诊是为谁登记？",
+      },
+      helper: {
+        en: "Tap one answer to proceed.",
+        id: "Cukup sentuh satu pilihan.",
+        zh: "点击一个选项即可继续。",
+      },
+      options: [
+        {
+          value: "myself",
+          label: { en: "Myself", id: "Untuk Diri Sendiri", zh: "本人" },
+          score: 1,
+          aliases: {
+            en: ["myself", "me", "for myself"],
+            id: ["diri sendiri", "saya sendiri", "saya"],
+            zh: ["本人", "我自己"],
+          },
+        },
+        {
+          value: "family",
+          label: { en: "Family member / Parent", id: "Orang Tua / Keluarga", zh: "父母 / 家人" },
+          score: 2,
+          aliases: {
+            en: ["family", "parent", "mother", "father"],
+            id: ["orang tua", "keluarga", "ibu", "ayah", "anak"],
+            zh: ["父母", "家人", "长辈"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_np_complaint",
+      type: "choice",
+      prompt: {
+        en: "What hurts or bothers you most?",
+        id: "Keluhan apa yang paling dirasakan?",
+        zh: "目前最主要的不适是什么？",
+      },
+      helper: {
+        en: "Choose the main issue.",
+        id: "Pilih keluhan utama Anda.",
+        zh: "请选择最主要的症状。",
+      },
+      options: [
+        {
+          value: "knee-joint",
+          label: { en: "Knee or Leg Pain", id: "Nyeri Lutut atau Kaki", zh: "膝盖或腿部疼痛" },
+          score: 10,
+          aliases: {
+            en: ["knee", "leg", "knee pain"],
+            id: ["lutut", "kaki", "nyeri lutut"],
+            zh: ["膝盖", "腿痛", "膝痛"],
+          },
+        },
+        {
+          value: "back-spine",
+          label: {
+            en: "Back or Waist Pain",
+            id: "Sakit Pinggang / Punggung",
+            zh: "腰部或背部酸痛",
+          },
+          score: 10,
+          aliases: {
+            en: ["back", "waist", "spine"],
+            id: ["pinggang", "punggung", "tulang belakang"],
+            zh: ["腰痛", "背痛", "腰椎"],
+          },
+        },
+        {
+          value: "shoulder-arm",
+          label: { en: "Shoulder or Arm Pain", id: "Nyeri Bahu / Lengan", zh: "肩膀或手臂疼痛" },
+          score: 8,
+          aliases: {
+            en: ["shoulder", "arm"],
+            id: ["bahu", "lengan", "tangan"],
+            zh: ["肩膀", "手臂", "肩痛"],
+          },
+        },
+        {
+          value: "fall-injury",
+          label: {
+            en: "Recent Fall or Injury",
+            id: "Baru Saja Jatuh / Cedera",
+            zh: "近期跌倒或扭伤",
+          },
+          score: 15,
+          aliases: {
+            en: ["fall", "injury", "accident"],
+            id: ["jatuh", "cedera", "keseleo", "terpeleset"],
+            zh: ["摔倒", "跌倒", "受伤"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_np_mobility",
+      type: "choice",
+      prompt: {
+        en: "How are you walking today?",
+        id: "Bagaimana cara berjalan saat ini?",
+        zh: "您今天行动自如吗？",
+      },
+      helper: {
+        en: "We will prepare walking aid if needed.",
+        id: "Kami siapkan kursi roda jika diperlukan.",
+        zh: "如有需要我们将为您准备轮椅助行。",
+      },
+      options: [
+        {
+          value: "independent",
+          label: { en: "Walk on my own", id: "Bisa jalan sendiri normal", zh: "可以自己正常走" },
+          score: 0,
+          aliases: {
+            en: ["independent", "normal", "on my own"],
+            id: ["sendiri", "normal", "bisa sendiri"],
+            zh: ["自己走", "正常"],
+          },
+        },
+        {
+          value: "cane-assisted",
+          label: {
+            en: "Need a cane or someone helping",
+            id: "Pakai tongkat / dipapah",
+            zh: "需要拄拐或家人搀扶",
+          },
+          score: 10,
+          aliases: {
+            en: ["cane", "stick", "someone helping"],
+            id: ["tongkat", "dipapah", "dibantu"],
+            zh: ["拄拐", "搀扶", "拐杖"],
+          },
+        },
+        {
+          value: "wheelchair",
+          label: { en: "Need wheelchair", id: "Perlu kursi roda", zh: "需要轮椅" },
+          score: 18,
+          aliases: { en: ["wheelchair"], id: ["kursi roda", "roda"], zh: ["轮椅"] },
+        },
+      ],
+    },
+    {
+      id: "q_np_pain_level",
+      type: "scale",
+      prompt: {
+        en: "How strong is the pain today?",
+        id: "Seberapa berat rasa sakitnya saat ini?",
+        zh: "今天的疼痛感有多强烈？",
+      },
+      helper: {
+        en: "0 is no pain, 10 is very severe pain.",
+        id: "0 tidak sakit, 10 sakit sekali.",
+        zh: "0为完全不痛，10为剧烈疼痛。",
+      },
+      max: 10,
+    },
+    {
+      id: "q_np_first_time",
+      type: "yesno",
+      prompt: {
+        en: "Is this your first time at this clinic?",
+        id: "Apakah ini pertama kali berobat di klinik kami?",
+        zh: "这是您第一次来我们诊所吗？",
+      },
+      options: [
+        {
+          value: "yes",
+          label: { en: "Yes, First Time", id: "Ya, Pertama Kali", zh: "是的，初次就诊" },
+          score: 5,
+          aliases: {
+            en: ["yes", "first time"],
+            id: ["ya", "pertama", "iya"],
+            zh: ["是的", "对", "第一次"],
+          },
+        },
+        {
+          value: "no",
+          label: { en: "No, Have Visited Before", id: "Bukan, Sudah Pernah", zh: "不是，曾来看过" },
+          score: 0,
+          aliases: {
+            en: ["no", "visited before", "already"],
+            id: ["bukan", "sudah pernah", "tidak"],
+            zh: ["不是", "看过了", "复诊"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_np_name",
+      type: "text",
+      optional: true,
+      prompt: {
+        en: "What is your name?",
+        id: "Siapa nama panggilan atau nama lengkap Anda?",
+        zh: "请问您的姓名或称呼是？",
+      },
+      helper: {
+        en: "Speak or type your name. You may also skip.",
+        id: "Cukup ucapkan lewat suara atau ketik. Boleh dilewati.",
+        zh: "可直接语音说出姓名，或输入，也可跳过。",
+      },
+    },
+  ],
+};
+
 export const kneePainForm: AssessmentForm = {
   id: "knee-pain-assessment",
   title: {
@@ -347,7 +571,31 @@ export const kneePainForm: AssessmentForm = {
   ],
 };
 
+export const allForms: AssessmentForm[] = [newPatientForm, kneePainForm];
+
+export function getFormById(id?: string | null): AssessmentForm {
+  if (!id) return newPatientForm;
+  return allForms.find((f) => f.id === id) ?? newPatientForm;
+}
+
 export const demoSubmissions: Submission[] = [
+  {
+    id: "sub-1029",
+    formId: newPatientForm.id,
+    patientName: "Opa Sutrisno",
+    submittedAt: "2026-09-03T04:10:00.000Z",
+    answers: {
+      q_np_who: "myself",
+      q_np_complaint: "knee-joint",
+      q_np_mobility: "cane-assisted",
+      q_np_pain_level: 7,
+      q_np_first_time: "yes",
+      q_np_name: "Opa Sutrisno",
+    },
+    score: 42,
+    risk: "mod",
+    triageStatus: "review",
+  },
   {
     id: "sub-1028",
     formId: kneePainForm.id,
@@ -356,6 +604,7 @@ export const demoSubmissions: Submission[] = [
     answers: {},
     score: 68,
     risk: "high",
+    triageStatus: "review",
   },
   {
     id: "sub-1027",
@@ -365,6 +614,7 @@ export const demoSubmissions: Submission[] = [
     answers: {},
     score: 48,
     risk: "mod",
+    triageStatus: "scheduled",
   },
   {
     id: "sub-1026",
@@ -374,6 +624,7 @@ export const demoSubmissions: Submission[] = [
     answers: {},
     score: 21,
     risk: "low",
+    triageStatus: "completed",
   },
   {
     id: "sub-1025",
@@ -383,6 +634,7 @@ export const demoSubmissions: Submission[] = [
     answers: {},
     score: 36,
     risk: "mod",
+    triageStatus: "scheduled",
   },
 ];
 
@@ -447,28 +699,188 @@ const spokenNumbers: Record<Language, Record<string, number>> = {
 
 export function parseScaleTranscript(transcript: string, language: Language, max = 10) {
   const normalized = normalizeSpeech(transcript);
+
+  // 1. Direct digit matching
   const digit = normalized.match(/\b(10|[0-9])\b/);
   if (digit) {
     const value = Number(digit[1]);
     return value >= 0 && value <= max ? value : null;
   }
+
+  // 2. Spoken number words
   for (const [word, value] of Object.entries(spokenNumbers[language])) {
     if (normalized.includes(word) && value <= max) return value;
   }
+
+  // 3. Natural descriptive pain levels for seniors
+  if (/\b(tidak|nggak|bukan|bebas|sembuh|aman|normal|zero|none|无|不)\b/i.test(normalized))
+    return 0;
+  if (/\b(sedikit|ringan|agak|mild|slight|一点)\b/i.test(normalized)) return Math.min(2, max);
+  if (/\b(sedang|lumayan|cukup|moderate|middle|中等)\b/i.test(normalized)) return Math.min(5, max);
+  if (/\b(berat|parah|sangat|severe|bad|严重)\b/i.test(normalized)) return Math.min(8, max);
+  if (/\b(tak tertahankan|maksimal|extreme|worst|剧痛)\b/i.test(normalized)) return max;
+
   return null;
 }
 
 export function matchOptionTranscript(question: Question, transcript: string, language: Language) {
+  if (!question.options || !question.options.length) return [];
   const normalized = normalizeSpeech(transcript);
-  const matches =
-    question.options?.filter((option) => {
-      const candidates = [option.label[language], ...(option.aliases?.[language] ?? [])];
-      return candidates.some((candidate) => {
-        const c = normalizeSpeech(candidate);
-        return normalized === c || normalized.includes(c) || c.includes(normalized);
+  const options = question.options;
+
+  // 1. Option Letter Matching (e.g. "A", "opsi A", "pilihan B", "jawaban C")
+  const letterMatch = normalized.match(/(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])\b/i);
+  if (letterMatch) {
+    const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
+    if (charCode >= 0 && charCode < options.length) {
+      return [options[charCode]];
+    }
+  }
+
+  // 2. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua")
+  const ordinalMap: Record<string, number> = {
+    pertama: 0,
+    kesatu: 0,
+    satu: 0,
+    first: 0,
+    one: 0,
+    kedua: 1,
+    dua: 1,
+    second: 1,
+    two: 1,
+    ketiga: 2,
+    tiga: 2,
+    third: 2,
+    three: 2,
+    keempat: 3,
+    empat: 3,
+    fourth: 3,
+    four: 3,
+  };
+  for (const [phrase, idx] of Object.entries(ordinalMap)) {
+    const regex = new RegExp(`\\b${phrase}\\b`, "i");
+    if (regex.test(normalized) && idx < options.length) {
+      // Check if it's explicitly an ordinal/option reference
+      if (
+        normalized === phrase ||
+        normalized.includes("pilihan") ||
+        normalized.includes("opsi") ||
+        normalized.includes("nomor") ||
+        normalized.includes("ke-") ||
+        normalized.includes("option") ||
+        normalized.includes("number")
+      ) {
+        return [options[idx]];
+      }
+    }
+  }
+
+  // 3. Binary Yes / No Questions
+  const hasYesOption = options.some((o) => o.value === "yes");
+  const hasNoOption = options.some((o) => o.value === "no");
+  if (hasYesOption && hasNoOption) {
+    // Check negative first (e.g. "tidak pernah" contains affirmative "pernah")
+    const noRegex =
+      /\b(tidak|nggak|ngga|enggak|gak|ga|bukan|belum|tak|tanpa|aman|normal|lancar|no|nope|nah|never|none|without|没有|不是|不|否|无)\b/i;
+    const yesRegex =
+      /\b(ya|iya|iye|yoi|yep|yes|ada|pernah|betul|benar|tentu|jelas|bisa|sering|bengkak|kaku|macet|terkunci|lepas|goyang|jatuh|cedera|nyeri|sakit|butuh|perlu|mau|boleh|pasti|ok|oke|siap|会|有|是|是的|对|对的)\b/i;
+
+    if (noRegex.test(normalized)) {
+      const noOpt = options.find((o) => o.value === "no");
+      if (noOpt) return [noOpt];
+    }
+    if (yesRegex.test(normalized)) {
+      const yesOpt = options.find((o) => o.value === "yes");
+      if (yesOpt) return [yesOpt];
+    }
+  }
+
+  // 4. Age Questions (e.g. "q_age", or prompt asking for age/umur)
+  const isAgeQuestion =
+    question.id.includes("age") ||
+    question.prompt.en.toLowerCase().includes("old") ||
+    question.prompt.id.toLowerCase().includes("usia") ||
+    question.prompt.id.toLowerCase().includes("umur");
+  if (isAgeQuestion) {
+    const ageNum = parseScaleTranscript(transcript, language, 120);
+    if (ageNum !== null && ageNum > 0) {
+      if (ageNum < 30) {
+        const opt = options.find((o) => o.value === "lt-30" || o.value.includes("30"));
+        if (opt) return [opt];
+      } else if (ageNum <= 44) {
+        const opt = options.find((o) => o.value === "30-44");
+        if (opt) return [opt];
+      } else if (ageNum <= 64) {
+        const opt = options.find((o) => o.value === "45-64");
+        if (opt) return [opt];
+      } else {
+        const opt = options.find((o) => o.value === "65-plus" || o.value.includes("65"));
+        if (opt) return [opt];
+      }
+    }
+  }
+
+  // 5. Duration Questions (e.g. "q_duration", or prompt asking for length of pain/gejala)
+  const isDurationQuestion =
+    question.id.includes("duration") ||
+    question.prompt.en.toLowerCase().includes("how long") ||
+    question.prompt.id.toLowerCase().includes("lama");
+  if (isDurationQuestion) {
+    if (/tahun|years|lebih|over|gt/i.test(normalized)) {
+      const opt = options.find((o) => o.value === "gt-6m" || o.value.includes("year"));
+      if (opt) return [opt];
+    } else if (
+      /\b([456]|empat|lima|enam)\s*bulan\b/i.test(normalized) ||
+      /setengah tahun/i.test(normalized)
+    ) {
+      const opt = options.find((o) => o.value === "3-6m");
+      if (opt) return [opt];
+    } else if (/\b([123]|satu|dua|tiga)\s*bulan\b/i.test(normalized)) {
+      const opt = options.find((o) => o.value === "1-3m");
+      if (opt) return [opt];
+    } else if (/minggu|hari|kurang|sebulan|baru|less/i.test(normalized)) {
+      const opt = options.find((o) => o.value === "lt-1m");
+      if (opt) return [opt];
+    }
+  }
+
+  // 6. Keyword & Substring Scoring across all Option Labels & Aliases
+  const words = normalized.split(/\s+/).filter((w) => w.length > 1);
+  let bestScore = 0;
+  let bestOption = options[0];
+
+  options.forEach((option) => {
+    let score = 0;
+    const candidates = [
+      option.label[language],
+      option.label.en,
+      ...(option.aliases?.[language] ?? []),
+      ...(option.aliases?.en ?? []),
+    ];
+
+    candidates.forEach((cand) => {
+      const c = normalizeSpeech(cand);
+      if (normalized === c) score += 10;
+      else if (normalized.includes(c) && c.length >= 3) score += 6;
+      else if (c.includes(normalized) && normalized.length >= 3) score += 4;
+
+      words.forEach((w) => {
+        if (c.split(/\s+/).some((cw) => cw === w)) score += 3;
+        else if (c.includes(w) && w.length >= 4) score += 1;
       });
-    }) ?? [];
-  return matches;
+    });
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestOption = option;
+    }
+  });
+
+  if (bestScore >= 3) {
+    return [bestOption];
+  }
+
+  return [];
 }
 
 const STORAGE = {
@@ -478,7 +890,31 @@ const STORAGE = {
   questionIndex: "pf_question_index_vnext",
   submissions: "pf_submissions",
   pendingPapers: "pf_pending_papers",
+  formId: "pf_active_form_id",
+  voiceAuto: "pf_voice_auto_mode",
 };
+
+export function getActiveFormId(): string {
+  if (typeof window === "undefined") return newPatientForm.id;
+  return window.localStorage.getItem(STORAGE.formId) || newPatientForm.id;
+}
+
+export function setActiveFormId(formId: string) {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE.formId, formId);
+  }
+}
+
+export function isVoiceAutoMode(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(STORAGE.voiceAuto) === "true";
+}
+
+export function setVoiceAutoMode(active: boolean) {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE.voiceAuto, active ? "true" : "false");
+  }
+}
 
 type LanguageListener = (lang: Language) => void;
 const languageListeners = new Set<LanguageListener>();
@@ -505,11 +941,22 @@ export function setStoredLanguage(language: Language) {
 
 export function getPatientName() {
   if (typeof window === "undefined") return "";
-  return window.localStorage.getItem(STORAGE.name) ?? "";
+  const val = window.localStorage.getItem(STORAGE.name) ?? "";
+  if (val.trim().toLowerCase() === "tes" || val.trim().toLowerCase() === "test") {
+    window.localStorage.removeItem(STORAGE.name);
+    return "";
+  }
+  return val;
 }
 
 export function setPatientName(name: string) {
-  if (typeof window !== "undefined") window.localStorage.setItem(STORAGE.name, name);
+  if (typeof window !== "undefined") {
+    if (!name || name.trim().toLowerCase() === "tes" || name.trim().toLowerCase() === "test") {
+      window.localStorage.removeItem(STORAGE.name);
+    } else {
+      window.localStorage.setItem(STORAGE.name, name);
+    }
+  }
 }
 
 export function getStoredAnswers(): Answers {
@@ -540,6 +987,7 @@ export function resetAssessment() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(STORAGE.answers);
   window.localStorage.removeItem(STORAGE.questionIndex);
+  window.localStorage.removeItem(STORAGE.name);
 }
 
 export function saveSubmission(submission: Submission) {
@@ -574,9 +1022,7 @@ export function updateTriageStatus(id: string, triageStatus: TriageStatus) {
     const existing = JSON.parse(
       window.localStorage.getItem(STORAGE.submissions) ?? "[]",
     ) as Submission[];
-    const next = existing.map((item) =>
-      item.id === id ? { ...item, triageStatus } : item,
-    );
+    const next = existing.map((item) => (item.id === id ? { ...item, triageStatus } : item));
     window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
   } catch {
     // silently fail
@@ -626,12 +1072,18 @@ export function getSubmissions(): Submission[] {
   }
 }
 
-export function savePendingPaper(paper: { formId: string; timestamp: string; patientName: string }) {
+export function savePendingPaper(paper: {
+  formId: string;
+  timestamp: string;
+  patientName: string;
+}) {
   if (typeof window === "undefined") return;
   try {
-    const existing = JSON.parse(
-      window.localStorage.getItem(STORAGE.pendingPapers) ?? "[]",
-    ) as { formId: string; timestamp: string; patientName: string }[];
+    const existing = JSON.parse(window.localStorage.getItem(STORAGE.pendingPapers) ?? "[]") as {
+      formId: string;
+      timestamp: string;
+      patientName: string;
+    }[];
     window.localStorage.setItem(STORAGE.pendingPapers, JSON.stringify([paper, ...existing]));
   } catch {
     window.localStorage.setItem(STORAGE.pendingPapers, JSON.stringify([paper]));
@@ -642,7 +1094,9 @@ export function getPendingPapers() {
   if (typeof window === "undefined") return [];
   try {
     return JSON.parse(window.localStorage.getItem(STORAGE.pendingPapers) ?? "[]") as {
-      formId: string; timestamp: string; patientName: string;
+      formId: string;
+      timestamp: string;
+      patientName: string;
     }[];
   } catch {
     return [];

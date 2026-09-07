@@ -44,10 +44,10 @@ This is the most important section. Violating these boundaries can break live se
 
 There are **two separate VPS** instances. Never assume which one is active without inspecting first.
 
-| VPS | IP | Role | Notes |
-|---|---|---|---|
+| VPS                   | IP               | Role                                                 | Notes                                                               |
+| --------------------- | ---------------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
 | Live audit tunnel VPS | `148.230.103.98` | Caddy (Docker) gateway, Cloudflare Tunnel `0f7602b7` | `/builds/audit` or `/var/www/audit` must be inspected before deploy |
-| Separate nginx VPS | `94.100.26.189` | nginx only | May **not** be connected to the live tunnel |
+| Separate nginx VPS    | `94.100.26.189`  | nginx only                                           | May **not** be connected to the live tunnel                         |
 
 **Never assume which VPS is serving live traffic.** Always inspect the active gateway and tunnel configuration before deploying or testing routes.
 
@@ -63,10 +63,10 @@ There are **two separate VPS** instances. Never assume which one is active witho
 
 ### Temporary / publicly known routes
 
-| Route | Content |
-|---|---|
-| `https://audit.pesat.app/patient-form/` | Landing page (`index.html`) |
-| `https://audit.pesat.app/admin.html` | Admin SPA (`admin.html`) |
+| Route                                                       | Content                      |
+| ----------------------------------------------------------- | ---------------------------- |
+| `https://audit.pesat.app/patient-form/`                     | Landing page (`index.html`)  |
+| `https://audit.pesat.app/admin.html`                        | Admin SPA (`admin.html`)     |
 | `https://audit.pesat.app/form.html?id=knee-pain-assessment` | Public patient form renderer |
 
 ### Planned canonical namespace
@@ -234,12 +234,12 @@ The local workspace at `D:/Claude Cowork/Pesat Business Audit/spring-hope-audit/
 
 **Question types:**
 
-| Type | Options field | Score source |
-|---|---|---|
-| `choice` | Required: array of `{label, score}` | Matched option's `score` value |
-| `yesno` | `[{label:"Yes",score:12},{label:"No",score:0}]` | Yes = 12, No = 0 |
-| `scale` | `max: 10` | `scale_value * 3` |
-| `text` | None | 0 (unless real processing added later) |
+| Type     | Options field                                   | Score source                           |
+| -------- | ----------------------------------------------- | -------------------------------------- |
+| `choice` | Required: array of `{label, score}`             | Matched option's `score` value         |
+| `yesno`  | `[{label:"Yes",score:12},{label:"No",score:0}]` | Yes = 12, No = 0                       |
+| `scale`  | `max: 10`                                       | `scale_value * 3`                      |
+| `text`   | None                                            | 0 (unless real processing added later) |
 
 ### `pf_submissions` (array of submission objects)
 
@@ -268,11 +268,11 @@ The local workspace at `D:/Claude Cowork/Pesat Business Audit/spring-hope-audit/
 
 **Risk level thresholds:**
 
-| Score range | Risk value | Display |
-|---|---|---|
-| 0 -- 30 | `low` | Green pill, "Low Risk" |
-| 31 -- 60 | `mod` | Amber pill, "Moderate" |
-| 61+ | `high` | Red pill, "High Risk" |
+| Score range | Risk value | Display                |
+| ----------- | ---------- | ---------------------- |
+| 0 -- 30     | `low`      | Green pill, "Low Risk" |
+| 31 -- 60    | `mod`      | Amber pill, "Moderate" |
+| 61+         | `high`     | Red pill, "High Risk"  |
 
 ### `pf_lang` (string)
 
@@ -327,21 +327,21 @@ localStorage is **browser-local** and **not multi-user production persistence**.
 
 ### Endpoints
 
-| Method | Path | Purpose | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/health` | Health check | -- | `{status, timestamp, pesatRouterConfigured}` |
-| POST | `/api/ai/form-draft` | AI form generation | `{mode:"chat", messages:[...]}` | `{success, form:{title, questions}}` |
-| POST | `/api/ai/extract-pdf` | PDF text extraction + AI | Multipart `file` (PDF, max 10MB) | `{success, form, extractedTextPreview}` |
-| POST | `/api/ai/extract-image` | Image vision + AI | Multipart `file` (PNG/JPEG/WebP, max 10MB) | `{success, form}` |
+| Method | Path                    | Purpose                  | Request                                    | Response                                     |
+| ------ | ----------------------- | ------------------------ | ------------------------------------------ | -------------------------------------------- |
+| GET    | `/api/health`           | Health check             | --                                         | `{status, timestamp, pesatRouterConfigured}` |
+| POST   | `/api/ai/form-draft`    | AI form generation       | `{mode:"chat", messages:[...]}`            | `{success, form:{title, questions}}`         |
+| POST   | `/api/ai/extract-pdf`   | PDF text extraction + AI | Multipart `file` (PDF, max 10MB)           | `{success, form, extractedTextPreview}`      |
+| POST   | `/api/ai/extract-image` | Image vision + AI        | Multipart `file` (PNG/JPEG/WebP, max 10MB) | `{success, form}`                            |
 
 ### Environment variables (server-side only)
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `PESATROUTER_API_KEY` | Yes | Server-side API key for PesatRouter |
-| `PESATROUTER_BASE_URL` | No | Defaults to `https://api.pesatrouter.com/v1` |
-| `PESATROUTER_MODEL` | No | Model name, defaults to `pesat-flash` |
-| `PORT` | No | Server port, defaults to `3001` (production uses `3010`) |
+| Variable               | Required | Purpose                                                  |
+| ---------------------- | -------- | -------------------------------------------------------- |
+| `PESATROUTER_API_KEY`  | Yes      | Server-side API key for PesatRouter                      |
+| `PESATROUTER_BASE_URL` | No       | Defaults to `https://api.pesatrouter.com/v1`             |
+| `PESATROUTER_MODEL`    | No       | Model name, defaults to `pesat-flash`                    |
+| `PORT`                 | No       | Server port, defaults to `3001` (production uses `3010`) |
 
 **Never expose these in frontend code, logs, chat output, or documentation.** Variable names only, no values.
 
@@ -478,15 +478,15 @@ docker restart gateway-caddy
 
 ## 10. Known Limitations / Do Not Overclaim
 
-| Claim | Reality |
-|---|---|
-| "Multi-user auth system" | **No.** Demo login is sessionStorage-only, not production auth. |
-| "Database-backed" | **No.** All data is localStorage, browser-local, not shared. |
-| "Send to Plato" | **Mock only.** Shows confirmation UI but does not actually transmit data unless a real API contract is implemented. |
-| "AI form generation is live" | **Only when server env vars are configured** and PesatRouter is reachable. Otherwise shows a controlled error. |
-| "PDF/image extraction works" | **Only when `pdf-parse` is installed** (PDF) and the AI provider is configured (both). Voice is explicitly not implemented. |
-| "Public URL is live" | **Must be externally verified.** An origin 200 response is insufficient -- the URL must work through Cloudflare's CDN, with correct tunnel/route config. |
-| "Patient data is secure" | **MVP limitation.** localStorage data stays on the device. No encryption, no server-side persistence, no HIPAA compliance. |
+| Claim                        | Reality                                                                                                                                                  |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Multi-user auth system"     | **No.** Demo login is sessionStorage-only, not production auth.                                                                                          |
+| "Database-backed"            | **No.** All data is localStorage, browser-local, not shared.                                                                                             |
+| "Send to Plato"              | **Mock only.** Shows confirmation UI but does not actually transmit data unless a real API contract is implemented.                                      |
+| "AI form generation is live" | **Only when server env vars are configured** and PesatRouter is reachable. Otherwise shows a controlled error.                                           |
+| "PDF/image extraction works" | **Only when `pdf-parse` is installed** (PDF) and the AI provider is configured (both). Voice is explicitly not implemented.                              |
+| "Public URL is live"         | **Must be externally verified.** An origin 200 response is insufficient -- the URL must work through Cloudflare's CDN, with correct tunnel/route config. |
+| "Patient data is secure"     | **MVP limitation.** localStorage data stays on the device. No encryption, no server-side persistence, no HIPAA compliance.                               |
 
 ---
 
@@ -500,7 +500,7 @@ docker restart gateway-caddy
    - `docs/domain-boundaries.md`
    - `docs/routing-matrix.md`
    - `docs/skills/pesat-app-agent.md`
-   (These may not exist locally yet -- check the repo.)
+     (These may not exist locally yet -- check the repo.)
 3. **Inspect git status** and active deployment state before any edits.
 4. **Understand the current VPS state** by reading `deploy-task.md` in the workspace.
 
@@ -641,12 +641,12 @@ Voice input enables a patient to answer without needing to tap every control or 
 
 ### Mapping voice to question types
 
-| Question type | Voice behavior |
-|---|---|
-| `choice` | Recognize the spoken option and map it to the closest valid option. Show the selected option visibly before continuing. |
-| `yesno` | Map common yes/no expressions in the active language to Yes/No. Never silently continue if recognition is ambiguous. |
-| `scale` | Parse a valid spoken number within the scale range, update the slider/value, and show the parsed number. |
-| `text` | Use speech-to-text dictation and place the transcript in the text field for review/editing. |
+| Question type | Voice behavior                                                                                                          |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `choice`      | Recognize the spoken option and map it to the closest valid option. Show the selected option visibly before continuing. |
+| `yesno`       | Map common yes/no expressions in the active language to Yes/No. Never silently continue if recognition is ambiguous.    |
+| `scale`       | Parse a valid spoken number within the scale range, update the slider/value, and show the parsed number.                |
+| `text`        | Use speech-to-text dictation and place the transcript in the text field for review/editing.                             |
 
 ### Multilingual requirement
 
@@ -798,4 +798,3 @@ Before integration:
 - Preserve current form IDs/data contracts where compatibility matters.
 - Compare generated routes against the existing routing boundaries.
 - Keep the prototype isolated until code review is complete.
-

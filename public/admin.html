@@ -1,0 +1,3830 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='%231f6feb'/><polyline points='88 50 72 50 60 84 40 16 28 50 12 50' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+    />
+    <title>Spring Hope — Form Builder Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ========== RESET & BASE ========== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #1b2a4a;
+        --teal: #2e86ab;
+        --bg: #f4f6f9;
+        --white: #ffffff;
+        --border: #d8dee8;
+        --text: #1a1f2e;
+        --text2: #5a6478;
+        --text3: #8b95a8;
+        --green: #27ae60;
+        --red: #c0392b;
+        --orange: #e67e22;
+        --radius: 12px;
+        --radius-lg: 16px;
+        --shadow: 0 2px 10px rgba(27, 42, 74, 0.05);
+        --shadow-lg: 0 8px 30px rgba(27, 42, 74, 0.1);
+        --transition: 200ms ease;
+      }
+      html,
+      body {
+        height: 100%;
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: var(--text);
+        background: var(--white);
+        outline: none;
+        transition: border var(--transition);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--teal);
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+
+      /* ========== TOAST ========== */
+      #toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        padding: 12px 20px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: var(--shadow-lg);
+        transform: translateX(120%);
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
+        opacity: 0;
+        max-width: 340px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast.success {
+        background: var(--green);
+      }
+      .toast.error {
+        background: var(--red);
+      }
+      .toast.info {
+        background: var(--teal);
+      }
+
+      /* ========== SCREENS ========== */
+      .screen {
+        display: none;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+      .screen.active {
+        display: flex;
+      }
+
+      /* ========== LOGIN ========== */
+      #login-screen {
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      }
+      .login-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 48px 40px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: var(--shadow-lg);
+      }
+      .login-logo {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .login-logo .icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .login-logo h2 {
+        font-size: 24px;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .login-logo p {
+        color: var(--text3);
+        font-size: 13px;
+      }
+      .login-field {
+        margin-bottom: 16px;
+      }
+      .login-field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .login-field input {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .login-hint {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: -8px;
+        margin-bottom: 16px;
+        font-style: italic;
+      }
+      .login-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--teal);
+        color: #fff;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        transition:
+          background var(--transition),
+          transform 100ms;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .login-btn:hover {
+        background: #257a9b;
+      }
+      .login-btn:active {
+        transform: scale(0.98);
+      }
+      .login-btn .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .login-footer {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 12px;
+        color: var(--text3);
+      }
+
+      /* ========== DASHBOARD LAYOUT ========== */
+      #dashboard-screen {
+        flex-direction: row;
+      }
+      .sidebar {
+        width: 240px;
+        background: var(--navy);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        padding: 24px 0;
+        transition: width 0.3s ease;
+      }
+      .sidebar-logo {
+        padding: 0 24px 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+      }
+      .sidebar-logo h3 {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .sidebar-logo small {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+        display: block;
+        margin-top: 2px;
+      }
+      .sidebar nav {
+        flex: 1;
+        padding: 8px 12px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        font-weight: 500;
+        transition: all var(--transition);
+        cursor: pointer;
+        margin-bottom: 2px;
+      }
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .nav-item.active {
+        background: rgba(46, 134, 171, 0.3);
+        color: #fff;
+      }
+      .nav-item svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+      .sidebar-user {
+        padding: 16px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sidebar-user .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--teal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .sidebar-user .info {
+        flex: 1;
+        min-width: 0;
+      }
+      .sidebar-user .name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .sidebar-user .role {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .sidebar-user .logout-btn {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all var(--transition);
+      }
+      .sidebar-user .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      /* ========== MAIN CONTENT ========== */
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px 40px;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      .page-header h1 {
+        font-size: 26px;
+        color: var(--navy);
+      }
+      .btn {
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--teal);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #257a9b;
+      }
+      .btn-ghost {
+        color: var(--text2);
+        border: 1px solid var(--border);
+        background: var(--white);
+      }
+      .btn-ghost:hover {
+        background: var(--bg);
+      }
+      .btn-danger {
+        background: var(--red);
+        color: #fff;
+      }
+      .btn-danger:hover {
+        background: #a93226;
+      }
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
+
+      /* Stats row */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      .stat-card .label {
+        font-size: 12px;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .stat-card .sub {
+        font-size: 12px;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      /* Forms table */
+      .forms-table {
+        width: 100%;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .forms-table thead {
+        background: var(--bg);
+      }
+      .forms-table th {
+        text-align: left;
+        padding: 14px 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border);
+      }
+      .forms-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      .forms-table tr:last-child td {
+        border-bottom: none;
+      }
+      .forms-table tr:hover td {
+        background: rgba(244, 246, 249, 0.5);
+      }
+      #sub-tbody tr {
+        cursor: pointer;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .pill-green {
+        background: rgba(39, 174, 96, 0.1);
+        color: var(--green);
+      }
+      .pill-amber {
+        background: rgba(230, 126, 34, 0.1);
+        color: var(--orange);
+      }
+      .pill-red {
+        background: rgba(192, 57, 43, 0.1);
+        color: var(--red);
+      }
+      .pill-blue {
+        background: rgba(46, 134, 171, 0.1);
+        color: var(--teal);
+      }
+      .actions-cell {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .action-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        color: var(--text2);
+        transition: all var(--transition);
+        white-space: nowrap;
+      }
+      .action-btn:hover {
+        background: var(--bg);
+        border-color: var(--text3);
+      }
+      .action-btn.publish {
+        border-color: var(--green);
+        color: var(--green);
+      }
+      .action-btn.publish:hover {
+        background: rgba(39, 174, 96, 0.08);
+      }
+      .action-btn.delete {
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .action-btn.delete:hover {
+        background: rgba(192, 57, 43, 0.08);
+      }
+      .confirm-delete {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* ========== BUILDER LAYOUT ========== */
+      #builder-screen {
+        flex-direction: column;
+      }
+      .builder-topbar {
+        height: 56px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+      .builder-topbar .back-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text2);
+        transition: all var(--transition);
+      }
+      .builder-topbar .back-btn:hover {
+        background: var(--bg);
+      }
+      .builder-topbar .title-input {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        background: none;
+        padding: 4px 8px;
+        border-radius: 6px;
+        flex: 1;
+        min-width: 0;
+        color: var(--text);
+      }
+      .builder-topbar .title-input:focus {
+        background: var(--bg);
+        outline: 1px solid var(--teal);
+      }
+      .builder-topbar .publish-btn {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all var(--transition);
+      }
+      .builder-topbar .publish-btn.draft {
+        background: var(--teal);
+        color: #fff;
+      }
+      .builder-topbar .publish-btn.draft:hover {
+        background: #257a9b;
+      }
+      .builder-topbar .publish-btn.published {
+        background: rgba(39, 174, 96, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(39, 174, 96, 0.3);
+      }
+
+      .builder-body {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* Builder left panel */
+      .builder-left {
+        width: 420px;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .builder-left .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .builder-left .panel-header h3 {
+        font-size: 14px;
+        color: var(--text2);
+      }
+      .builder-left .panel-header span {
+        font-size: 12px;
+        color: var(--text3);
+      }
+      .question-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+      }
+      .question-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+      }
+      .question-card:hover {
+        border-color: var(--teal);
+        box-shadow: 0 2px 8px rgba(46, 134, 171, 0.1);
+      }
+      .question-card.selected {
+        border-color: var(--teal);
+        background: rgba(46, 134, 171, 0.04);
+        box-shadow: 0 2px 8px rgba(46, 134, 171, 0.12);
+      }
+      .question-card.dragging {
+        opacity: 0.5;
+        transform: rotate(1deg);
+        box-shadow: var(--shadow-lg);
+      }
+      .question-card .drag-handle {
+        color: var(--text3);
+        cursor: grab;
+        font-size: 16px;
+        flex-shrink: 0;
+        user-select: none;
+      }
+      .question-card .drag-handle:active {
+        cursor: grabbing;
+      }
+      .question-card .q-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text2);
+        flex-shrink: 0;
+      }
+      .question-card .q-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .question-card .q-text {
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text);
+      }
+      .question-card .q-type {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .question-card .q-actions {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      .question-card .q-actions button {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        transition: all var(--transition);
+        font-size: 13px;
+      }
+      .question-card .q-actions button:hover {
+        background: var(--bg);
+        color: var(--text);
+      }
+      .question-card .q-actions .del:hover {
+        color: var(--red);
+      }
+      .add-question-btn {
+        width: 100%;
+        padding: 12px;
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        color: var(--text3);
+        font-size: 13px;
+        font-weight: 600;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .add-question-btn:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: rgba(46, 134, 171, 0.03);
+      }
+
+      /* Question editor */
+      .question-editor {
+        border-top: 1px solid var(--border);
+        padding: 20px;
+        overflow-y: auto;
+        background: var(--white);
+        max-height: 400px;
+      }
+      .editor-field {
+        margin-bottom: 16px;
+      }
+      .editor-field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .editor-field input,
+      .editor-field textarea,
+      .editor-field select {
+        width: 100%;
+      }
+      .editor-field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .type-selector {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .type-btn {
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+        transition: all var(--transition);
+        color: var(--text2);
+      }
+      .type-btn:hover {
+        border-color: var(--teal);
+      }
+      .type-btn.active {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .option-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .option-row input {
+        flex: 1;
+      }
+      .option-row .score-input {
+        width: 60px;
+        flex: none;
+        text-align: center;
+      }
+      .option-row .remove-opt {
+        color: var(--text3);
+        font-size: 16px;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .option-row .remove-opt:hover {
+        color: var(--red);
+      }
+      .add-option-btn {
+        font-size: 12px;
+        color: var(--teal);
+        font-weight: 600;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .editor-done {
+        width: 100%;
+        padding: 10px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        transition: background var(--transition);
+      }
+      .editor-done:hover {
+        background: #253a5e;
+      }
+
+      /* Builder right - phone preview */
+      .builder-right {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 32px;
+        background: var(--bg);
+        overflow-y: auto;
+        position: relative;
+      }
+      .phone-frame {
+        width: 375px;
+        min-height: 680px;
+        background: var(--white);
+        border-radius: 30px;
+        box-shadow:
+          0 20px 60px rgba(27, 42, 74, 0.15),
+          0 0 0 1px rgba(27, 42, 74, 0.05);
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .phone-notch {
+        width: 120px;
+        height: 24px;
+        background: var(--navy);
+        border-radius: 0 0 16px 16px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+      .phone-screen {
+        padding: 20px;
+        min-height: 636px;
+        display: flex;
+        flex-direction: column;
+      }
+      .phone-progress {
+        height: 3px;
+        background: var(--bg);
+        border-radius: 2px;
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+      .phone-progress .bar {
+        height: 100%;
+        background: var(--teal);
+        border-radius: 2px;
+        transition: width 0.3s ease;
+      }
+      .phone-qnum {
+        font-size: 12px;
+        color: var(--text3);
+        margin-bottom: 8px;
+      }
+      .phone-question {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 24px;
+        line-height: 1.3;
+      }
+      .phone-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+      }
+      .phone-opt {
+        padding: 14px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-align: left;
+      }
+      .phone-opt:hover {
+        border-color: var(--teal);
+        background: rgba(46, 134, 171, 0.04);
+      }
+      .phone-opt.selected {
+        border-color: var(--teal);
+        background: rgba(46, 134, 171, 0.08);
+        color: var(--teal);
+      }
+      .phone-scale {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding-top: 20px;
+      }
+      .phone-scale .scale-value {
+        font-size: 48px;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        color: var(--teal);
+      }
+      .phone-scale .scale-track {
+        width: 100%;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .phone-scale .scale-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        color: var(--text2);
+      }
+      .phone-scale .scale-dot:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+      .phone-scale .scale-dot.active {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .phone-yesno {
+        display: flex;
+        gap: 12px;
+        margin-top: auto;
+      }
+      .phone-yesno button {
+        flex: 1;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border: 1.5px solid var(--border);
+      }
+      .phone-yesno .yes {
+        color: var(--green);
+      }
+      .phone-yesno .yes:hover {
+        background: rgba(39, 174, 96, 0.08);
+        border-color: var(--green);
+      }
+      .phone-yesno .no {
+        color: var(--red);
+      }
+      .phone-yesno .no:hover {
+        background: rgba(192, 57, 43, 0.08);
+        border-color: var(--red);
+      }
+
+      .scoring-chip {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        padding: 8px 14px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 11px;
+        color: var(--text3);
+        box-shadow: var(--shadow);
+        max-width: 400px;
+      }
+
+      /* ========== SUBMISSIONS ========== */
+      #submissions-screen {
+        flex-direction: column;
+      }
+      .sub-topbar {
+        height: 56px;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+      .sub-topbar .back-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text2);
+        transition: all var(--transition);
+      }
+      .sub-topbar .back-btn:hover {
+        background: var(--bg);
+      }
+      .sub-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px 40px;
+      }
+      .sub-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+      .sub-header h1 {
+        font-size: 22px;
+        color: var(--navy);
+      }
+
+      /* Modal overlay */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(27, 42, 74, 0.4);
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .modal-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 520px;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 32px;
+        transform: scale(0.95);
+        transition: transform 0.25s ease;
+      }
+      .modal-overlay.show .modal {
+        transform: scale(1);
+      }
+      .modal h2 {
+        font-size: 20px;
+        margin-bottom: 16px;
+        color: var(--navy);
+      }
+      .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        transition: all var(--transition);
+      }
+      .modal-close:hover {
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* Publish modal */
+      .publish-modal .url-field {
+        display: flex;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .publish-modal .url-field input {
+        flex: 1;
+        padding: 10px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--text);
+      }
+      .publish-modal .url-field button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background var(--transition);
+      }
+      .publish-modal .url-field button:hover {
+        background: #253a5e;
+      }
+      .publish-modal .modal-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .publish-modal .modal-links a {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .qr-placeholder {
+        width: 140px;
+        height: 140px;
+        margin: 20px auto 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        gap: 2px;
+        padding: 8px;
+      }
+      .qr-placeholder span {
+        border-radius: 2px;
+      }
+      .qr-placeholder .on {
+        background: var(--navy);
+      }
+      .qr-placeholder .off {
+        background: var(--white);
+      }
+
+      /* Submission detail modal */
+      .detail-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .detail-header .name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .detail-header .date {
+        font-size: 13px;
+        color: var(--text3);
+      }
+      .score-ring {
+        width: 140px;
+        height: 140px;
+        margin: 20px auto;
+        position: relative;
+      }
+      .score-ring svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .score-ring circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+      }
+      .score-ring .bg {
+        stroke: var(--bg);
+      }
+      .score-ring .fg {
+        transition: stroke-dashoffset 0.8s ease;
+      }
+      .score-ring .center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .score-ring .num {
+        font-size: 36px;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .score-ring .lbl {
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .detail-answers {
+        margin-top: 20px;
+      }
+      .detail-answer {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .detail-answer:last-child {
+        border-bottom: none;
+      }
+      .detail-answer .q {
+        font-size: 13px;
+        color: var(--text2);
+        margin-bottom: 4px;
+      }
+      .detail-answer .a {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .send-plato-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+      }
+      .send-plato-btn.ready {
+        background: var(--navy);
+        color: #fff;
+      }
+      .send-plato-btn.ready:hover {
+        background: #253a5e;
+      }
+      .send-plato-btn.sent {
+        background: var(--green);
+        color: #fff;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 900px) {
+        .sidebar {
+          display: none;
+        }
+        .builder-left {
+          width: 100%;
+        }
+        .builder-right {
+          display: none;
+        }
+        .builder-right.mobile-show {
+          display: flex;
+          position: fixed;
+          inset: 0;
+          z-index: 100;
+          background: var(--bg);
+          padding: 16px;
+        }
+        .stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .main-content {
+          padding: 20px;
+        }
+        .forms-table {
+          font-size: 13px;
+        }
+      }
+
+      /* ========== CHOICE SCREEN ========== */
+      .choice-card {
+        background: var(--white);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .choice-card:hover {
+        border-color: var(--teal);
+        box-shadow: 0 4px 16px rgba(46, 134, 171, 0.12);
+        transform: translateY(-2px);
+      }
+      .choice-icon {
+        font-size: 32px;
+        margin-bottom: 4px;
+      }
+      .choice-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .choice-desc {
+        font-size: 13px;
+        color: var(--text3);
+        line-height: 1.4;
+      }
+
+      /* ========== AI BUILDER ========== */
+      .ai-msg {
+        display: flex;
+        gap: 10px;
+        max-width: 90%;
+      }
+      .ai-msg-user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
+      .ai-msg-bubble {
+        padding: 12px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .ai-msg-system .ai-msg-bubble {
+        background: var(--bg);
+        color: var(--text2);
+      }
+      .ai-msg-user .ai-msg-bubble {
+        background: var(--teal);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+      .ai-msg-ai .ai-msg-bubble {
+        background: var(--white);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-bottom-left-radius: 4px;
+      }
+      .ai-msg-error .ai-msg-bubble {
+        background: rgba(192, 57, 43, 0.08);
+        color: var(--red);
+        border: 1px solid rgba(192, 57, 43, 0.2);
+      }
+      .ai-typing {
+        display: flex;
+        gap: 4px;
+        padding: 12px 16px;
+      }
+      .ai-typing span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text3);
+        animation: typingDot 1.2s infinite;
+      }
+      .ai-typing span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .ai-typing span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes typingDot {
+        0%,
+        60%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+        30% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      /* AI preview question cards */
+      .ai-preview-q {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+      }
+      .ai-preview-q .q-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .ai-preview-q .q-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text2);
+        flex-shrink: 0;
+      }
+      .ai-preview-q .q-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .ai-preview-q .q-type {
+        font-size: 11px;
+        color: var(--text3);
+        margin-bottom: 4px;
+      }
+      .ai-preview-q .q-opts {
+        font-size: 12px;
+        color: var(--text3);
+      }
+      .ai-preview-q .q-opts span {
+        display: inline-block;
+        padding: 2px 8px;
+        background: var(--bg);
+        border-radius: 4px;
+        margin: 2px;
+      }
+
+      /* ========== UPLOAD MODAL ========== */
+      #upload-dropzone.dragover {
+        border-color: var(--teal);
+        background: rgba(46, 134, 171, 0.04);
+      }
+
+      @media (max-width: 600px) {
+        #choice-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .ai-msg {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen active">
+      <div class="login-card">
+        <div class="login-logo">
+          <div
+            style="
+              width: 48px;
+              height: 48px;
+              border-radius: 15px;
+              background: linear-gradient(145deg, #2d7cf2, #1858c6);
+              color: #fff;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 9px 24px rgba(31, 111, 235, 0.25);
+              margin-bottom: 14px;
+            "
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <h2>Spring Hope</h2>
+          <p>Orthopaedic Clinic &mdash; Admin Portal</p>
+        </div>
+        <div class="login-field">
+          <label>Email</label>
+          <input type="email" id="login-email" value="admin@springhope.sg" />
+        </div>
+        <div class="login-field">
+          <label>Password</label>
+          <input type="password" id="login-pass" value="demo123" />
+        </div>
+        <p class="login-hint">Demo credentials &mdash; pre-filled</p>
+        <button class="login-btn" id="login-btn">Sign In</button>
+        <p class="login-footer">Powered by pesat.ai</p>
+      </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="screen">
+      <aside class="sidebar">
+        <div
+          class="sidebar-logo"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          "
+        >
+          <div
+            style="
+              width: 36px;
+              height: 36px;
+              border-radius: 12px;
+              background: linear-gradient(145deg, #2d7cf2, #1858c6);
+              color: #fff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 6px 18px rgba(31, 111, 235, 0.3);
+              flex-shrink: 0;
+            "
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <div style="min-width: 0">
+            <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin: 0; line-height: 1.2">
+              Spring Hope
+            </h3>
+            <small
+              style="
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.6);
+                display: block;
+                margin-top: 2px;
+              "
+              >Orthopaedic Clinic</small
+            >
+          </div>
+        </div>
+        <nav>
+          <div class="nav-item active" data-route="#/dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            My Forms
+          </div>
+          <div class="nav-item" data-route="#/submissions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M16 13H8" />
+              <path d="M16 17H8" />
+              <path d="M10 9H8" />
+            </svg>
+            Submissions
+          </div>
+          <div
+            class="nav-item"
+            onclick="window.top.location.href = '/'"
+            style="
+              margin-top: 12px;
+              border-top: 1px solid rgba(255, 255, 255, 0.1);
+              padding-top: 12px;
+            "
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            Back to Website
+          </div>
+        </nav>
+        <div class="sidebar-user">
+          <div class="avatar">DT</div>
+          <div class="info">
+            <div class="name">Dr. Tony</div>
+            <div class="role">Administrator</div>
+          </div>
+          <button class="logout-btn" id="logout-btn">Sign Out</button>
+        </div>
+      </aside>
+      <div class="main-content">
+        <div class="page-header">
+          <h1>My Forms</h1>
+          <button class="btn btn-primary" id="new-form-btn">+ New Form</button>
+        </div>
+        <div class="stats-row" id="stats-row"></div>
+        <table class="forms-table">
+          <thead>
+            <tr>
+              <th>Form</th>
+              <th>Status</th>
+              <th>Questions</th>
+              <th>Submissions</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="forms-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BUILDER SCREEN -->
+    <div id="builder-screen" class="screen">
+      <div class="builder-topbar">
+        <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
+        <input class="title-input" id="builder-title" value="" spellcheck="false" />
+        <span class="pill" id="builder-status-pill"></span>
+        <button class="publish-btn" id="builder-publish-btn"></button>
+      </div>
+      <div class="builder-body">
+        <div class="builder-left">
+          <div class="panel-header">
+            <h3>Questions</h3>
+            <span id="builder-qcount"></span>
+          </div>
+          <div class="question-list" id="question-list"></div>
+          <div style="padding: 12px">
+            <button class="add-question-btn" id="add-q-btn">+ Add Question</button>
+          </div>
+          <div class="question-editor" id="question-editor" style="display: none"></div>
+        </div>
+        <div class="builder-right">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" id="phone-screen"></div>
+          </div>
+          <div class="scoring-chip">
+            Scoring: choice = options' score, scale = x3, yes/no = 12/0
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMISSIONS SCREEN -->
+    <div id="submissions-screen" class="screen">
+      <div class="sub-topbar">
+        <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
+        <h2 style="font-size: 16px; color: var(--navy)" id="sub-topbar-title">Submissions</h2>
+      </div>
+      <div class="sub-content">
+        <div
+          class="sub-header"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 12px">
+            <h1 id="sub-title">Submissions</h1>
+            <select
+              id="sub-form-filter"
+              style="
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--navy);
+                border: 1px solid var(--border);
+                background: #fff;
+              "
+            ></select>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="export-csv-btn">Export CSV</button>
+        </div>
+        <div class="stats-row" id="sub-stats"></div>
+        <table class="forms-table">
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Date</th>
+              <th>Score</th>
+              <th>Risk</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sub-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHOICE SCREEN (New Form) -->
+    <div
+      id="choice-screen"
+      class="screen"
+      style="
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+      "
+    >
+      <div style="max-width: 640px; width: 100%; padding: 32px">
+        <div style="text-align: center; margin-bottom: 32px">
+          <button
+            class="btn btn-ghost"
+            onclick="navigate('#/dashboard')"
+            style="margin-bottom: 16px"
+          >
+            &#8592; Back to Dashboard
+          </button>
+          <h1 style="font-size: 26px; color: var(--navy); margin-bottom: 8px">Create New Form</h1>
+          <p style="color: var(--text3); font-size: 14px">
+            Choose how you'd like to build your assessment form
+          </p>
+        </div>
+        <div
+          style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px"
+          id="choice-grid"
+        >
+          <button class="choice-card" data-choice="ai">
+            <div class="choice-icon">&#129302;</div>
+            <div class="choice-title">AI-Assisted</div>
+            <div class="choice-desc">
+              Describe your form in chat or use voice. AI generates questions for you.
+            </div>
+          </button>
+          <button class="choice-card" data-choice="standard">
+            <div class="choice-icon">&#128221;</div>
+            <div class="choice-title">Standard Builder</div>
+            <div class="choice-desc">Start with a blank form and add questions manually.</div>
+          </button>
+          <button class="choice-card" data-choice="pdf">
+            <div class="choice-icon">&#128196;</div>
+            <div class="choice-title">Upload PDF</div>
+            <div class="choice-desc">
+              Upload an existing PDF form. We'll extract and structure the questions.
+            </div>
+          </button>
+          <button class="choice-card" data-choice="image">
+            <div class="choice-icon">&#128247;</div>
+            <div class="choice-title">Scan Image</div>
+            <div class="choice-desc">Upload a photo of a paper form. AI reads and converts it.</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI BUILDER MODAL -->
+    <div class="modal-overlay" id="ai-modal-overlay" style="z-index: 9500">
+      <div
+        class="modal"
+        id="ai-modal-content"
+        style="
+          max-width: 700px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+          padding: 0;
+        "
+      >
+        <!-- Header -->
+        <div
+          style="
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+          "
+        >
+          <h2 style="font-size: 18px; margin: 0">AI Form Builder</h2>
+          <button class="modal-close" onclick="closeAiModal()" style="position: static">
+            &times;
+          </button>
+        </div>
+        <!-- Chat area -->
+        <div
+          id="ai-chat-area"
+          style="
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            min-height: 300px;
+            max-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          "
+        >
+          <div class="ai-msg ai-msg-system">
+            <div class="ai-msg-bubble">
+              Describe the form you need. For example: "I need a knee pain assessment with questions
+              about age, pain level, swelling, and mobility."
+            </div>
+          </div>
+        </div>
+        <!-- Voice indicator -->
+        <div
+          id="ai-voice-indicator"
+          style="
+            display: none;
+            padding: 8px 24px;
+            background: rgba(192, 57, 43, 0.08);
+            color: var(--red);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            flex-shrink: 0;
+          "
+        >
+          <span
+            class="voice-dot"
+            style="
+              display: inline-block;
+              width: 8px;
+              height: 8px;
+              border-radius: 50%;
+              background: var(--red);
+              margin-right: 6px;
+              animation: pulse 1s infinite;
+            "
+          ></span>
+          Recording...
+          <button
+            onclick="stopVoice()"
+            style="
+              background: none;
+              border: none;
+              color: var(--red);
+              font-weight: 700;
+              cursor: pointer;
+              text-decoration: underline;
+            "
+          >
+            Stop
+          </button>
+        </div>
+        <!-- Input area -->
+        <div
+          style="
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+          "
+        >
+          <button
+            id="ai-voice-btn"
+            onclick="toggleVoice()"
+            title="Voice input"
+            style="
+              width: 42px;
+              height: 42px;
+              border-radius: 10px;
+              border: 1px solid var(--border);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 18px;
+              flex-shrink: 0;
+              color: var(--text2);
+              transition: all 0.15s;
+            "
+          >
+            🎤
+          </button>
+          <input
+            type="text"
+            id="ai-chat-input"
+            placeholder="Describe what your form should assess..."
+            style="
+              flex: 1;
+              padding: 10px 14px;
+              font-size: 14px;
+              border: 1px solid var(--border);
+              border-radius: 10px;
+            "
+          />
+          <button
+            id="ai-send-btn"
+            onclick="sendAiMessage()"
+            style="
+              padding: 10px 20px;
+              border-radius: 10px;
+              background: var(--teal);
+              color: #fff;
+              font-weight: 600;
+              font-size: 14px;
+              transition: background 0.15s;
+              white-space: nowrap;
+            "
+          >
+            Send
+          </button>
+        </div>
+        <!-- Preview area (hidden until form generated) -->
+        <div
+          id="ai-preview-area"
+          style="
+            display: none;
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            max-height: 40vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 12px;
+            "
+          >
+            <h3 style="font-size: 15px; margin: 0; color: var(--navy)">Generated Form Preview</h3>
+            <div style="display: flex; gap: 8px">
+              <button class="btn btn-ghost btn-sm" onclick="regenerateAiForm()">Regenerate</button>
+              <button class="btn btn-primary btn-sm" onclick="saveAiForm()">Use This Form</button>
+            </div>
+          </div>
+          <div id="ai-preview-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF/IMAGE UPLOAD MODAL -->
+    <div class="modal-overlay" id="upload-modal-overlay" style="z-index: 9500">
+      <div class="modal" id="upload-modal-content" style="max-width: 520px; padding: 32px">
+        <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+        <h2 id="upload-modal-title" style="margin-bottom: 16px">Upload Form</h2>
+        <div id="upload-body">
+          <div
+            id="upload-dropzone"
+            style="
+              border: 2px dashed var(--border);
+              border-radius: 12px;
+              padding: 40px 20px;
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.2s;
+            "
+          >
+            <div style="font-size: 36px; margin-bottom: 12px" id="upload-dropzone-icon">
+              &#128196;
+            </div>
+            <p
+              style="font-size: 14px; color: var(--text2); margin-bottom: 4px"
+              id="upload-dropzone-text"
+            >
+              Click or drag a file here
+            </p>
+            <p style="font-size: 12px; color: var(--text3)" id="upload-dropzone-hint">
+              PDF, PNG, or JPG up to 10MB
+            </p>
+            <input
+              type="file"
+              id="upload-file-input"
+              style="display: none"
+              accept=".pdf,image/png,image/jpeg,image/webp"
+            />
+          </div>
+          <div id="upload-progress" style="display: none; margin-top: 16px">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px">
+              <div
+                class="spinner"
+                style="
+                  width: 18px;
+                  height: 18px;
+                  border: 2px solid var(--border);
+                  border-top-color: var(--teal);
+                  border-radius: 50%;
+                  animation: spin 0.6s linear infinite;
+                "
+              ></div>
+              <span id="upload-progress-text" style="font-size: 13px; color: var(--text2)"
+                >Uploading...</span
+              >
+            </div>
+            <div style="height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden">
+              <div
+                id="upload-progress-bar"
+                style="height: 100%; background: var(--teal); width: 0%; transition: width 0.3s"
+              ></div>
+            </div>
+          </div>
+          <div
+            id="upload-error"
+            style="
+              display: none;
+              margin-top: 16px;
+              padding: 12px;
+              background: rgba(192, 57, 43, 0.08);
+              border: 1px solid rgba(192, 57, 43, 0.2);
+              border-radius: 8px;
+              color: var(--red);
+              font-size: 13px;
+            "
+          ></div>
+          <div id="upload-success" style="display: none; margin-top: 16px">
+            <p style="font-size: 14px; color: var(--green); font-weight: 600; margin-bottom: 8px">
+              Form extracted successfully!
+            </p>
+            <button class="btn btn-primary" onclick="saveUploadedForm()" style="width: 100%">
+              Use This Form
+            </button>
+          </div>
+          <div
+            id="upload-fallback"
+            style="
+              display: none;
+              margin-top: 16px;
+              padding: 12px;
+              background: rgba(230, 126, 34, 0.08);
+              border: 1px solid rgba(230, 126, 34, 0.2);
+              border-radius: 8px;
+            "
+          >
+            <p style="font-size: 13px; color: var(--orange); font-weight: 600; margin-bottom: 4px">
+              Extraction unavailable
+            </p>
+            <p
+              style="font-size: 12px; color: var(--text2); margin-bottom: 8px"
+              id="upload-fallback-msg"
+            >
+              The server could not process this file. You can create the form manually instead.
+            </p>
+            <button
+              class="btn btn-ghost btn-sm"
+              onclick="
+                closeUploadModal();
+                createBlankForm();
+              "
+            >
+              Create Blank Form Instead
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" id="modal-content"></div>
+    </div>
+
+    <script>
+      // ===================== UTILITY =====================
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => document.querySelectorAll(s);
+      const LS = {
+        get(k) {
+          try {
+            return JSON.parse(localStorage.getItem(k));
+          } catch {
+            return null;
+          }
+        },
+        set(k, v) {
+          localStorage.setItem(k, JSON.stringify(v));
+        },
+      };
+      function uid() {
+        return "_" + Math.random().toString(36).slice(2, 10);
+      }
+
+      // FIX 1: Slugify title for form IDs
+      function slugify(title) {
+        return (
+          title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "") || "untitled-form"
+        );
+      }
+      function uniqueSlug(title, excludeId) {
+        let base = slugify(title);
+        const allForms = forms();
+        let slug = base,
+          n = 2;
+        while (allForms.some((f) => f.id === slug && f.id !== excludeId)) {
+          slug = base + "-" + n;
+          n++;
+        }
+        return slug;
+      }
+
+      function toast(msg, type = "success") {
+        const t = document.createElement("div");
+        t.className = "toast " + type;
+        t.textContent = msg;
+        $("#toast-container").appendChild(t);
+        requestAnimationFrame(() => t.classList.add("show"));
+        setTimeout(() => {
+          t.classList.remove("show");
+          setTimeout(() => t.remove(), 300);
+        }, 2800);
+      }
+      function showModal(html) {
+        $("#modal-content").innerHTML = html;
+        $("#modal-overlay").classList.add("show");
+      }
+      function hideModal() {
+        $("#modal-overlay").classList.remove("show");
+      }
+      $("#modal-overlay").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) hideModal();
+      });
+      $("#ai-modal-overlay").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeAiModal();
+      });
+      $("#upload-modal-overlay").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeUploadModal();
+      });
+      // FIX 4: Escape key closes modals
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if ($("#ai-modal-overlay").classList.contains("show")) {
+            closeAiModal();
+            return;
+          }
+          if ($("#upload-modal-overlay").classList.contains("show")) {
+            closeUploadModal();
+            return;
+          }
+          hideModal();
+        }
+      });
+      function timeAgo(d) {
+        const dt = new Date(d);
+        if (isNaN(dt.getTime())) return "\u2014";
+        const s = Math.floor((Date.now() - dt) / 1000);
+        if (s < 0) return "Just now";
+        if (s < 60) return "Just now";
+        if (s < 3600) return Math.floor(s / 60) + "m ago";
+        if (s < 86400) return Math.floor(s / 3600) + "h ago";
+        return Math.floor(s / 86400) + "d ago";
+      }
+      function safeDateStr(d) {
+        const dt = new Date(d);
+        if (isNaN(dt.getTime())) return "\u2014";
+        return dt.toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" });
+      }
+      function safeDateLong(d) {
+        const dt = new Date(d);
+        if (isNaN(dt.getTime())) return "\u2014";
+        return dt.toLocaleDateString("en-SG", { day: "numeric", month: "long", year: "numeric" });
+      }
+      // Migrate submissions with invalid submittedAt to valid ISO dates spread over last 14 days
+      function migrateSubmissionDates() {
+        const subs = submissions();
+        if (!subs.length) return;
+        const now = new Date();
+        let changed = false;
+        subs.forEach((sub, i) => {
+          const d = new Date(sub.submittedAt);
+          if (isNaN(d.getTime())) {
+            const dayOffset = Math.floor(14 * (1 - i / Math.max(subs.length - 1, 1)));
+            const hour = 8 + (i % 12);
+            const minute = (i * 7) % 60;
+            sub.submittedAt = new Date(
+              now - dayOffset * 86400000 + (hour * 3600 + minute * 60) * 1000,
+            ).toISOString();
+            changed = true;
+          }
+        });
+        if (changed) LS.set("pf_submissions", subs);
+      }
+      function escHtml(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      // ===================== SEED DATA (FIX 1: slug IDs) =====================
+      function seedData() {
+        const now = new Date();
+        const d = (n) => new Date(now - n * 86400000).toISOString().slice(0, 10);
+        const dt = (n, time) =>
+          new Date(now - n * 86400000).toISOString().slice(0, 10) + "T" + time + "Z";
+
+        const defaultNewPatientForm = {
+          id: "new-patient-intake",
+          title: "New Patient Registration",
+          status: "published",
+          submissions: 18,
+          createdAt: d(18),
+          updatedAt: d(1),
+          questions: [
+            {
+              id: "q_np_who",
+              text: "Who is this visit for?",
+              type: "choice",
+              options: [
+                { label: "Myself", score: 1 },
+                { label: "Family member / Parent", score: 2 },
+              ],
+            },
+            {
+              id: "q_np_complaint",
+              text: "What hurts or bothers you most?",
+              type: "choice",
+              options: [
+                { label: "Knee or Leg Pain", score: 10 },
+                { label: "Back or Waist Pain", score: 10 },
+                { label: "Shoulder or Arm Pain", score: 8 },
+                { label: "Recent Fall or Injury", score: 15 },
+              ],
+            },
+            {
+              id: "q_np_mobility",
+              text: "How are you walking today?",
+              type: "choice",
+              options: [
+                { label: "Walking normally", score: 1 },
+                { label: "Using a cane or walker", score: 8 },
+                { label: "Using a wheelchair", score: 15 },
+                { label: "Severe difficulty standing", score: 20 },
+              ],
+            },
+            {
+              id: "q_np_swelling",
+              text: "Is there noticeable swelling, heat, or redness?",
+              type: "yesno",
+            },
+            {
+              id: "q_np_assistance",
+              text: "Do you need wheelchair assistance upon arrival at clinic?",
+              type: "yesno",
+            },
+          ],
+        };
+
+        const npSubs = [
+          {
+            id: "sub_np_1",
+            formId: "new-patient-intake",
+            patientName: "Opa Sutrisno",
+            submittedAt: d(1) + "T09:15:00Z",
+            answers: {
+              q_np_who: 1,
+              q_np_complaint: 10,
+              q_np_mobility: 15,
+              q_np_swelling: "yes",
+              q_np_assistance: "yes",
+            },
+            score: 68,
+            risk: "high",
+          },
+          {
+            id: "sub_np_2",
+            formId: "new-patient-intake",
+            patientName: "Budi Santoso",
+            submittedAt: d(2) + "T11:20:00Z",
+            answers: {
+              q_np_who: 1,
+              q_np_complaint: 8,
+              q_np_mobility: 1,
+              q_np_swelling: "no",
+              q_np_assistance: "no",
+            },
+            score: 26,
+            risk: "low",
+          },
+          {
+            id: "sub_np_3",
+            formId: "new-patient-intake",
+            patientName: "Siti Rahayu",
+            submittedAt: d(3) + "T14:40:00Z",
+            answers: {
+              q_np_who: 2,
+              q_np_complaint: 10,
+              q_np_mobility: 8,
+              q_np_swelling: "yes",
+              q_np_assistance: "no",
+            },
+            score: 54,
+            risk: "mod",
+          },
+          {
+            id: "sub_np_4",
+            formId: "new-patient-intake",
+            patientName: "Maria Kusuma",
+            submittedAt: d(5) + "T16:00:00Z",
+            answers: {
+              q_np_who: 1,
+              q_np_complaint: 15,
+              q_np_mobility: 20,
+              q_np_swelling: "yes",
+              q_np_assistance: "yes",
+            },
+            score: 82,
+            risk: "high",
+          },
+          {
+            id: "sub_np_5",
+            formId: "new-patient-intake",
+            patientName: "Hendra Wijaya",
+            submittedAt: d(7) + "T08:50:00Z",
+            answers: {
+              q_np_who: 1,
+              q_np_complaint: 10,
+              q_np_mobility: 1,
+              q_np_swelling: "no",
+              q_np_assistance: "no",
+            },
+            score: 32,
+            risk: "low",
+          },
+        ];
+
+        let storedForms = LS.get("pf_forms");
+        let storedSubs = LS.get("pf_submissions") || [];
+
+        if (!storedForms) {
+          const forms = [
+            defaultNewPatientForm,
+            {
+              id: "knee-pain-assessment",
+              title: "Knee Pain Assessment",
+              status: "published",
+              submissions: 34,
+              createdAt: d(20),
+              updatedAt: d(2),
+              questions: [
+                {
+                  id: "q1",
+                  text: "How old are you?",
+                  type: "choice",
+                  options: [
+                    { label: "Under 30", score: 1 },
+                    { label: "30-44", score: 2 },
+                    { label: "45-64", score: 3 },
+                    { label: "65 or older", score: 4 },
+                  ],
+                },
+                {
+                  id: "q2",
+                  text: "How long have you had knee pain?",
+                  type: "choice",
+                  options: [
+                    { label: "Less than 1 month", score: 1 },
+                    { label: "1-6 months", score: 2 },
+                    { label: "6-12 months", score: 3 },
+                    { label: "Over 1 year", score: 4 },
+                  ],
+                },
+                { id: "q3", text: "Rate your pain level", type: "scale", max: 10 },
+                { id: "q4", text: "Do you experience swelling in your knee?", type: "yesno" },
+                { id: "q5", text: "Does your knee lock or get stuck?", type: "yesno" },
+                { id: "q6", text: "Does your knee feel unstable or give way?", type: "yesno" },
+                {
+                  id: "q7",
+                  text: "How does pain affect your daily activities?",
+                  type: "choice",
+                  options: [
+                    { label: "No limitation", score: 1 },
+                    { label: "Mild limitation", score: 2 },
+                    { label: "Moderate limitation", score: 3 },
+                    { label: "Severe limitation", score: 4 },
+                  ],
+                },
+                { id: "q8", text: "Have you had a previous knee injury?", type: "yesno" },
+              ],
+            },
+            {
+              id: "hip-function-score",
+              title: "Hip Function Score",
+              status: "draft",
+              submissions: 0,
+              createdAt: d(15),
+              updatedAt: d(5),
+              questions: [
+                {
+                  id: "q1",
+                  text: "How old are you?",
+                  type: "choice",
+                  options: [
+                    { label: "Under 40", score: 1 },
+                    { label: "40-59", score: 2 },
+                    { label: "60-74", score: 3 },
+                    { label: "75 or older", score: 4 },
+                  ],
+                },
+                { id: "q2", text: "Rate your hip pain level", type: "scale", max: 10 },
+                { id: "q3", text: "Do you have a noticeable limp?", type: "yesno" },
+                {
+                  id: "q4",
+                  text: "How many flights of stairs can you manage?",
+                  type: "choice",
+                  options: [
+                    { label: "3 or more", score: 1 },
+                    { label: "1-2 flights", score: 2 },
+                    { label: "Half a flight", score: 3 },
+                    { label: "Unable to climb stairs", score: 4 },
+                  ],
+                },
+              ],
+            },
+            {
+              id: "post-surgery-follow-up",
+              title: "Post-Surgery Follow-up",
+              status: "published",
+              submissions: 12,
+              createdAt: d(14),
+              updatedAt: d(1),
+              questions: [
+                { id: "q1", text: "Rate your current pain level", type: "scale", max: 10 },
+                {
+                  id: "q2",
+                  text: "How has your sleep quality been?",
+                  type: "choice",
+                  options: [
+                    { label: "Excellent", score: 1 },
+                    { label: "Good", score: 2 },
+                    { label: "Fair", score: 3 },
+                    { label: "Poor", score: 4 },
+                  ],
+                },
+                {
+                  id: "q3",
+                  text: "Describe your mobility level",
+                  type: "choice",
+                  options: [
+                    { label: "Fully mobile", score: 1 },
+                    { label: "Mostly independent", score: 2 },
+                    { label: "Some assistance needed", score: 3 },
+                    { label: "Significant help required", score: 4 },
+                  ],
+                },
+                {
+                  id: "q4",
+                  text: "How satisfied are you with your recovery so far?",
+                  type: "scale",
+                  max: 10,
+                },
+                { id: "q5", text: "Would you recommend this procedure to others?", type: "yesno" },
+              ],
+            },
+          ];
+          const kneeSubs = [
+            {
+              id: "sub_1",
+              formId: "knee-pain-assessment",
+              patientName: "Tan Wei Ling",
+              submittedAt: d(2) + "T10:30:00Z",
+              answers: { q1: 3, q2: 2, q3: 5, q4: "no", q5: "no", q6: "no", q7: 2, q8: "no" },
+              score: 52,
+              risk: "mod",
+            },
+            {
+              id: "sub_2",
+              formId: "knee-pain-assessment",
+              patientName: "Lim Ah Kow",
+              submittedAt: d(1) + "T14:15:00Z",
+              answers: { q1: 4, q2: 4, q3: 8, q4: "yes", q5: "yes", q6: "yes", q7: 4, q8: "yes" },
+              score: 71,
+              risk: "high",
+            },
+            {
+              id: "sub_3",
+              formId: "knee-pain-assessment",
+              patientName: "Sarah Ng",
+              submittedAt: d(4) + "T09:00:00Z",
+              answers: { q1: 1, q2: 1, q3: 2, q4: "no", q5: "no", q6: "no", q7: 1, q8: "no" },
+              score: 34,
+              risk: "low",
+            },
+            {
+              id: "sub_4",
+              formId: "knee-pain-assessment",
+              patientName: "Muhammad Ismail",
+              submittedAt: d(3) + "T11:45:00Z",
+              answers: { q1: 3, q2: 3, q3: 6, q4: "yes", q5: "no", q6: "no", q7: 3, q8: "no" },
+              score: 58,
+              risk: "mod",
+            },
+            {
+              id: "sub_5",
+              formId: "knee-pain-assessment",
+              patientName: "Wong Mei Ling",
+              submittedAt: d(6) + "T16:20:00Z",
+              answers: { q1: 2, q2: 2, q3: 3, q4: "no", q5: "no", q6: "no", q7: 2, q8: "no" },
+              score: 45,
+              risk: "low",
+            },
+            {
+              id: "sub_6",
+              formId: "knee-pain-assessment",
+              patientName: "David Chen",
+              submittedAt: d(2) + "T08:30:00Z",
+              answers: { q1: 4, q2: 3, q3: 7, q4: "yes", q5: "yes", q6: "yes", q7: 3, q8: "yes" },
+              score: 67,
+              risk: "high",
+            },
+            {
+              id: "sub_7",
+              formId: "knee-pain-assessment",
+              patientName: "Priya Sharma",
+              submittedAt: d(5) + "T13:00:00Z",
+              answers: { q1: 2, q2: 2, q3: 4, q4: "no", q5: "no", q6: "yes", q7: 2, q8: "no" },
+              score: 41,
+              risk: "mod",
+            },
+            {
+              id: "sub_8",
+              formId: "knee-pain-assessment",
+              patientName: "James Tan",
+              submittedAt: d(1) + "T17:00:00Z",
+              answers: { q1: 3, q2: 3, q3: 6, q4: "yes", q5: "no", q6: "yes", q7: 3, q8: "no" },
+              score: 62,
+              risk: "mod",
+            },
+          ];
+          const fuSubs = [
+            {
+              id: "sub_9",
+              formId: "post-surgery-follow-up",
+              patientName: "Ang Siew Lian",
+              submittedAt: d(3) + "T10:00:00Z",
+              answers: { q1: 3, q2: 2, q3: 2, q4: 7, q5: "yes" },
+              score: 48,
+              risk: "low",
+            },
+            {
+              id: "sub_10",
+              formId: "post-surgery-follow-up",
+              patientName: "Rajesh Kumar",
+              submittedAt: d(7) + "T15:30:00Z",
+              answers: { q1: 6, q2: 3, q3: 3, q4: 4, q5: "no" },
+              score: 55,
+              risk: "mod",
+            },
+            {
+              id: "sub_11",
+              formId: "post-surgery-follow-up",
+              patientName: "Chen Xiao Ming",
+              submittedAt: d(10) + "T09:15:00Z",
+              answers: { q1: 2, q2: 1, q3: 1, q4: 9, q5: "yes" },
+              score: 22,
+              risk: "low",
+            },
+          ];
+          LS.set("pf_forms", forms);
+          LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...fuSubs]);
+        } else if (!storedForms.some((f) => f.id === "new-patient-intake")) {
+          storedForms.unshift(defaultNewPatientForm);
+          LS.set("pf_forms", storedForms);
+          LS.set("pf_submissions", [...npSubs, ...storedSubs]);
+        }
+      }
+
+      // ===================== SESSION / AUTH (FIX 3) =====================
+      function isLoggedIn() {
+        return sessionStorage.getItem("pf_loggedin") === "1";
+      }
+      function setLoggedIn(v) {
+        if (v) sessionStorage.setItem("pf_loggedin", "1");
+        else sessionStorage.removeItem("pf_loggedin");
+      }
+
+      // ===================== ROUTER (FIX 3: bad-hash redirect) =====================
+      function navigate(hash) {
+        location.hash = hash;
+      }
+      function getRoute() {
+        return location.hash || "#/login";
+      }
+      function parseRoute() {
+        const h = getRoute();
+        if (h.startsWith("#/builder/")) return { screen: "builder", id: h.split("/")[2] };
+        if (h === "#/submissions" || h.startsWith("#/submissions")) {
+          const parts = h.split("/");
+          const allForms = forms();
+          const formId = parts[2] || allForms[0]?.id || "new-patient-intake";
+          return { screen: "submissions", formId };
+        }
+        if (h === "#/dashboard") return { screen: "dashboard" };
+        if (h === "#/login") return { screen: "login" };
+        if (h === "#/new") return { screen: "choice" };
+        // Bad hash: redirect based on auth state
+        return { screen: isLoggedIn() ? "dashboard" : "login", redirect: true };
+      }
+      function route() {
+        const r = parseRoute();
+        if (r.redirect) {
+          navigate(isLoggedIn() ? "#/dashboard" : "#/login");
+          return;
+        }
+        $$(".screen").forEach((s) => s.classList.remove("active"));
+        const el = $("#" + r.screen + "-screen");
+        if (el) el.classList.add("active");
+
+        // Update sidebar active highlights
+        $$(".nav-item").forEach((n) => {
+          if (n.dataset.route) {
+            if (r.screen === "dashboard" && n.dataset.route === "#/dashboard") {
+              n.classList.add("active");
+            } else if (r.screen === "submissions" && n.dataset.route.startsWith("#/submissions")) {
+              n.classList.add("active");
+            } else {
+              n.classList.remove("active");
+            }
+          }
+        });
+
+        if (r.screen === "dashboard") renderDashboard();
+        if (r.screen === "builder") renderBuilder(r.id);
+        if (r.screen === "submissions") renderSubmissions(r.formId);
+        if (r.screen === "choice") renderChoiceScreen();
+      }
+      window.addEventListener("hashchange", route);
+
+      // Delegate click for all navigation items
+      document.addEventListener("click", (e) => {
+        const item = e.target.closest("[data-route]");
+        if (item) {
+          e.preventDefault();
+          navigate(item.dataset.route);
+        }
+      });
+
+      // ===================== LOGIN / LOGOUT =====================
+      $("#login-btn").addEventListener("click", () => {
+        const btn = $("#login-btn");
+        btn.innerHTML = '<div class="spinner"></div> Signing in...';
+        btn.disabled = true;
+        setTimeout(() => {
+          setLoggedIn(true);
+          navigate("#/dashboard");
+          btn.innerHTML = "Sign In";
+          btn.disabled = false;
+        }, 800);
+      });
+      $("#logout-btn").addEventListener("click", () => {
+        setLoggedIn(false);
+        navigate("#/login");
+      });
+
+      // ===================== DASHBOARD =====================
+      let forms = () => LS.get("pf_forms") || [];
+      let submissions = () => LS.get("pf_submissions") || [];
+
+      function renderDashboard() {
+        const f = forms();
+        const total = f.length;
+        const published = f.filter((x) => x.status === "published").length;
+        const totalSub = f.reduce((a, x) => a + x.submissions, 0);
+        $("#stats-row").innerHTML = `
+    <div class="stat-card"><div class="label">Total Forms</div><div class="value">${total}</div><div class="sub">All forms</div></div>
+    <div class="stat-card"><div class="label">Published</div><div class="value">${published}</div><div class="sub">Live forms</div></div>
+    <div class="stat-card"><div class="label">Submissions</div><div class="value">${totalSub}</div><div class="sub">All time</div></div>
+    <div class="stat-card"><div class="label">Avg Completion</div><div class="value">87%</div><div class="sub">Across forms</div></div>`;
+        const tbody = $("#forms-tbody");
+        tbody.innerHTML = f
+          .map((x) => {
+            const isPublished = x.status === "published";
+            return `<tr>
+      <td><strong>${escHtml(x.title)}</strong></td>
+      <td><span class="pill ${isPublished ? "pill-green" : "pill-amber"}">${isPublished ? "Published" : "Draft"}</span></td>
+      <td>${x.questions.length}</td>
+      <td>${x.submissions}</td>
+      <td>${timeAgo(x.updatedAt)}</td>
+      <td class="actions-cell">
+        <button class="action-btn" onclick="navigate('#/builder/${x.id}')">Edit</button>
+        <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">Submissions</button>
+        ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">Copy Link</button>` : ""}
+        ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">Publish</button>` : ""}
+        <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">Delete</button>
+      </td>
+    </tr>`;
+          })
+          .join("");
+      }
+
+      // FIX 1: New Form goes to choice screen
+      $("#new-form-btn").addEventListener("click", () => {
+        navigate("#/new");
+      });
+
+      // FIX 1: copyLink uses slug id
+      function copyLink(id) {
+        const appUrl = (window.location.origin || "") + "/intake?form=" + id;
+        navigator.clipboard?.writeText(appUrl);
+        toast("Link copied to clipboard");
+      }
+      function publishForm(id) {
+        const f = forms();
+        const x = f.find((y) => y.id === id);
+        if (x) {
+          x.status = "published";
+          x.updatedAt = new Date().toISOString();
+          LS.set("pf_forms", f);
+          toast("Form published!");
+          renderDashboard();
+        }
+      }
+      let deleteConfirm = {};
+      function confirmDelete(id, btn) {
+        if (deleteConfirm[id]) {
+          const f = forms().filter((x) => x.id !== id);
+          LS.set("pf_forms", f);
+          const s = submissions().filter((x) => x.formId !== id);
+          LS.set("pf_submissions", s);
+          deleteConfirm[id] = false;
+          toast("Form deleted", "error");
+          renderDashboard();
+        } else {
+          deleteConfirm[id] = true;
+          btn.textContent = "Confirm?";
+          btn.classList.add("confirm-delete");
+          setTimeout(() => {
+            deleteConfirm[id] = false;
+            btn.textContent = "Delete";
+            btn.classList.remove("confirm-delete");
+          }, 3000);
+        }
+      }
+
+      // ===================== BUILDER =====================
+      let builderForm = null,
+        editingQ = null,
+        phonePreviewIdx = 0;
+
+      function renderBuilder(formId) {
+        const f = forms().find((x) => x.id === formId);
+        if (!f) {
+          navigate("#/dashboard");
+          return;
+        }
+        builderForm = f;
+        editingQ = null;
+        phonePreviewIdx = 0;
+        $("#builder-title").value = f.title;
+        updateStatusPill(f.status);
+        updatePublishBtn(f.status);
+        renderQuestionList();
+        renderPhonePreview();
+        if (f.questions && f.questions.length > 0) {
+          editingQ = f.questions[0].id;
+          renderQuestionEditor();
+        } else {
+          $("#question-editor").style.display = "none";
+        }
+      }
+
+      function updateStatusPill(status) {
+        $("#builder-status-pill").className =
+          "pill " + (status === "published" ? "pill-green" : "pill-amber");
+        $("#builder-status-pill").textContent = status === "published" ? "Published" : "Draft";
+      }
+      function updatePublishBtn(status) {
+        const btn = $("#builder-publish-btn");
+        if (status === "published") {
+          btn.className = "publish-btn published";
+          btn.textContent = "Published  ✓";
+        } else {
+          btn.className = "publish-btn draft";
+          btn.textContent = "Publish";
+        }
+      }
+
+      // FIX 1: Title input live-updates slug + migrates submissions on rename
+      $("#builder-title").addEventListener("input", (e) => {
+        if (!builderForm) return;
+        const oldId = builderForm.id;
+        const newTitle = e.target.value;
+        const newId = uniqueSlug(newTitle, oldId);
+        builderForm.title = newTitle;
+        if (newId !== oldId) {
+          builderForm.id = newId;
+          // Migrate all submissions from old formId to new formId
+          const subs = submissions();
+          subs.forEach((s) => {
+            if (s.formId === oldId) s.formId = newId;
+          });
+          LS.set("pf_submissions", subs);
+          // Update builder URL hash to new id (without triggering re-render)
+          history.replaceState(null, "", "#/builder/" + newId);
+        }
+        saveForm();
+        renderPhonePreview();
+      });
+
+      // FIX 4: Publish modal — clickable link, slug URL
+      $("#builder-publish-btn").addEventListener("click", () => {
+        if (!builderForm) return;
+        if (builderForm.status === "published") {
+          // Already published — just show the publish modal with link
+          showPublishModal();
+          return;
+        }
+        builderForm.status = "published";
+        builderForm.updatedAt = new Date().toISOString();
+        saveForm();
+        updateStatusPill("published");
+        updatePublishBtn("published");
+        showPublishModal();
+      });
+
+      function showPublishModal() {
+        const localUrl =
+          (window.location.host || "localhost:8080") + "/intake?form=" + builderForm.id;
+        const fullUrl =
+          (window.location.origin || "http://localhost:8080") + "/intake?form=" + builderForm.id;
+        showModal(`<div class="publish-modal">
+    <h2>Your form is live!</h2>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:4px">Share this link with your patients:</p>
+    <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('Copied!')">Copy</button></div>
+    <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">Open form &rarr;</a></div>
+    <div class="qr-placeholder" id="qr-ph"></div>
+    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:8px">Scan to open form</p>
+  </div>`);
+        const ph = $("#qr-ph");
+        ph.innerHTML = "";
+        for (let i = 0; i < 49; i++) {
+          const s = document.createElement("span");
+          s.className = Math.random() > 0.45 ? "on" : "off";
+          ph.appendChild(s);
+        }
+      }
+
+      function renderQuestionList() {
+        const qs = builderForm.questions;
+        $("#builder-qcount").textContent = qs.length + " question" + (qs.length !== 1 ? "s" : "");
+        const list = $("#question-list");
+        if (!qs.length) {
+          list.innerHTML =
+            '<p style="text-align:center;color:var(--text3);padding:40px 0;font-size:14px">No questions yet. Click "+ Add Question" to start.</p>';
+          return;
+        }
+        list.innerHTML = qs
+          .map(
+            (q, i) => `
+    <div class="question-card ${editingQ === q.id ? "selected" : ""}" draggable="true" data-idx="${i}" onclick="selectQuestion('${q.id}')">
+      <span class="drag-handle" title="Drag to reorder">&#11041;</span>
+      <span class="q-num">${i + 1}</span>
+      <div class="q-info">
+        <div class="q-text">${escHtml(q.text)}</div>
+        <div class="q-type">${typeLabel(q.type)}</div>
+      </div>
+      <div class="q-actions">
+        <button onclick="event.stopPropagation();editQuestion('${q.id}')" title="Edit">&#9998;</button>
+        <button class="del" onclick="event.stopPropagation();deleteQuestion('${q.id}')" title="Delete">&#10005;</button>
+      </div>
+    </div>`,
+          )
+          .join("");
+        setupDragDrop();
+      }
+
+      function typeLabel(t) {
+        return (
+          {
+            choice: "&#9673; Choice",
+            yesno: "&#10003;&#10007; Yes / No",
+            scale: "&#8596; Scale",
+            text: "&#9998; Text",
+          }[t] || t
+        );
+      }
+
+      function selectQuestion(id) {
+        editingQ = id;
+        renderQuestionList();
+        renderQuestionEditor();
+        renderPhonePreview();
+      }
+      function editQuestion(id) {
+        editingQ = id;
+        renderQuestionList();
+        renderQuestionEditor();
+        renderPhonePreview();
+      }
+
+      function renderQuestionEditor() {
+        const q = builderForm.questions.find((x) => x.id === editingQ);
+        if (!q) {
+          $("#question-editor").style.display = "none";
+          return;
+        }
+        const ed = $("#question-editor");
+        ed.style.display = "block";
+        let optionsHtml = "";
+        if (q.type === "choice") {
+          optionsHtml = `<div class="editor-field"><label>Options</label><div id="option-rows">${q.options
+            .map(
+              (o, i) => `
+      <div class="option-row"><input value="${escHtml(o.label)}" placeholder="Option label" oninput="updateOption('${q.id}',${i},'label',this.value)">
+      <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
+      <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
+            )
+            .join("")}</div>
+      <button class="add-option-btn" onclick="addOption('${q.id}')">+ Add Option</button></div>`;
+        } else if (q.type === "scale") {
+          optionsHtml = `<div class="editor-field"><label>Max Value</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
+        }
+        ed.innerHTML = `
+    <div class="editor-field"><label>Question Text</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
+    <div class="editor-field"><label>Type</label>
+      <div class="type-selector">${["choice", "yesno", "scale", "text"]
+        .map(
+          (t) =>
+            `<button class="type-btn ${q.type === t ? "active" : ""}" onclick="changeType('${q.id}','${t}')">${{ choice: "&#9673; Choice", yesno: "&#10003;&#10007; Yes/No", scale: "&#8596; Scale", text: "&#9998; Text" }[t]}</button>`,
+        )
+        .join("")}</div></div>
+    ${optionsHtml}
+    <button class="editor-done" onclick="doneEditing()">Done</button>`;
+      }
+
+      function updateQText(id, v) {
+        const q = builderForm.questions.find((x) => x.id === id);
+        if (q) {
+          q.text = v;
+          saveForm();
+          renderQuestionList();
+          renderPhonePreview();
+        }
+      }
+      function changeType(id, t) {
+        const q = builderForm.questions.find((x) => x.id === id);
+        if (!q) return;
+        q.type = t;
+        if (t === "choice" && !q.options)
+          q.options = [
+            { label: "Option 1", score: 1 },
+            { label: "Option 2", score: 2 },
+          ];
+        if (t === "scale") q.max = q.max || 10;
+        saveForm();
+        renderQuestionEditor();
+        renderPhonePreview();
+      }
+      function updateOption(qid, idx, key, val) {
+        const q = builderForm.questions.find((x) => x.id === qid);
+        if (q && q.options[idx]) {
+          q.options[idx][key] = val;
+          saveForm();
+          renderPhonePreview();
+        }
+      }
+      function addOption(qid) {
+        const q = builderForm.questions.find((x) => x.id === qid);
+        if (q) {
+          q.options = q.options || [];
+          q.options.push({ label: "New option", score: 1 });
+          saveForm();
+          renderQuestionEditor();
+          renderPhonePreview();
+        }
+      }
+      function removeOption(qid, idx) {
+        const q = builderForm.questions.find((x) => x.id === qid);
+        if (q && q.options) {
+          q.options.splice(idx, 1);
+          saveForm();
+          renderQuestionEditor();
+          renderPhonePreview();
+        }
+      }
+      function updateScaleMax(qid, v) {
+        const q = builderForm.questions.find((x) => x.id === qid);
+        if (q) {
+          q.max = v;
+          saveForm();
+          renderPhonePreview();
+        }
+      }
+      function doneEditing() {
+        editingQ = null;
+        $("#question-editor").style.display = "none";
+        renderQuestionList();
+      }
+
+      $("#add-q-btn").addEventListener("click", () => {
+        const id = "q_" + uid();
+        builderForm.questions.push({
+          id,
+          text: "New question",
+          type: "choice",
+          options: [
+            { label: "Option 1", score: 1 },
+            { label: "Option 2", score: 2 },
+          ],
+        });
+        saveForm();
+        editingQ = id;
+        renderQuestionList();
+        renderQuestionEditor();
+        renderPhonePreview();
+      });
+
+      function deleteQuestion(id) {
+        builderForm.questions = builderForm.questions.filter((x) => x.id !== id);
+        if (editingQ === id) {
+          editingQ = null;
+          $("#question-editor").style.display = "none";
+        }
+        saveForm();
+        renderQuestionList();
+        renderPhonePreview();
+      }
+
+      function saveForm() {
+        const f = forms();
+        const idx = f.findIndex((x) => x.id === builderForm.id);
+        builderForm.updatedAt = new Date().toISOString();
+        if (idx >= 0) f[idx] = builderForm;
+        else f.push(builderForm);
+        LS.set("pf_forms", f);
+      }
+
+      // FIX 3: Drag-and-drop with reorder toast + preview update
+      function setupDragDrop() {
+        const cards = $$(".question-card[draggable]");
+        let dragIdx = null;
+        cards.forEach((c) => {
+          c.addEventListener("dragstart", (e) => {
+            dragIdx = +c.dataset.idx;
+            c.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+          });
+          c.addEventListener("dragend", () => {
+            c.classList.remove("dragging");
+            dragIdx = null;
+          });
+          c.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+          });
+          c.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const to = +c.dataset.idx;
+            if (dragIdx !== null && dragIdx !== to) {
+              const qs = builderForm.questions;
+              const [item] = qs.splice(dragIdx, 1);
+              qs.splice(to, 0, item);
+              saveForm();
+              renderQuestionList();
+              renderPhonePreview();
+              // FIX 4: toast on reorder
+              toast("Order updated", "info");
+            }
+          });
+        });
+      }
+
+      // Phone preview (FIX 3: always re-renders on any change)
+      function renderPhonePreview() {
+        if (!builderForm) return;
+        const qs = builderForm.questions;
+        const screen = $("#phone-screen");
+        if (!qs.length) {
+          screen.innerHTML =
+            '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:14px">Add questions to see preview</div>';
+          return;
+        }
+        const qi = Math.min(phonePreviewIdx, qs.length - 1);
+        phonePreviewIdx = qi; // clamp index
+        const q = qs[qi];
+        const pct = (((qi + 1) / qs.length) * 100).toFixed(0);
+        let content = "";
+        if (q.type === "choice") {
+          content = `<div class="phone-options">${q.options.map((o) => `<button class="phone-opt" onclick="advancePhone()">${escHtml(o.label)}</button>`).join("")}</div>`;
+        } else if (q.type === "yesno") {
+          content = `<div class="phone-yesno"><button class="yes" onclick="advancePhone()">Yes</button><button class="no" onclick="advancePhone()">No</button></div>`;
+        } else if (q.type === "scale") {
+          const max = q.max || 10;
+          let dots = "";
+          for (let i = 0; i <= max; i++)
+            dots += `<button class="scale-dot ${i === Math.floor(max / 2) ? "active" : ""}" onclick="advancePhone()">${i}</button>`;
+          content = `<div class="phone-scale"><div class="scale-value">${Math.floor(max / 2)}</div><div class="scale-track">${dots}</div></div>`;
+        } else {
+          content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="Type your answer..."></textarea>`;
+        }
+        screen.innerHTML = `
+    <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
+    <div class="phone-qnum">Question ${qi + 1} of ${qs.length}</div>
+    <div class="phone-question">${escHtml(q.text)}</div>
+    ${content}`;
+      }
+      function advancePhone() {
+        if (!builderForm || !builderForm.questions.length) return;
+        if (phonePreviewIdx < builderForm.questions.length - 1) {
+          phonePreviewIdx++;
+          renderPhonePreview();
+        } else {
+          phonePreviewIdx = 0;
+          renderPhonePreview();
+        }
+      }
+
+      // ===================== SUBMISSIONS (FIX 2: event delegation for clickable rows) =====================
+      function renderSubmissions(formId) {
+        const allForms = forms();
+        let f = allForms.find((x) => x.id === formId) || allForms[0];
+        if (!f) {
+          navigate("#/dashboard");
+          return;
+        }
+        formId = f.id;
+        const subs = submissions().filter((x) => x.formId === formId);
+        $("#sub-topbar-title").textContent = f.title + " — Submissions";
+        $("#sub-title").textContent = f.title + " Submissions";
+
+        // Populate dropdown filter
+        const filter = $("#sub-form-filter");
+        if (filter) {
+          filter.innerHTML = allForms
+            .map(
+              (form) =>
+                `<option value="${form.id}" ${form.id === formId ? "selected" : ""}>${escHtml(form.title)}</option>`,
+            )
+            .join("");
+          filter.onchange = (e) => {
+            navigate("#/submissions/" + e.target.value);
+          };
+        }
+
+        const high = subs.filter((x) => x.risk === "high").length;
+        const mod = subs.filter((x) => x.risk === "mod").length;
+        const low = subs.filter((x) => x.risk === "low").length;
+        const avg = subs.length
+          ? Math.round(subs.reduce((a, x) => a + x.score, 0) / subs.length)
+          : 0;
+        $("#sub-stats").innerHTML = `
+    <div class="stat-card"><div class="label">Total</div><div class="value">${subs.length}</div></div>
+    <div class="stat-card"><div class="label">High Risk</div><div class="value" style="color:var(--red)">${high}</div></div>
+    <div class="stat-card"><div class="label">Moderate</div><div class="value" style="color:var(--orange)">${mod}</div></div>
+    <div class="stat-card"><div class="label">Low Risk</div><div class="value" style="color:var(--green)">${low}</div><div class="sub">Avg Score: ${avg}</div></div>`;
+        // FIX 2: Store current formId for event delegation, render rows without inline onclick
+        window._currentSubFormId = formId;
+        $("#sub-tbody").innerHTML = subs.length
+          ? subs
+              .map((s) => {
+                const riskPill =
+                  s.risk === "high" ? "pill-red" : s.risk === "mod" ? "pill-amber" : "pill-green";
+                const riskLabel =
+                  s.risk === "high" ? "High" : s.risk === "mod" ? "Moderate" : "Low";
+                return `<tr data-sub-id="${s.id}">
+      <td><strong>${escHtml(s.patientName)}</strong></td>
+      <td>${safeDateStr(s.submittedAt)}</td>
+      <td><strong>${s.score}</strong></td>
+      <td><span class="pill ${riskPill}">${riskLabel}</span></td>
+      <td><button class="action-btn sub-view-btn">View</button></td>
+    </tr>`;
+              })
+              .join("")
+          : `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:30px">No submissions yet for this form.</td></tr>`;
+      }
+
+      // FIX 2: Robust event delegation on submissions tbody
+      document.getElementById("sub-tbody").addEventListener("click", function (e) {
+        // Find the closest <tr> with data-sub-id
+        const tr = e.target.closest("tr[data-sub-id]");
+        if (!tr) return;
+        const subId = tr.dataset.subId;
+        const formId = window._currentSubFormId;
+        if (subId && formId) {
+          viewSubmission(subId, formId);
+        }
+      });
+
+      $("#export-csv-btn").addEventListener("click", () => {
+        const formId = window._currentSubFormId;
+        const form = forms().find((x) => x.id === formId);
+        const subs = submissions().filter((x) => x.formId === formId);
+        if (!subs.length) {
+          toast("No submissions to export", "error");
+          return;
+        }
+        let csv = "Patient Name,Date,Score,Risk\n";
+        subs.forEach((s) => {
+          csv += `"${(s.patientName || "").replace(/"/g, '""')}","${safeDateStr(s.submittedAt)}",${s.score},${s.risk}\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = (form ? slugify(form.title) : "submissions") + "-export.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast("CSV exported successfully");
+      });
+
+      function viewSubmission(subId, formId) {
+        const sub = submissions().find((x) => x.id === subId);
+        const form = forms().find((x) => x.id === formId);
+        if (!sub || !form) return;
+        const circumference = 2 * Math.PI * 60;
+        const offset = circumference - (sub.score / 100) * circumference;
+        const riskColor =
+          sub.risk === "high"
+            ? "var(--red)"
+            : sub.risk === "mod"
+              ? "var(--orange)"
+              : "var(--green)";
+        const riskLabel =
+          sub.risk === "high" ? "High Risk" : sub.risk === "mod" ? "Moderate" : "Low Risk";
+        const answersHtml = form.questions
+          .map((q) => {
+            let ans = sub.answers[q.id];
+            if (ans === undefined) ans = "—";
+            else if (q.type === "choice" && q.options)
+              ans = q.options.find((o) => o.score === ans)?.label || ans;
+            else if (q.type === "scale") ans = ans + "/" + (q.max || 10);
+            else if (q.type === "yesno") ans = ans === "yes" ? "Yes" : "No";
+            return `<div class="detail-answer"><div class="q">${escHtml(q.text)}</div><div class="a">${ans}</div></div>`;
+          })
+          .join("");
+        showModal(`<div style="position:relative">
+    <button class="modal-close" onclick="hideModal()">&times;</button>
+    <div class="detail-header"><div class="name">${escHtml(sub.patientName)}</div><div class="date">${safeDateLong(sub.submittedAt)}</div></div>
+    <div class="score-ring">
+      <svg viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="60"/><circle class="fg" cx="70" cy="70" r="60" stroke="${riskColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/></svg>
+      <div class="center"><div class="num">${sub.score}</div><div class="lbl">${riskLabel}</div></div>
+    </div>
+    <div class="detail-answers">${answersHtml}</div>
+    <button class="send-plato-btn ready" onclick="sendToPlato(this)">Send to Plato</button>
+  </div>`);
+      }
+      function sendToPlato(btn) {
+        btn.textContent = "Sent ✓";
+        btn.classList.remove("ready");
+        btn.classList.add("sent");
+        toast("Sent to Plato successfully");
+      }
+
+      // ===================== CHOICE SCREEN =====================
+      function renderChoiceScreen() {
+        // Choice cards bound via document event delegation below
+      }
+
+      document.addEventListener("click", (e) => {
+        const card = e.target.closest(".choice-card");
+        if (!card) return;
+        e.preventDefault();
+        const choice = card.dataset.choice;
+        if (choice === "standard") {
+          createBlankForm();
+        } else if (choice === "ai") {
+          openAiBuilder();
+        } else if (choice === "pdf") {
+          openUploadModal("pdf");
+        } else if (choice === "image") {
+          openUploadModal("image");
+        }
+      });
+
+      function createBlankForm() {
+        const f = forms();
+        const title = "Untitled Assessment Form";
+        const id = uniqueSlug(title);
+        const nf = {
+          id,
+          title,
+          status: "draft",
+          questions: [
+            {
+              id: "q1",
+              text: "What is your main symptom or concern today?",
+              type: "choice",
+              options: [
+                { label: "Pain or joint discomfort", score: 2 },
+                { label: "Mobility or walking difficulty", score: 3 },
+                { label: "Routine post-treatment checkup", score: 1 },
+              ],
+            },
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          submissions: 0,
+        };
+        f.push(nf);
+        LS.set("pf_forms", f);
+        navigate("#/builder/" + nf.id);
+        toast("Blank form created! Customize your questions in the editor.");
+      }
+
+      // ===================== AI FORM BUILDER =====================
+      let aiMessages = []; // chat history for the AI conversation
+      let aiGeneratedForm = null; // last generated form structure
+      let aiRecognition = null; // SpeechRecognition instance
+      let aiVoiceActive = false;
+
+      const AI_API_BASE =
+        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+          ? ""
+          : "https://apps.pesat.ai/patient-form-server";
+
+      function openAiBuilder() {
+        aiMessages = [];
+        aiGeneratedForm = null;
+        // Reset UI
+        const chatArea = $("#ai-chat-area");
+        chatArea.innerHTML =
+          '<div class="ai-msg ai-msg-system"><div class="ai-msg-bubble">Describe the form you need. For example: "I need a shoulder pain assessment with questions about age, pain level, swelling, and mobility." atau "Formulir asesmen nyeri pinggang dan punggung".</div></div>';
+        $("#ai-preview-area").style.display = "none";
+        $("#ai-chat-input").value = "";
+        $("#ai-voice-indicator").style.display = "none";
+        // Show the AI modal overlay (already in DOM)
+        $("#ai-modal-overlay").classList.add("show");
+        // Bind enter key
+        const input = $("#ai-chat-input");
+        input.onkeydown = (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendAiMessage();
+          }
+        };
+      }
+
+      function closeAiModal() {
+        $("#ai-modal-overlay").classList.remove("show");
+        if (aiRecognition) {
+          try {
+            aiRecognition.stop();
+          } catch (e) {}
+        }
+        aiVoiceActive = false;
+      }
+
+      async function sendAiMessage() {
+        const input = $("#ai-chat-input");
+        const text = (input.value || "").trim();
+        if (!text) return;
+        input.value = "";
+
+        // Add user message to UI
+        addAiMsg("user", text);
+        aiMessages.push({ role: "user", content: text });
+
+        // Show typing indicator
+        const typingDiv = document.createElement("div");
+        typingDiv.className = "ai-msg ai-msg-ai";
+        typingDiv.id = "ai-typing";
+        typingDiv.innerHTML =
+          '<div class="ai-msg-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>';
+        $("#ai-chat-area").appendChild(typingDiv);
+        $("#ai-chat-area").scrollTop = $("#ai-chat-area").scrollHeight;
+
+        let generated = null;
+        let replyText = "";
+
+        // 1. Try server endpoint
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 3500);
+          const resp = await fetch(AI_API_BASE + "/api/ai/form-draft", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: aiMessages }),
+            signal: controller.signal,
+          });
+          clearTimeout(timer);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.success && data.form) {
+              generated = data.form;
+              replyText = data.message || "Here is the generated assessment draft.";
+            } else if (data.message) {
+              replyText = data.message;
+            }
+          }
+        } catch (e) {
+          // Network/local fallback
+        }
+
+        // 2. Intelligent Medical Assistant Engine fallback (offline-proof)
+        if (!generated && !replyText) {
+          await new Promise((r) => setTimeout(r, 500));
+          const lower = text.toLowerCase();
+
+          if (/^(halo|hai|hi|hello|pagi|siang|sore|malam|tes|test)\b/i.test(lower)) {
+            replyText =
+              'Halo! Saya asisten AI Spring Hope. Formulir asesmen klinis apa yang ingin Anda rancang? Contoh: "Buat form asesmen nyeri bahu dan mobilitas lengan" atau "Kuesioner evaluasi pasca operasi".';
+          } else {
+            const isId =
+              /nyeri|sakit|lutut|bahu|punggung|kaki|jatuh|pasien|klinik|operasi|tulang|sendi/i.test(
+                lower,
+              );
+            let formTitle = "Clinical Health Assessment";
+            if (/bahu|shoulder/i.test(lower))
+              formTitle = isId ? "Asesmen Nyeri Bahu" : "Shoulder Pain & Mobility Assessment";
+            else if (/punggung|pinggang|back|spine/i.test(lower))
+              formTitle = isId
+                ? "Asesmen Nyeri Tulang Belakang & Pinggang"
+                : "Spine & Lower Back Assessment";
+            else if (/lutut|knee/i.test(lower))
+              formTitle = isId ? "Asesmen Keluhan Sendi Lutut" : "Knee Joint Clinical Evaluation";
+            else if (/operasi|surgery|post-op/i.test(lower))
+              formTitle = isId
+                ? "Evaluasi Pemulihan Pasca Operasi"
+                : "Post-Surgery Recovery Evaluation";
+            else if (/lansia|manula|elderly|geriatric/i.test(lower))
+              formTitle = isId
+                ? "Asesmen Risiko Jatuh & Mobilitas Lansia"
+                : "Elderly Mobility & Fall Risk";
+            else
+              formTitle =
+                text.length < 35
+                  ? text.charAt(0).toUpperCase() + text.slice(1)
+                  : "Custom Patient Assessment";
+
+            generated = {
+              title: formTitle,
+              questions: [
+                {
+                  id: "q1",
+                  text: isId ? "Berapa rentang usia Anda?" : "What is your age category?",
+                  type: "choice",
+                  options: [
+                    { label: isId ? "Di bawah 35 tahun" : "Under 35", score: 1 },
+                    { label: isId ? "35 - 54 tahun" : "35 - 54", score: 2 },
+                    { label: isId ? "55 - 69 tahun" : "55 - 69", score: 3 },
+                    { label: isId ? "70 tahun ke atas" : "70 or older", score: 4 },
+                  ],
+                },
+                {
+                  id: "q2",
+                  text: isId
+                    ? "Berapa lama gejala ini sudah berlangsung?"
+                    : "How long have you experienced these symptoms?",
+                  type: "choice",
+                  options: [
+                    { label: isId ? "Kurang dari 2 minggu" : "Less than 2 weeks", score: 1 },
+                    { label: isId ? "2 - 8 minggu" : "2 - 8 weeks", score: 2 },
+                    { label: isId ? "2 - 6 bulan" : "2 - 6 months", score: 3 },
+                    { label: isId ? "Lebih dari 6 bulan" : "Over 6 months", score: 4 },
+                  ],
+                },
+                {
+                  id: "q3",
+                  text: isId
+                    ? "Seberapa parah rasa nyeri saat beraktivitas? (0 = tidak nyeri, 10 = tak tertahankan)"
+                    : "Rate your pain level during regular activities (0-10)",
+                  type: "scale",
+                  max: 10,
+                },
+                {
+                  id: "q4",
+                  text: isId
+                    ? "Apakah terdapat pembengkakan, rasa kaku, atau bunyi gemeretak pada sendi?"
+                    : "Do you experience swelling, stiffness, or joint clicking?",
+                  type: "yesno",
+                },
+                {
+                  id: "q5",
+                  text: isId
+                    ? "Apakah keluhan ini membatasi kemampuan berjalan, bekerja, atau tidur malam?"
+                    : "Does this condition restrict walking, working, or sleeping at night?",
+                  type: "yesno",
+                },
+              ],
+            };
+
+            replyText = isId
+              ? `Saya telah menyusun draf "${formTitle}" dengan ${generated.questions.length} pertanyaan klinis. Tinjau draf pertanyaan di bawah ini lalu klik "Use This Form".`
+              : `I've generated "${formTitle}" with ${generated.questions.length} clinical questions. Review the draft below and click "Use This Form".`;
+          }
+        }
+
+        const typingEl = $("#ai-typing");
+        if (typingEl) typingEl.remove();
+
+        if (generated) {
+          aiGeneratedForm = generated;
+          addAiMsg("ai", replyText);
+          showAiPreview(generated);
+        } else {
+          addAiMsg("ai", replyText);
+        }
+      }
+
+      function addAiMsg(type, text) {
+        const chatArea = $("#ai-chat-area");
+        const div = document.createElement("div");
+        div.className = "ai-msg ai-msg-" + type;
+        div.innerHTML = '<div class="ai-msg-bubble">' + escHtml(text) + "</div>";
+        chatArea.appendChild(div);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+
+      function showAiPreview(form) {
+        const area = $("#ai-preview-area");
+        const content = $("#ai-preview-content");
+        area.style.display = "block";
+        let html =
+          '<div style="margin-bottom:12px"><strong style="color:var(--navy);font-size:15px">' +
+          escHtml(form.title || "Untitled Form") +
+          "</strong></div>";
+        (form.questions || []).forEach((q, i) => {
+          const qText = q.text || q.prompt?.en || q.prompt?.id || "Question " + (i + 1);
+          html +=
+            '<div class="ai-preview-q"><div class="q-head"><span class="q-num">' +
+            (i + 1) +
+            '</span><span class="q-text">' +
+            escHtml(qText) +
+            "</span></div>";
+          html += '<div class="q-type">' + typeLabel(q.type) + "</div>";
+          if (q.options && q.options.length) {
+            html +=
+              '<div class="q-opts">' +
+              q.options
+                .map((o) => {
+                  const lbl =
+                    typeof o.label === "object"
+                      ? o.label.en || o.label.id || "Option"
+                      : String(o.label || "Option");
+                  return "<span>" + escHtml(lbl) + " (" + (o.score || 0) + ")</span>";
+                })
+                .join("") +
+              "</div>";
+          }
+          html += "</div>";
+        });
+        content.innerHTML = html;
+      }
+
+      function regenerateAiForm() {
+        // Re-send the last user message
+        const lastUser = aiMessages.filter((m) => m.role === "user").pop();
+        if (lastUser) {
+          aiMessages = aiMessages.filter((m) => m.role !== "assistant");
+          sendAiMessage();
+        }
+      }
+
+      function saveAiForm() {
+        if (!aiGeneratedForm) return;
+        const f = forms();
+        const title = aiGeneratedForm.title || "AI Generated Form";
+        const id = uniqueSlug(title);
+        const questions = (aiGeneratedForm.questions || []).map((q, i) => ({
+          id: "q_" + uid(),
+          text: q.text || q.prompt?.en || q.prompt?.id || "Question " + (i + 1),
+          type: q.type || "choice",
+          options: q.options
+            ? q.options.map((o) => ({
+                label:
+                  typeof o.label === "object"
+                    ? o.label.en || o.label.id || "Option"
+                    : String(o.label || "Option"),
+                score: typeof o.score === "number" ? o.score : 1,
+              }))
+            : undefined,
+          max: q.max || (q.type === "scale" ? 10 : undefined),
+        }));
+        const nf = {
+          id,
+          title,
+          status: "draft",
+          questions,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          submissions: 0,
+        };
+        f.push(nf);
+        LS.set("pf_forms", f);
+        closeAiModal();
+        navigate("#/builder/" + nf.id);
+        toast("AI form created! Review and edit in the builder.");
+      }
+
+      // Voice input
+      function toggleVoice() {
+        if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+          toast(
+            "Speech recognition is not supported in this browser. Use Chrome or Edge.",
+            "error",
+          );
+          return;
+        }
+        if (aiVoiceActive) {
+          stopVoice();
+          return;
+        }
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        aiRecognition = new SR();
+        aiRecognition.continuous = false;
+        aiRecognition.interimResults = true;
+        aiRecognition.lang = "en-US";
+        aiRecognition.onresult = (e) => {
+          let transcript = "";
+          for (let i = e.resultIndex; i < e.results.length; i++)
+            transcript += e.results[i][0].transcript;
+          $("#ai-chat-input").value = transcript;
+        };
+        aiRecognition.onend = () => {
+          aiVoiceActive = false;
+          $("#ai-voice-indicator").style.display = "none";
+        };
+        aiRecognition.onerror = () => {
+          aiVoiceActive = false;
+          $("#ai-voice-indicator").style.display = "none";
+          toast("Voice recognition error", "error");
+        };
+        aiVoiceActive = true;
+        $("#ai-voice-indicator").style.display = "block";
+        aiRecognition.start();
+      }
+
+      function stopVoice() {
+        if (aiRecognition) {
+          try {
+            aiRecognition.stop();
+          } catch (e) {}
+        }
+        aiVoiceActive = false;
+        $("#ai-voice-indicator").style.display = "none";
+      }
+
+      // ===================== PDF / IMAGE UPLOAD =====================
+      let uploadType = "pdf"; // 'pdf' or 'image'
+      let uploadedFile = null;
+      let uploadedFormResult = null;
+
+      function openUploadModal(type) {
+        uploadType = type;
+        uploadedFile = null;
+        uploadedFormResult = null;
+        const title = type === "pdf" ? "Upload PDF Form" : "Scan Image Form";
+        const icon = type === "pdf" ? "&#128196;" : "&#128247;";
+        const hint = type === "pdf" ? "PDF up to 10MB" : "PNG, JPG, or WebP up to 10MB";
+        const accept = type === "pdf" ? ".pdf" : ".png,.jpg,.jpeg,.webp";
+        $("#upload-modal-title").textContent = title;
+        $("#upload-dropzone-icon").innerHTML = icon;
+        $("#upload-dropzone-hint").textContent = hint;
+        $("#upload-file-input").accept = accept;
+        $("#upload-progress").style.display = "none";
+        $("#upload-error").style.display = "none";
+        $("#upload-success").style.display = "none";
+        $("#upload-fallback").style.display = "none";
+        $("#upload-dropzone").style.display = "";
+        // Show the upload modal overlay (already in DOM)
+        $("#upload-modal-overlay").classList.add("show");
+        // Bind events
+        const dz = $("#upload-dropzone");
+        const fi = $("#upload-file-input");
+        dz.onclick = () => fi.click();
+        dz.ondragover = (e) => {
+          e.preventDefault();
+          dz.classList.add("dragover");
+        };
+        dz.ondragleave = () => dz.classList.remove("dragover");
+        dz.ondrop = (e) => {
+          e.preventDefault();
+          dz.classList.remove("dragover");
+          if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0]);
+        };
+        fi.onchange = () => {
+          if (fi.files.length) handleUploadFile(fi.files[0]);
+        };
+      }
+
+      function closeUploadModal() {
+        $("#upload-modal-overlay").classList.remove("show");
+      }
+
+      async function handleUploadFile(file) {
+        uploadedFile = file;
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          $("#upload-error").textContent = "File is too large. Maximum size is 10MB.";
+          $("#upload-error").style.display = "block";
+          return;
+        }
+        const endpoint = uploadType === "pdf" ? "/api/ai/extract-pdf" : "/api/ai/extract-image";
+        const expectedMime = uploadType === "pdf" ? "application/pdf" : null;
+        if (expectedMime && file.type !== expectedMime) {
+          $("#upload-error").textContent = "Invalid file type. Please upload a PDF.";
+          $("#upload-error").style.display = "block";
+          return;
+        }
+        if (
+          uploadType === "image" &&
+          !["image/png", "image/jpeg", "image/webp"].includes(file.type)
+        ) {
+          $("#upload-error").textContent =
+            "Invalid file type. Please upload a PNG, JPG, or WebP image.";
+          $("#upload-error").style.display = "block";
+          return;
+        }
+
+        // Show progress
+        $("#upload-dropzone").style.display = "none";
+        $("#upload-progress").style.display = "block";
+        $("#upload-error").style.display = "none";
+        $("#upload-success").style.display = "none";
+        $("#upload-fallback").style.display = "none";
+        $("#upload-progress-text").textContent = "Uploading and processing...";
+        $("#upload-progress-bar").style.width = "30%";
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          $("#upload-progress-bar").style.width = "60%";
+          const resp = await fetch(AI_API_BASE + endpoint, { method: "POST", body: formData });
+          const data = await resp.json();
+          $("#upload-progress-bar").style.width = "100%";
+
+          if (data.success && data.form) {
+            uploadedFormResult = data.form;
+            $("#upload-progress").style.display = "none";
+            $("#upload-success").style.display = "block";
+          } else {
+            // Show controlled error, allow manual fallback
+            $("#upload-progress").style.display = "none";
+            const errMsg = data.message || data.details || "Extraction failed";
+            if (data.error === "NO_EXTRACTION_ENGINE") {
+              $("#upload-fallback-msg").textContent = errMsg;
+              $("#upload-fallback").style.display = "block";
+            } else if (data.error === "AI_PROVIDER_NOT_CONFIGURED") {
+              $("#upload-fallback-msg").textContent =
+                errMsg + ". You can create the form manually instead.";
+              $("#upload-fallback").style.display = "block";
+            } else {
+              $("#upload-error").textContent = errMsg;
+              $("#upload-error").style.display = "block";
+            }
+          }
+        } catch (e) {
+          $("#upload-progress").style.display = "none";
+          // Network error — show fallback
+          $("#upload-fallback-msg").textContent =
+            "Could not reach the server at " +
+            AI_API_BASE +
+            ". " +
+            e.message +
+            ". You can create the form manually.";
+          $("#upload-fallback").style.display = "block";
+        }
+      }
+
+      function saveUploadedForm() {
+        if (!uploadedFormResult) return;
+        const f = forms();
+        const title =
+          uploadedFormResult.title ||
+          (uploadType === "pdf" ? "PDF Imported Form" : "Image Scanned Form");
+        const id = uniqueSlug(title);
+        const questions = (uploadedFormResult.questions || []).map((q, i) => ({
+          id: "q_" + uid(),
+          text: q.text,
+          type: q.type || "choice",
+          options: q.options || undefined,
+          max: q.max || undefined,
+        }));
+        const nf = {
+          id,
+          title,
+          status: "draft",
+          questions,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          submissions: 0,
+        };
+        f.push(nf);
+        LS.set("pf_forms", f);
+        closeUploadModal();
+        navigate("#/builder/" + nf.id);
+        toast("Form imported! Review and edit in the builder.");
+      }
+
+      // ===================== INIT =====================
+      seedData();
+      migrateSubmissionDates();
+      route();
+    </script>
+  </body>
+</html>

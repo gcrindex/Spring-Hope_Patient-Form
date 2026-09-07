@@ -1,38 +1,50 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowRight,
   Camera,
   Check,
   ChevronRight,
   Clock3,
+  HeartHandshake,
   Home,
-  Image as ImageIcon,
   Mic,
   RotateCcw,
-  ShieldCheck,
   Sparkles,
+  Stethoscope,
   UploadCloud,
+  Volume2,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import {
+  getActiveFormId,
+  getFormById,
   getPatientName,
   getStoredLanguage,
+  isVoiceAutoMode,
   kneePainForm,
+  newPatientForm,
   resetAssessment,
   savePendingPaper,
+  setActiveFormId,
   setPatientName,
   setStoredLanguage,
+  setStoredQuestionIndex,
+  setVoiceAutoMode,
   type Language,
 } from "../lib/patientform";
 
 export const Route = createFileRoute("/intake/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    form: (search.form as string) || undefined,
+  }),
   head: () => ({
     meta: [
-      { title: "Knee Pain Assessment — Spring Hope" },
+      { title: "Formulir Pasien — Ramah Lansia & Suara" },
       {
         name: "description",
-        content: "Begin a guided knee pain assessment with optional voice answering.",
+        content: "Isi formulir pasien dengan mudah lewat suara atau sentuhan layar besar.",
       },
     ],
   }),
@@ -40,9 +52,13 @@ export const Route = createFileRoute("/intake/")({
 });
 
 function IntakeStart() {
+  const { form: formParam } = Route.useSearch();
   const navigate = useNavigate();
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
-  const [name, setName] = useState("");
+  const [activeForm, setActiveForm] = useState(() => getFormById(formParam || getActiveFormId()));
+  const [name, setName] = useState(() => getPatientName());
+  const [useVoiceFirst, setUseVoiceFirst] = useState(() => isVoiceAutoMode());
+  const [showNameField, setShowNameField] = useState(false);
   const [showPaperModal, setShowPaperModal] = useState(false);
   const [paperFile, setPaperFile] = useState<File | null>(null);
   const [paperPreview, setPaperPreview] = useState<string | null>(null);
@@ -51,21 +67,38 @@ function IntakeStart() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const fId = formParam || getActiveFormId();
+    setActiveFormId(fId);
+    setActiveForm(getFormById(fId));
     setLanguage(getStoredLanguage());
     setName(getPatientName());
-  }, []);
+  }, [formParam]);
 
   const setLang = (next: Language) => {
     setLanguage(next);
     setStoredLanguage(next);
   };
 
-  const start = () => {
-    if (!name.trim()) return;
-    setPatientName(name.trim());
+  const switchForm = (formId: string) => {
+    setActiveFormId(formId);
+    setActiveForm(getFormById(formId));
     resetAssessment();
-    navigate({ to: "/intake/question" });
+    setStoredQuestionIndex(0);
+    navigate({ to: "/intake", search: { form: formId } });
   };
+
+  const start = (withVoice = false) => {
+    const finalName =
+      name.trim() ||
+      (language === "id" ? "Pasien Baru" : language === "zh" ? "新患者" : "New Patient");
+    setPatientName(finalName);
+    setVoiceAutoMode(withVoice || useVoiceFirst);
+    resetAssessment();
+    setStoredQuestionIndex(0);
+    navigate({ to: "/intake/question", search: { form: activeForm.id } });
+  };
+
+  const isSeniorNewPatient = activeForm.id === newPatientForm.id;
 
   const handleSelectPaper = (file: File) => {
     setPaperFile(file);
@@ -76,11 +109,11 @@ function IntakeStart() {
     if (!paperFile || !paperConfirmed) return;
     setPaperUploading(true);
 
-    const patient = name.trim() || "Patient (Paper)";
+    const patient = name.trim() || (language === "id" ? "Pasien (Kertas)" : "Patient (Paper)");
     setPatientName(patient);
 
     savePendingPaper({
-      formId: kneePainForm.id,
+      formId: activeForm.id,
       timestamp: new Date().toISOString(),
       patientName: patient,
     });
@@ -92,124 +125,87 @@ function IntakeStart() {
     }, 600);
   };
 
-  const title = kneePainForm.title[language];
-  const description = kneePainForm.description[language];
-  const localized = {
-    en: {
-      badge: "2–3 minute guided assessment",
-      intro: "Let's check how your knee has been feeling.",
-      name: "What should we call you?",
-      placeholder: "Your name",
-      start: "Start assessment",
-      voice: "Voice is optional",
-      voiceBody:
-        "Tap the microphone on any question to answer naturally. You'll always be able to review or answer manually.",
-      paper: "Already completed a paper form?",
-      photo: "Upload photo of completed form",
-      privacy: "Microphone access is only requested when you choose voice.",
-    },
-    id: {
-      badge: "Penilaian terpandu 2–3 menit",
-      intro: "Mari cek bagaimana kondisi lutut Anda.",
-      name: "Siapa nama Anda?",
-      placeholder: "Nama Anda",
-      start: "Mulai penilaian",
-      voice: "Suara bersifat opsional",
-      voiceBody:
-        "Tekan mikrofon pada pertanyaan untuk menjawab dengan suara. Jawaban tetap bisa ditinjau atau diisi manual.",
-      paper: "Sudah mengisi formulir kertas?",
-      photo: "Unggah foto formulir yang sudah diisi",
-      privacy: "Akses mikrofon hanya diminta saat Anda memilih fitur suara.",
-    },
-    zh: {
-      badge: "2–3分钟引导式评估",
-      intro: "让我们了解一下您膝盖的情况。",
-      name: "我们该如何称呼您？",
-      placeholder: "您的姓名",
-      start: "开始评估",
-      voice: "语音为可选功能",
-      voiceBody: "在任意问题上点击麦克风即可语音回答。您始终可以检查或手动填写。",
-      paper: "已经填写纸质表格？",
-      photo: "上传已填写的纸质表单照片",
-      privacy: "只有在您选择语音时才会请求麦克风权限。",
-    },
-  }[language];
-
   return (
-    <PatientShell
-      language={language}
-      onLanguage={setLang}
-      onBack={() => navigate({ to: "/" })}
-    >
-      <div className="patient-card patient-card-start patient-enter">
+    <PatientShell language={language} onLanguage={setLang} onBack={() => navigate({ to: "/" })}>
+      <div className="patient-card patient-card-start patient-enter senior-friendly-card">
+        {/* Form Switcher Pill for Demo */}
+        <div className="demo-toggle-banner">
+          <span className="demo-pill-label">Pilih Demo Form:</span>
+          <div className="demo-pill-group">
+            <button
+              type="button"
+              className={`demo-pill-btn ${activeForm.id === newPatientForm.id ? "active" : ""}`}
+              onClick={() => switchForm(newPatientForm.id)}
+            >
+              <HeartHandshake size={15} /> Demo 1: Pasien Baru (Lansia)
+            </button>
+            <button
+              type="button"
+              className={`demo-pill-btn ${activeForm.id === kneePainForm.id ? "active" : ""}`}
+              onClick={() => switchForm(kneePainForm.id)}
+            >
+              <Stethoscope size={15} /> Demo 2: Nyeri Lutut
+            </button>
+          </div>
+        </div>
+
         <div className="patient-card-header-actions">
           <Link to="/" className="patient-home-pill">
             <Home size={14} /> Beranda
           </Link>
-        </div>
-
-        <div className="patient-start-icon">
-          <Sparkles size={23} />
-        </div>
-        <div className="patient-badge">
-          <Clock3 size={14} /> {localized.badge}
-        </div>
-        <h1>{title}</h1>
-        <p className="patient-intro-lead">{localized.intro}</p>
-        <p className="patient-description">{description}</p>
-
-        <label className="patient-field-label" htmlFor="patient-name">
-          {localized.name}
-        </label>
-        <input
-          id="patient-name"
-          className="patient-name-input"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder={localized.placeholder}
-          autoComplete="name"
-          onKeyDown={(event) => event.key === "Enter" && start()}
-        />
-
-        <button
-          type="button"
-          className="patient-primary-action"
-          onClick={start}
-          disabled={!name.trim()}
-        >
-          {localized.start}
-          <ChevronRight size={19} />
-        </button>
-
-        <div className="voice-intro-card">
-          <div className="voice-intro-icon">
-            <Mic size={20} />
-          </div>
-          <div>
-            <strong>{localized.voice}</strong>
-            <p>{localized.voiceBody}</p>
-          </div>
-        </div>
-        <div className="patient-privacy-line">
-          <ShieldCheck size={15} /> {localized.privacy}
-        </div>
-
-        <div className="patient-paper-divider">
-          <span>atau</span>
-        </div>
-
-        <button
-          type="button"
-          className="patient-paper-action-active"
-          onClick={() => setShowPaperModal(true)}
-        >
-          <Camera size={20} />
-          <span className="text-left flex-1">
-            <strong>{localized.paper}</strong>
-            <small>{localized.photo}</small>
+          <span className="senior-badge">
+            <Sparkles size={14} />
+            {isSeniorNewPatient
+              ? language === "id"
+                ? "Desain Ramah Manula & Suara"
+                : "Senior-Friendly & Voice UX"
+              : language === "id"
+                ? "Penilaian Spesifik Lutut"
+                : "Knee Clinical Assessment"}
           </span>
-          <ChevronRight size={16} />
-        </button>
+        </div>
+
+        <h1 className="senior-main-title">{activeForm.title[language] ?? activeForm.title.en}</h1>
+
+        <p className="senior-main-desc">
+          {isSeniorNewPatient
+            ? language === "id"
+              ? "Formulir singkat tanpa perlu mengetik. Cukup sentuh pilihan jawaban Anda."
+              : language === "zh"
+                ? "简短问卷无需打字，直接点击选项即可。"
+                : "A brief form without typing. Simply tap your answer."
+            : (activeForm.description[language] ?? activeForm.description.en)}
+        </p>
+
+        {/* 1 Single Obvious Start Button for Seniors */}
+        <div className="senior-action-stack">
+          <button
+            type="button"
+            className="patient-giant-action button-touch"
+            onClick={() => start(false)}
+            style={{
+              padding: "20px 28px",
+              minHeight: "72px",
+              borderRadius: "22px",
+              fontSize: "18px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "12px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "20px",
+                fontWeight: 800,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {language === "id" ? "Mulai Sekarang" : language === "zh" ? "开始填写" : "Start Now"}
+            </span>
+            <ArrowRight size={24} strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
 
       {/* Modal Upload Foto Formulir Kertas */}
@@ -243,10 +239,7 @@ function IntakeStart() {
             />
 
             {!paperPreview ? (
-              <div
-                className="paper-upload-box"
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <div className="paper-upload-box" onClick={() => fileInputRef.current?.click()}>
                 <UploadCloud size={36} />
                 <strong>Pilih Foto / Ambil dengan Kamera</strong>
                 <span>Format PNG, JPG, atau WebP (maks. 10MB)</span>
@@ -271,7 +264,8 @@ function IntakeStart() {
                 onChange={(e) => setPaperConfirmed(e.target.checked)}
               />
               <span>
-                Saya menyatakan bahwa foto ini adalah formulir asli yang telah saya isi dengan benar.
+                Saya menyatakan bahwa foto ini adalah formulir asli yang telah saya isi dengan
+                benar.
               </span>
             </label>
 

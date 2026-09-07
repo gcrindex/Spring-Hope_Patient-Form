@@ -6,11 +6,11 @@ AI Assistant memanggil PesatRouter **dari server** (`/api/ai/form-draft`, `/api/
 
 Dashboard → **Workers & Pages** → pilih aplikasi → **Settings → Variables and Secrets** → tambah:
 
-| Nama | Tipe | Nilai |
-|---|---|---|
-| `PESATROUTER_API_KEY` | **Secret** | key PesatRouter valid (mis. `sk-pesat-...`) |
-| `PESATROUTER_BASE_URL` | Text | `https://api.pesatrouter.com/v1` (opsional, sudah default) |
-| `PESATROUTER_MODEL` | Text | `pesat-flash` (opsional, sudah default) |
+| Nama                   | Tipe       | Nilai                                                      |
+| ---------------------- | ---------- | ---------------------------------------------------------- |
+| `PESATROUTER_API_KEY`  | **Secret** | key PesatRouter valid (mis. `sk-pesat-...`)                |
+| `PESATROUTER_BASE_URL` | Text       | `https://api.pesatrouter.com/v1` (opsional, sudah default) |
+| `PESATROUTER_MODEL`    | Text       | `pesat-flash` (opsional, sudah default)                    |
 
 Set untuk **Production** (dan Preview jika perlu), lalu **redeploy**.
 
@@ -33,6 +33,7 @@ npm run build
 ```
 
 Cek hasil di `.output/`:
+
 - Kalau ada `.output/public/` (berisi `_worker.js` + aset) → deploy sebagai **Pages**:
   ```bash
   npx wrangler pages deploy .output/public

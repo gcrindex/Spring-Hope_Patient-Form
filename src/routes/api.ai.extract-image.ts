@@ -38,7 +38,10 @@ export const Route = createFileRoute("/api/ai/extract-image")({
       POST: async ({ request }) => {
         const contentType = request.headers.get("content-type") ?? "";
         if (!contentType.includes("multipart/form-data")) {
-          return json({ success: false, error: "INVALID_CONTENT_TYPE", message: "Send multipart form data." }, 400);
+          return json(
+            { success: false, error: "INVALID_CONTENT_TYPE", message: "Send multipart form data." },
+            400,
+          );
         }
 
         const apiKey = process.env.PESATROUTER_API_KEY;
@@ -46,7 +49,14 @@ export const Route = createFileRoute("/api/ai/extract-image")({
         const model = process.env.PESATROUTER_MODEL || DEFAULT_MODEL;
 
         if (!apiKey) {
-          return json({ success: false, error: "AI_PROVIDER_NOT_CONFIGURED", message: "AI service is not configured." }, 503);
+          return json(
+            {
+              success: false,
+              error: "AI_PROVIDER_NOT_CONFIGURED",
+              message: "AI service is not configured.",
+            },
+            503,
+          );
         }
 
         try {
@@ -57,12 +67,22 @@ export const Route = createFileRoute("/api/ai/extract-image")({
           }
 
           if (file.size > 10 * 1024 * 1024) {
-            return json({ success: false, error: "FILE_TOO_LARGE", message: "File must be under 10 MB." }, 400);
+            return json(
+              { success: false, error: "FILE_TOO_LARGE", message: "File must be under 10 MB." },
+              400,
+            );
           }
 
           const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
           if (!allowedTypes.includes(file.type)) {
-            return json({ success: false, error: "INVALID_FILE_TYPE", message: "Upload a PNG, JPEG, or WebP image." }, 400);
+            return json(
+              {
+                success: false,
+                error: "INVALID_FILE_TYPE",
+                message: "Upload a PNG, JPEG, or WebP image.",
+              },
+              400,
+            );
           }
 
           // Convert to base64 data URI for the AI provider
@@ -83,7 +103,10 @@ export const Route = createFileRoute("/api/ai/extract-image")({
                 {
                   role: "user",
                   content: [
-                    { type: "text", text: "Analyze this image of a clinical form and convert it into a structured patient assessment form." },
+                    {
+                      type: "text",
+                      text: "Analyze this image of a clinical form and convert it into a structured patient assessment form.",
+                    },
                     { type: "image_url", image_url: { url: dataUri } },
                   ],
                 },
@@ -95,26 +118,56 @@ export const Route = createFileRoute("/api/ai/extract-image")({
           });
 
           if (!response.ok) {
-            return json({ success: false, error: "AI_PROVIDER_ERROR", message: "AI service returned an error. The model may not support image input." }, 502);
+            return json(
+              {
+                success: false,
+                error: "AI_PROVIDER_ERROR",
+                message: "AI service returned an error. The model may not support image input.",
+              },
+              502,
+            );
           }
 
-          const data = await response.json() as { choices?: { message?: { content?: string } }[] };
+          const data = (await response.json()) as {
+            choices?: { message?: { content?: string } }[];
+          };
           const content = data.choices?.[0]?.message?.content ?? "";
           const parsed = extractJsonObject(content);
           const formPayload = typeof parsed === "string" ? JSON.parse(parsed) : parsed;
 
           const form = aiDraftFormSchema.safeParse(formPayload);
           if (!form.success) {
-            return json({ success: false, error: "AI_INVALID_DRAFT", message: "AI generated an incomplete form draft. Please try again." }, 502);
+            return json(
+              {
+                success: false,
+                error: "AI_INVALID_DRAFT",
+                message: "AI generated an incomplete form draft. Please try again.",
+              },
+              502,
+            );
           }
 
           return json({ success: true, form: form.data, provider: "pesatrouter", model });
         } catch (error) {
           if (error instanceof Error && error.name === "AbortError") {
-            return json({ success: false, error: "AI_TIMEOUT", message: "AI took too long. Please try again." }, 504);
+            return json(
+              {
+                success: false,
+                error: "AI_TIMEOUT",
+                message: "AI took too long. Please try again.",
+              },
+              504,
+            );
           }
           console.error("Image extract error", error);
-          return json({ success: false, error: "EXTRACT_FAILED", message: "Could not process this image. Try chat mode instead." }, 500);
+          return json(
+            {
+              success: false,
+              error: "EXTRACT_FAILED",
+              message: "Could not process this image. Try chat mode instead.",
+            },
+            500,
+          );
         }
       },
     },

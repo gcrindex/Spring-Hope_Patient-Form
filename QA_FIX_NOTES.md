@@ -1,6 +1,7 @@
 # PatientForm QA / Fix Notes — 2026-09-03
 
 ## Fixed
+
 - Added `.gitignore` so local environment files, dependencies, build output, logs, and editor files are not committed accidentally.
 - Removed `.env.local` from the handoff ZIP. Keep real server/API secrets only in the local/server environment; `.env.example` remains the template.
 - Hardened browser speech-recognition lifecycle: old recognition sessions are aborted, delayed completion callbacks are cancelled on reset/unmount, and stale sessions cannot update a later question.
@@ -12,6 +13,7 @@
 - Publish actions that are not implemented (direct send and QR generation) are explicitly disabled/planned instead of fake-clickable.
 
 ## Verification notes
+
 - Source-level QA was performed against the supplied project and project handoff documents.
 - The supplied ZIP contained platform-specific `node_modules`; its Rolldown native binding could not run in this Linux sandbox.
 - A clean dependency reinstall could not complete because package download access timed out in the sandbox, so final `vite build` / full ESLint could not be rerun here.

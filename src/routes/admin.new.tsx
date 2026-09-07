@@ -72,44 +72,81 @@ function Chooser({ onPick }: { onPick: (m: Mode) => void }) {
       </section>
 
       <section className="new-form-grid">
-        <button type="button" className="creation-mode-card creation-mode-ai" onClick={() => onPick("ai")}>
+        <button
+          type="button"
+          className="creation-mode-card creation-mode-ai"
+          onClick={() => onPick("ai")}
+        >
           <div className="creation-mode-head">
-            <span className="creation-mode-icon"><Bot size={24} /></span>
+            <span className="creation-mode-icon">
+              <Bot size={24} />
+            </span>
             <span className="creation-mode-badge">PesatRouter</span>
           </div>
           <h3>AI-Assisted</h3>
-          <p>Describe the assessment in chat or speak your prompt. AI prepares a multilingual draft for staff review.</p>
-          <div className="creation-mode-action">Open AI-Assisted <span>→</span></div>
+          <p>
+            Describe the assessment in chat or speak your prompt. AI prepares a multilingual draft
+            for staff review.
+          </p>
+          <div className="creation-mode-action">
+            Open AI-Assisted <span>→</span>
+          </div>
         </button>
 
         <Link to="/admin/forms-builder" className="creation-mode-card creation-mode-builder">
           <div className="creation-mode-head">
-            <span className="creation-mode-icon"><Wrench size={24} /></span>
+            <span className="creation-mode-icon">
+              <Wrench size={24} />
+            </span>
             <span className="creation-mode-badge">Manual</span>
           </div>
           <h3>Standard Builder</h3>
-          <p>Start from a blank assessment and configure questions, scores and patient voice input manually.</p>
-          <div className="creation-mode-action">Open Standard Builder <span>→</span></div>
+          <p>
+            Start from a blank assessment and configure questions, scores and patient voice input
+            manually.
+          </p>
+          <div className="creation-mode-action">
+            Open Standard Builder <span>→</span>
+          </div>
         </Link>
 
-        <button type="button" className="creation-mode-card creation-mode-upload" onClick={() => onPick("pdf")}>
+        <button
+          type="button"
+          className="creation-mode-card creation-mode-upload"
+          onClick={() => onPick("pdf")}
+        >
           <div className="creation-mode-head">
-            <span className="creation-mode-icon"><FileText size={24} /></span>
+            <span className="creation-mode-icon">
+              <FileText size={24} />
+            </span>
             <span className="creation-mode-badge">AI Vision</span>
           </div>
           <h3>Upload PDF</h3>
-          <p>Import an existing assessment document. AI extracts the content and creates a draft for review.</p>
-          <div className="creation-mode-action">Open PDF Upload <span>→</span></div>
+          <p>
+            Import an existing assessment document. AI extracts the content and creates a draft for
+            review.
+          </p>
+          <div className="creation-mode-action">
+            Open PDF Upload <span>→</span>
+          </div>
         </button>
 
-        <button type="button" className="creation-mode-card creation-mode-scan" onClick={() => onPick("scan")}>
+        <button
+          type="button"
+          className="creation-mode-card creation-mode-scan"
+          onClick={() => onPick("scan")}
+        >
           <div className="creation-mode-head">
-            <span className="creation-mode-icon"><ScanLine size={24} /></span>
+            <span className="creation-mode-icon">
+              <ScanLine size={24} />
+            </span>
             <span className="creation-mode-badge">AI Vision</span>
           </div>
           <h3>Scan Image</h3>
           <p>Upload a photo of a paper form. AI reads it and creates an editable draft.</p>
-          <div className="creation-mode-action">Open Image Scan <span>→</span></div>
+          <div className="creation-mode-action">
+            Open Image Scan <span>→</span>
+          </div>
         </button>
       </section>
     </AdminShell>
@@ -121,7 +158,11 @@ function AICard({ onBack }: { onBack: () => void }) {
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
-    { role: "assistant", content: "Tell me what assessment you need. I'll create a multilingual draft for you to review before publishing." },
+    {
+      role: "assistant",
+      content:
+        "Tell me what assessment you need. I'll create a multilingual draft for you to review before publishing.",
+    },
   ]);
   const [draft, setDraft] = useState<AIDraftForm | null>(null);
   const [loading, setLoading] = useState(false);
@@ -147,7 +188,12 @@ function AICard({ onBack }: { onBack: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "chat", messages: next.slice(-10) }),
       });
-      const result = await res.json() as { success: boolean; type?: "chat" | "draft"; form?: AIDraftForm; message?: string };
+      const result = (await res.json()) as {
+        success: boolean;
+        type?: "chat" | "draft";
+        form?: AIDraftForm;
+        message?: string;
+      };
       if (!res.ok || !result.success) {
         const msg = result.message || "AI Assistant is unavailable.";
         setError(msg);
@@ -156,9 +202,22 @@ function AICard({ onBack }: { onBack: () => void }) {
       }
       if (result.type === "draft" && result.form) {
         setDraft(result.form);
-        setMessages((c) => [...c, { role: "assistant", content: result.message || `Draft ready: ${result.form!.title.en}. Review before using.` }]);
+        setMessages((c) => [
+          ...c,
+          {
+            role: "assistant",
+            content:
+              result.message || `Draft ready: ${result.form!.title.en}. Review before using.`,
+          },
+        ]);
       } else {
-        setMessages((c) => [...c, { role: "assistant", content: result.message || "Could you describe the assessment you need?" }]);
+        setMessages((c) => [
+          ...c,
+          {
+            role: "assistant",
+            content: result.message || "Could you describe the assessment you need?",
+          },
+        ]);
       }
     } catch {
       const msg = "Couldn't reach AI Assistant. Check the server configuration.";
@@ -176,11 +235,22 @@ function AICard({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <AdminShell title="AI Form Assistant" eyebrow="Forms / New / AI-Assisted" activeNav="forms" actions={<button className="admin-soft-button" onClick={onBack}>← Back</button>}>
+    <AdminShell
+      title="AI Form Assistant"
+      eyebrow="Forms / New / AI-Assisted"
+      activeNav="forms"
+      actions={
+        <button className="admin-soft-button" onClick={onBack}>
+          ← Back
+        </button>
+      }
+    >
       <div className="ai-assistant-layout">
         <section className="ai-chat-panel">
           <div className="ai-chat-head">
-            <div className="ai-avatar"><Bot size={22} /></div>
+            <div className="ai-avatar">
+              <Bot size={22} />
+            </div>
             <div>
               <span className="panel-kicker">PesatRouter · pesat-flash</span>
               <h2>Draft with AI, decide as staff.</h2>
@@ -188,8 +258,14 @@ function AICard({ onBack }: { onBack: () => void }) {
             </div>
           </div>
           <div className="ai-suggestion-row">
-            {["Create a short post-surgery knee follow-up with pain, swelling and mobility questions.", "Create a shoulder pain assessment with 7 questions and a 0–10 pain scale.", "Create a hip function screening form for an initial clinic visit."].map((s) => (
-              <button key={s} type="button" onClick={() => send(s)} disabled={loading}>{s}</button>
+            {[
+              "Create a short post-surgery knee follow-up with pain, swelling and mobility questions.",
+              "Create a shoulder pain assessment with 7 questions and a 0–10 pain scale.",
+              "Create a hip function screening form for an initial clinic visit.",
+            ].map((s) => (
+              <button key={s} type="button" onClick={() => send(s)} disabled={loading}>
+                {s}
+              </button>
             ))}
           </div>
           <div className="ai-chat-scroll">
@@ -199,41 +275,118 @@ function AICard({ onBack }: { onBack: () => void }) {
                 <p>{m.content}</p>
               </div>
             ))}
-            {loading && <div className="ai-message ai-message-assistant"><span><LoaderCircle size={15} className="ai-spin" /></span><p>Thinking…</p></div>}
+            {loading && (
+              <div className="ai-message ai-message-assistant">
+                <span>
+                  <LoaderCircle size={15} className="ai-spin" />
+                </span>
+                <p>Thinking…</p>
+              </div>
+            )}
           </div>
-          {error && <div className="ai-inline-error"><AlertCircle size={17} /><span>{error}</span></div>}
+          {error && (
+            <div className="ai-inline-error">
+              <AlertCircle size={17} />
+              <span>{error}</span>
+            </div>
+          )}
           <div className={`ai-composer ${voice.state === "listening" ? "is-listening" : ""}`}>
-            <textarea rows={3} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Example: Create an 8-question shoulder pain assessment…" />
+            <textarea
+              rows={3}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Example: Create an 8-question shoulder pain assessment…"
+            />
             <div className="ai-composer-bottom">
-              <div className="ai-voice-status"><Mic size={15} /><span>{voice.state === "listening" ? "Listening…" : "Speak or type your prompt"}</span></div>
+              <div className="ai-voice-status">
+                <Mic size={15} />
+                <span>
+                  {voice.state === "listening" ? "Listening…" : "Speak or type your prompt"}
+                </span>
+              </div>
               <div className="ai-composer-actions">
                 {voice.state === "listening" ? (
-                  <button type="button" className="admin-soft-button" onClick={voice.stop}>Stop</button>
+                  <button type="button" className="admin-soft-button" onClick={voice.stop}>
+                    Stop
+                  </button>
                 ) : (
-                  <button type="button" className="admin-soft-button" onClick={() => { setError(""); voice.start(); }}><Mic size={16} /> Voice</button>
+                  <button
+                    type="button"
+                    className="admin-soft-button"
+                    onClick={() => {
+                      setError("");
+                      voice.start();
+                    }}
+                  >
+                    <Mic size={16} /> Voice
+                  </button>
                 )}
-                <button type="button" className="admin-primary-button" disabled={!input.trim() || loading} onClick={() => send()}><Send size={16} /> Send</button>
+                <button
+                  type="button"
+                  className="admin-primary-button"
+                  disabled={!input.trim() || loading}
+                  onClick={() => send()}
+                >
+                  <Send size={16} /> Send
+                </button>
               </div>
             </div>
           </div>
         </section>
         <aside className="ai-draft-panel">
           <div className="ai-draft-head">
-            <div><span className="panel-kicker">Generated preview</span><h2>{draft?.title.en ?? "Your draft will appear here"}</h2></div>
-            {draft && <span className="ai-draft-status"><Check size={14} /> Draft</span>}
+            <div>
+              <span className="panel-kicker">Generated preview</span>
+              <h2>{draft?.title.en ?? "Your draft will appear here"}</h2>
+            </div>
+            {draft && (
+              <span className="ai-draft-status">
+                <Check size={14} /> Draft
+              </span>
+            )}
           </div>
           {!draft ? (
-            <div className="ai-empty-draft"><div><WandSparkles size={30} /></div><h3>Describe the assessment</h3><p>Use chat or the microphone.</p></div>
+            <div className="ai-empty-draft">
+              <div>
+                <WandSparkles size={30} />
+              </div>
+              <h3>Describe the assessment</h3>
+              <p>Use chat or the microphone.</p>
+            </div>
           ) : (
             <>
               <p className="ai-draft-description">{draft.description.en}</p>
               <div className="ai-draft-questions">
                 {draft.questions.map((q, i) => (
-                  <article key={q.id}><span>{i + 1}</span><div><strong>{q.prompt.en}</strong><small>{q.type === "yesno" ? "Yes/No" : q.type === "scale" ? "0–10" : q.type === "text" ? "Text" : "Choice"}{q.optional ? " · Optional" : ""}</small></div></article>
+                  <article key={q.id}>
+                    <span>{i + 1}</span>
+                    <div>
+                      <strong>{q.prompt.en}</strong>
+                      <small>
+                        {q.type === "yesno"
+                          ? "Yes/No"
+                          : q.type === "scale"
+                            ? "0–10"
+                            : q.type === "text"
+                              ? "Text"
+                              : "Choice"}
+                        {q.optional ? " · Optional" : ""}
+                      </small>
+                    </div>
+                  </article>
                 ))}
               </div>
-              <div className="ai-review-warning"><AlertCircle size={17} /><span>Review wording, translations and scoring before publishing.</span></div>
-              <button type="button" className="admin-primary-button admin-primary-button-full" onClick={useDraft}><WandSparkles size={16} /> Use This Form</button>
+              <div className="ai-review-warning">
+                <AlertCircle size={17} />
+                <span>Review wording, translations and scoring before publishing.</span>
+              </div>
+              <button
+                type="button"
+                className="admin-primary-button admin-primary-button-full"
+                onClick={useDraft}
+              >
+                <WandSparkles size={16} /> Use This Form
+              </button>
             </>
           )}
         </aside>
@@ -257,7 +410,11 @@ function PDFCard({ onBack }: { onBack: () => void }) {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/ai/extract-pdf", { method: "POST", body: fd });
-      const result = await res.json() as { success: boolean; form?: AIDraftForm; message?: string };
+      const result = (await res.json()) as {
+        success: boolean;
+        form?: AIDraftForm;
+        message?: string;
+      };
       if (!res.ok || !result.success) {
         setError(result.message || "Could not process this PDF.");
         return;
@@ -277,36 +434,105 @@ function PDFCard({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <AdminShell title="Upload PDF" eyebrow="Forms / New / PDF Upload" activeNav="forms" actions={<button className="admin-soft-button" onClick={onBack}>← Back</button>}>
+    <AdminShell
+      title="Upload PDF"
+      eyebrow="Forms / New / PDF Upload"
+      activeNav="forms"
+      actions={
+        <button className="admin-soft-button" onClick={onBack}>
+          ← Back
+        </button>
+      }
+    >
       <div className="extract-card">
         {!draft && (
-          <div className="extract-dropzone" role="button" tabIndex={0}
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("dragover"); }}
+          <div
+            className="extract-dropzone"
+            role="button"
+            tabIndex={0}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("dragover");
+            }}
             onDragLeave={(e) => e.currentTarget.classList.remove("dragover")}
-            onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("dragover"); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
-            onClick={() => { const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".pdf"; inp.onchange = () => { const f = inp.files?.[0]; if (f) handleFile(f); }; inp.click(); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("dragover");
+              const f = e.dataTransfer.files[0];
+              if (f) handleFile(f);
+            }}
+            onClick={() => {
+              const inp = document.createElement("input");
+              inp.type = "file";
+              inp.accept = ".pdf";
+              inp.onchange = () => {
+                const f = inp.files?.[0];
+                if (f) handleFile(f);
+              };
+              inp.click();
+            }}
           >
             {loading ? (
-              <><LoaderCircle size={36} className="ai-spin" /><p>Extracting and generating draft…</p></>
+              <>
+                <LoaderCircle size={36} className="ai-spin" />
+                <p>Extracting and generating draft…</p>
+              </>
             ) : (
-              <><Upload size={36} /><h3>Drop a PDF here or click to browse</h3><p>Max 10 MB. AI will extract the content and generate a form draft.</p></>
+              <>
+                <Upload size={36} />
+                <h3>Drop a PDF here or click to browse</h3>
+                <p>Max 10 MB. AI will extract the content and generate a form draft.</p>
+              </>
             )}
           </div>
         )}
-        {error && <div className="ai-inline-error"><AlertCircle size={17} /><span>{error}</span><button type="button" onClick={() => setError("")}>Dismiss</button></div>}
+        {error && (
+          <div className="ai-inline-error">
+            <AlertCircle size={17} />
+            <span>{error}</span>
+            <button type="button" onClick={() => setError("")}>
+              Dismiss
+            </button>
+          </div>
+        )}
         {draft && (
           <div className="extract-result">
-            <div className="ai-draft-head"><div><span className="panel-kicker">Extracted draft</span><h2>{draft.title.en}</h2></div></div>
+            <div className="ai-draft-head">
+              <div>
+                <span className="panel-kicker">Extracted draft</span>
+                <h2>{draft.title.en}</h2>
+              </div>
+            </div>
             <p className="ai-draft-description">{draft.description.en}</p>
             <div className="ai-draft-questions">
               {draft.questions.map((q, i) => (
-                <article key={q.id}><span>{i + 1}</span><div><strong>{q.prompt.en}</strong><small>{q.type}</small></div></article>
+                <article key={q.id}>
+                  <span>{i + 1}</span>
+                  <div>
+                    <strong>{q.prompt.en}</strong>
+                    <small>{q.type}</small>
+                  </div>
+                </article>
               ))}
             </div>
-            <div className="ai-review-warning"><AlertCircle size={17} /><span>Review carefully — AI extraction may contain errors.</span></div>
+            <div className="ai-review-warning">
+              <AlertCircle size={17} />
+              <span>Review carefully — AI extraction may contain errors.</span>
+            </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button type="button" className="admin-primary-button" onClick={useDraft}><WandSparkles size={16} /> Use This Form</button>
-              <button type="button" className="admin-soft-button" onClick={() => { setDraft(null); setError(""); }}>Upload another</button>
+              <button type="button" className="admin-primary-button" onClick={useDraft}>
+                <WandSparkles size={16} /> Use This Form
+              </button>
+              <button
+                type="button"
+                className="admin-soft-button"
+                onClick={() => {
+                  setDraft(null);
+                  setError("");
+                }}
+              >
+                Upload another
+              </button>
             </div>
           </div>
         )}
@@ -333,7 +559,11 @@ function ScanCard({ onBack }: { onBack: () => void }) {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/ai/extract-image", { method: "POST", body: fd });
-      const result = await res.json() as { success: boolean; form?: AIDraftForm; message?: string };
+      const result = (await res.json()) as {
+        success: boolean;
+        form?: AIDraftForm;
+        message?: string;
+      };
       if (!res.ok || !result.success) {
         setError(result.message || "Could not process this image.");
         return;
@@ -353,40 +583,110 @@ function ScanCard({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <AdminShell title="Scan Image" eyebrow="Forms / New / Image Scan" activeNav="forms" actions={<button className="admin-soft-button" onClick={onBack}>← Back</button>}>
+    <AdminShell
+      title="Scan Image"
+      eyebrow="Forms / New / Image Scan"
+      activeNav="forms"
+      actions={
+        <button className="admin-soft-button" onClick={onBack}>
+          ← Back
+        </button>
+      }
+    >
       <div className="extract-card">
-        <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleFile(f);
+          }}
+        />
         {!draft && (
-          <div className="extract-dropzone"
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("dragover"); }}
+          <div
+            className="extract-dropzone"
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add("dragover");
+            }}
             onDragLeave={(e) => e.currentTarget.classList.remove("dragover")}
-            onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("dragover"); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove("dragover");
+              const f = e.dataTransfer.files[0];
+              if (f) handleFile(f);
+            }}
             onClick={() => fileRef.current?.click()}
           >
             {loading ? (
-              <><LoaderCircle size={36} className="ai-spin" /><p>Analyzing image and generating draft…</p></>
+              <>
+                <LoaderCircle size={36} className="ai-spin" />
+                <p>Analyzing image and generating draft…</p>
+              </>
             ) : (
-              <><ScanLine size={36} /><h3>Drop an image or click to browse</h3><p>PNG, JPEG, or WebP up to 10 MB. AI reads the form and creates a draft.</p></>
+              <>
+                <ScanLine size={36} />
+                <h3>Drop an image or click to browse</h3>
+                <p>PNG, JPEG, or WebP up to 10 MB. AI reads the form and creates a draft.</p>
+              </>
             )}
           </div>
         )}
         {preview && !draft && !loading && (
-          <div className="scan-preview"><img src={preview} alt="Uploaded form" /></div>
+          <div className="scan-preview">
+            <img src={preview} alt="Uploaded form" />
+          </div>
         )}
-        {error && <div className="ai-inline-error"><AlertCircle size={17} /><span>{error}</span><button type="button" onClick={() => setError("")}>Dismiss</button></div>}
+        {error && (
+          <div className="ai-inline-error">
+            <AlertCircle size={17} />
+            <span>{error}</span>
+            <button type="button" onClick={() => setError("")}>
+              Dismiss
+            </button>
+          </div>
+        )}
         {draft && (
           <div className="extract-result">
-            <div className="ai-draft-head"><div><span className="panel-kicker">Extracted draft</span><h2>{draft.title.en}</h2></div></div>
+            <div className="ai-draft-head">
+              <div>
+                <span className="panel-kicker">Extracted draft</span>
+                <h2>{draft.title.en}</h2>
+              </div>
+            </div>
             <p className="ai-draft-description">{draft.description.en}</p>
             <div className="ai-draft-questions">
               {draft.questions.map((q, i) => (
-                <article key={q.id}><span>{i + 1}</span><div><strong>{q.prompt.en}</strong><small>{q.type}</small></div></article>
+                <article key={q.id}>
+                  <span>{i + 1}</span>
+                  <div>
+                    <strong>{q.prompt.en}</strong>
+                    <small>{q.type}</small>
+                  </div>
+                </article>
               ))}
             </div>
-            <div className="ai-review-warning"><AlertCircle size={17} /><span>Review carefully — AI extraction may contain errors.</span></div>
+            <div className="ai-review-warning">
+              <AlertCircle size={17} />
+              <span>Review carefully — AI extraction may contain errors.</span>
+            </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button type="button" className="admin-primary-button" onClick={useDraft}><WandSparkles size={16} /> Use This Form</button>
-              <button type="button" className="admin-soft-button" onClick={() => { setDraft(null); setPreview(null); setError(""); }}>Scan another</button>
+              <button type="button" className="admin-primary-button" onClick={useDraft}>
+                <WandSparkles size={16} /> Use This Form
+              </button>
+              <button
+                type="button"
+                className="admin-soft-button"
+                onClick={() => {
+                  setDraft(null);
+                  setPreview(null);
+                  setError("");
+                }}
+              >
+                Scan another
+              </button>
             </div>
           </div>
         )}

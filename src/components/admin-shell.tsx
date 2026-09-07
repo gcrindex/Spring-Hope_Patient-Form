@@ -15,7 +15,12 @@ import { Link } from "@tanstack/react-router";
 import { BrandMark } from "./brand";
 import { LanguageSwitcher } from "./language-switcher";
 import { adminI18n } from "../lib/translations";
-import { getStoredLanguage, onLanguageChange, setStoredLanguage, type Language } from "../lib/patientform";
+import {
+  getStoredLanguage,
+  onLanguageChange,
+  setStoredLanguage,
+  type Language,
+} from "../lib/patientform";
 import { useState, useEffect } from "react";
 
 export type AdminNavKey = "overview" | "forms" | "submissions" | "patients" | "analytics";
@@ -64,9 +69,21 @@ export function AdminShell({
   }> = [
     { key: "overview", label: t.overview, icon: LayoutDashboard, to: "/admin" },
     { key: "forms", label: t.forms, icon: FileText, to: "/admin/forms-builder" },
-    { key: "submissions", label: t.submissions, icon: ClipboardList, to: "/admin", search: { view: "submissions" } },
+    {
+      key: "submissions",
+      label: t.submissions,
+      icon: ClipboardList,
+      to: "/admin",
+      search: { view: "submissions" },
+    },
     { key: "patients", label: t.patients, icon: Users, to: "/admin", search: { view: "patients" } },
-    { key: "analytics", label: t.analytics, icon: BarChart3, to: "/admin", search: { view: "analytics" } },
+    {
+      key: "analytics",
+      label: t.analytics,
+      icon: BarChart3,
+      to: "/admin",
+      search: { view: "analytics" },
+    },
   ];
 
   return (

@@ -12,10 +12,12 @@ The implementation in this package follows the agreed direction:
 ## What changed
 
 ### Landing
+
 - Rebuilt the landing page from scratch with stronger product storytelling, interactive patient preview, voice demonstration, workflow section, admin preview, responsive CTA hierarchy, and a more premium visual system.
 - Removed dependency on remote hero/product image assets; product previews are native UI/CSS so they stay consistent and lightweight.
 
 ### Patient assessment
+
 - Rebuilt the start, question, microphone-check, and completion screens.
 - Mobile-first one-question-per-screen flow.
 - EN / ID / Simplified Chinese UI and question content.
@@ -25,6 +27,7 @@ The implementation in this package follows the agreed direction:
 - Existing risk thresholds remain: 0–30 low, 31–60 moderate, 61+ high.
 
 ### Voice
+
 - Added a reusable browser speech-recognition hook.
 - Voice locale follows selected language (`en-SG`, `id-ID`, `zh-CN`).
 - Choice/yes-no answers are mapped to valid options.
@@ -34,6 +37,7 @@ The implementation in this package follows the agreed direction:
 - No raw microphone audio is persisted.
 
 ### Admin
+
 - Rebuilt dashboard, forms builder, patient preview, and publish/share screen with a compact professional clinical-SaaS direction.
 - Dashboard reads demo/local submission data.
 - Form builder keeps the core supported question types and shows a patient mobile preview.

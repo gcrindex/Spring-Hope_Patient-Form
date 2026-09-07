@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SpringHopeRouteImport } from './routes/spring-hope'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
@@ -28,6 +29,11 @@ import { Route as ApiAiFormDraftRouteImport } from './routes/api.ai.form-draft'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpringHopeRoute = SpringHopeRouteImport.update({
+  id: '/spring-hope',
+  path: '/spring-hope',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -104,6 +110,7 @@ const ApiAiFormDraftRoute = ApiAiFormDraftRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
   '/api/health': typeof ApiHealthRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
   '/api/health': typeof ApiHealthRoute
@@ -139,6 +147,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
   '/api/health': typeof ApiHealthRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
     | '/api/health'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
     | '/api/health'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
     | '/api/health'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SpringHopeRoute: typeof SpringHopeRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRouteWithChildren
   ApiHealthRoute: typeof ApiHealthRoute
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spring-hope': {
+      id: '/spring-hope'
+      path: '/spring-hope'
+      fullPath: '/spring-hope'
+      preLoaderRoute: typeof SpringHopeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -349,6 +369,7 @@ const AdminNewRouteWithChildren = AdminNewRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SpringHopeRoute: SpringHopeRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRouteWithChildren,
   ApiHealthRoute: ApiHealthRoute,

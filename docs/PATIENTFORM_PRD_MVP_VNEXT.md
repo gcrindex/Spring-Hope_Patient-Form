@@ -586,7 +586,6 @@ The MVP is ready for stakeholder review when:
 6. The app contains no frontend secrets or hidden production claims.
 7. The generated code can be reviewed independently before any integration into the existing repo/deployment.
 
-
 ---
 
 ## 20. Leader-Added Foundation Requirements — 2026-09-03

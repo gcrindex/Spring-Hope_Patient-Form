@@ -1,39 +1,69 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  BarChart3,
+  Building2,
+  CalendarDays,
   Check,
-  ChevronRight,
-  ClipboardCheck,
-  FileText,
+  GraduationCap,
+  HeartHandshake,
   Languages,
+  LayoutDashboard,
+  Link2,
   Mic,
-  ShieldCheck,
+  PenLine,
+  Share2,
+  ShoppingBag,
   Smartphone,
   Sparkles,
-  Upload,
-  Waves,
+  Stethoscope,
+  Users,
+  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BrandMark } from "../components/brand";
+import { PlatformMark } from "../components/brand";
 import { LanguageSwitcher } from "../components/language-switcher";
-import { getStoredLanguage, onLanguageChange, setStoredLanguage, type Language } from "../lib/patientform";
-import { landingI18n } from "../lib/translations";
+import {
+  getStoredLanguage,
+  onLanguageChange,
+  setStoredLanguage,
+  type Language,
+} from "../lib/patientform";
+import { builderI18n } from "../lib/translations";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PatientForm — Spring Hope Orthopaedic Clinic" },
+      { title: "SpringForm — Form Builder Multi-Industri" },
       {
         name: "description",
         content:
-          "A guided, voice-enabled clinical assessment experience for Spring Hope Orthopaedic Clinic.",
+          "SpringForm is a conversational, multi-industry form builder: one question at a time, auto-advance navigation, voice answers and a clean admin area.",
       },
     ],
   }),
-  component: LandingPage,
+  component: BuilderLandingPage,
 });
 
-function LandingPage() {
+const industries = [
+  { icon: Stethoscope, nameKey: "ind1Name", descKey: "ind1Desc" },
+  { icon: GraduationCap, nameKey: "ind2Name", descKey: "ind2Desc" },
+  { icon: Users, nameKey: "ind3Name", descKey: "ind3Desc" },
+  { icon: CalendarDays, nameKey: "ind4Name", descKey: "ind4Desc" },
+  { icon: Building2, nameKey: "ind5Name", descKey: "ind5Desc" },
+  { icon: ShoppingBag, nameKey: "ind6Name", descKey: "ind6Desc" },
+] as const;
+
+const features = [
+  { icon: Smartphone, labelKey: "f1Label", titleKey: "f1Title", descKey: "f1Desc" },
+  { icon: Zap, labelKey: "f2Label", titleKey: "f2Title", descKey: "f2Desc" },
+  { icon: Mic, labelKey: "f3Label", titleKey: "f3Title", descKey: "f3Desc" },
+  { icon: Languages, labelKey: "f4Label", titleKey: "f4Title", descKey: "f4Desc" },
+  { icon: LayoutDashboard, labelKey: "f5Label", titleKey: "f5Title", descKey: "f5Desc" },
+  { icon: HeartHandshake, labelKey: "f6Label", titleKey: "f6Title", descKey: "f6Desc" },
+] as const;
+
+function BuilderLandingPage() {
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
 
   useEffect(() => {
@@ -46,29 +76,30 @@ function LandingPage() {
     setLanguage(next);
   };
 
-  const t = landingI18n[language] ?? landingI18n.en;
+  const t = builderI18n[language] ?? builderI18n.en;
 
   return (
     <div className="marketing-page">
       <header className="marketing-header">
         <div className="marketing-nav">
-          <BrandMark />
+          <PlatformMark />
           <nav className="marketing-links" aria-label="Main navigation">
-            <a href="#experience">{t.navExperience}</a>
-            <a href="#voice">{t.navVoice}</a>
-            <a href="#workflow">{t.navWorkflow}</a>
+            <a href="#industries">{t.navIndustries}</a>
+            <a href="#demo">{t.navDemo}</a>
+            <a href="#features">{t.navFeatures}</a>
+            <Link to="/admin">{t.navAdmin}</Link>
           </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher value={language} onChange={handleLang} compact />
-            <Link className="button-primary button-nav" to="/intake">
-              {t.tryAssessment} <ArrowRight size={16} />
-            </Link>
+            <a className="button-primary button-nav" href="#demo">
+              {t.navCta} <ArrowRight size={16} />
+            </a>
           </div>
         </div>
       </header>
 
       <main>
-        {/* ── Hero Section ──────────────────────────────── */}
+        {/* ── Hero ─────────────────────────────────────── */}
         <section className="hero-section">
           <div className="hero-aurora hero-aurora-one" />
           <div className="hero-aurora hero-aurora-two" />
@@ -78,186 +109,371 @@ function LandingPage() {
                 <Sparkles size={14} /> {t.badge}
               </div>
               <h1>
-                {t.heroH1Pre}<span>{t.heroH1Span}</span>
+                {t.heroH1Pre} <span>{t.heroH1Span}</span>
               </h1>
               <p className="hero-lead">{t.heroLead}</p>
               <div className="hero-actions">
-                <Link className="button-primary button-lg" to="/intake">
-                  {t.tryLive} <ArrowRight size={18} />
-                </Link>
-                <a className="button-secondary button-lg" href="#voice">
-                  {t.seeVoice}
+                <a className="button-primary button-lg" href="#demo">
+                  {t.heroCtaPrimary} <ArrowRight size={18} />
                 </a>
+                <Link className="button-secondary button-lg" to="/admin">
+                  {t.heroCtaSecondary}
+                </Link>
               </div>
               <div className="hero-trust-row">
-                <div><Check size={15} /> {t.noApp}</div>
-                <div><Check size={15} /> {t.languages}</div>
-                <div><Check size={15} /> {t.manualFallback}</div>
+                <div>
+                  <Check size={15} /> {t.trustNoApp}
+                </div>
+                <div>
+                  <Check size={15} /> EN · ID · 中文
+                </div>
+                <div>
+                  <Check size={15} /> {t.trustVoice}
+                </div>
               </div>
             </div>
 
-            <div className="hero-product-stage reveal-scale" aria-label="PatientForm product preview">
-              <div className="hero-note hero-note-top">
-                <Waves size={17} />
+            <div className="sf-hero-mock reveal-scale" aria-label="SpringForm form preview">
+              <div className="sf-responses-note hero-note">
+                <BarChart3 size={17} />
                 <span>
-                  <strong>{t.voiceUnderstood}</strong>
-                  <small>{t.voiceUnderstoodSub}</small>
+                  <strong>{t.mockResponses}</strong>
+                  <small>{t.mockResponsesSub}</small>
                 </span>
               </div>
-              <div className="phone-shell">
-                <div className="phone-island" />
-                <div className="phone-ui">
-                  <div className="phone-topline">
-                    <span className="phone-brand-dot" />
-                    <span>Spring Hope</span>
-                    <span className="ml-auto text-muted">EN</span>
+
+              <div className="sf-mock-card">
+                <div className="sf-mock-topline">
+                  <span className="sf-mock-brand">
+                    <i /> SpringForm
+                  </span>
+                  <span className="sf-mock-step">2 / 4</span>
+                </div>
+                <div className="sf-mock-progress">
+                  <span style={{ width: "50%" }} />
+                </div>
+                <h3>{t.mockQuestion}</h3>
+                <div className="sf-mock-options">
+                  <div className="selected">
+                    <i>
+                      <Check size={14} strokeWidth={3} />
+                    </i>{" "}
+                    {t.mockOpt1}
                   </div>
-                  <div className="phone-progress"><span style={{ width: "57%" }} /></div>
-                  <div className="phone-question-meta">QUESTION 4 OF 7</div>
-                  <h3>{language === "id" ? "Nilai nyeri lutut Anda sekarang" : language === "zh" ? "请评估目前的膝痛" : "Rate your pain right now"}</h3>
-                  <p>{language === "id" ? "0 berarti tidak ada nyeri. 10 berarti nyeri terburuk." : language === "zh" ? "0 表示无痛，10 表示剧烈疼痛" : "0 means no pain. 10 means the worst pain you can imagine."}</p>
-                  <div className="phone-score">7</div>
-                  <div className="phone-scale-track">
-                    <span style={{ width: "70%" }} />
-                    <i style={{ left: "70%" }} />
+                  <div>
+                    <i>B</i> {t.mockOpt2}
                   </div>
-                  <div className="phone-scale-labels">
-                    <span>{language === "id" ? "Tanpa nyeri" : language === "zh" ? "无痛" : "No pain"}</span>
-                    <span>{language === "id" ? "Nyeri terburuk" : language === "zh" ? "最严重疼痛" : "Worst pain"}</span>
+                  <div>
+                    <i>C</i> {t.mockOpt3}
                   </div>
-                  <div className="phone-voice-live">
-                    <div className="mini-voice-orb">
-                      <Mic size={18} /><i /><b />
-                    </div>
-                    <div>
-                      <strong>{language === "id" ? 'Saya mendengar "tujuh"' : language === "zh" ? '识别到 "七"' : 'I heard "seven"'}</strong>
-                      <small>{language === "id" ? "Gunakan jawaban ini atau ubah" : language === "zh" ? "确认使用或修改" : "Use this answer or change it"}</small>
-                    </div>
-                  </div>
-                  <button className="phone-continue">
-                    {language === "id" ? "Lanjut" : language === "zh" ? "继续" : "Continue"} <ArrowRight size={15} />
-                  </button>
+                </div>
+                <div className="sf-mock-auto">
+                  <Zap size={14} /> {t.mockAuto}
                 </div>
               </div>
-              <div className="hero-note hero-note-bottom">
-                <ShieldCheck size={17} />
+
+              <div className="sf-mock-voice">
+                <span className="sf-voice-orb">
+                  <Mic size={17} />
+                  <i />
+                  <b />
+                </span>
                 <span>
-                  <strong>{t.patientInControl}</strong>
-                  <small>{t.patientInControlSub}</small>
+                  <strong>{t.mockVoiceTitle}</strong>
+                  <small>{t.mockVoiceSub}</small>
                 </span>
               </div>
             </div>
           </div>
 
           <div className="hero-proof-strip">
-            <div><span>{t.p1Number}</span><strong>{t.p1Title}</strong><small>{t.p1Sub}</small></div>
-            <div><span>{t.p2Number}</span><strong>{t.p2Title}</strong><small>{t.p2Sub}</small></div>
-            <div><span>{t.p3Number}</span><strong>{t.p3Title}</strong><small>{t.p3Sub}</small></div>
-            <div><span>{t.p4Number}</span><strong>{t.p4Title}</strong><small>{t.p4Sub}</small></div>
+            <div>
+              <span>{t.proof1Number}</span>
+              <strong>{t.proof1Title}</strong>
+              <small>{t.proof1Sub}</small>
+            </div>
+            <div>
+              <span>{t.proof2Number}</span>
+              <strong>{t.proof2Title}</strong>
+              <small>{t.proof2Sub}</small>
+            </div>
+            <div>
+              <span>{t.proof3Number}</span>
+              <strong>{t.proof3Title}</strong>
+              <small>{t.proof3Sub}</small>
+            </div>
+            <div>
+              <span>{t.proof4Number}</span>
+              <strong>{t.proof4Title}</strong>
+              <small>{t.proof4Sub}</small>
+            </div>
           </div>
         </section>
 
-        {/* ── Experience Section ────────────────────────── */}
-        <section className="section-shell section-light" id="experience">
-          <div className="section-kicker">{t.expKicker}</div>
+        {/* ── Industries ───────────────────────────────── */}
+        <section className="section-shell section-light" id="industries">
+          <div className="section-kicker">{t.indKicker}</div>
           <div className="section-title-row">
-            <h2>{t.expTitle1}<br />{t.expTitle2}</h2>
-            <p>{t.expDesc}</p>
+            <h2>
+              {t.indTitle1}
+              <br />
+              {t.indTitle2}
+            </h2>
+            <p>{t.indDesc}</p>
           </div>
-          <div className="experience-grid">
-            <article className="feature-card feature-card-large">
-              <div className="feature-card-text-col">
-                <div className="feature-icon"><Smartphone size={21} /></div>
-                <span className="feature-label">{t.f1Label}</span>
-                <h3>{t.f1Title}</h3>
-                <p>{t.f1Desc}</p>
-              </div>
-              <div className="mini-question-demo">
-                <span>{language === "id" ? "Pertanyaan 2 dari 7" : language === "zh" ? "第 2 题 / 共 7 题" : "Question 2 of 7"}</span>
-                <strong>{language === "id" ? "Sudah berapa lama Anda mengalami nyeri lutut?" : language === "zh" ? "膝痛持续多久？" : "How long have you had knee pain?"}</strong>
-                {(language === "id"
-                  ? ["Kurang dari 1 bulan", "1–3 bulan", "3–6 bulan"]
-                  : language === "zh"
-                    ? ["不到 1 个月", "1–3 个月", "3–6 个月"]
-                    : ["Less than 1 month", "1–3 months", "3–6 months"]
-                ).map((item, i) => (
-                  <div key={item} className={i === 1 ? "selected" : ""}>
-                    <i>{i === 1 ? <Check size={14} /> : null}</i>
-                    {item}
+          <div className="sf-grid-3">
+            {industries.map((item) => {
+              const Icon = item.icon;
+              return (
+                <article key={item.nameKey} className="sf-industry-card">
+                  <div className="feature-icon">
+                    <Icon size={21} />
                   </div>
-                ))}
+                  <h3>{t[item.nameKey]}</h3>
+                  <p>{t[item.descKey]}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── Demo Showcase ────────────────────────────── */}
+        <section className="section-shell sf-section-blue" id="demo">
+          <div className="section-kicker">{t.demoKicker}</div>
+          <div className="section-title-row">
+            <h2>
+              {t.demoTitle1}
+              <br />
+              {t.demoTitle2}
+            </h2>
+            <p>{t.demoDesc}</p>
+          </div>
+          <div className="sf-demo-grid">
+            <article className="sf-demo-card">
+              <div className="sf-demo-top">
+                <span className="sf-demo-badge">{t.demo1Badge}</span>
+                <h3>{t.demo1Title}</h3>
+                <p>{t.demo1Desc}</p>
               </div>
-            </article>
-            <article className="feature-card feature-card-blue" id="voice">
-              <div className="feature-icon feature-icon-inverse"><Mic size={21} /></div>
-              <span className="feature-label text-white/60">{t.f2Label}</span>
-              <h3>{t.f2Title1}<br />{t.f2Title2}</h3>
-              <p>{t.f2Desc}</p>
-              <div className="voice-showcase">
-                <div className="voice-showcase-orb">
-                  <Mic size={26} /><span /><i />
+              <div className="sf-demo-body">
+                <ul className="sf-demo-features">
+                  <li>
+                    <Check size={16} /> {t.demo1F1}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo1F2}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo1F3}
+                  </li>
+                </ul>
+                <div className="sf-demo-cta">
+                  <Link
+                    className="button-primary button-lg"
+                    to="/intake"
+                    search={{ form: "new-patient-intake" }}
+                  >
+                    {t.demo1Cta} <ArrowRight size={18} />
+                  </Link>
                 </div>
-                <div className="voice-wave-bars">
-                  {[20, 34, 48, 28, 54, 38, 22, 44, 30].map((h, i) => (
-                    <b key={i} style={{ height: h }} />
-                  ))}
-                </div>
-                <small>{t.f2Listening}</small>
               </div>
             </article>
-            <article className="feature-card">
-              <div className="feature-icon"><Languages size={21} /></div>
-              <span className="feature-label">{t.f3Label}</span>
-              <h3>{t.f3Title}</h3>
-              <p>{t.f3Desc}</p>
-              <div className="language-demo">
-                <span className="active">English</span>
-                <span>Bahasa</span>
-                <span>中文</span>
+
+            <article className="sf-demo-card">
+              <div className="sf-demo-top demo-alt">
+                <span className="sf-demo-badge">{t.demo2Badge}</span>
+                <h3>{t.demo2Title}</h3>
+                <p>{t.demo2Desc}</p>
               </div>
-            </article>
-            <article className="feature-card feature-card-paper">
-              <div className="feature-icon"><Upload size={21} /></div>
-              <span className="feature-label">{t.f4Label}</span>
-              <h3>{t.f4Title}</h3>
-              <p>{t.f4Desc}</p>
-              <div className="paper-stack">
-                <div /><div />
-                <div className="paper-front">
-                  <Upload size={20} />
-                  <span>{t.f4Upload}</span>
+              <div className="sf-demo-body">
+                <ul className="sf-demo-features">
+                  <li>
+                    <Check size={16} /> {t.demo2F1}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo2F2}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo2F3}
+                  </li>
+                </ul>
+                <div className="sf-demo-cta">
+                  <Link
+                    className="button-primary button-lg"
+                    to="/intake"
+                    search={{ form: "knee-pain-assessment" }}
+                  >
+                    {t.demo2Cta} <ArrowRight size={18} />
+                  </Link>
                 </div>
               </div>
             </article>
           </div>
         </section>
 
-        {/* ── Workflow Section ──────────────────────────── */}
-        <section className="section-shell workflow-section" id="workflow">
+        {/* ── Features ─────────────────────────────────── */}
+        <section className="section-shell section-light" id="features">
+          <div className="section-kicker">{t.featKicker}</div>
+          <div className="section-title-row">
+            <h2>
+              {t.featTitle1}
+              <br />
+              {t.featTitle2}
+            </h2>
+            <p>{t.featDesc}</p>
+          </div>
+          <div className="sf-grid-3">
+            {features.map((item) => {
+              const Icon = item.icon;
+              return (
+                <article key={item.labelKey} className="feature-card">
+                  <div className="feature-icon">
+                    <Icon size={21} />
+                  </div>
+                  <span className="feature-label">{t[item.labelKey]}</span>
+                  <h3>{t[item.titleKey]}</h3>
+                  <p>{t[item.descKey]}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── How it works ─────────────────────────────── */}
+        <section className="section-shell workflow-section" id="how">
           <div className="workflow-heading">
             <div>
-              <div className="section-kicker section-kicker-dark">{t.wfKicker}</div>
-              <h2>{t.wfTitle}</h2>
+              <div className="section-kicker section-kicker-dark">{t.howKicker}</div>
+              <h2>{t.howTitle}</h2>
             </div>
-            <p>{t.wfDesc}</p>
+            <p>{t.howDesc}</p>
           </div>
           <div className="workflow-grid">
             {[
-              { icon: FileText, num: "01", title: t.s1Title, desc: t.s1Desc },
-              { icon: Smartphone, num: "02", title: t.s2Title, desc: t.s2Desc },
-              { icon: ClipboardCheck, num: "03", title: t.s3Title, desc: t.s3Desc },
+              { icon: PenLine, num: "01", title: t.step1Title, desc: t.step1Desc },
+              { icon: Share2, num: "02", title: t.step2Title, desc: t.step2Desc },
+              { icon: BarChart3, num: "03", title: t.step3Title, desc: t.step3Desc },
             ].map((step) => {
               const Icon = step.icon;
               return (
                 <article key={step.num} className="workflow-card">
                   <div className="workflow-number">{step.num}</div>
-                  <div className="workflow-icon"><Icon size={23} /></div>
+                  <div className="workflow-icon">
+                    <Icon size={23} />
+                  </div>
                   <h3>{step.title}</h3>
                   <p>{step.desc}</p>
-                  <ChevronRight className="workflow-chevron" size={18} />
                 </article>
               );
             })}
+          </div>
+        </section>
+
+        {/* ── Admin preview ────────────────────────────── */}
+        <section className="section-shell section-light" id="admin">
+          <div className="admin-preview-section">
+            <div className="admin-preview-copy">
+              <div className="section-kicker">{t.adminKicker}</div>
+              <h2>
+                {t.adminTitle1}
+                <br />
+                {t.adminTitle2}
+              </h2>
+              <p>{t.adminDesc}</p>
+              <ul className="sf-admin-list">
+                <li>
+                  <Check size={15} /> {t.adminB1}
+                </li>
+                <li>
+                  <Check size={15} /> {t.adminB2}
+                </li>
+                <li>
+                  <Check size={15} /> {t.adminB3}
+                </li>
+                <li>
+                  <Check size={15} /> {t.adminB4}
+                </li>
+              </ul>
+              <Link className="button-primary button-lg" to="/admin">
+                {t.adminCta} <ArrowRight size={18} />
+              </Link>
+            </div>
+
+            <div className="admin-browser-mock" aria-hidden="true">
+              <div className="browser-bar">
+                <span />
+                <span />
+                <span />
+                <small>springform.app/admin</small>
+              </div>
+              <div className="browser-body">
+                <aside>
+                  <div className="browser-logo">
+                    <LayoutDashboard size={14} />
+                  </div>
+                  <i className="active" />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </aside>
+                <div className="browser-main">
+                  <div className="browser-title">
+                    <span>{t.adminMockTitle}</span>
+                    <button type="button">+ New</button>
+                  </div>
+                  <div className="browser-stats">
+                    <div>
+                      <strong>23</strong>
+                      <small>{t.adminStat1}</small>
+                    </div>
+                    <div>
+                      <strong>4</strong>
+                      <small>{t.adminStat2}</small>
+                    </div>
+                    <div>
+                      <strong>41</strong>
+                      <small>{t.adminStat3}</small>
+                    </div>
+                  </div>
+                  <div className="browser-table">
+                    <div className="browser-table-head">
+                      <span>Name</span>
+                      <span>Submitted</span>
+                      <span>Risk</span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>S</b> Opa Sutrisno
+                      </span>
+                      <span>03 Sep, 12:10</span>
+                      <span className="risk-moderate">Moderate</span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>T</b> Tan Wei Ling
+                      </span>
+                      <span>03 Sep, 11:14</span>
+                      <span className="risk-high">High</span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>A</b> Aisha Rahman
+                      </span>
+                      <span>03 Sep, 10:41</span>
+                      <span className="risk-moderate">Moderate</span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>L</b> Lim Jia Hao
+                      </span>
+                      <span>02 Sep, 17:22</span>
+                      <span className="risk-low">Low</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -272,18 +488,22 @@ function LandingPage() {
           </div>
           <h2>{t.closingTitle}</h2>
           <p>{t.closingDesc}</p>
-          <Link className="button-white button-lg" to="/intake">
+          <a className="button-white button-lg" href="#demo">
             {t.closingCta} <ArrowRight size={18} />
-          </Link>
+          </a>
         </div>
       </section>
 
       <footer className="marketing-footer">
         <div className="marketing-footer-inner">
-          <BrandMark />
-          <p>{t.disclaimer}</p>
+          <PlatformMark />
+          <p>{t.footerNote}</p>
           <div className="footer-links">
-            <a href="#experience">{t.navExperience}</a>
+            <a href="#demo">{t.navDemo}</a>
+            <Link to="/admin/login">{t.navAdmin}</Link>
+            <Link to="/spring-hope">
+              <Link2 size={12} /> {t.footerOld}
+            </Link>
           </div>
         </div>
       </footer>

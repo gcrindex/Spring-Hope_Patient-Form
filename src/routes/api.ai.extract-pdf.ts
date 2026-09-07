@@ -38,7 +38,10 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
       POST: async ({ request }) => {
         const contentType = request.headers.get("content-type") ?? "";
         if (!contentType.includes("multipart/form-data")) {
-          return json({ success: false, error: "INVALID_CONTENT_TYPE", message: "Send multipart form data." }, 400);
+          return json(
+            { success: false, error: "INVALID_CONTENT_TYPE", message: "Send multipart form data." },
+            400,
+          );
         }
 
         const apiKey = process.env.PESATROUTER_API_KEY;
@@ -46,7 +49,14 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
         const model = process.env.PESATROUTER_MODEL || DEFAULT_MODEL;
 
         if (!apiKey) {
-          return json({ success: false, error: "AI_PROVIDER_NOT_CONFIGURED", message: "AI service is not configured." }, 503);
+          return json(
+            {
+              success: false,
+              error: "AI_PROVIDER_NOT_CONFIGURED",
+              message: "AI service is not configured.",
+            },
+            503,
+          );
         }
 
         try {
@@ -57,7 +67,10 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
           }
 
           if (file.size > 10 * 1024 * 1024) {
-            return json({ success: false, error: "FILE_TOO_LARGE", message: "File must be under 10 MB." }, 400);
+            return json(
+              { success: false, error: "FILE_TOO_LARGE", message: "File must be under 10 MB." },
+              400,
+            );
           }
 
           // Read the PDF as text — basic extraction (works for simple text-based PDFs)
@@ -65,11 +78,15 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
           const text = await extractPdfText(buffer);
 
           if (!text || text.trim().length < 20) {
-            return json({
-              success: false,
-              error: "NO_EXTRACTABLE_TEXT",
-              message: "Could not extract readable text from this PDF. Try describing the form in chat mode instead.",
-            }, 422);
+            return json(
+              {
+                success: false,
+                error: "NO_EXTRACTABLE_TEXT",
+                message:
+                  "Could not extract readable text from this PDF. Try describing the form in chat mode instead.",
+              },
+              422,
+            );
           }
 
           const truncatedText = text.slice(0, 6000);
@@ -84,7 +101,10 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
               model,
               messages: [
                 { role: "system", content: SYSTEM_PROMPT },
-                { role: "user", content: `Convert this PDF content into a patient assessment form:\n\n${truncatedText}` },
+                {
+                  role: "user",
+                  content: `Convert this PDF content into a patient assessment form:\n\n${truncatedText}`,
+                },
               ],
               temperature: 0.4,
             }),
@@ -92,26 +112,56 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
           });
 
           if (!response.ok) {
-            return json({ success: false, error: "AI_PROVIDER_ERROR", message: "AI service returned an error." }, 502);
+            return json(
+              {
+                success: false,
+                error: "AI_PROVIDER_ERROR",
+                message: "AI service returned an error.",
+              },
+              502,
+            );
           }
 
-          const data = await response.json() as { choices?: { message?: { content?: string } }[] };
+          const data = (await response.json()) as {
+            choices?: { message?: { content?: string } }[];
+          };
           const content = data.choices?.[0]?.message?.content ?? "";
           const parsed = extractJsonObject(content);
           const formPayload = typeof parsed === "string" ? JSON.parse(parsed) : parsed;
 
           const form = aiDraftFormSchema.safeParse(formPayload);
           if (!form.success) {
-            return json({ success: false, error: "AI_INVALID_DRAFT", message: "AI generated an incomplete form draft. Please try again." }, 502);
+            return json(
+              {
+                success: false,
+                error: "AI_INVALID_DRAFT",
+                message: "AI generated an incomplete form draft. Please try again.",
+              },
+              502,
+            );
           }
 
           return json({ success: true, form: form.data, provider: "pesatrouter", model });
         } catch (error) {
           if (error instanceof Error && error.name === "AbortError") {
-            return json({ success: false, error: "AI_TIMEOUT", message: "AI took too long. Please try again." }, 504);
+            return json(
+              {
+                success: false,
+                error: "AI_TIMEOUT",
+                message: "AI took too long. Please try again.",
+              },
+              504,
+            );
           }
           console.error("PDF extract error", error);
-          return json({ success: false, error: "EXTRACT_FAILED", message: "Could not process this PDF. Try chat mode instead." }, 500);
+          return json(
+            {
+              success: false,
+              error: "EXTRACT_FAILED",
+              message: "Could not process this PDF. Try chat mode instead.",
+            },
+            500,
+          );
         }
       },
     },
