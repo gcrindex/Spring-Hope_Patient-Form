@@ -34,13 +34,13 @@ class NumberedCanvas(canvas.Canvas):
         # Header text
         self.setFont("Helvetica-Bold", 8)
         self.setFillColor(colors.HexColor("#64748B"))
-        self.drawString(40, letter[1] - 24, "9FORMS.COM — SETUP & CONFIGURATION GUIDE")
+        self.drawString(40, letter[1] - 24, "9FORMS.COM — NEWBIE GUIDANCE & SETUP MANUAL")
         
         # Footer
         self.setFont("Helvetica", 8)
         self.setFillColor(colors.HexColor("#94A3B8"))
-        self.drawString(40, 25, "Internal Documentation · 9forms.com System Operations · v2.0")
-        page_text = f"Page {self._pageNumber} of {page_count}"
+        self.drawString(40, 25, "Dokumentasi & Panduan Pemula (Newbie Guidance) · 9forms.com")
+        page_text = f"Halaman {self._pageNumber} dari {page_count}"
         self.drawRightString(letter[0] - 40, 25, page_text)
         self.restoreState()
 
@@ -56,14 +56,14 @@ def build_pdf(filename):
 
     styles = getSampleStyleSheet()
     
-    # Custom Palette
+    # Color Palette
     c_navy = colors.HexColor("#0F172A")
     c_blue = colors.HexColor("#2563EB")
     c_slate = colors.HexColor("#334155")
     c_bg = colors.HexColor("#F8FAFC")
     c_border = colors.HexColor("#E2E8F0")
 
-    # Custom Typography Styles
+    # Typography
     title_style = ParagraphStyle(
         'DocTitle',
         parent=styles['Normal'],
@@ -81,17 +81,17 @@ def build_pdf(filename):
         fontSize=10,
         leading=13,
         textColor=colors.HexColor("#64748B"),
-        spaceAfter=14
+        spaceAfter=12
     )
 
     h1_style = ParagraphStyle(
         'SectionH1',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=11.5,
-        leading=15,
+        fontSize=11,
+        leading=14,
         textColor=c_navy,
-        spaceBefore=11,
+        spaceBefore=10,
         spaceAfter=5,
         keepWithNext=True
     )
@@ -100,8 +100,8 @@ def build_pdf(filename):
         'BodyDark',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9,
-        leading=12.5,
+        fontSize=8.5,
+        leading=12,
         textColor=c_slate
     )
 
@@ -125,116 +125,115 @@ def build_pdf(filename):
 
     story = []
 
-    # Header Title Banner
-    story.append(Paragraph("<b>9forms.com</b> &mdash; System Setup & Operational Guide", title_style))
-    story.append(Paragraph("Panduan Ringkas Pengaturan, Konfigurasi Formulir, & Alur Kerja Aplikasi", subtitle_style))
+    # Title Banner
+    story.append(Paragraph("<b>Newbie Guidance</b> &mdash; Setup & Konfigurasi 9forms.com", title_style))
+    story.append(Paragraph("Panduan Langkah Demi Langkah Menjalankan, Mengatur, dan Mengoperasikan Web App 9forms.com", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1, color=c_border, spaceBefore=0, spaceAfter=8))
 
-    # 1. RINGKASAN PRODUK
-    story.append(Paragraph("1. Ringkasan Arsitektur & Konsep Produk", h1_style))
+    # 1. PENGANTAR & KONSEP
+    story.append(Paragraph("1. Konsep Dasar 9forms.com", h1_style))
     story.append(Paragraph(
-        "<b>9forms.com</b> adalah platform SaaS formulir percakapan (<i>conversational form builder</i>) multi-industri (kesehatan, HR, event, edukasi, dan ritel). "
-        "Aplikasi menerapkan prinsip <b>One Question per Screen</b>, navigasi otomatis (<b>Auto-Advance</b>), dan input suara mandiri (<b>Sticky Voice Mode</b>) dengan antarmuka yang bersih, cepat, dan ramah untuk pengguna awam maupun lansia.",
+        "<b>9forms.com</b> adalah platform SaaS pembuat formulir percakapan (<i>conversational form</i>) multi-industri. "
+        "Menggunakan konsep <b>One Question per Screen</b>, <b>Auto-Advance</b> (otomatis lanjut soal setelah dijawab), dan <b>Sticky Voice Answering</b> (suara aktif otomatis). "
+        "Tersedia portal admin no-code lengkap untuk membuat formulir baru, melihat submissions, dan ekspor data.",
         body_style
     ))
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 4))
 
-    # 2. STRUKTUR RUTE LIVE
-    story.append(Paragraph("2. Struktur Rute & Peta Halaman", h1_style))
-    routes_data = [
-        [Paragraph("Rute URL", table_header_style), Paragraph("Fungsi & Tampilan Halaman", table_header_style), Paragraph("Keterangan Operasional", table_header_style)],
-        [Paragraph("<b>/</b>", code_style), Paragraph("Landing Page Utama 9forms.com", body_style), Paragraph("Katalog multi-industri, link demo, dan navigasi admin portal.", body_style)],
-        [Paragraph("<b>/intake?form=new-patient-intake</b>", code_style), Paragraph("Demo 1: Form Pasien Baru (Lansia)", body_style), Paragraph("1 tombol mulai raksasa, tanpa ketik nama di awal, auto-advance.", body_style)],
-        [Paragraph("<b>/intake?form=knee-pain-assessment</b>", code_style), Paragraph("Demo 2: Asesmen Nyeri Lutut (Klinis)", body_style), Paragraph("Skala nyeri 0–10 1-tap, pertanyaan ya/tidak, triase risiko otomatis.", body_style)],
-        [Paragraph("<b>/admin</b>", code_style), Paragraph("Admin Portal & Form Builder", body_style), Paragraph("Login <code>admin@9forms.com</code> / <code>demo123</code>. Kelola form & submissions.", body_style)],
-        [Paragraph("<b>/spring-hope</b>", code_style), Paragraph("Landing Page Lama Klinik (Arsip v1.0)", body_style), Paragraph("Tersimpan utuh untuk kebutuhan arsip internal.", body_style)],
+    # 2. CARA MENJALANKAN DI KOMPUTER LOKAL
+    story.append(Paragraph("2. Cara Menjalankan Aplikasi di Lokal (Local Setup)", h1_style))
+    run_steps_data = [
+        [Paragraph("Langkah", table_header_style), Paragraph("Perintah Terminal (Git Bash / PowerShell)", table_header_style), Paragraph("Keterangan", table_header_style)],
+        [Paragraph("<b>1. Buka Folder</b>", body_style), Paragraph("<code>cd \"D:\\data C\\Download\\springhope-project_2.0\"</code>", code_style), Paragraph("Masuk ke direktori project.", body_style)],
+        [Paragraph("<b>2. Install Dependencies</b>", body_style), Paragraph("<code>npm install</code>", code_style), Paragraph("Hanya perlu dijalankan di awal / saat ada package baru.", body_style)],
+        [Paragraph("<b>3. Jalankan Server</b>", body_style), Paragraph("<code>npm run dev</code>", code_style), Paragraph("Aplikasi aktif di <code>http://localhost:8080</code>.", body_style)],
+        [Paragraph("<b>4. Buka di Browser</b>", body_style), Paragraph("Akses <code>http://localhost:8080</code>", code_style), Paragraph("Disarankan Google Chrome / Edge untuk fitur suara optimal.", body_style)],
     ]
-    t_routes = Table(routes_data, colWidths=[150, 200, 180])
-    t_routes.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), c_navy),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('TOPPADDING', (0, 0), (-1, -1), 4),
-        ('GRID', (0, 0), (-1, -1), 0.5, c_border),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_bg]),
-    ]))
-    story.append(t_routes)
-    story.append(Spacer(1, 8))
-
-    # 3. PANDUAN PENGATURAN FORM
-    story.append(Paragraph("3. Panduan Menambah & Mengatur Formulir", h1_style))
-    form_guide_data = [
-        [Paragraph("Metode", table_header_style), Paragraph("Langkah & Cara Kerja", table_header_style)],
-        [
-            Paragraph("<b>A. Via Admin Portal<br/>(No-Code)</b>", body_style),
-            Paragraph("1. Masuk ke <code>/admin</code> lalu klik tombol <b>+ New Form</b>.<br/>"
-                      "2. Pilih <b>AI-Assisted</b> (cukup ketik kebutuhan form) atau <b>Standard Builder</b>.<br/>"
-                      "3. Tambah pertanyaan, pilih tipe (Choice / Yes-No / Scale 0-10 / Text), dan atur bobot skor.<br/>"
-                      "4. Klik <b>Publish</b> untuk menghasilkan tautan formulir yang langsung aktif.", body_style)
-        ],
-        [
-            Paragraph("<b>B. Via File Kode<br/>(Programmatic)</b>", body_style),
-            Paragraph("1. Buka file <code>src/lib/patientform.ts</code>.<br/>"
-                      "2. Tambahkan objek form baru dengan struktur pertanyaan, terjemahan (EN/ID/ZH), dan kata kunci suara (<code>aliases</code>).<br/>"
-                      "3. Sistem otomatis mengaktifkan form di web app tanpa konfigurasi manual tambahan.", body_style)
-        ]
-    ]
-    t_form_guide = Table(form_guide_data, colWidths=[130, 400])
-    t_form_guide.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), c_blue),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('PADDING', (0, 0), (-1, -1), 5),
-        ('GRID', (0, 0), (-1, -1), 0.5, c_border),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_bg]),
-    ]))
-    story.append(t_form_guide)
-    story.append(Spacer(1, 8))
-
-    # 4. FITUR SUARA & UX
-    story.append(Paragraph("4. Pengoperasian Fitur Suara (Voice Engine) & UX", h1_style))
-    voice_points = [
-        ("Mikrofon Streaming Stabil (Continuous)", "Mikrofon tidak mati saat pengguna terdiam atau berpikir sejenak. Koneksi suara otomatis terjaga tanpa perlu menekan tombol mic berulang kali."),
-        ("Pengenalan Kata Alami", "Mendukung huruf ('Opsi A', 'B'), angka usia ('tujuh puluh tahun'), durasi ('sebulan'), kata afirmatif/negatif ('Ya/Tidak'), dan istilah keluhan ('lutut', 'bengkak', 'jalan sendiri')."),
-        ("Koreksi Suara Seketika", "Jika pengguna keliru dan meralat kata ucapannya, timer perpindahan otomatis seketika dibatalkan dan jawaban langsung berganti ke pilihan baru."),
-        ("Antarmuka Bersih (Zero Clutter)", "Tampilan awal bebas dari formulir ketik dan kotak instruksi bertumpuk. Cukup 1 tombol aksi utama 'Mulai Sekarang'.")
-    ]
-    
-    voice_table_data = [[Paragraph("Fitur", table_header_style), Paragraph("Mekanisme & Keuntungan Pengguna", table_header_style)]]
-    for title, desc in voice_points:
-        voice_table_data.append([Paragraph(f"<b>{title}</b>", body_style), Paragraph(desc, body_style)])
-    
-    t_voice = Table(voice_table_data, colWidths=[160, 370])
-    t_voice.setStyle(TableStyle([
+    t_run = Table(run_steps_data, colWidths=[100, 240, 190])
+    t_run.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), c_navy),
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('PADDING', (0, 0), (-1, -1), 4),
         ('GRID', (0, 0), (-1, -1), 0.5, c_border),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_bg]),
     ]))
-    story.append(t_voice)
-    story.append(Spacer(1, 8))
+    story.append(t_run)
+    story.append(Spacer(1, 6))
 
-    # 5. INTEGRASI & SINKRONISASI DATA SUBMISSION
-    story.append(Paragraph("5. Alur Data & Sinkronisasi Real-Time", h1_style))
+    # 3. PETA HALAMAN UTAMA
+    story.append(Paragraph("3. Peta Halaman & Akses URL", h1_style))
+    url_data = [
+        [Paragraph("Halaman", table_header_style), Paragraph("URL Path", table_header_style), Paragraph("Fungsi & Konten", table_header_style)],
+        [Paragraph("<b>Landing Page</b>", body_style), Paragraph("<code>/</code>", code_style), Paragraph("Halaman utama 9forms.com (showcase SaaS multi-industri).", body_style)],
+        [Paragraph("<b>Demo 1: Pasien Baru</b>", body_style), Paragraph("<code>/intake?form=new-patient-intake</code>", code_style), Paragraph("Form ramah lansia: 1 tombol mulai, tanpa ketik nama di awal.", body_style)],
+        [Paragraph("<b>Demo 2: Nyeri Lutut</b>", body_style), Paragraph("<code>/intake?form=knee-pain-assessment</code>", code_style), Paragraph("Asesmen klinis: skala nyeri 0–10, pertanyaan ya/tidak, triase risiko.", body_style)],
+        [Paragraph("<b>Admin Portal</b>", body_style), Paragraph("<code>/admin</code>", code_style), Paragraph("Login: <code>admin@9forms.com</code> / <code>demo123</code>. Kelola form & hasil data.", body_style)],
+        [Paragraph("<b>Arsip Landing Lama</b>", body_style), Paragraph("<code>/spring-hope</code>", code_style), Paragraph("Landing page versi 1.0 (tersimpan aman untuk arsip).", body_style)],
+    ]
+    t_url = Table(url_data, colWidths=[110, 190, 230])
+    t_url.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), c_blue),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('PADDING', (0, 0), (-1, -1), 4),
+        ('GRID', (0, 0), (-1, -1), 0.5, c_border),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_bg]),
+    ]))
+    story.append(t_url)
+    story.append(Spacer(1, 6))
+
+    # 4. CARA MEMBUAT & MENGELOLA FORMULIR BARU
+    story.append(Paragraph("4. Cara Membuat & Mengelola Formulir Baru", h1_style))
+    form_create_data = [
+        [Paragraph("Cara", table_header_style), Paragraph("Langkah Praktis", table_header_style)],
+        [
+            Paragraph("<b>Pakai AI Builder<br/>(Paling Cepat)</b>", body_style),
+            Paragraph("1. Masuk <code>/admin</code> &rarr; klik <b>+ New Form</b> &rarr; pilih <b>AI-Assisted</b>.<br/>"
+                      "2. Ketik kebutuhan Anda (contoh: <i>'Survei kepuasan pelanggan restoran'</i> atau <i>'Pendaftaran workshop'</i>).<br/>"
+                      "3. AI langsung membuatkan draf pertanyaan lengkap. Klik <b>Use This Form</b> &rarr; form langsung masuk builder.", body_style)
+        ],
+        [
+            Paragraph("<b>Manual Builder<br/>(Standard)</b>", body_style),
+            Paragraph("1. Masuk <code>/admin</code> &rarr; klik <b>+ New Form</b> &rarr; pilih <b>Standard Builder</b>.<br/>"
+                      "2. Ganti judul formulir, klik <b>+ Add Question</b>, pilih tipe pertanyaan (Choice / Scale 0-10 / Yes-No / Text).<br/>"
+                      "3. Atur bobot skor tiap opsi &rarr; lihat live preview di sebelah kanan &rarr; klik <b>Publish</b>.", body_style)
+        ],
+        [
+            Paragraph("<b>Via File Kode<br/>(Developer)</b>", body_style),
+            Paragraph("Edit file <code>src/lib/patientform.ts</code> untuk menambah objek form baru beserta kata kunci suara (<code>aliases</code>).", body_style)
+        ]
+    ]
+    t_create = Table(form_create_data, colWidths=[110, 420])
+    t_create.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), c_navy),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('PADDING', (0, 0), (-1, -1), 4),
+        ('GRID', (0, 0), (-1, -1), 0.5, c_border),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, c_bg]),
+    ]))
+    story.append(t_create)
+    story.append(Spacer(1, 6))
+
+    # 5. CARA MELIHAT DATA & EXPORT EXCEL/CSV
+    story.append(Paragraph("5. Melihat Hasil Pengisian & Ekspor Data (Submissions)", h1_style))
     story.append(Paragraph(
-        "&bull; <b>Auto-Sync ke Admin:</b> Begitu responden menyelesaikan pertanyaan terakhir dan masuk halaman akhir, jawaban, skor risiko (Low/Mod/High), dan nama otomatis masuk ke tabel <code>/admin</code>.<br/>"
-        "&bull; <b>Identitas Responden Dinamis:</b> Jika responden mengisi nama di pertanyaan nama, admin mencatat nama aslinya. Jika dilewati atau dikosongkan, admin mencatat otomatis sebagai <code>Pasien</code>.<br/>"
-        "&bull; <b>Export CSV:</b> Pada menu Submissions admin, klik tombol <b>Export CSV</b> untuk mengunduh seluruh data jawaban ke format spreadsheet Excel/CSV.",
+        "&bull; <b>Sinkronisasi Otomatis:</b> Begitu responden menyelesaikan pertanyaan dan masuk halaman selesai, data jawaban dan skor risiko otomatis masuk ke Admin tanpa perlu klik tombol tambahan.<br/>"
+        "&bull; <b>Melihat Detail Jawaban:</b> Di Admin, klik menu <b>Submissions</b> &rarr; klik tombol <b>View</b> pada baris nama pasien untuk melihat rincian jawaban per pertanyaan.<br/>"
+        "&bull; <b>Ekspor ke Excel/CSV:</b> Klik tombol <b>Export CSV</b> di pojok kanan atas halaman Submissions untuk mengunduh seluruh data dalam format spreadsheet.",
         body_style
     ))
-    story.append(Spacer(1, 8))
+    story.append(Spacer(1, 6))
 
-    # 6. CHEAT SHEET PERINTAH
-    story.append(Paragraph("6. Perintah Standar Menjalankan & Deploy", h1_style))
-    
+    # 6. CHEAT SHEET COMMANDS
+    story.append(Paragraph("6. Cheat Sheet Perintah Penting", h1_style))
     cmd_data = [
-        [Paragraph("Tujuan", table_header_style), Paragraph("Perintah Terminal (Git Bash / PowerShell)", table_header_style)],
-        [Paragraph("<b>Menjalankan Lokal</b>", body_style), Paragraph("<code>npm run dev</code> &rarr; buka <code>http://localhost:8080</code> di browser Chrome/Edge.", code_style)],
-        [Paragraph("<b>Deploy ke Web Live</b>", body_style), Paragraph("<code>git add . && git commit -m \"update\" && git push origin main</code>", code_style)],
-        [Paragraph("<b>Format & Cek Error</b>", body_style), Paragraph("<code>npm run format && npm run lint && npm run build</code>", code_style)],
-        [Paragraph("<b>Ganti Logo Baru</b>", body_style), Paragraph("Ganti file gambar di <code>public/logo-mark.webp</code> (format WebP transparan).", body_style)]
+        [Paragraph("Kebutuhan", table_header_style), Paragraph("Perintah di Terminal", table_header_style)],
+        [Paragraph("<b>Menjalankan Web</b>", body_style), Paragraph("<code>npm run dev</code>", code_style)],
+        [Paragraph("<b>Kompilasi & Cek Error</b>", body_style), Paragraph("<code>npm run build</code>", code_style)],
+        [Paragraph("<b>Format & Rapikan Kode</b>", body_style), Paragraph("<code>npm run format && npm run lint</code>", code_style)],
+        [Paragraph("<b>Kirim ke GitHub / Live</b>", body_style), Paragraph("<code>git add . && git commit -m \"update\" && git push origin main</code>", code_style)],
+        [Paragraph("<b>Ganti Logo Brand</b>", body_style), Paragraph("Simpan file logo baru format WebP di <code>public/logo-mark.webp</code>.", body_style)],
     ]
-    t_cmd = Table(cmd_data, colWidths=[130, 400])
+    t_cmd = Table(cmd_data, colWidths=[120, 410])
     t_cmd.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), c_navy),
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
@@ -245,8 +244,10 @@ def build_pdf(filename):
     story.append(t_cmd)
 
     doc.build(story, canvasmaker=NumberedCanvas)
-    print(f"PDF successfully generated: {filename}")
+    print(f"Newbie Guidance PDF generated: {filename}")
 
 if __name__ == '__main__':
-    out_pdf = r"D:\data C\Download\9forms-Setup-Guidance-Leader.pdf"
+    out_pdf = r"D:\data C\Download\Newbie-Guidance-9forms.pdf"
     build_pdf(out_pdf)
+    # Also save as 9forms-Setup-Guidance-Leader.pdf for compatibility
+    build_pdf(r"D:\data C\Download\9forms-Setup-Guidance-Leader.pdf")
