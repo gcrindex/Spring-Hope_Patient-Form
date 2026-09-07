@@ -86,6 +86,7 @@ function CompletionPage() {
       lowBody: "Your response is saved and received by the portal.",
       modBody: "Priority assistance prepared upon arrival.",
       highBody: "Medical team is notified for priority triage.",
+      tryOther: isSenior ? "Try Demo 2: Knee Pain" : "Try Demo 1: New Patient",
       sent: "Saved & Synced to Admin Portal",
       restart: "Start over",
       backHome: "Back to Home",
@@ -100,6 +101,7 @@ function CompletionPage() {
       lowBody: "Jawaban Anda telah tersimpan dan diterima oleh portal admin.",
       modBody: "Bantuan prioritas akan disiapkan oleh petugas.",
       highBody: "Tim klinis segera menerima notifikasi untuk triase prioritas.",
+      tryOther: isSenior ? "Coba Demo 2: Nyeri Lutut" : "Coba Demo 1: Pasien Baru",
       sent: "Tersimpan & Terhubung ke Portal Admin",
       restart: "Mulai dari awal",
       backHome: "Kembali ke Beranda",
@@ -114,6 +116,7 @@ function CompletionPage() {
       lowBody: "您的答案已成功保存并同步至管理后台。",
       modBody: "诊所工作人员已为您做好优先接待准备。",
       highBody: "医护团队已收到优先分诊提醒。",
+      tryOther: isSenior ? "体验示例 2: 膝痛评估" : "体验示例 1: 新患者",
       sent: "已同步至管理后台",
       restart: "重新填写",
       backHome: "返回首页",
@@ -189,7 +192,7 @@ function CompletionPage() {
             className="sleek-action-btn secondary"
           >
             <HeartHandshake size={15} />
-            <span>{isSenior ? "Coba Demo 2: Nyeri Lutut" : "Coba Demo 1: Pasien Baru"}</span>
+            <span>{strings.tryOther}</span>
           </Link>
 
           <Link
