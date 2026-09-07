@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Check,
-  CheckCircle2,
-  ClipboardList,
-  HeartHandshake,
-  Home,
-  RotateCcw,
-  ShieldAlert,
-} from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, HeartHandshake, Home, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import {
@@ -55,7 +46,6 @@ function CompletionPage() {
   const risk = getRisk(score);
 
   const name = useMemo(() => {
-    // 1. Look for answer in name question (e.g. q_np_name, q_name, or any key containing name)
     const answerNameEntry = Object.entries(answers).find(
       ([k, v]) => (k.includes("name") || k === "q_np_name") && typeof v === "string" && v.trim(),
     );
@@ -63,7 +53,6 @@ function CompletionPage() {
       return answerNameEntry[1].trim();
     }
 
-    // 2. Look for stored patient name
     const stored = getPatientName();
     if (
       stored &&
@@ -76,7 +65,6 @@ function CompletionPage() {
       return stored.trim();
     }
 
-    // 3. Fallback to generic "Pasien" / "Patient"
     return language === "id" ? "Pasien" : language === "zh" ? "患者" : "Patient";
   }, [answers, language]);
 
@@ -90,71 +78,51 @@ function CompletionPage() {
   const strings = {
     en: {
       done: isSenior ? "Registration Completed" : "Assessment Complete",
-      thanks: `Thank you, ${name}. Your answers have been recorded.`,
-      result: "Intake Priority Summary",
+      thanks: `Thank you, ${name}. Your response has been recorded.`,
+      result: "Priority Status",
       low: "Standard Routine",
       mod: "Priority Attention",
-      high: "Urgent Clinical Review",
-      lowBody: "Thank you for completing your intake. Our staff will prepare your files.",
-      modBody: "Some of your symptoms may require prioritized physical assistance upon arrival.",
-      highBody: "Our medical team will review your symptoms promptly to assist with priority care.",
-      next: "Next Steps at Clinic",
-      lowNext: "Please proceed to reception desk with your ID card.",
-      modNext: "Our nurse desk is notified to assist with mobility if needed.",
-      highNext: "Priority queue assigned for consultation and triage.",
-      send: "Submit to Clinic Portal",
-      sent: "Saved & Sent to Clinic (Demo)",
-      disclaimer: "This form assists clinical workflow and triage preparation.",
-      review: "Review answers",
+      high: "Urgent Review",
+      lowBody: "Your response is saved and received by the portal.",
+      modBody: "Priority assistance prepared upon arrival.",
+      highBody: "Medical team is notified for priority triage.",
+      sent: "Saved & Synced to Admin Portal",
       restart: "Start over",
+      backHome: "Back to Home",
     },
     id: {
       done: isSenior ? "Pendaftaran Berhasil Selesai" : "Penilaian Selesai",
-      thanks: `Terima kasih, ${name}. Formulir Anda telah berhasil dicatat.`,
-      result: "Ringkasan Prioritas Kunjungan",
+      thanks: `Terima kasih, ${name}. Formulir Anda telah tercatat.`,
+      result: "Status Prioritas",
       low: "Pemeriksaan Rutin",
       mod: "Perhatian Prioritas",
       high: "Tinjauan Segera",
-      lowBody: "Terima kasih sudah mengisi. Petugas klinik telah menerima data Anda.",
-      modBody: "Beberapa keluhan Anda menandakan perlunya bantuan fisik / kursi roda saat tiba.",
-      highBody: "Tim medis akan memprioritaskan pemeriksaan awal untuk Anda.",
-      next: "Langkah Selanjutnya di Klinik",
-      lowNext: "Silakan menuju meja registrasi depan saat tiba.",
-      modNext: "Perawat kami telah diberi notifikasi untuk menyiapkan bantuan jalan.",
-      highNext: "Nomor antrean prioritas akan disiapkan oleh petugas.",
-      send: "Kirim ke Sistem Klinik",
-      sent: "Tersimpan ke Portal Klinik (Demo)",
-      disclaimer: "Formulir ini mempermudah registrasi dan triase awal pasien.",
-      review: "Tinjau jawaban",
+      lowBody: "Jawaban Anda telah tersimpan dan diterima oleh portal admin.",
+      modBody: "Bantuan prioritas akan disiapkan oleh petugas.",
+      highBody: "Tim klinis segera menerima notifikasi untuk triase prioritas.",
+      sent: "Tersimpan & Terhubung ke Portal Admin",
       restart: "Mulai dari awal",
+      backHome: "Kembali ke Beranda",
     },
     zh: {
       done: isSenior ? "登记完成" : "评估完成",
-      thanks: `谢谢您，${name}。您的信息已记录完毕。`,
-      result: "就诊分流建议",
+      thanks: `谢谢您，${name}。您的问卷已记录完毕。`,
+      result: "分流状态",
       low: "常规就诊",
       mod: "优先跟进",
       high: "重点关照",
-      lowBody: "感谢您完成登记。诊所已收到您的信息。",
-      modBody: "根据您的描述，诊所将视情况为您提供行动便利。",
-      highBody: "医护人员将为您提供优先分诊评估。",
-      next: "下一步指引",
-      lowNext: "到达诊所后请前往前台出示身份证件。",
-      modNext: "护理人员已收到提醒，必要时为您提供轮椅。",
-      highNext: "将为您安排优先分诊队列。",
-      send: "提交至诊所系统",
-      sent: "已同步至诊所端（演示）",
-      disclaimer: "本表单仅用于就诊登记与分流参考。",
-      review: "查看答案",
+      lowBody: "您的答案已成功保存并同步至管理后台。",
+      modBody: "诊所工作人员已为您做好优先接待准备。",
+      highBody: "医护团队已收到优先分诊提醒。",
+      sent: "已同步至管理后台",
       restart: "重新填写",
+      backHome: "返回首页",
     },
   }[language];
 
   const riskLabel = risk === "low" ? strings.low : risk === "mod" ? strings.mod : strings.high;
   const riskBody =
     risk === "low" ? strings.lowBody : risk === "mod" ? strings.modBody : strings.highBody;
-  const nextBody =
-    risk === "low" ? strings.lowNext : risk === "mod" ? strings.modNext : strings.highNext;
 
   const autoSavedRef = useRef(false);
 
@@ -175,83 +143,42 @@ function CompletionPage() {
     }
   }, [answers, activeForm.id, name, score, risk]);
 
-  const send = () => {
-    saveSubmission({
-      id: `sub-${Date.now()}`,
-      formId: activeForm.id,
-      patientName: name,
-      submittedAt: new Date().toISOString(),
-      answers,
-      score,
-      risk,
-      triageStatus: risk === "high" ? "review" : risk === "mod" ? "scheduled" : "completed",
-    });
-    setSaved(true);
-  };
-
   return (
     <PatientShell language={language} onLanguage={setLang} progress={100}>
-      <div className="completion-card patient-enter senior-complete-card">
-        <div className="patient-card-header-actions">
-          <Link to="/" className="patient-home-pill">
-            <Home size={14} /> Beranda
-          </Link>
+      <div className="patient-card completion-card sleek-completion-card patient-enter">
+        {/* Sleek animated checkmark */}
+        <div className="sleek-check-bubble">
+          <Check size={28} strokeWidth={3} />
         </div>
-        <div className="completion-check">
-          <Check size={32} strokeWidth={3} />
-        </div>
-        <div className="completion-kicker">{strings.done}</div>
-        <h1 className="text-2xl sm:text-3xl font-black text-ink">{strings.thanks}</h1>
 
-        <div className={`risk-card risk-card-${risk} mt-4`}>
-          <div className="risk-card-head">
+        <div className="sleek-complete-hero">
+          <span className="sleek-kicker-pill">{strings.done}</span>
+          <h1 className="sleek-complete-title">{strings.thanks}</h1>
+        </div>
+
+        {/* Minimalist sleek summary card */}
+        <div className={`sleek-result-box risk-${risk}`}>
+          <div className="sleek-result-row">
             <div>
-              <span>{strings.result}</span>
-              <strong>{riskLabel}</strong>
+              <span className="sleek-result-sub">{strings.result}</span>
+              <strong className="sleek-result-title">{riskLabel}</strong>
             </div>
-            <div className="risk-score">
+            <div className="sleek-result-score-badge">
               <strong>{score}</strong>
-              <span>skor</span>
+              <small>pts</small>
             </div>
           </div>
-          <p>{riskBody}</p>
-          <div className="risk-meter">
-            <span className={risk === "low" ? "active" : ""} />
-            <span className={risk === "mod" ? "active" : ""} />
-            <span className={risk === "high" ? "active" : ""} />
-          </div>
+          <p className="sleek-result-desc">{riskBody}</p>
         </div>
 
-        <div className="next-step-card">
-          <div className="next-step-icon">
-            <ClipboardList size={22} />
-          </div>
-          <div>
-            <strong>{strings.next}</strong>
-            <p>{nextBody}</p>
-          </div>
+        {/* Live sync badge */}
+        <div className="sleek-synced-pill">
+          <CheckCircle2 size={15} className="text-emerald-500" />
+          <span>{strings.sent}</span>
         </div>
 
-        <div className="clinical-disclaimer">
-          <ShieldAlert size={17} />
-          <span>{strings.disclaimer}</span>
-        </div>
-
-        <button type="button" className="patient-primary-action" onClick={send} disabled={saved}>
-          {saved ? (
-            <>
-              <CheckCircle2 size={18} />
-              {strings.sent}
-            </>
-          ) : (
-            <>
-              {strings.send}
-              <ArrowRight size={18} />
-            </>
-          )}
-        </button>
-
-        <div className="completion-secondary-actions">
+        {/* Clean Action Buttons */}
+        <div className="sleek-complete-actions">
           <Link
             to="/intake"
             search={{ form: isSenior ? kneePainForm.id : newPatientForm.id }}
@@ -259,11 +186,12 @@ function CompletionPage() {
               resetAssessment();
               setStoredQuestionIndex(0);
             }}
-            className="text-action"
+            className="sleek-action-btn secondary"
           >
-            <HeartHandshake size={14} />
-            {isSenior ? "Coba Demo 2: Nyeri Lutut" : "Coba Demo 1: Pasien Baru (Lansia)"}
+            <HeartHandshake size={15} />
+            <span>{isSenior ? "Coba Demo 2: Nyeri Lutut" : "Coba Demo 1: Pasien Baru"}</span>
           </Link>
+
           <Link
             to="/intake"
             search={{ form: activeForm.id }}
@@ -271,13 +199,15 @@ function CompletionPage() {
               resetAssessment();
               setStoredQuestionIndex(0);
             }}
-            className="text-action"
+            className="sleek-action-btn ghost"
           >
-            <RotateCcw size={14} />
-            {strings.restart}
+            <RotateCcw size={15} />
+            <span>{strings.restart}</span>
           </Link>
-          <Link to="/admin" className="text-action text-blue-600 font-bold">
-            Lihat di Admin Portal →
+
+          <Link to="/" className="sleek-action-btn ghost">
+            <Home size={15} />
+            <span>{strings.backHome}</span>
           </Link>
         </div>
       </div>

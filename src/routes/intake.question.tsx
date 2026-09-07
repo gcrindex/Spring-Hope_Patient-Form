@@ -1,18 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  Check,
-  ChevronRight,
-  Mic,
-  MicOff,
-  Minus,
-  Plus,
-  Quote,
-  Sparkles,
-  Volume2,
-} from "lucide-react";
+import { ArrowRight, Check, Mic, MicOff, Quote, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
-import { VoiceControl } from "../components/voice-control";
 import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import {
   copy,
@@ -27,6 +16,7 @@ import {
   newPatientForm,
   parseScaleTranscript,
   setActiveFormId,
+  setPatientName,
   setStoredAnswers,
   setStoredLanguage,
   setStoredQuestionIndex,
@@ -42,10 +32,10 @@ export const Route = createFileRoute("/intake/question")({
   }),
   head: () => ({
     meta: [
-      { title: "Pertanyaan — Formulir Terpandu" },
+      { title: "Pertanyaan — 9forms.com" },
       {
         name: "description",
-        content: "Formulir interaktif ramah lansia dengan pengenalan suara dan auto-advance.",
+        content: "Formulir interaktif terpandu dengan navigasi otomatis dan pengenalan suara.",
       },
     ],
   }),
@@ -77,7 +67,6 @@ function QuestionPage() {
 
   const question = activeForm.questions[index] ?? activeForm.questions[0];
   const t = copy[language];
-  const isSeniorForm = activeForm.id === newPatientForm.id;
 
   useEffect(() => {
     if (formParam) setActiveFormId(formParam);
@@ -89,7 +78,7 @@ function QuestionPage() {
   const answer = answers[question?.id];
   const isAnswered = question?.optional || (answer !== undefined && answer !== "");
 
-  // Auto next transition with gentle delay so seniors see feedback
+  // Smooth auto-advance transition
   const triggerAutoAdvance = useCallback(() => {
     if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
 
@@ -104,12 +93,11 @@ function QuestionPage() {
         setVoiceMappedLabel("");
         setVoiceIssue("");
       }
-    }, 700);
+    }, 650);
   }, [index, activeForm.questions.length, navigate, activeForm.id]);
 
   const updateAnswer = useCallback(
     (value: string | number, autoAdvance = true) => {
-      // Clear any pending advance timer so user can change answer freely
       if (autoAdvanceTimerRef.current) {
         clearTimeout(autoAdvanceTimerRef.current);
       }
@@ -121,11 +109,12 @@ function QuestionPage() {
         return next;
       });
 
-      // If user inputs/speaks a name, immediately save it to patientName storage
-      if (typeof value === "string" && (question.id.includes("name") || question.type === "text")) {
-        if (value.trim()) {
-          setPatientName(value.trim());
-        }
+      if (
+        typeof value === "string" &&
+        (question.id.includes("name") || question.type === "text") &&
+        value.trim()
+      ) {
+        setPatientName(value.trim());
       }
 
       if (autoAdvance) {
@@ -155,7 +144,7 @@ function QuestionPage() {
         if (parsed === null) {
           setVoiceIssue(
             language === "id"
-              ? "Sebutkan angka antara 0 sampai 10."
+              ? "Sebutkan angka 0 sampai 10."
               : language === "zh"
                 ? "请说0到10之间的数字。"
                 : "Please say a number from 0 to 10.",
@@ -175,8 +164,8 @@ function QuestionPage() {
       } else {
         setVoiceIssue(
           language === "id"
-            ? `Jawaban "${transcript}" belum cocok. Silakan sentuh salah satu pilihan.`
-            : `Could not match "${transcript}". Please tap an option on screen.`,
+            ? `Ucapan "${transcript}" belum cocok. Silakan sentuh salah satu pilihan di bawah.`
+            : `Could not match "${transcript}". Please tap an option below.`,
         );
       }
     },
@@ -186,9 +175,10 @@ function QuestionPage() {
   const voice = useSpeechRecognition({
     locale: localeFor(language),
     onFinal: handleVoiceFinal,
+    keepAlive: true,
   });
 
-  // Persistent voice mode: automatically activate mic on next question if voiceAuto is true
+  // Persistent voice mode: automatically activate mic on each question
   useEffect(() => {
     voice.reset();
     setVoiceMappedLabel("");
@@ -201,7 +191,7 @@ function QuestionPage() {
         try {
           voice.start();
         } catch {
-          // ignore already started
+          // ignore
         }
       }, 150);
     }
@@ -256,7 +246,8 @@ function QuestionPage() {
   };
 
   const progressPercent = ((index + 1) / activeForm.questions.length) * 100;
-  const progressLabel = `${t.questionOf} ${index + 1} / ${activeForm.questions.length}`;
+  const stepNumber = String(index + 1).padStart(2, "0");
+  const totalNumber = String(activeForm.questions.length).padStart(2, "0");
 
   if (!question) return null;
 
@@ -266,78 +257,64 @@ function QuestionPage() {
       onLanguage={setLang}
       onBack={goBack}
       progress={progressPercent}
-      stepLabel={progressLabel}
+      stepLabel={`${stepNumber} / ${totalNumber}`}
     >
-      <div className="question-card senior-question-card patient-enter" key={question.id}>
-        {/* Top bar with voice mode switch */}
-        <div className="senior-top-bar">
-          <span className="senior-q-counter">
-            {language === "id"
-              ? `Pertanyaan ${index + 1} dari ${activeForm.questions.length}`
-              : `Question ${index + 1} of ${activeForm.questions.length}`}
+      <div
+        className="patient-card question-card sleek-question-card patient-enter"
+        key={question.id}
+      >
+        {/* Minimal, elegant top bar */}
+        <div className="sleek-q-header">
+          <span className="sleek-step-badge">
+            {stepNumber} <span className="sleek-step-sep">/</span> {totalNumber}
           </span>
+
           <button
             type="button"
-            className={`voice-mode-toggle-pill ${voiceAuto ? "active" : ""}`}
+            className={`sleek-voice-toggle ${voiceAuto ? "active" : ""}`}
             onClick={toggleVoiceMode}
-            title={voiceAuto ? "Mode Suara Aktif (Klik untuk matikan)" : "Aktifkan Mode Suara"}
+            title={voiceAuto ? "Mode Suara Aktif" : "Aktifkan Mode Suara"}
           >
-            {voiceAuto ? <Mic size={14} /> : <MicOff size={14} />}
-            <span>
-              {voiceAuto
-                ? language === "id"
-                  ? "Suara Aktif"
-                  : "Voice On"
-                : language === "id"
-                  ? "Pakai Suara"
-                  : "Use Voice"}
-            </span>
+            {voiceAuto ? (
+              <>
+                <span className="sleek-live-dot" />
+                <span>{language === "id" ? "Suara Aktif" : "Voice On"}</span>
+              </>
+            ) : (
+              <>
+                <MicOff size={13} />
+                <span>{language === "id" ? "Pakai Suara" : "Use Voice"}</span>
+              </>
+            )}
           </button>
         </div>
 
-        {/* Big high-contrast prompt */}
-        <h1 className="senior-question-title">{question.prompt[language]}</h1>
+        {/* Clean, high-legibility prompt */}
+        <div className="sleek-q-body">
+          <h1 className="sleek-q-title">{question.prompt[language]}</h1>
+          {question.helper && <p className="sleek-q-helper">{question.helper[language]}</p>}
+        </div>
 
-        {question.helper && <p className="senior-question-helper">{question.helper[language]}</p>}
-
-        {/* Persistent Voice Live Feedback Bar */}
+        {/* Subtle, sleek voice status line */}
         {voiceAuto && (
-          <div className="voice-persistent-banner">
-            <div className="voice-orb-mini">
-              <Volume2 size={18} className="animate-pulse text-blue-600" />
-            </div>
-            <div className="text-left flex-1">
-              <strong className="text-sm text-blue-900 block">
-                {voice.state === "listening"
-                  ? language === "id"
-                    ? "Mendengarkan... Katakan jawaban Anda"
-                    : "Listening... Speak your answer"
-                  : voice.state === "recognized"
-                    ? language === "id"
-                      ? `Mendengar: "${voiceMappedLabel || voice.transcript}"`
-                      : `Heard: "${voiceMappedLabel || voice.transcript}"`
-                    : language === "id"
-                      ? "Mode Suara Aktif — Siap mendengarkan"
-                      : "Voice mode active — Ready"}
-              </strong>
-              <small className="text-xs text-blue-700">
-                {language === "id"
-                  ? "Setelah terjawab langsung lanjut otomatis"
-                  : "Automatically advances once answered"}
-              </small>
-            </div>
-            <button
-              type="button"
-              className="text-xs text-blue-800 underline font-semibold px-2 py-1"
-              onClick={toggleVoiceMode}
-            >
-              {language === "id" ? "Beralih ke Sentuh" : "Touch only"}
-            </button>
+          <div className="sleek-voice-status" aria-live="polite">
+            <Volume2 size={15} className="text-blue-500 animate-pulse" />
+            <span className="sleek-voice-status-text">
+              {voice.state === "listening"
+                ? language === "id"
+                  ? "Mendengarkan ucapan Anda..."
+                  : "Listening to your voice..."
+                : voice.state === "recognized" || voiceMappedLabel
+                  ? `"${voiceMappedLabel || voice.transcript}"`
+                  : language === "id"
+                    ? "Mikrofon aktif — siap mendengarkan"
+                    : "Mic active — speak anytime"}
+            </span>
           </div>
         )}
 
-        {/* Question Input Choices with Giant Targets */}
-        <SeniorQuestionInput
+        {/* Question Options Input */}
+        <SleekQuestionInput
           question={question}
           language={language}
           value={answer}
@@ -345,55 +322,32 @@ function QuestionPage() {
           onSelect={(val, autoAdvance) => updateAnswer(val, autoAdvance)}
         />
 
-        {/* Regular Voice Control widget if voice auto is off */}
-        {!voiceAuto && (
-          <div className="question-voice-section mt-5">
-            <VoiceControl
-              language={language}
-              state={voice.state}
-              transcript={voice.transcript}
-              error={voice.error}
-              onStart={() => {
-                setVoiceIssue("");
-                setVoiceAuto(true);
-                setVoiceAutoMode(true);
-                voice.start();
-              }}
-              onStop={voice.stop}
-              onReset={() => {
-                setVoiceIssue("");
-                setVoiceMappedLabel("");
-                voice.reset();
-              }}
-              recognizedLabel={voiceMappedLabel}
-            />
-          </div>
-        )}
-
         {voiceIssue && (
-          <div className="voice-clarify">
-            <Quote size={15} />
+          <div className="sleek-voice-issue">
+            <Quote size={14} />
             <span>{voiceIssue}</span>
           </div>
         )}
 
-        {/* Manual Advance button if needed (e.g. text input or skip optional) */}
-        {(question.type === "text" || question.optional || !isSeniorForm) && (
-          <div className="question-actions mt-6">
+        {/* Only show manual advance button for free-text inputs */}
+        {question.type === "text" && (
+          <div className="sleek-text-action-wrap">
             <button
               type="button"
-              className="patient-primary-action"
+              className="sleek-primary-btn"
               disabled={!isAnswered && !question.optional}
               onClick={goNextManual}
             >
-              {index === activeForm.questions.length - 1
-                ? language === "id"
-                  ? "Selesai & Kirim Formulir"
-                  : "Finish & Submit"
-                : language === "id"
-                  ? "Lanjut ke Pertanyaan Berikutnya"
-                  : "Continue to Next"}
-              <ChevronRight size={19} />
+              <span>
+                {index === activeForm.questions.length - 1
+                  ? language === "id"
+                    ? "Selesai & Kirim"
+                    : "Finish & Submit"
+                  : language === "id"
+                    ? "Lanjut"
+                    : "Continue"}
+              </span>
+              <ArrowRight size={18} />
             </button>
           </div>
         )}
@@ -402,7 +356,7 @@ function QuestionPage() {
   );
 }
 
-function SeniorQuestionInput({
+function SleekQuestionInput({
   question,
   language,
   value,
@@ -417,7 +371,7 @@ function SeniorQuestionInput({
 }) {
   if (question.type === "choice" || question.type === "yesno") {
     return (
-      <div className="senior-options-grid">
+      <div className="sleek-options-stack">
         {question.options?.map((option, idx) => {
           const isSelected = value === option.value;
           const isFadingNext = justSelected === option.value;
@@ -426,20 +380,14 @@ function SeniorQuestionInput({
             <button
               key={option.value}
               type="button"
-              className={`senior-option-btn ${isSelected ? "selected" : ""} ${isFadingNext ? "just-answered" : ""}`}
+              className={`sleek-option-card ${isSelected ? "selected" : ""} ${isFadingNext ? "just-answered" : ""}`}
               onClick={() => onSelect(option.value, true)}
             >
-              <div className="senior-option-bullet">
-                {isSelected ? (
-                  <Check size={20} strokeWidth={3} />
-                ) : (
-                  <span>{String.fromCharCode(65 + idx)}</span>
-                )}
-              </div>
-              <span className="senior-option-label">{option.label[language]}</span>
+              <span className="sleek-option-tag">{String.fromCharCode(65 + idx)}</span>
+              <span className="sleek-option-text">{option.label[language]}</span>
               {isSelected && (
-                <span className="senior-auto-check">
-                  <Check size={18} />
+                <span className="sleek-check-icon">
+                  <Check size={18} strokeWidth={2.8} />
                 </span>
               )}
             </button>
@@ -454,31 +402,32 @@ function SeniorQuestionInput({
     const numeric = typeof value === "number" ? value : 5;
 
     return (
-      <div className="senior-scale-box">
-        <div className="senior-scale-number-display">
-          <span className="scale-num-val">{numeric}</span>
-          <span className="scale-num-label">
+      <div className="sleek-scale-container">
+        {/* Clean Rating Header */}
+        <div className="sleek-scale-hero">
+          <span className="sleek-scale-big-num">{numeric}</span>
+          <span className="sleek-scale-badge">
             {numeric === 0
               ? language === "id"
                 ? "Tidak Nyeri"
                 : "No Pain"
               : numeric >= 8
                 ? language === "id"
-                  ? "Nyeri Sangat Berat"
+                  ? "Nyeri Berat"
                   : "Severe Pain"
                 : language === "id"
-                  ? "Tingkat Nyeri Sedang"
+                  ? "Nyeri Sedang"
                   : "Moderate Pain"}
           </span>
         </div>
 
-        {/* Quick Grid for 1-tap auto advance */}
-        <div className="scale-senior-grid">
+        {/* 1-Tap Sleek Number Grid */}
+        <div className="sleek-scale-grid">
           {Array.from({ length: max + 1 }, (_, i) => (
             <button
               key={i}
               type="button"
-              className={`scale-senior-num-btn ${numeric === i ? "selected" : ""} ${justSelected === i ? "just-answered" : ""}`}
+              className={`sleek-scale-btn ${numeric === i ? "active" : ""} ${justSelected === i ? "just-answered" : ""}`}
               onClick={() => onSelect(i, true)}
             >
               {i}
@@ -486,7 +435,7 @@ function SeniorQuestionInput({
           ))}
         </div>
 
-        <div className="scale-label-row mt-3">
+        <div className="sleek-scale-endpoints">
           <span>{language === "id" ? "0 = Bebas Nyeri" : "0 = No pain"}</span>
           <span>{language === "id" ? "10 = Sangat Sakit" : "10 = Worst pain"}</span>
         </div>
@@ -494,31 +443,19 @@ function SeniorQuestionInput({
     );
   }
 
-  // Text input for Senior
+  // Text input
   return (
-    <div className="senior-text-box">
+    <div className="sleek-text-container">
       <input
         type="text"
-        className="senior-text-input"
+        className="sleek-input-field"
         value={typeof value === "string" ? value : ""}
         onChange={(e) => onSelect(e.target.value, false)}
         placeholder={
-          language === "id"
-            ? "Ketik nama atau sebutkan lewat mikrofon…"
-            : "Type name or speak into microphone…"
+          language === "id" ? "Ketik nama atau sebutkan lewat suara…" : "Type name or speak aloud…"
         }
         autoFocus
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            onSelect((value as string) || "", true);
-          }
-        }}
       />
-      <p className="text-xs text-muted mt-2">
-        {language === "id"
-          ? "Tekan tombol mikrofon di atas untuk mendikte nama Anda secara otomatis."
-          : "You can also tap the microphone above to speak your name."}
-      </p>
     </div>
   );
 }
