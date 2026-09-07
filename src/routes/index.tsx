@@ -34,11 +34,11 @@ import { builderI18n } from "../lib/translations";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SpringForm — Form Builder Multi-Industri" },
+      { title: "9forms.com — Smart Form Builder & Workflows" },
       {
         name: "description",
         content:
-          "SpringForm is a conversational, multi-industry form builder: one question at a time, auto-advance navigation, voice answers and a clean admin area.",
+          "9forms.com is a conversational, multi-industry form builder: one question at a time, auto-advance navigation, voice answers and a clean admin area.",
       },
     ],
   }),
@@ -133,7 +133,7 @@ function BuilderLandingPage() {
               </div>
             </div>
 
-            <div className="sf-hero-mock reveal-scale" aria-label="SpringForm form preview">
+            <div className="sf-hero-mock reveal-scale" aria-label="9forms.com form preview">
               <div className="sf-responses-note hero-note">
                 <BarChart3 size={17} />
                 <span>
@@ -145,7 +145,18 @@ function BuilderLandingPage() {
               <div className="sf-mock-card">
                 <div className="sf-mock-topline">
                   <span className="sf-mock-brand">
-                    <i /> SpringForm
+                    <img
+                      src="/logo-mark.webp"
+                      alt="9forms"
+                      style={{
+                        width: 18,
+                        height: 18,
+                        display: "inline-block",
+                        verticalAlign: "middle",
+                        marginRight: 4,
+                      }}
+                    />{" "}
+                    9forms.com
                   </span>
                   <span className="sf-mock-step">2 / 4</span>
                 </div>
@@ -404,7 +415,7 @@ function BuilderLandingPage() {
                 <span />
                 <span />
                 <span />
-                <small>springform.app/admin</small>
+                <small>9forms.com/admin</small>
               </div>
               <div className="browser-body">
                 <aside>

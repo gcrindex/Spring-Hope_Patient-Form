@@ -116,7 +116,7 @@ export function useSpeechRecognition({
 
       const recognition = new Recognition();
       recognition.lang = localeRef.current;
-      recognition.continuous = false;
+      recognition.continuous = true;
       recognition.interimResults = true;
       recognition.maxAlternatives = 3;
       recognitionRef.current = recognition;

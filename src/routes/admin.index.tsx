@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Spring Hope — Form Builder Admin" },
+      { title: "9forms.com — Form Builder Admin" },
       {
         name: "description",
-        content: "Spring Hope clinical intake forms administration portal.",
+        content: "9forms.com multi-industry form builder and admin portal.",
       },
     ],
   }),
