@@ -104,11 +104,15 @@ function QuestionPage() {
         setVoiceMappedLabel("");
         setVoiceIssue("");
       }
-    }, 420);
+    }, 700);
   }, [index, activeForm.questions.length, navigate, activeForm.id]);
 
   const updateAnswer = useCallback(
     (value: string | number, autoAdvance = true) => {
+      // Clear any pending advance timer so user can change answer freely
+      if (autoAdvanceTimerRef.current) {
+        clearTimeout(autoAdvanceTimerRef.current);
+      }
       setVoiceIssue("");
       setJustSelected(value);
       setAnswers((current) => {
