@@ -76,7 +76,7 @@ export function useSpeechRecognition({
     try {
       recognitionRef.current?.stop();
     } catch {
-      // Recognition can already be stopped by the browser.
+      // Ignore cleanup error
     }
     setState("idle");
   }, [clearTimers]);
@@ -88,7 +88,7 @@ export function useSpeechRecognition({
     try {
       recognitionRef.current?.abort?.();
     } catch {
-      // Recognition can already be stopped by the browser.
+      // Ignore cleanup error
     }
     recognitionRef.current = null;
     setState("idle");
@@ -110,9 +110,10 @@ export function useSpeechRecognition({
 
       const recognition = new Recognition();
       recognition.lang = locale;
-      recognition.continuous = true;
+      // Note: Chrome/Edge desktop handles recognition most reliably in continuous false + auto-restart mode
+      recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.maxAlternatives = 2;
+      recognition.maxAlternatives = 3;
       recognitionRef.current = recognition;
 
       recognition.onresult = (event) => {
@@ -133,7 +134,10 @@ export function useSpeechRecognition({
         }
 
         const nextTranscript = (final || interim).trim();
-        setTranscript(nextTranscript);
+        if (nextTranscript) {
+          setTranscript(nextTranscript);
+        }
+
         if (final.trim()) {
           setState("processing");
           if (completionTimerRef.current !== null && typeof window !== "undefined") {
@@ -144,9 +148,9 @@ export function useSpeechRecognition({
             completionTimerRef.current = null;
             setState("recognized");
             onFinal(final.trim(), confidence);
-          }, 320);
+          }, 250);
         } else if (interim.trim()) {
-          // If browser holds interim without emitting final, trigger after brief pause
+          // If the user speaks and browser takes time to mark final, debounce on interim
           if (completionTimerRef.current !== null && typeof window !== "undefined") {
             window.clearTimeout(completionTimerRef.current);
           }
@@ -154,8 +158,8 @@ export function useSpeechRecognition({
             if (currentSession !== sessionRef.current) return;
             completionTimerRef.current = null;
             setState("recognized");
-            onFinal(interim.trim(), confidence || 0.75);
-          }, 650);
+            onFinal(interim.trim(), confidence || 0.8);
+          }, 600);
         }
       };
 
@@ -168,10 +172,9 @@ export function useSpeechRecognition({
           setState("error");
           setError("permission-denied");
         } else if (reason === "no-speech") {
-          // Senior took time to think or paused: NOT a fatal error.
-          // Keep listening state active so it restarts smoothly.
+          // Normal senior thinking pause: do NOT set fatal error state
         } else if (reason === "aborted") {
-          // Expected on cleanup
+          // Expected on question switch or unmount
         } else {
           if (!keepAlive) {
             setState("error");
@@ -184,7 +187,7 @@ export function useSpeechRecognition({
         if (currentSession !== sessionRef.current) return;
         recognitionRef.current = null;
 
-        // Auto keep-alive: if silence timeout closed the session, immediately revive it
+        // Auto keep-alive: revive recognition seamlessly if still in voice mode
         if (shouldListenRef.current && keepAlive) {
           setState("listening");
           if (restartTimerRef.current !== null && typeof window !== "undefined") {
@@ -194,7 +197,7 @@ export function useSpeechRecognition({
             if (shouldListenRef.current && currentSession === sessionRef.current) {
               launch(currentSession);
             }
-          }, 150);
+          }, 120);
         } else {
           setState((current) => (current === "listening" ? "idle" : current));
         }
@@ -205,13 +208,12 @@ export function useSpeechRecognition({
         setState("listening");
         setError(null);
       } catch {
-        // If already started or browser blocked, retry after tiny backoff if keepAlive
         if (shouldListenRef.current && keepAlive) {
           restartTimerRef.current = window.setTimeout(() => {
             if (shouldListenRef.current && currentSession === sessionRef.current) {
               launch(currentSession);
             }
-          }, 300);
+          }, 250);
         }
       }
     },
