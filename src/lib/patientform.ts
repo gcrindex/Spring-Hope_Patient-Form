@@ -1018,6 +1018,24 @@ export function saveSubmission(submission: Submission) {
     ) as Submission[];
     const next = [submission, ...existing.filter((item) => item.id !== submission.id)];
     window.localStorage.setItem(STORAGE.submissions, JSON.stringify(next));
+
+    // Also update submission count and updatedAt in pf_forms if present
+    try {
+      const forms = JSON.parse(window.localStorage.getItem("pf_forms") ?? "[]") as Array<{
+        id: string;
+        submissions?: number;
+        updatedAt?: string;
+      }>;
+      const formIdx = forms.findIndex((f) => f.id === submission.formId);
+      if (formIdx >= 0) {
+        const count = next.filter((s) => s.formId === submission.formId).length;
+        forms[formIdx].submissions = count;
+        forms[formIdx].updatedAt = new Date().toISOString();
+        window.localStorage.setItem("pf_forms", JSON.stringify(forms));
+      }
+    } catch {
+      // ignore
+    }
   } catch {
     window.localStorage.setItem(STORAGE.submissions, JSON.stringify([submission]));
   }

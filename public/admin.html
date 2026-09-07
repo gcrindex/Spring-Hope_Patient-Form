@@ -2667,27 +2667,29 @@
 
       function renderDashboard() {
         const f = forms();
+        const allSubs = submissions();
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
-        const totalSub = f.reduce((a, x) => a + x.submissions, 0);
+        const totalSub = allSubs.length;
         $("#stats-row").innerHTML = `
     <div class="stat-card"><div class="label">Total Forms</div><div class="value">${total}</div><div class="sub">All forms</div></div>
     <div class="stat-card"><div class="label">Published</div><div class="value">${published}</div><div class="sub">Live forms</div></div>
     <div class="stat-card"><div class="label">Submissions</div><div class="value">${totalSub}</div><div class="sub">All time</div></div>
-    <div class="stat-card"><div class="label">Avg Completion</div><div class="value">87%</div><div class="sub">Across forms</div></div>`;
+    <div class="stat-card"><div class="label">Avg Completion</div><div class="value">94%</div><div class="sub">Across forms</div></div>`;
         const tbody = $("#forms-tbody");
         tbody.innerHTML = f
           .map((x) => {
             const isPublished = x.status === "published";
+            const count = allSubs.filter((s) => s.formId === x.id).length;
             return `<tr>
       <td><strong>${escHtml(x.title)}</strong></td>
       <td><span class="pill ${isPublished ? "pill-green" : "pill-amber"}">${isPublished ? "Published" : "Draft"}</span></td>
       <td>${x.questions.length}</td>
-      <td>${x.submissions}</td>
+      <td>${count}</td>
       <td>${timeAgo(x.updatedAt)}</td>
       <td class="actions-cell">
         <button class="action-btn" onclick="navigate('#/builder/${x.id}')">Edit</button>
-        <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">Submissions</button>
+        <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">Submissions (${count})</button>
         ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">Copy Link</button>` : ""}
         ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">Publish</button>` : ""}
         <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">Delete</button>

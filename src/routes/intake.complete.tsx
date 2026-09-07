@@ -131,6 +131,25 @@ function CompletionPage() {
   const nextBody =
     risk === "low" ? strings.lowNext : risk === "mod" ? strings.modNext : strings.highNext;
 
+  const autoSavedRef = useRef(false);
+
+  useEffect(() => {
+    if (!autoSavedRef.current && Object.keys(answers).length > 0) {
+      autoSavedRef.current = true;
+      saveSubmission({
+        id: `sub-${Date.now()}`,
+        formId: activeForm.id,
+        patientName: name,
+        submittedAt: new Date().toISOString(),
+        answers,
+        score,
+        risk,
+        triageStatus: risk === "high" ? "review" : risk === "mod" ? "scheduled" : "completed",
+      });
+      setSaved(true);
+    }
+  }, [answers, activeForm.id, name, score, risk]);
+
   const send = () => {
     saveSubmission({
       id: `sub-${Date.now()}`,
