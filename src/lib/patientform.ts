@@ -576,7 +576,7 @@ export const elderlyFriendlyForm: AssessmentForm = {
   id: "elderly-friendly-intake",
   theme: "elderly-dark",
   title: {
-    en: "Senior-Friendly Registration",
+    en: "Elderly Friendly Registration",
     id: "Pendaftaran Ramah Lansia",
     zh: "长者关怀初诊登记",
   },
@@ -930,7 +930,6 @@ export function matchOptionTranscript(question: Question, transcript: string, la
       ...(option.aliases?.en ?? []),
     ];
     for (const cand of candidates) {
-      if (!cand) continue;
       const c = normalizeSpeech(cand);
       if (normalized === c) return [option];
     }
@@ -943,9 +942,9 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     const letterMatch = normalized.match(
       /^(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])$/i,
     );
-    if (letterMatch && letterMatch[1]) {
+    if (letterMatch) {
       const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
-      if (charCode >= 0 && charCode < options.length && options[charCode]) {
+      if (charCode >= 0 && charCode < options.length) {
         return [options[charCode]];
       }
     }
@@ -1221,11 +1220,10 @@ export function saveSubmission(submission: Submission) {
         updatedAt?: string;
       }>;
       const formIdx = forms.findIndex((f) => f.id === submission.formId);
-      const targetForm = formIdx >= 0 ? forms[formIdx] : undefined;
-      if (targetForm) {
+      if (formIdx >= 0) {
         const count = next.filter((s) => s.formId === submission.formId).length;
-        targetForm.submissions = count;
-        targetForm.updatedAt = new Date().toISOString();
+        forms[formIdx].submissions = count;
+        forms[formIdx].updatedAt = new Date().toISOString();
         window.localStorage.setItem("pf_forms", JSON.stringify(forms));
       }
     } catch {

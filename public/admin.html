@@ -224,9 +224,35 @@
           transform: rotate(360deg);
         }
       }
+      .login-back-btn {
+        width: 100%;
+        margin-top: 10px;
+        padding: 11px;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition:
+          background var(--transition),
+          color var(--transition),
+          border-color var(--transition);
+        box-sizing: border-box;
+      }
+      .login-back-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+        border-color: #94a3b8;
+      }
       .login-footer {
         text-align: center;
-        margin-top: 24px;
+        margin-top: 20px;
         font-size: 12px;
         color: var(--text3);
       }
@@ -1584,6 +1610,22 @@
         </div>
         <p class="login-hint">Demo credentials &mdash; pre-filled</p>
         <button class="login-btn" id="login-btn">Sign In</button>
+        <a href="/" class="login-back-btn" id="login-back-btn">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Kembali ke Beranda
+        </a>
         <p class="login-footer">Powered by 9forms</p>
       </div>
     </div>
