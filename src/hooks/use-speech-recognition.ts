@@ -129,10 +129,11 @@ export function useSpeechRecognition({
         let confidence = 0;
         for (let index = event.resultIndex; index < event.results.length; index += 1) {
           const result = event.results[index];
-          const text = result?.[0]?.transcript ?? "";
+          if (!result) continue;
+          const text = result[0]?.transcript ?? "";
           if (result.isFinal) {
             final += text;
-            confidence = result?.[0]?.confidence ?? 0;
+            confidence = result[0]?.confidence ?? 0;
           } else {
             interim += text;
           }

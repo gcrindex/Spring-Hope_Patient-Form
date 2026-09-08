@@ -23,7 +23,8 @@ import {
 } from "../lib/patientform";
 import { useState, useEffect } from "react";
 
-export type AdminNavKey = "overview" | "forms" | "submissions" | "patients" | "analytics";
+export type AdminNavKey =
+  "overview" | "forms" | "submissions" | "patients" | "analytics" | "settings";
 
 export function AdminShell({
   title,
@@ -35,12 +36,12 @@ export function AdminShell({
   onLanguage: controlledOnLang,
 }: {
   title: string;
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   children: ReactNode;
-  actions?: ReactNode;
-  activeNav?: AdminNavKey;
-  language?: Language;
-  onLanguage?: (lang: Language) => void;
+  actions?: ReactNode | undefined;
+  activeNav?: AdminNavKey | undefined;
+  language?: Language | undefined;
+  onLanguage?: ((lang: Language) => void) | undefined;
 }) {
   const [internalLang, setInternalLang] = useState<Language>(() => getStoredLanguage());
 
@@ -101,29 +102,30 @@ export function AdminShell({
               const Icon = item.icon;
               const isActive = activeNav === item.key;
               return (
-                <Link
+                <a
                   key={item.key}
-                  to={item.to}
-                  search={item.search}
+                  href={
+                    item.search
+                      ? `${item.to}?${new URLSearchParams(item.search).toString()}`
+                      : item.to
+                  }
                   className={`admin-nav-item ${isActive ? "active" : ""}`}
-                  activeProps={{ className: "" }}
                 >
                   <Icon size={19} />
                   <span>{item.label}</span>
-                </Link>
+                </a>
               );
             })}
           </nav>
         </div>
         <div className="admin-sidebar-bottom">
-          <Link
-            to="/admin"
-            search={{ view: "settings" }}
+          <a
+            href="/admin?view=settings"
             className={`admin-nav-item ${activeNav === "settings" ? "active" : ""}`}
           >
             <Settings size={19} />
             <span>{t.settings}</span>
-          </Link>
+          </a>
           <div className="admin-profile">
             <div className="admin-avatar">MV</div>
             <div className="min-w-0 flex-1">

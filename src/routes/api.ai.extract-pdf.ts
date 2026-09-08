@@ -44,9 +44,12 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
           );
         }
 
-        const apiKey = process.env.PESATROUTER_API_KEY;
-        const baseUrl = (process.env.PESATROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
-        const model = process.env.PESATROUTER_MODEL || DEFAULT_MODEL;
+        const apiKey = process.env["PESATROUTER_API_KEY"];
+        const baseUrl = (process.env["PESATROUTER_BASE_URL"] || DEFAULT_BASE_URL).replace(
+          /\/$/,
+          "",
+        );
+        const model = process.env["PESATROUTER_MODEL"] || DEFAULT_MODEL;
 
         if (!apiKey) {
           return json(
@@ -186,19 +189,20 @@ async function extractPdfText(buffer: ArrayBuffer): Promise<string> {
   let match;
   while ((match = streamRegex.exec(text)) !== null) {
     const block = match[1];
+    if (!block) continue;
     // Extract text operators: Tj, TJ, '
     const tjMatches = block.match(/\(([^)]*)\)\s*Tj/g);
     if (tjMatches) {
       for (const m of tjMatches) {
         const inner = m.match(/\(([^)]*)\)/);
-        if (inner) textChunks.push(inner[1]);
+        if (inner && inner[1]) textChunks.push(inner[1]);
       }
     }
     const tjArrayMatches = block.match(/\[([^\]]*)\]\s*TJ/g);
     if (tjArrayMatches) {
       for (const m of tjArrayMatches) {
         const inner = m.match(/\[([^\]]*)\]/);
-        if (inner) {
+        if (inner && inner[1]) {
           const parts = inner[1].match(/\(([^)]*)\)/g);
           if (parts) {
             for (const p of parts) {

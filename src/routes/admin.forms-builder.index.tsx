@@ -63,7 +63,7 @@ function FormsBuilder() {
     if (!raw) return;
     try {
       const draft = JSON.parse(raw) as AIDraftForm;
-      if (!draft?.questions?.length) return;
+      if (!draft?.questions?.length || !draft.questions[0]) return;
       setFormTitle(draft.title.en);
       setQuestions(draft.questions as Question[]);
       setSelectedId(draft.questions[0].id);
@@ -76,7 +76,7 @@ function FormsBuilder() {
   const changePrompt = (value: string) =>
     setQuestions((current) =>
       current.map((question) =>
-        question.id === selected.id
+        selected && question.id === selected.id
           ? { ...question, prompt: { ...question.prompt, en: value } }
           : question,
       ),
@@ -292,7 +292,7 @@ function FormsBuilder() {
               </span>
               <h3>{selected?.prompt.en}</h3>
               {selected?.helper && <p>{selected.helper.en}</p>}
-              <PreviewInput question={selected} />
+              {selected && <PreviewInput question={selected} />}
               <div className="preview-voice">
                 <Mic size={15} />
                 <span>Answer by voice</span>

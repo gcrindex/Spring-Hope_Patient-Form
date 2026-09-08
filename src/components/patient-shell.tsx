@@ -16,10 +16,10 @@ export function PatientShell({
   children: ReactNode;
   language: Language;
   onLanguage: (language: Language) => void;
-  progress?: number;
-  onBack?: () => void;
-  stepLabel?: string;
-  theme?: "default" | "elderly-dark";
+  progress?: number | undefined;
+  onBack?: (() => void) | undefined;
+  stepLabel?: string | undefined;
+  theme?: "default" | "elderly-dark" | undefined;
 }) {
   return (
     <div className="patient-page" data-theme={theme}>

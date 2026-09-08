@@ -689,7 +689,11 @@ export const elderlyFriendlyForm: AssessmentForm = {
       options: [
         {
           value: "independent",
-          label: { en: "Independent (No help needed)", id: "Mandiri (Tanpa Bantuan)", zh: "独立行走（无需协助）" },
+          label: {
+            en: "Independent (No help needed)",
+            id: "Mandiri (Tanpa Bantuan)",
+            zh: "独立行走（无需协助）",
+          },
           score: 0,
           aliases: {
             en: ["independent", "no help", "walks fine"],
@@ -699,7 +703,11 @@ export const elderlyFriendlyForm: AssessmentForm = {
         },
         {
           value: "cane-assisted",
-          label: { en: "Using Cane or Walker", id: "Menggunakan Tongkat / Walker", zh: "使用手杖或助行器" },
+          label: {
+            en: "Using Cane or Walker",
+            id: "Menggunakan Tongkat / Walker",
+            zh: "使用手杖或助行器",
+          },
           score: 15,
           aliases: {
             en: ["cane", "walker", "stick"],
@@ -709,7 +717,11 @@ export const elderlyFriendlyForm: AssessmentForm = {
         },
         {
           value: "wheelchair",
-          label: { en: "Wheelchair / Need assistance", id: "Kursi Roda / Butuh Bantuan Penuh", zh: "轮椅 / 需要全程协助" },
+          label: {
+            en: "Wheelchair / Need assistance",
+            id: "Kursi Roda / Butuh Bantuan Penuh",
+            zh: "轮椅 / 需要全程协助",
+          },
           score: 25,
           aliases: {
             en: ["wheelchair", "assisted", "cannot walk"],
@@ -930,9 +942,9 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     const letterMatch = normalized.match(
       /^(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])$/i,
     );
-    if (letterMatch) {
+    if (letterMatch && letterMatch[1]) {
       const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
-      if (charCode >= 0 && charCode < options.length) {
+      if (charCode >= 0 && charCode < options.length && options[charCode]) {
         return [options[charCode]];
       }
     }
@@ -1208,7 +1220,7 @@ export function saveSubmission(submission: Submission) {
         updatedAt?: string;
       }>;
       const formIdx = forms.findIndex((f) => f.id === submission.formId);
-      if (formIdx >= 0) {
+      if (formIdx >= 0 && forms[formIdx]) {
         const count = next.filter((s) => s.formId === submission.formId).length;
         forms[formIdx].submissions = count;
         forms[formIdx].updatedAt = new Date().toISOString();

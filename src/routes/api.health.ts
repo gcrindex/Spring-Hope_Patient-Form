@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/health")({
           {
             status: "ok",
             timestamp: new Date().toISOString(),
-            pesatRouterConfigured: Boolean(process.env.PESATROUTER_API_KEY),
+            pesatRouterConfigured: Boolean(process.env["PESATROUTER_API_KEY"]),
           },
           {
             headers: { "Cache-Control": "no-store" },

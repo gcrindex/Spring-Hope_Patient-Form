@@ -28,7 +28,7 @@ import {
 
 export const Route = createFileRoute("/intake/question")({
   validateSearch: (search: Record<string, unknown>) => ({
-    form: (search.form as string) || undefined,
+    form: (search["form"] as string) || undefined,
   }),
   head: () => ({
     meta: [
@@ -75,8 +75,10 @@ function QuestionPage() {
     setAnswers(getStoredAnswers());
   }, [formParam, activeForm]);
 
-  const answer = answers[question?.id];
-  const isAnswered = question?.optional || (answer !== undefined && answer !== "");
+  const answer = question ? answers[question.id] : undefined;
+  const isAnswered = question
+    ? question.optional || (answer !== undefined && answer !== "")
+    : false;
 
   // Smooth auto-advance transition
   const triggerAutoAdvance = useCallback(() => {
@@ -98,6 +100,7 @@ function QuestionPage() {
 
   const updateAnswer = useCallback(
     (value: string | number, autoAdvance = true) => {
+      if (!question) return;
       if (autoAdvanceTimerRef.current) {
         clearTimeout(autoAdvanceTimerRef.current);
       }
@@ -121,7 +124,7 @@ function QuestionPage() {
         triggerAutoAdvance();
       }
     },
-    [question?.id, question?.type, triggerAutoAdvance],
+    [question, triggerAutoAdvance],
   );
 
   const handleVoiceFinal = useCallback(
@@ -157,7 +160,7 @@ function QuestionPage() {
       }
 
       const matches = matchOptionTranscript(question, transcript, language);
-      if (matches.length >= 1) {
+      if (matches.length >= 1 && matches[0]) {
         const chosen = matches[0];
         updateAnswer(chosen.value, true);
         setVoiceMappedLabel(chosen.label[language]);
@@ -270,17 +273,37 @@ function QuestionPage() {
             type="button"
             className={`sleek-voice-toggle ${voiceAuto ? "active" : ""}`}
             onClick={toggleVoiceMode}
-            title={voiceAuto ? (language === "id" ? "Mode Suara Aktif" : language === "zh" ? "语音模式已开启" : "Voice Mode Active") : (language === "id" ? "Aktifkan Mode Suara" : language === "zh" ? "开启语音模式" : "Enable Voice Mode")}
+            title={
+              voiceAuto
+                ? language === "id"
+                  ? "Mode Suara Aktif"
+                  : language === "zh"
+                    ? "语音模式已开启"
+                    : "Voice Mode Active"
+                : language === "id"
+                  ? "Aktifkan Mode Suara"
+                  : language === "zh"
+                    ? "开启语音模式"
+                    : "Enable Voice Mode"
+            }
           >
             {voiceAuto ? (
               <>
                 <span className="sleek-live-dot" />
-                <span>{language === "id" ? "Suara Aktif" : language === "zh" ? "语音开启" : "Voice Active"}</span>
+                <span>
+                  {language === "id"
+                    ? "Suara Aktif"
+                    : language === "zh"
+                      ? "语音开启"
+                      : "Voice Active"}
+                </span>
               </>
             ) : (
               <>
                 <MicOff size={16} strokeWidth={2.3} />
-                <span>{language === "id" ? "Pakai Suara" : language === "zh" ? "使用语音" : "Use Voice"}</span>
+                <span>
+                  {language === "id" ? "Pakai Suara" : language === "zh" ? "使用语音" : "Use Voice"}
+                </span>
               </>
             )}
           </button>
@@ -447,8 +470,16 @@ function SleekQuestionInput({
         </div>
 
         <div className="sleek-scale-endpoints">
-          <span>{language === "id" ? "0 = Bebas Nyeri" : language === "zh" ? "0 = 无痛" : "0 = No pain"}</span>
-          <span>{language === "id" ? "10 = Sangat Sakit" : language === "zh" ? "10 = 最严重疼痛" : "10 = Worst pain"}</span>
+          <span>
+            {language === "id" ? "0 = Bebas Nyeri" : language === "zh" ? "0 = 无痛" : "0 = No pain"}
+          </span>
+          <span>
+            {language === "id"
+              ? "10 = Sangat Sakit"
+              : language === "zh"
+                ? "10 = 最严重疼痛"
+                : "10 = Worst pain"}
+          </span>
         </div>
       </div>
     );
@@ -463,7 +494,11 @@ function SleekQuestionInput({
         value={typeof value === "string" ? value : ""}
         onChange={(e) => onSelect(e.target.value, false)}
         placeholder={
-          language === "id" ? "Ketik jawaban atau sebutkan lewat suara…" : language === "zh" ? "输入内容或直接语音作答…" : "Type answer or speak aloud…"
+          language === "id"
+            ? "Ketik jawaban atau sebutkan lewat suara…"
+            : language === "zh"
+              ? "输入内容或直接语音作答…"
+              : "Type answer or speak aloud…"
         }
         autoFocus
       />

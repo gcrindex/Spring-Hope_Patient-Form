@@ -80,9 +80,12 @@ export const Route = createFileRoute("/api/ai/form-draft")({
           );
         }
 
-        const apiKey = process.env.PESATROUTER_API_KEY;
-        const baseUrl = (process.env.PESATROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
-        const model = process.env.PESATROUTER_MODEL || DEFAULT_MODEL;
+        const apiKey = process.env["PESATROUTER_API_KEY"];
+        const baseUrl = (process.env["PESATROUTER_BASE_URL"] || DEFAULT_BASE_URL).replace(
+          /\/$/,
+          "",
+        );
+        const model = process.env["PESATROUTER_MODEL"] || DEFAULT_MODEL;
 
         if (!apiKey) {
           return json(

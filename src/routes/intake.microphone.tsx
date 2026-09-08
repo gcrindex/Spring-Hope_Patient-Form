@@ -62,7 +62,7 @@ function MicrophoneCheck() {
         <div className="patient-privacy-line">
           <ShieldCheck size={15} /> Browser support varies. Manual answering is always available.
         </div>
-        <Link to="/intake" className="patient-primary-action">
+        <Link to="/intake" search={{ form: undefined }} className="patient-primary-action">
           <ArrowLeft size={18} /> Back to assessment
         </Link>
       </div>

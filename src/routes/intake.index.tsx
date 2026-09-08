@@ -22,7 +22,7 @@ import {
 
 export const Route = createFileRoute("/intake/")({
   validateSearch: (search: Record<string, unknown>) => ({
-    form: (search.form as string) || undefined,
+    form: (search["form"] as string) || undefined,
   }),
   head: () => ({
     meta: [

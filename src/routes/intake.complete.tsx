@@ -21,7 +21,7 @@ import {
 
 export const Route = createFileRoute("/intake/complete")({
   validateSearch: (search: Record<string, unknown>) => ({
-    form: (search.form as string) || undefined,
+    form: (search["form"] as string) || undefined,
   }),
   head: () => ({ meta: [{ title: "Formulir Selesai — 9forms.com" }] }),
   component: CompletionPage,
