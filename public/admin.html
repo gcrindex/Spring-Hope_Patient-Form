@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/webp" href="/logo-mark.webp" />
     <title>9forms.com — Form Builder Admin</title>
+    <script>
+      (function () {
+        try {
+          var isAuth =
+            localStorage.getItem("pf_loggedin") === "1" ||
+            sessionStorage.getItem("pf_loggedin") === "1" ||
+            document.cookie.indexOf("pf_loggedin=1") !== -1 ||
+            localStorage.getItem("pf_admin_auth") === "authenticated";
+          var h = location.hash;
+          if (isAuth) {
+            if (!h || h === "" || h === "#" || h === "#/" || h === "#/login") {
+              location.hash = "#/dashboard";
+            }
+          } else {
+            if (!h || h === "" || h === "#" || h === "#/") {
+              location.hash = "#/login";
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
@@ -1103,20 +1124,22 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 14px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 22px;
       }
-      .sub-header-top {
+      .sub-header-left {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 16px;
+        flex-wrap: wrap;
+        min-width: 0;
       }
       .sub-header h1 {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 800;
         color: var(--navy);
         margin: 0;
+        white-space: nowrap;
       }
       .sub-filter-box {
         display: inline-flex;
@@ -1126,6 +1149,7 @@
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 6px 12px;
+        box-shadow: 0 1px 4px rgba(27, 42, 74, 0.04);
       }
       .sub-filter-box label {
         font-size: 11px;
@@ -1133,6 +1157,7 @@
         color: var(--text3);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        flex-shrink: 0;
       }
       .sub-filter-box select {
         border: none;
@@ -1142,42 +1167,44 @@
         font-weight: 600;
         color: var(--navy);
         cursor: pointer;
-        max-width: 220px;
+        max-width: 240px;
       }
 
       @media (max-width: 640px) {
         .sub-content {
-          padding: 14px 14px 140px 14px;
+          padding: 16px 14px 140px 14px;
         }
         .sub-header {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 10px;
-          margin-bottom: 14px;
-        }
-        .sub-header-top {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 12px;
+          margin-bottom: 16px;
           align-items: center;
-          justify-content: space-between;
-          width: 100%;
+        }
+        .sub-header-left {
+          display: contents;
         }
         .sub-header h1 {
-          font-size: 18px;
+          font-size: 19px;
+          grid-column: 1;
+        }
+        #export-csv-btn {
+          grid-column: 2;
+          font-size: 12px;
+          padding: 6px 12px;
+          white-space: nowrap;
         }
         .sub-filter-box {
+          grid-column: 1 / -1;
           width: 100%;
           box-sizing: border-box;
-          justify-content: space-between;
+          justify-content: flex-start;
           padding: 8px 12px;
         }
         .sub-filter-box select {
           flex: 1;
           max-width: none;
           font-size: 13px;
-        }
-        #export-csv-btn {
-          font-size: 12px;
-          padding: 6px 12px;
         }
       }
 
@@ -1901,14 +1928,31 @@
       </div>
       <div class="sub-content">
         <div class="sub-header">
-          <div class="sub-header-top">
+          <div class="sub-header-left">
             <h1 id="sub-title">Submissions</h1>
-            <button class="btn btn-ghost btn-sm" id="export-csv-btn">Export CSV</button>
+            <div class="sub-filter-box">
+              <label for="sub-form-filter">Form:</label>
+              <select id="sub-form-filter"></select>
+            </div>
           </div>
-          <div class="sub-filter-box">
-            <label for="sub-form-filter">Form:</label>
-            <select id="sub-form-filter"></select>
-          </div>
+          <button class="btn btn-ghost btn-sm" id="export-csv-btn">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="margin-right: 4px; vertical-align: -2px"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export CSV
+          </button>
         </div>
         <div class="stats-row" id="sub-stats"></div>
         <div class="forms-table-wrap">
@@ -2901,6 +2945,7 @@
           return (
             localStorage.getItem("pf_loggedin") === "1" ||
             sessionStorage.getItem("pf_loggedin") === "1" ||
+            document.cookie.indexOf("pf_loggedin=1") !== -1 ||
             localStorage.getItem("pf_admin_auth") === "authenticated" ||
             sessionStorage.getItem("pf_admin_auth") === "authenticated"
           );
@@ -2915,11 +2960,13 @@
             sessionStorage.setItem("pf_loggedin", "1");
             localStorage.setItem("pf_admin_auth", "authenticated");
             sessionStorage.setItem("pf_admin_auth", "authenticated");
+            document.cookie = "pf_loggedin=1; path=/; max-age=31536000; SameSite=Lax";
           } else {
             localStorage.removeItem("pf_loggedin");
             sessionStorage.removeItem("pf_loggedin");
             localStorage.removeItem("pf_admin_auth");
             sessionStorage.removeItem("pf_admin_auth");
+            document.cookie = "pf_loggedin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           }
         } catch {
           // ignore
