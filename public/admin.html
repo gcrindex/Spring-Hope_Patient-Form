@@ -2717,16 +2717,28 @@
           LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...efSubs, ...fuSubs]);
         } else {
           let updated = false;
+          const efIdx = storedForms.findIndex((f) => f.id === "elderly-friendly-intake");
+          if (efIdx === -1) {
+            storedForms.splice(2, 0, defaultElderlyFriendlyForm);
+            updated = true;
+          } else {
+            // Ensure title & questions are up to date
+            storedForms[efIdx].title = "Elderly Friendly Registration";
+            storedForms[efIdx].status = "published";
+            storedForms[efIdx].questions = defaultElderlyFriendlyForm.questions;
+            updated = true;
+          }
+
           if (!storedForms.some((f) => f.id === "new-patient-intake")) {
             storedForms.unshift(defaultNewPatientForm);
             updated = true;
           }
-          if (!storedForms.some((f) => f.id === "elderly-friendly-intake")) {
-            storedForms.splice(2, 0, defaultElderlyFriendlyForm);
-            updated = true;
-          }
           if (updated) {
             LS.set("pf_forms", storedForms);
+          }
+
+          if (!storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
+            LS.set("pf_submissions", [...storedSubs, ...efSubs]);
           }
         }
       }
