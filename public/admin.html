@@ -1122,52 +1122,74 @@
       }
       .sub-header {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        flex-direction: column;
+        gap: 14px;
         margin-bottom: 22px;
       }
-      .sub-header-left {
+      .sub-header-row {
         display: flex;
         align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-        min-width: 0;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
       }
       .sub-header h1 {
         font-size: 22px;
         font-weight: 800;
         color: var(--navy);
         margin: 0;
-        white-space: nowrap;
+        line-height: 1.2;
       }
-      .sub-filter-box {
-        display: inline-flex;
+      .sub-filter-wrap {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 6px 12px;
-        box-shadow: 0 1px 4px rgba(27, 42, 74, 0.04);
+        gap: 10px;
+        width: 100%;
       }
-      .sub-filter-box label {
+      .sub-filter-label {
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         flex-shrink: 0;
       }
-      .sub-filter-box select {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 13px;
+      .sub-filter-select-box {
+        position: relative;
+        flex: 1;
+        max-width: 440px;
+        display: flex;
+        align-items: center;
+      }
+      .sub-filter-select-box select {
+        width: 100%;
+        height: 42px;
+        padding: 0 36px 0 14px;
+        background: #ffffff;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--navy);
         cursor: pointer;
-        max-width: 240px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition:
+          border-color var(--transition),
+          box-shadow var(--transition);
+      }
+      .sub-filter-select-box select:focus {
+        outline: none;
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.15);
+      }
+      .sub-filter-arrow {
+        position: absolute;
+        right: 12px;
+        pointer-events: none;
+        color: var(--text3);
       }
 
       @media (max-width: 640px) {
@@ -1175,36 +1197,23 @@
           padding: 16px 14px 140px 14px;
         }
         .sub-header {
-          display: grid;
-          grid-template-columns: 1fr auto;
           gap: 12px;
           margin-bottom: 16px;
-          align-items: center;
-        }
-        .sub-header-left {
-          display: contents;
         }
         .sub-header h1 {
-          font-size: 19px;
-          grid-column: 1;
+          font-size: 18px;
+        }
+        .sub-filter-select-box {
+          max-width: 100%;
+        }
+        .sub-filter-select-box select {
+          height: 40px;
+          font-size: 13px;
+          padding: 0 34px 0 12px;
         }
         #export-csv-btn {
-          grid-column: 2;
           font-size: 12px;
           padding: 6px 12px;
-          white-space: nowrap;
-        }
-        .sub-filter-box {
-          grid-column: 1 / -1;
-          width: 100%;
-          box-sizing: border-box;
-          justify-content: flex-start;
-          padding: 8px 12px;
-        }
-        .sub-filter-box select {
-          flex: 1;
-          max-width: none;
-          font-size: 13px;
         }
       }
 
@@ -1928,31 +1937,46 @@
       </div>
       <div class="sub-content">
         <div class="sub-header">
-          <div class="sub-header-left">
+          <div class="sub-header-row">
             <h1 id="sub-title">Submissions</h1>
-            <div class="sub-filter-box">
-              <label for="sub-form-filter">Form:</label>
+            <button class="btn btn-ghost btn-sm" id="export-csv-btn">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="margin-right: 4px; vertical-align: -2px"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export CSV
+            </button>
+          </div>
+          <div class="sub-filter-wrap">
+            <span class="sub-filter-label">Form:</span>
+            <div class="sub-filter-select-box">
               <select id="sub-form-filter"></select>
+              <svg
+                class="sub-filter-arrow"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
           </div>
-          <button class="btn btn-ghost btn-sm" id="export-csv-btn">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              style="margin-right: 4px; vertical-align: -2px"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Export CSV
-          </button>
         </div>
         <div class="stats-row" id="sub-stats"></div>
         <div class="forms-table-wrap">
