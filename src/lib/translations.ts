@@ -772,7 +772,7 @@ export const builderI18n: Record<
     demoTitle2: "your customers would.",
     demoDesc:
       "Three published 9forms.com demos. Open them on your phone — every answer advances automatically.",
-    demo1Badge: "Demo 1 · Elderly Friendly",
+    demo1Badge: "Demo 1 · Senior-Friendly",
     demo1Title: "New Patient Questionnaire",
     demo1Desc:
       "A simplified intake for senior patients: no typing required to start, giant touch targets, and optional voice answering.",
@@ -821,7 +821,7 @@ export const builderI18n: Record<
       "Review every submission with scores, statuses and quick filters — inspired by modern clinical portals.",
     f6Label: "Accessible",
     f6Title: "Friendly to every age.",
-    f6Desc: "An elderly mode with larger text, fewer words and giant touch targets.",
+    f6Desc: "A senior-friendly mode with larger text, fewer words and giant touch targets.",
     howKicker: "How it works",
     howTitle: "From blank page to insights in three steps.",
     howDesc: "No code, no complex setup — build, share and analyze.",

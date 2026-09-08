@@ -576,7 +576,7 @@ export const elderlyFriendlyForm: AssessmentForm = {
   id: "elderly-friendly-intake",
   theme: "elderly-dark",
   title: {
-    en: "Elderly Friendly Registration",
+    en: "Senior-Friendly Registration",
     id: "Pendaftaran Ramah Lansia",
     zh: "长者关怀初诊登记",
   },
@@ -942,10 +942,12 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     const letterMatch = normalized.match(
       /^(?:opsi|pilihan|jawaban|huruf|yang|option)?\s*([a-e])$/i,
     );
-    if (letterMatch) {
-      const charCode = letterMatch[1].toLowerCase().charCodeAt(0) - 97;
+    const matchedLetter = letterMatch?.[1];
+    if (matchedLetter) {
+      const charCode = matchedLetter.toLowerCase().charCodeAt(0) - 97;
       if (charCode >= 0 && charCode < options.length) {
-        return [options[charCode]];
+        const matchedOption = options[charCode];
+        if (matchedOption) return [matchedOption];
       }
     }
   }
@@ -1219,11 +1221,12 @@ export function saveSubmission(submission: Submission) {
         submissions?: number;
         updatedAt?: string;
       }>;
-      const formIdx = forms.findIndex((f) => f.id === submission.formId);
-      if (formIdx >= 0) {
-        const count = next.filter((s) => s.formId === submission.formId).length;
-        forms[formIdx].submissions = count;
-        forms[formIdx].updatedAt = new Date().toISOString();
+      const formIdx = forms.findIndex((f) => f && f.id === submission.formId);
+      const targetForm = formIdx >= 0 ? forms[formIdx] : undefined;
+      if (targetForm) {
+        const count = next.filter((s) => s && s.formId === submission.formId).length;
+        targetForm.submissions = count;
+        targetForm.updatedAt = new Date().toISOString();
         window.localStorage.setItem("pf_forms", JSON.stringify(forms));
       }
     } catch {

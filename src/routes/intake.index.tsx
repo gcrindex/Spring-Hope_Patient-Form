@@ -128,7 +128,7 @@ function IntakeStart() {
                 ? "Demo 3: Lansia Kontras"
                 : language === "zh"
                   ? "示例 3: 长者关怀"
-                  : "Demo 3: Elderly Dark"}
+                  : "Demo 3: Senior-Friendly"}
             </span>
           </button>
         </div>
