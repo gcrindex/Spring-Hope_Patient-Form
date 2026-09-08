@@ -1620,7 +1620,14 @@
               9forms
             </h3>
           </div>
-          <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" aria-label="Close sidebar">&times;</button>
+          <button
+            type="button"
+            class="sidebar-close-btn"
+            id="sidebar-close-btn"
+            aria-label="Close sidebar"
+          >
+            &times;
+          </button>
         </div>
         <nav>
           <div class="nav-item active" data-route="#/dashboard">
@@ -1670,8 +1677,21 @@
       <div class="main-content">
         <div class="page-header">
           <div style="display: flex; align-items: center; gap: 12px">
-            <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <button
+              type="button"
+              class="mobile-menu-btn"
+              id="mobile-menu-btn"
+              aria-label="Open menu"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
                 <line x1="4" y1="6" x2="20" y2="6"></line>
                 <line x1="4" y1="12" x2="20" y2="12"></line>
                 <line x1="4" y1="18" x2="20" y2="18"></line>
@@ -2365,7 +2385,12 @@
                 { label: "Wheelchair / Need assistance", score: 25 },
               ],
             },
-            { id: "q_ef_pain_level", text: "How severe is the pain right now?", type: "scale", max: 10 },
+            {
+              id: "q_ef_pain_level",
+              text: "How severe is the pain right now?",
+              type: "scale",
+              max: 10,
+            },
             { id: "q_ef_name", text: "What is your name or nickname?", type: "text" },
           ],
         };
@@ -2838,7 +2863,10 @@
       document.addEventListener("click", (e) => {
         if (e.target.closest("#mobile-menu-btn")) {
           openSidebar();
-        } else if (e.target.closest("#sidebar-close-btn") || e.target.closest("#sidebar-backdrop")) {
+        } else if (
+          e.target.closest("#sidebar-close-btn") ||
+          e.target.closest("#sidebar-backdrop")
+        ) {
           closeSidebar();
         } else if (e.target.closest(".nav-item") && window.innerWidth <= 900) {
           closeSidebar();

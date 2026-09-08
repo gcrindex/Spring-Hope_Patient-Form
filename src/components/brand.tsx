@@ -15,6 +15,8 @@ export function BrandMark({
           height={34}
           className="h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
+          decoding="async"
+          fetchPriority="high"
         />
       </div>
       {!compact && (
@@ -49,6 +51,8 @@ export function PlatformMark({
           height={34}
           className="h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
+          decoding="async"
+          fetchPriority="high"
         />
       </div>
       {!compact && (

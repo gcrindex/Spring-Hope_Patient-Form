@@ -154,6 +154,8 @@ function BuilderLandingPage() {
                       alt="9forms"
                       width={22}
                       height={26}
+                      loading="lazy"
+                      decoding="async"
                       style={{
                         width: "auto",
                         height: 22,

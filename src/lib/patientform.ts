@@ -930,6 +930,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
       ...(option.aliases?.en ?? []),
     ];
     for (const cand of candidates) {
+      if (!cand) continue;
       const c = normalizeSpeech(cand);
       if (normalized === c) return [option];
     }
@@ -1220,10 +1221,11 @@ export function saveSubmission(submission: Submission) {
         updatedAt?: string;
       }>;
       const formIdx = forms.findIndex((f) => f.id === submission.formId);
-      if (formIdx >= 0 && forms[formIdx]) {
+      const targetForm = formIdx >= 0 ? forms[formIdx] : undefined;
+      if (targetForm) {
         const count = next.filter((s) => s.formId === submission.formId).length;
-        forms[formIdx].submissions = count;
-        forms[formIdx].updatedAt = new Date().toISOString();
+        targetForm.submissions = count;
+        targetForm.updatedAt = new Date().toISOString();
         window.localStorage.setItem("pf_forms", JSON.stringify(forms));
       }
     } catch {

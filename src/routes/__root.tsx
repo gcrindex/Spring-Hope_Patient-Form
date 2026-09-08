@@ -76,32 +76,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Spring Hope Orthopaedic Clinic" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#0a66f0" },
+      { name: "color-scheme", content: "light" },
+      { title: "9forms.com — Smart Conversational Form Builder" },
       {
         name: "description",
         content:
-          "Voice-enabled patient intake and clinical triage for Spring Hope Orthopaedic Clinic.",
+          "Conversational, multi-industry form builder: one question at a time, auto-advance navigation, voice answers, and clean triage dashboard.",
       },
-      { property: "og:title", content: "Spring Hope Orthopaedic Clinic" },
+      { property: "og:title", content: "9forms.com — Smart Form Builder" },
       {
         property: "og:description",
         content:
-          "Voice-enabled patient intake and clinical triage for Spring Hope Orthopaedic Clinic.",
+          "Conversational form builder with voice input, auto-advance, and real-time triage.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
+      { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
+        rel: "preload",
+        as: "style",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap",
+      },
+      {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap",
+      },
+      {
+        rel: "stylesheet",
+        href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
