@@ -2,9 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BarChart3,
+  BookOpen,
   Building2,
   CalendarDays,
   Check,
+  ExternalLink,
   GraduationCap,
   HeartHandshake,
   Languages,
@@ -18,6 +20,7 @@ import {
   Sparkles,
   Stethoscope,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -65,6 +68,7 @@ const features = [
 
 function BuilderLandingPage() {
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+  const [researchOpen, setResearchOpen] = useState(false);
 
   useEffect(() => {
     setLanguage(getStoredLanguage());
@@ -351,6 +355,14 @@ function BuilderLandingPage() {
                   >
                     {t.demo3Cta} <ArrowRight size={18} />
                   </Link>
+                  <button
+                    type="button"
+                    className="sf-research-anchor"
+                    onClick={() => setResearchOpen(true)}
+                  >
+                    <BookOpen size={14} />
+                    <span>{t.demo3ResearchLink}</span>
+                  </button>
                 </div>
               </div>
             </article>
@@ -553,6 +565,300 @@ function BuilderLandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── Research Study Modal Popup ────────────────── */}
+      {researchOpen && <SeniorResearchModal onClose={() => setResearchOpen(false)} />}
+    </div>
+  );
+}
+
+function SeniorResearchModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [onClose]);
+
+  const colorSystem = [
+    {
+      element: "Main Background",
+      hex: "#171A18",
+      note: "Warm Charcoal — comfortable, non-glare dark",
+    },
+    {
+      element: "Elevated Card",
+      hex: "#232826",
+      note: "Dark Warm Gray — subtle contrast above background",
+    },
+    {
+      element: "Primary Text",
+      hex: "#F3EEDF",
+      note: "Warm Ivory — softer and less fatiguing than pure white",
+    },
+    {
+      element: "Secondary Text",
+      hex: "#D4CEBE",
+      note: "Warm Beige Gray — supporting details & descriptions",
+    },
+    {
+      element: "Primary CTA",
+      hex: "#F2C94C",
+      note: "Warm Golden Yellow — high luminance & easy visibility",
+    },
+    {
+      element: "CTA Text",
+      hex: "#121416",
+      note: "Near Black — maximum legibility on yellow buttons",
+    },
+    {
+      element: "Selected / Active",
+      hex: "#F6E7A8",
+      note: "Soft Butter Yellow — distinct active selection state",
+    },
+    {
+      element: "Border / Divider",
+      hex: "#7A847B",
+      note: "Warm Mid Gray — crisp visual separation for seniors",
+    },
+    {
+      element: "Success",
+      hex: "#A7CFB2",
+      note: "Soft Sage Green — calming, readable confirmation",
+    },
+    {
+      element: "Error",
+      hex: "#F39A8F",
+      note: "Soft Coral — clear warning without visual aggression",
+    },
+  ];
+
+  return (
+    <div className="research-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="research-modal-card" onClick={(e) => e.stopPropagation()} tabIndex={-1}>
+        <div className="research-modal-header">
+          <div className="flex items-center gap-3">
+            <span className="research-modal-badge">
+              <BookOpen size={14} /> Research Basis
+            </span>
+          </div>
+          <button
+            type="button"
+            className="research-modal-close"
+            onClick={onClose}
+            aria-label="Close research modal"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="research-modal-body">
+          <div className="research-hero">
+            <h2>Senior-Friendly Color Scheme</h2>
+            <p className="research-lead">
+              The 9forms Senior-friendly color scheme was developed from established findings in
+              aging vision, visual accessibility, contrast sensitivity, color perception, glare, and
+              interface design for older adults.
+            </p>
+          </div>
+
+          <div className="research-section">
+            <h3>Key Findings</h3>
+            <div className="research-findings-grid">
+              <div className="research-finding-item">
+                <h4>1. Contrast sensitivity decreases with age</h4>
+                <p>
+                  Older adults may require stronger luminance contrast to distinguish text and
+                  interface elements clearly.
+                </p>
+                <div className="research-sources">
+                  <strong>Source:</strong>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3049199/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC3049199 <ExternalLink size={12} />
+                  </a>
+                  <a href="https://www.w3.org/WAI/older-users/" target="_blank" rel="noreferrer">
+                    W3C WAI Older Users <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="research-finding-item">
+                <h4>2. Color discrimination changes with aging</h4>
+                <p>
+                  Research shows age-related decline in color discrimination, particularly involving
+                  the blue–yellow visual pathway.
+                </p>
+                <div className="research-sources">
+                  <strong>Source:</strong>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7721812/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC7721812 <ExternalLink size={12} />
+                  </a>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12298189/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC12298189 <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="research-finding-item">
+                <h4>3. Glare sensitivity generally increases with age</h4>
+                <p>
+                  Age-related changes in the lens increase intraocular light scattering, which can
+                  make high-glare visual environments more difficult.
+                </p>
+                <div className="research-sources">
+                  <strong>Source:</strong>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2585730/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC2585730 <ExternalLink size={12} />
+                  </a>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3972772/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC3972772 <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="research-finding-item">
+                <h4>4. Important information should not depend on color alone</h4>
+                <p>
+                  WCAG recommends sufficient contrast and additional visual cues for states,
+                  controls, and important information.
+                </p>
+                <div className="research-sources">
+                  <strong>Source:</strong>
+                  <a
+                    href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    WCAG 2.2 Contrast Minimum <ExternalLink size={12} />
+                  </a>
+                  <a
+                    href="https://www.w3.org/WAI/older-users/developing/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    W3C Developing for Older Users <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="research-finding-item">
+                <h4>5. Lower visual complexity can improve usability for older adults</h4>
+                <p>
+                  Research on interfaces for older users shows that reduced information density and
+                  clearer visual hierarchy can lower cognitive load.
+                </p>
+                <div className="research-sources">
+                  <strong>Source:</strong>
+                  <a
+                    href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9367723/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    PMC9367723 <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="research-section">
+            <h3>Applied Color System</h3>
+            <div className="research-table-wrap">
+              <table className="research-color-table">
+                <thead>
+                  <tr>
+                    <th>Element</th>
+                    <th>Color</th>
+                    <th>HEX</th>
+                    <th>Design Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {colorSystem.map((item) => (
+                    <tr key={item.hex}>
+                      <td>
+                        <strong>{item.element}</strong>
+                      </td>
+                      <td>
+                        <span
+                          className="research-color-chip"
+                          style={{ backgroundColor: item.hex }}
+                        />
+                      </td>
+                      <td>
+                        <code>{item.hex}</code>
+                      </td>
+                      <td>{item.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="research-disclaimer">
+              <em>
+                * The exact HEX values are design implementations of these research principles, not
+                colors prescribed directly by any individual study.
+              </em>
+            </p>
+          </div>
+
+          <div className="research-section">
+            <h3>Accessibility Reference</h3>
+            <div className="research-links-list">
+              <a
+                href="https://www.w3.org/TR/WCAG22/"
+                target="_blank"
+                rel="noreferrer"
+                className="research-ref-card"
+              >
+                <div>
+                  <strong>WCAG 2.2 Guidelines</strong>
+                  <span>W3C Web Content Accessibility Guidelines 2.2 Specification</span>
+                </div>
+                <ExternalLink size={16} />
+              </a>
+              <a
+                href="https://www.w3.org/WAI/older-users/"
+                target="_blank"
+                rel="noreferrer"
+                className="research-ref-card"
+              >
+                <div>
+                  <strong>Older Users and Web Accessibility</strong>
+                  <span>W3C Web Accessibility Initiative Guidelines & Findings</span>
+                </div>
+                <ExternalLink size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

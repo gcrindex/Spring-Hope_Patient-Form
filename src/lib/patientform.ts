@@ -576,7 +576,7 @@ export const elderlyFriendlyForm: AssessmentForm = {
   id: "elderly-friendly-intake",
   theme: "elderly-dark",
   title: {
-    en: "Elderly Friendly Registration",
+    en: "Senior-Friendly Registration",
     id: "Pendaftaran Ramah Lansia",
     zh: "长者关怀初诊登记",
   },
