@@ -148,8 +148,10 @@ function BuilderLandingPage() {
                     <img
                       src="/logo-mark.webp"
                       alt="9forms"
+                      width={22}
+                      height={26}
                       style={{
-                        width: 22,
+                        width: "auto",
                         height: 22,
                         display: "inline-block",
                         verticalAlign: "middle",
@@ -166,7 +168,7 @@ function BuilderLandingPage() {
                 <div className="sf-mock-progress">
                   <span style={{ width: "50%" }} />
                 </div>
-                <h3>{t.mockQuestion}</h3>
+                <div className="sf-mock-question">{t.mockQuestion}</div>
                 <div className="sf-mock-options">
                   <div className="selected">
                     <i>
@@ -464,7 +466,7 @@ function BuilderLandingPage() {
                 <div className="browser-main">
                   <div className="browser-title">
                     <span>{t.adminMockTitle}</span>
-                    <button type="button">+ New</button>
+                    <span className="browser-new-btn">+ New</span>
                   </div>
                   <div className="browser-stats">
                     <div>

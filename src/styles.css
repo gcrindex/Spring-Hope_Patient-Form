@@ -647,17 +647,17 @@ button:disabled {
 }
 .hero-proof-strip span {
   grid-row: span 2;
-  color: #a0aec0;
+  color: #64748b;
   font-size: 11px;
   font-weight: 850;
 }
 .hero-proof-strip strong {
-  color: #233d5b;
+  color: #1e293b;
   font-size: 13px;
 }
 .hero-proof-strip small {
   margin-top: 2px;
-  color: #75869a;
+  color: #475569;
   font-size: 11px;
 }
 .section-shell {
@@ -699,7 +699,7 @@ button:disabled {
 .workflow-heading p,
 .admin-preview-copy > p {
   margin: 0;
-  color: #687b91;
+  color: #475569;
   font-size: 15px;
   line-height: 1.8;
 }
@@ -766,7 +766,7 @@ button:disabled {
 .feature-label {
   display: block;
   margin-bottom: 9px;
-  color: #698198;
+  color: #0284c7;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -782,7 +782,7 @@ button:disabled {
 }
 .feature-card p {
   margin: 12px 0 0;
-  color: #6c7f94;
+  color: #475569;
   font-size: 13px;
   line-height: 1.75;
 }
@@ -790,7 +790,7 @@ button:disabled {
   color: #0c2340;
 }
 .feature-card-blue p {
-  color: #4b6480;
+  color: #334155;
 }
 .mini-question-demo {
   align-self: stretch;
@@ -1149,7 +1149,8 @@ button:disabled {
   font-size: 13px;
   font-weight: 850;
 }
-.browser-title button {
+.browser-title button,
+.browser-title .browser-new-btn {
   border: 0;
   border-radius: 7px;
   padding: 7px 10px;
@@ -1157,6 +1158,7 @@ button:disabled {
   background: var(--brand);
   font-size: 8px;
   font-weight: 800;
+  display: inline-block;
 }
 .browser-stats {
   display: grid;
@@ -6707,7 +6709,8 @@ html {
   background: linear-gradient(90deg, #38bdf8, #7dd3fc);
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
 }
-.sf-mock-card h3 {
+.sf-mock-card h3,
+.sf-mock-card .sf-mock-question {
   margin: 20px 0 16px;
   color: #ffffff;
   font-family: "Plus Jakarta Sans", sans-serif;
@@ -6869,7 +6872,7 @@ html {
 }
 .sf-industry-card p {
   margin: 8px 0 0;
-  color: #6c7f94;
+  color: #475569;
   font-size: 12.5px;
   line-height: 1.65;
 }

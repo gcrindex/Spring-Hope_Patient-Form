@@ -2,16 +2,18 @@ export function BrandMark({
   compact = false,
   inverse = false,
 }: {
-  compact?: boolean;
-  inverse?: boolean;
+  compact?: boolean | undefined;
+  inverse?: boolean | undefined;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`} aria-hidden="true">
+      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
         <img
           src="/logo-mark.webp"
           alt="9forms logo"
-          className="h-7 w-7 object-contain drop-shadow-sm"
+          width={28}
+          height={34}
+          className="h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
         />
       </div>
@@ -34,16 +36,18 @@ export function PlatformMark({
   compact = false,
   inverse = false,
 }: {
-  compact?: boolean;
-  inverse?: boolean;
+  compact?: boolean | undefined;
+  inverse?: boolean | undefined;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`} aria-hidden="true">
+      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
         <img
           src="/logo-mark.webp"
           alt="9forms logo"
-          className="h-7 w-7 object-contain drop-shadow-sm"
+          width={28}
+          height={34}
+          className="h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
         />
       </div>
