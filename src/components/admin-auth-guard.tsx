@@ -1,15 +1,18 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-const SESSION_KEY = "pf_admin_auth";
-
 export function AdminAuthGuard({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const isAuth = sessionStorage.getItem(SESSION_KEY) === "authenticated";
+  const isAuth =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("pf_loggedin") === "1" ||
+      sessionStorage.getItem("pf_loggedin") === "1" ||
+      localStorage.getItem("pf_admin_auth") === "authenticated" ||
+      sessionStorage.getItem("pf_admin_auth") === "authenticated");
 
   useEffect(() => {
     if (!isAuth) {
-      navigate({ to: "/admin/login" });
+      navigate({ to: "/admin" });
     }
   }, [isAuth, navigate]);
 

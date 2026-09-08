@@ -552,13 +552,6 @@ function BuilderLandingPage() {
         <div className="marketing-footer-inner">
           <PlatformMark />
           <p>{t.footerNote}</p>
-          <div className="footer-links">
-            <a href="#demo">{t.navDemo}</a>
-            <Link to="/admin/login">{t.navAdmin}</Link>
-            <Link to="/spring-hope">
-              <Link2 size={12} /> {t.footerOld}
-            </Link>
-          </div>
         </div>
       </footer>
 

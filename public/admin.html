@@ -453,29 +453,38 @@
       }
 
       /* Forms table */
-      .forms-table {
+      .forms-table-wrap {
         width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         background: var(--white);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        overflow: hidden;
         box-shadow: var(--shadow);
+        margin-bottom: 24px;
+      }
+      .forms-table {
+        width: 100%;
+        min-width: 600px;
+        background: var(--white);
+        border-collapse: collapse;
       }
       .forms-table thead {
         background: var(--bg);
       }
       .forms-table th {
         text-align: left;
-        padding: 14px 20px;
+        padding: 14px 18px;
         font-size: 12px;
         font-weight: 600;
         color: var(--text3);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 1px solid var(--border);
+        white-space: nowrap;
       }
       .forms-table td {
-        padding: 16px 20px;
+        padding: 14px 18px;
         border-bottom: 1px solid var(--border);
         font-size: 14px;
         vertical-align: middle;
@@ -1392,10 +1401,16 @@
           grid-template-columns: repeat(2, 1fr);
         }
         .main-content {
-          padding: 16px;
+          padding: 16px 14px 160px 14px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          max-height: 100dvh;
         }
         .forms-table {
           font-size: 13px;
+        }
+        .forms-table-wrap {
+          margin-bottom: 40px;
         }
         .page-header {
           flex-wrap: wrap;
@@ -1584,7 +1599,7 @@
     <div id="toast-container"></div>
 
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="screen active">
+    <div id="login-screen" class="screen">
       <div class="login-card">
         <div class="login-logo">
           <img
@@ -1744,19 +1759,21 @@
           <button class="btn btn-primary" id="new-form-btn">+ New Form</button>
         </div>
         <div class="stats-row" id="stats-row"></div>
-        <table class="forms-table">
-          <thead>
-            <tr>
-              <th>Form</th>
-              <th>Status</th>
-              <th>Questions</th>
-              <th>Submissions</th>
-              <th>Updated</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="forms-tbody"></tbody>
-        </table>
+        <div class="forms-table-wrap">
+          <table class="forms-table">
+            <thead>
+              <tr>
+                <th>Form</th>
+                <th>Status</th>
+                <th>Questions</th>
+                <th>Submissions</th>
+                <th>Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="forms-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1828,18 +1845,20 @@
           <button class="btn btn-ghost btn-sm" id="export-csv-btn">Export CSV</button>
         </div>
         <div class="stats-row" id="sub-stats"></div>
-        <table class="forms-table">
-          <thead>
-            <tr>
-              <th>Patient Name</th>
-              <th>Date</th>
-              <th>Score</th>
-              <th>Risk</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="sub-tbody"></tbody>
-        </table>
+        <div class="forms-table-wrap">
+          <table class="forms-table">
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Risk</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="sub-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -2810,29 +2829,44 @@
         }
       }
 
-      // ===================== SESSION / AUTH (FIX 3) =====================
+      // ===================== SESSION / AUTH =====================
       function isLoggedIn() {
-        return (
-          localStorage.getItem("pf_loggedin") === "1" ||
-          sessionStorage.getItem("pf_loggedin") === "1"
-        );
+        try {
+          return (
+            localStorage.getItem("pf_loggedin") === "1" ||
+            sessionStorage.getItem("pf_loggedin") === "1" ||
+            localStorage.getItem("pf_admin_auth") === "authenticated" ||
+            sessionStorage.getItem("pf_admin_auth") === "authenticated"
+          );
+        } catch {
+          return false;
+        }
       }
       function setLoggedIn(v) {
-        if (v) {
-          localStorage.setItem("pf_loggedin", "1");
-          sessionStorage.setItem("pf_loggedin", "1");
-        } else {
-          localStorage.removeItem("pf_loggedin");
-          sessionStorage.removeItem("pf_loggedin");
+        try {
+          if (v) {
+            localStorage.setItem("pf_loggedin", "1");
+            sessionStorage.setItem("pf_loggedin", "1");
+            localStorage.setItem("pf_admin_auth", "authenticated");
+            sessionStorage.setItem("pf_admin_auth", "authenticated");
+          } else {
+            localStorage.removeItem("pf_loggedin");
+            sessionStorage.removeItem("pf_loggedin");
+            localStorage.removeItem("pf_admin_auth");
+            sessionStorage.removeItem("pf_admin_auth");
+          }
+        } catch {
+          // ignore
         }
       }
 
-      // ===================== ROUTER (FIX 3: bad-hash redirect) =====================
+      // ===================== ROUTER =====================
       function navigate(hash) {
         location.hash = hash;
       }
       function getRoute() {
-        if (location.hash) return location.hash;
+        const h = location.hash;
+        if (h && h !== "#" && h !== "#/") return h;
         return isLoggedIn() ? "#/dashboard" : "#/login";
       }
       function parseRoute() {
@@ -2860,7 +2894,6 @@
           if (isLoggedIn()) return { screen: "dashboard", redirect: true };
           return { screen: "login" };
         }
-        // Bad hash: redirect based on auth state
         return { screen: isLoggedIn() ? "dashboard" : "login", redirect: true };
       }
       function route() {
@@ -2872,6 +2905,14 @@
         $$(".screen").forEach((s) => s.classList.remove("active"));
         const el = $("#" + r.screen + "-screen");
         if (el) el.classList.add("active");
+        if (
+          !location.hash ||
+          location.hash === "" ||
+          location.hash === "#" ||
+          location.hash === "#/"
+        ) {
+          history.replaceState(null, "", isLoggedIn() ? "#/dashboard" : "#/login");
+        }
 
         // Update sidebar active highlights
         $$(".nav-item").forEach((n) => {
