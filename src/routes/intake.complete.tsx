@@ -147,7 +147,7 @@ function CompletionPage() {
   }, [answers, activeForm.id, name, score, risk]);
 
   return (
-    <PatientShell language={language} onLanguage={setLang} progress={100}>
+    <PatientShell language={language} onLanguage={setLang} progress={100} theme={activeForm.theme}>
       <div className="patient-card completion-card sleek-completion-card patient-enter">
         {/* Sleek animated checkmark */}
         <div className="sleek-check-bubble">

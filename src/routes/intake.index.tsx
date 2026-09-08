@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, HeartHandshake, Stethoscope } from "lucide-react";
+import { ArrowRight, HeartHandshake, Sparkles, Stethoscope } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import {
+  elderlyFriendlyForm,
   getActiveFormId,
   getFormById,
   getPatientName,
@@ -75,10 +76,16 @@ function IntakeStart() {
     navigate({ to: "/intake/question", search: { form: activeForm.id } });
   };
 
-  const isSeniorNewPatient = activeForm.id === newPatientForm.id;
+  const isSeniorNewPatient =
+    activeForm.id === newPatientForm.id || activeForm.id === elderlyFriendlyForm.id;
 
   return (
-    <PatientShell language={language} onLanguage={setLang} onBack={() => navigate({ to: "/" })}>
+    <PatientShell
+      language={language}
+      onLanguage={setLang}
+      onBack={() => navigate({ to: "/" })}
+      theme={activeForm.theme}
+    >
       <div className="patient-card patient-card-start patient-enter sleek-form-card">
         {/* Sleek Segmented Switcher for Demos */}
         <div className="sleek-demo-segment" role="tablist" aria-label="Pilih Form Demo">
@@ -108,6 +115,20 @@ function IntakeStart() {
                 : language === "zh"
                   ? "示例 2: 膝痛评估"
                   : "Demo 2: Knee Pain"}
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`sleek-segment-item ${activeForm.id === elderlyFriendlyForm.id ? "active" : ""}`}
+            onClick={() => switchForm(elderlyFriendlyForm.id)}
+          >
+            <Sparkles size={15} className="flex-shrink-0" />
+            <span>
+              {language === "id"
+                ? "Demo 3: Lansia Kontras"
+                : language === "zh"
+                  ? "示例 3: 长者关怀"
+                  : "Demo 3: Elderly Dark"}
             </span>
           </button>
         </div>

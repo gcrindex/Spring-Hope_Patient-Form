@@ -11,6 +11,7 @@ export function PatientShell({
   progress,
   onBack,
   stepLabel,
+  theme = "default",
 }: {
   children: ReactNode;
   language: Language;
@@ -18,9 +19,10 @@ export function PatientShell({
   progress?: number;
   onBack?: () => void;
   stepLabel?: string;
+  theme?: "default" | "elderly-dark";
 }) {
   return (
-    <div className="patient-page">
+    <div className="patient-page" data-theme={theme}>
       <header className="patient-header">
         <div className="patient-header-inner">
           <div className="flex items-center gap-3">

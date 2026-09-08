@@ -654,6 +654,13 @@ export const builderI18n: Record<
     demo2F2: string;
     demo2F3: string;
     demo2Cta: string;
+    demo3Badge: string;
+    demo3Title: string;
+    demo3Desc: string;
+    demo3F1: string;
+    demo3F2: string;
+    demo3F3: string;
+    demo3Cta: string;
     featKicker: string;
     featTitle1: string;
     featTitle2: string;
@@ -763,8 +770,8 @@ export const builderI18n: Record<
     demoTitle1: "Try it like",
     demoTitle2: "your customers would.",
     demoDesc:
-      "Two published 9forms.com demos. Open them on your phone — every answer advances automatically.",
-    demo1Badge: "Demo 1 · Elderly-friendly",
+      "Three published 9forms.com demos. Open them on your phone — every answer advances automatically.",
+    demo1Badge: "Demo 1 · Elderly Friendly",
     demo1Title: "New Patient Questionnaire",
     demo1Desc:
       "A simplified intake for senior patients: no typing required to start, giant touch targets, and optional voice answering.",
@@ -780,6 +787,14 @@ export const builderI18n: Record<
     demo2F2: "Fast yes/no questions",
     demo2F3: "Automatic risk score for staff",
     demo2Cta: "Open Demo 2",
+    demo3Badge: "Demo 3 · Elderly Friendly (Dark Contrast)",
+    demo3Title: "Elderly Friendly Registration",
+    demo3Desc:
+      "High-contrast warm charcoal theme with giant touch targets, voice answering, and clear letter badges.",
+    demo3F1: "Warm charcoal & golden yellow high-contrast UI",
+    demo3F2: "Giant touch buttons with A/B letter tags",
+    demo3F3: "Auto-advance + voice-first support",
+    demo3Cta: "Open Demo 3",
     featKicker: "Why 9forms.com",
     featTitle1: "Everything a modern",
     featTitle2: "form needs.",
@@ -893,7 +908,7 @@ export const builderI18n: Record<
     demoTitle1: "Rasakan seperti",
     demoTitle2: "pelanggan Anda.",
     demoDesc:
-      "Dua demo 9forms.com yang siap dicoba. Buka di ponsel Anda — setiap jawaban langsung lanjut otomatis.",
+      "Tiga demo 9forms.com yang siap dicoba. Buka di ponsel Anda — setiap jawaban langsung lanjut otomatis.",
     demo1Badge: "Demo 1 · Ramah Lansia",
     demo1Title: "Kuesioner Pasien Baru",
     demo1Desc:
@@ -910,6 +925,14 @@ export const builderI18n: Record<
     demo2F2: "Pertanyaan ya/tidak yang cepat",
     demo2F3: "Skor risiko otomatis untuk staf",
     demo2Cta: "Buka Demo 2",
+    demo3Badge: "Demo 3 · Ramah Lansia (Dark Kontras)",
+    demo3Title: "Pendaftaran Pasien Lansia",
+    demo3Desc:
+      "Tema warm charcoal kontras tinggi dengan tombol ekstra besar, respons suara, dan badge huruf yang jelas.",
+    demo3F1: "UI kontras tinggi Warm Charcoal & Golden Yellow",
+    demo3F2: "Tombol sentuh raksasa dengan badge huruf A/B",
+    demo3F3: "Lanjut otomatis + dukungan suara instan",
+    demo3Cta: "Buka Demo 3",
     featKicker: "Kenapa 9forms.com",
     featTitle1: "Semua yang dibutuhkan",
     featTitle2: "formulir modern.",
@@ -1022,7 +1045,7 @@ export const builderI18n: Record<
     demoKicker: "在线演示",
     demoTitle1: "像您的客户",
     demoTitle2: "一样体验。",
-    demoDesc: "两个 9forms.com 演示。在手机上打开——每个答案都会自动进入下一题。",
+    demoDesc: "三个 9forms.com 演示。在手机上打开——每个答案都会自动进入下一题。",
     demo1Badge: "演示 1 · 长者友好",
     demo1Title: "新患者问卷",
     demo1Desc: "为长者简化的登记流程：开始无需打字、超大触控按钮，以及可选的语音作答。",
@@ -1037,6 +1060,13 @@ export const builderI18n: Record<
     demo2F2: "快速是非题",
     demo2F3: "自动生成风险评分",
     demo2Cta: "打开演示 2",
+    demo3Badge: "演示 3 · 长者关怀深色版",
+    demo3Title: "长者关怀初诊登记",
+    demo3Desc: "高对比度暖炭黑配色，配备超大触控按键、语音应答与清晰直观的字母标识。",
+    demo3F1: "暖炭黑与暖金黄高对比度界面",
+    demo3F2: "带 A/B 字母标识的超大触控按钮",
+    demo3F3: "自动跳转 + 持续语音应答支持",
+    demo3Cta: "打开演示 3",
     featKicker: "为什么选择 9forms.com",
     featTitle1: "现代表单所需的",
     featTitle2: "一切功能。",

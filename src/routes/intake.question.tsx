@@ -257,6 +257,7 @@ function QuestionPage() {
       onLanguage={setLang}
       onBack={goBack}
       progress={progressPercent}
+      theme={activeForm.theme}
     >
       <div
         className="patient-card question-card sleek-question-card patient-enter"

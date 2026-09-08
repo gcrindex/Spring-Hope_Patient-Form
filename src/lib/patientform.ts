@@ -26,6 +26,7 @@ export type AssessmentForm = {
   title: Localized;
   description: Localized;
   status: "draft" | "published";
+  theme?: "default" | "elderly-dark";
   questions: Question[];
 };
 
@@ -571,7 +572,187 @@ export const kneePainForm: AssessmentForm = {
   ],
 };
 
-export const allForms: AssessmentForm[] = [newPatientForm, kneePainForm];
+export const elderlyFriendlyForm: AssessmentForm = {
+  id: "elderly-friendly-intake",
+  theme: "elderly-dark",
+  title: {
+    en: "Elderly Friendly Registration",
+    id: "Pendaftaran Ramah Lansia",
+    zh: "长者关怀初诊登记",
+  },
+  description: {
+    en: "High-contrast warm charcoal design with giant buttons, voice answering, and clear choices.",
+    id: "Desain warm charcoal kontras tinggi dengan tombol ekstra besar, respons suara, dan pilihan jelas.",
+    zh: "高对比度暖炭黑设计，配备超大触控按键、语音应答与清晰直观的选项。",
+  },
+  status: "published",
+  questions: [
+    {
+      id: "q_ef_who",
+      type: "choice",
+      prompt: {
+        en: "Who is this visit for?",
+        id: "Pemeriksaan ini untuk siapa?",
+        zh: "这次看诊是为谁登记？",
+      },
+      helper: {
+        en: "Tap one answer to proceed.",
+        id: "Cukup sentuh satu pilihan.",
+        zh: "点击一个选项即可继续。",
+      },
+      options: [
+        {
+          value: "myself",
+          label: { en: "Myself", id: "Untuk Diri Sendiri", zh: "本人" },
+          score: 1,
+          aliases: {
+            en: ["myself", "me", "for myself"],
+            id: ["diri sendiri", "saya sendiri", "saya"],
+            zh: ["本人", "我自己"],
+          },
+        },
+        {
+          value: "family",
+          label: { en: "Family member / Parent", id: "Orang Tua / Keluarga", zh: "父母 / 家人" },
+          score: 2,
+          aliases: {
+            en: ["family", "parent", "mother", "father"],
+            id: ["orang tua", "keluarga", "ibu", "ayah", "anak"],
+            zh: ["父母", "家人", "长辈"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_ef_complaint",
+      type: "choice",
+      prompt: {
+        en: "What hurts or bothers you most?",
+        id: "Keluhan apa yang paling dirasakan?",
+        zh: "目前最主要的不适是什么？",
+      },
+      helper: {
+        en: "Choose the main issue.",
+        id: "Pilih keluhan utama Anda.",
+        zh: "请选择最主要的症状。",
+      },
+      options: [
+        {
+          value: "knee-joint",
+          label: { en: "Knee or Leg Pain", id: "Nyeri Lutut atau Kaki", zh: "膝盖或腿部疼痛" },
+          score: 10,
+          aliases: {
+            en: ["knee", "leg", "knee pain"],
+            id: ["lutut", "kaki", "nyeri lutut"],
+            zh: ["膝盖", "腿痛", "膝痛"],
+          },
+        },
+        {
+          value: "back-spine",
+          label: {
+            en: "Back or Waist Pain",
+            id: "Sakit Pinggang / Punggung",
+            zh: "腰部或背部酸痛",
+          },
+          score: 10,
+          aliases: {
+            en: ["back", "waist", "spine"],
+            id: ["pinggang", "punggung", "tulang belakang"],
+            zh: ["腰痛", "背痛", "腰椎"],
+          },
+        },
+        {
+          value: "shoulder-arm",
+          label: { en: "Shoulder or Arm Pain", id: "Nyeri Bahu / Lengan", zh: "肩膀或手臂疼痛" },
+          score: 8,
+          aliases: {
+            en: ["shoulder", "arm"],
+            id: ["bahu", "lengan", "tangan"],
+            zh: ["肩膀", "手臂", "肩痛"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_ef_mobility",
+      type: "choice",
+      prompt: {
+        en: "How do you walk or get around?",
+        id: "Bagaimana kondisi berjalan saat ini?",
+        zh: "日常步行或行动情况如何？",
+      },
+      helper: {
+        en: "Select walking mobility.",
+        id: "Pilih bantuan berjalan Anda.",
+        zh: "请选择行动辅助情况。",
+      },
+      options: [
+        {
+          value: "independent",
+          label: { en: "Independent (No help needed)", id: "Mandiri (Tanpa Bantuan)", zh: "独立行走（无需协助）" },
+          score: 0,
+          aliases: {
+            en: ["independent", "no help", "walks fine"],
+            id: ["mandiri", "bisa sendiri", "tanpa bantuan"],
+            zh: ["独立", "自己走", "无需协助"],
+          },
+        },
+        {
+          value: "cane-assisted",
+          label: { en: "Using Cane or Walker", id: "Menggunakan Tongkat / Walker", zh: "使用手杖或助行器" },
+          score: 15,
+          aliases: {
+            en: ["cane", "walker", "stick"],
+            id: ["tongkat", "walker", "alat bantu"],
+            zh: ["手杖", "拐杖", "助行器"],
+          },
+        },
+        {
+          value: "wheelchair",
+          label: { en: "Wheelchair / Need assistance", id: "Kursi Roda / Butuh Bantuan Penuh", zh: "轮椅 / 需要全程协助" },
+          score: 25,
+          aliases: {
+            en: ["wheelchair", "assisted", "cannot walk"],
+            id: ["kursi roda", "butuh bantuan", "tidak bisa jalan"],
+            zh: ["轮椅", "需要协助", "坐轮椅"],
+          },
+        },
+      ],
+    },
+    {
+      id: "q_ef_pain_level",
+      type: "scale",
+      max: 10,
+      prompt: {
+        en: "How severe is the pain right now?",
+        id: "Seberapa sakit yang dirasakan saat ini?",
+        zh: "目前感受到的疼痛程度是？",
+      },
+      helper: {
+        en: "0 = No pain, 10 = Worst pain ever.",
+        id: "0 = Bebas nyeri, 10 = Sangat sakit.",
+        zh: "0为无痛，10为极度剧痛。",
+      },
+    },
+    {
+      id: "q_ef_name",
+      type: "text",
+      optional: true,
+      prompt: {
+        en: "What is your name or nickname?",
+        id: "Siapa nama atau panggilan Anda?",
+        zh: "请问怎么称呼您？",
+      },
+      helper: {
+        en: "Tap the box or speak your name. You may also skip.",
+        id: "Sentuh kotak atau sebutkan nama Anda. Boleh dilewati.",
+        zh: "点击输入框或直接报出姓名，也可跳过。",
+      },
+    },
+  ],
+};
+
+export const allForms: AssessmentForm[] = [newPatientForm, kneePainForm, elderlyFriendlyForm];
 
 export function getFormById(id?: string | null): AssessmentForm {
   if (!id) return newPatientForm;

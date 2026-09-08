@@ -322,6 +322,36 @@ function BuilderLandingPage() {
                 </div>
               </div>
             </article>
+
+            <article className="sf-demo-card card-elderly">
+              <div className="sf-demo-top demo-elderly">
+                <span className="sf-demo-badge">{t.demo3Badge}</span>
+                <h3>{t.demo3Title}</h3>
+                <p>{t.demo3Desc}</p>
+              </div>
+              <div className="sf-demo-body">
+                <ul className="sf-demo-features">
+                  <li>
+                    <Check size={16} /> {t.demo3F1}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo3F2}
+                  </li>
+                  <li>
+                    <Check size={16} /> {t.demo3F3}
+                  </li>
+                </ul>
+                <div className="sf-demo-cta">
+                  <Link
+                    className="button-primary button-lg"
+                    to="/intake"
+                    search={{ form: "elderly-friendly-intake" }}
+                  >
+                    {t.demo3Cta} <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
+            </article>
           </div>
         </section>
 
