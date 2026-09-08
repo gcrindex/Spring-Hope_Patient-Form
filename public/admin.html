@@ -2279,16 +2279,14 @@
           <h2 style="font-size: 17px; margin: 0; color: var(--navy)" data-i18n="aiModalTitle">
             AI Form Builder
           </h2>
-          <div style="display: flex; align-items: center; gap: 8px">
-            <div class="admin-lang-picker-light">
-              <button type="button" class="lang-btn" data-lang="en">EN</button>
-              <button type="button" class="lang-btn" data-lang="id">ID</button>
-              <button type="button" class="lang-btn" data-lang="zh">中文</button>
-            </div>
-            <button class="modal-close" onclick="closeAiModal()" style="position: static">
-              &times;
-            </button>
-          </div>
+          <button
+            class="modal-close"
+            onclick="closeAiModal()"
+            style="position: static"
+            aria-label="Close"
+          >
+            &times;
+          </button>
         </div>
         <!-- Chat area -->
         <div
@@ -3260,7 +3258,7 @@
           choiceImageDesc: "Upload a photo of a paper form. AI reads and converts it.",
           aiModalTitle: "AI Form Builder",
           aiGreeting:
-            'Hello! I am the 9forms AI Assistant. What kind of form or survey would you like to create? (e.g. "Customer satisfaction survey", "Event registration", or "Health checkup form")',
+            'Hello! I am the 9forms.com AI Assistant. Tell me what kind of form you would like to create, for example: "Restaurant customer satisfaction survey", "Online workshop registration", "Employee evaluation questionnaire", or "Patient health assessment".',
           aiPlaceholder: "Describe your form or ask a question...",
           aiSend: "Send",
           aiListening: "Listening...",
@@ -3320,7 +3318,7 @@
             "Unggah foto formulir kertas. AI akan membaca dan mengubahnya jadi form digital.",
           aiModalTitle: "AI Form Builder Interaktif",
           aiGreeting:
-            'Halo! Saya asisten AI 9forms. Ceritakan formulir apa yang ingin Anda buat, misalnya: "Survei kepuasan pelanggan", "Pendaftaran workshop online", atau "Kuesioner evaluasi karyawan".',
+            'Halo! Saya asisten AI 9forms.com. Ceritakan formulir apa yang ingin Anda buat, misalnya: "Survei kepuasan pelanggan restoran", "Formulir pendaftaran workshop online", "Kuesioner evaluasi karyawan", atau "Asesmen kesehatan pasien".',
           aiPlaceholder: "Ketik kebutuhan form atau gunakan suara...",
           aiSend: "Kirim",
           aiListening: "Mendengarkan suara...",
@@ -3378,7 +3376,7 @@
           choiceImageDesc: "上传纸质表单照片，AI 将智能读取并转换为数字表单。",
           aiModalTitle: "AI 智能表单构建器",
           aiGreeting:
-            '您好！我是 9forms AI 助手。请告诉我您想制作什么类型的表单，例如："顾客满意度调查"、"活动在线报名表" 或 "员工培训评估表"。',
+            '您好！我是 9forms.com AI 助手。请告诉我您想制作什么类型的表单，例如："餐厅顾客满意度调查"、"在线工作坊报名表"、"员工评估问卷" 或 "患者健康评估"。',
           aiPlaceholder: "输入表单需求或使用语音...",
           aiSend: "发送",
           aiListening: "正在聆听语音...",
@@ -3435,6 +3433,13 @@
         const chatInput = $("#ai-chat-input");
         if (chatInput) {
           chatInput.placeholder = t("aiPlaceholder");
+        }
+
+        if (typeof aiMessages !== "undefined" && aiMessages.length === 0) {
+          const chatArea = $("#ai-chat-area");
+          if (chatArea) {
+            chatArea.innerHTML = getAiGreetingHtml();
+          }
         }
 
         const r = parseRoute();
@@ -4252,6 +4257,15 @@
       let aiRecognition = null; // SpeechRecognition instance
       let aiVoiceActive = false;
 
+      function getAiGreetingHtml() {
+        const greeting = t("aiGreeting");
+        return (
+          '<div class="ai-msg ai-msg-system"><div class="ai-msg-bubble">' +
+          escHtml(greeting) +
+          "</div></div>"
+        );
+      }
+
       const AI_API_BASE =
         window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
           ? ""
@@ -4262,21 +4276,27 @@
         aiGeneratedForm = null;
         // Reset UI
         const chatArea = $("#ai-chat-area");
-        chatArea.innerHTML =
-          '<div class="ai-msg ai-msg-system"><div class="ai-msg-bubble">Halo! Saya asisten AI 9forms.com. Ceritakan formulir apa yang ingin Anda buat, misalnya: <em>"Survei kepuasan pelanggan restoran"</em>, <em>"Formulir pendaftaran workshop online"</em>, <em>"Kuesioner evaluasi karyawan"</em>, atau <em>"Asesmen kesehatan pasien"</em>.</div></div>';
+        if (chatArea) {
+          chatArea.innerHTML = getAiGreetingHtml();
+        }
         $("#ai-preview-area").style.display = "none";
-        $("#ai-chat-input").value = "";
+        const input = $("#ai-chat-input");
+        if (input) {
+          input.value = "";
+          input.placeholder = t("aiPlaceholder");
+        }
         $("#ai-voice-indicator").style.display = "none";
         // Show the AI modal overlay (already in DOM)
         $("#ai-modal-overlay").classList.add("show");
         // Bind enter key
-        const input = $("#ai-chat-input");
-        input.onkeydown = (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendAiMessage();
-          }
-        };
+        if (input) {
+          input.onkeydown = (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendAiMessage();
+            }
+          };
+        }
       }
 
       function closeAiModal() {
@@ -4341,8 +4361,7 @@
           const lower = text.toLowerCase();
 
           if (/^(halo|hai|hi|hello|pagi|siang|sore|malam|tes|test|menu)\b/i.test(lower)) {
-            replyText =
-              'Halo! Saya asisten AI 9forms.com. Formulir atau survei apa yang ingin Anda buat hari ini? Anda bisa meminta: "Formulir survei kepuasan pelanggan", "Form pendaftaran webinar", "Evaluasi kinerja karyawan", atau "Kuesioner pasien klinik".';
+            replyText = t("aiGreeting");
           } else if (
             /kepuasan|feedback|pelanggan|customer|nps|csat|restoran|toko|layanan/i.test(lower)
           ) {
