@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -14,6 +15,14 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminEmbedPage() {
+  const [iframeSrc, setIframeSrc] = useState("/admin.html");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      setIframeSrc(`/admin.html${window.location.hash}`);
+    }
+  }, []);
+
   return (
     <div
       style={{
@@ -27,7 +36,7 @@ function AdminEmbedPage() {
       }}
     >
       <iframe
-        src="/admin.html"
+        src={iframeSrc}
         title="Spring Hope — Form Builder Admin"
         style={{
           width: "100%",

@@ -2244,6 +2244,48 @@
           ],
         };
 
+        const defaultElderlyFriendlyForm = {
+          id: "elderly-friendly-intake",
+          title: "Elderly Friendly Registration",
+          status: "published",
+          submissions: 5,
+          createdAt: d(10),
+          updatedAt: d(1),
+          questions: [
+            {
+              id: "q_ef_who",
+              text: "Who is this visit for?",
+              type: "choice",
+              options: [
+                { label: "Myself", score: 1 },
+                { label: "Family member / Parent", score: 2 },
+              ],
+            },
+            {
+              id: "q_ef_complaint",
+              text: "What hurts or bothers you most?",
+              type: "choice",
+              options: [
+                { label: "Knee or Leg Pain", score: 10 },
+                { label: "Back or Waist Pain", score: 10 },
+                { label: "Shoulder or Arm Pain", score: 8 },
+              ],
+            },
+            {
+              id: "q_ef_mobility",
+              text: "How do you walk or get around?",
+              type: "choice",
+              options: [
+                { label: "Independent (No help needed)", score: 0 },
+                { label: "Using Cane or Walker", score: 15 },
+                { label: "Wheelchair / Need assistance", score: 25 },
+              ],
+            },
+            { id: "q_ef_pain_level", text: "How severe is the pain right now?", type: "scale", max: 10 },
+            { id: "q_ef_name", text: "What is your name or nickname?", type: "text" },
+          ],
+        };
+
         const npSubs = [
           {
             id: "sub_np_1",
@@ -2376,6 +2418,7 @@
                 { id: "q8", text: "Have you had a previous knee injury?", type: "yesno" },
               ],
             },
+            defaultElderlyFriendlyForm,
             {
               id: "hip-function-score",
               title: "Hip Function Score",
@@ -2449,6 +2492,38 @@
                 },
                 { id: "q5", text: "Would you recommend this procedure to others?", type: "yesno" },
               ],
+            },
+          ];
+          const efSubs = [
+            {
+              id: "sub_ef_1",
+              formId: "elderly-friendly-intake",
+              patientName: "Opa Sutrisno",
+              submittedAt: d(1) + "T10:15:00Z",
+              answers: {
+                q_ef_who: 1,
+                q_ef_complaint: 10,
+                q_ef_mobility: 15,
+                q_ef_pain_level: 7,
+                q_ef_name: "Opa Sutrisno",
+              },
+              score: 52,
+              risk: "mod",
+            },
+            {
+              id: "sub_ef_2",
+              formId: "elderly-friendly-intake",
+              patientName: "Oma Lie",
+              submittedAt: d(2) + "T14:30:00Z",
+              answers: {
+                q_ef_who: 1,
+                q_ef_complaint: 10,
+                q_ef_mobility: 0,
+                q_ef_pain_level: 4,
+                q_ef_name: "Oma Lie",
+              },
+              score: 24,
+              risk: "low",
             },
           ];
           const kneeSubs = [
@@ -2555,21 +2630,38 @@
             },
           ];
           LS.set("pf_forms", forms);
-          LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...fuSubs]);
-        } else if (!storedForms.some((f) => f.id === "new-patient-intake")) {
-          storedForms.unshift(defaultNewPatientForm);
-          LS.set("pf_forms", storedForms);
-          LS.set("pf_submissions", [...npSubs, ...storedSubs]);
+          LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...efSubs, ...fuSubs]);
+        } else {
+          let updated = false;
+          if (!storedForms.some((f) => f.id === "new-patient-intake")) {
+            storedForms.unshift(defaultNewPatientForm);
+            updated = true;
+          }
+          if (!storedForms.some((f) => f.id === "elderly-friendly-intake")) {
+            storedForms.splice(2, 0, defaultElderlyFriendlyForm);
+            updated = true;
+          }
+          if (updated) {
+            LS.set("pf_forms", storedForms);
+          }
         }
       }
 
       // ===================== SESSION / AUTH (FIX 3) =====================
       function isLoggedIn() {
-        return sessionStorage.getItem("pf_loggedin") === "1";
+        return (
+          localStorage.getItem("pf_loggedin") === "1" ||
+          sessionStorage.getItem("pf_loggedin") === "1"
+        );
       }
       function setLoggedIn(v) {
-        if (v) sessionStorage.setItem("pf_loggedin", "1");
-        else sessionStorage.removeItem("pf_loggedin");
+        if (v) {
+          localStorage.setItem("pf_loggedin", "1");
+          sessionStorage.setItem("pf_loggedin", "1");
+        } else {
+          localStorage.removeItem("pf_loggedin");
+          sessionStorage.removeItem("pf_loggedin");
+        }
       }
 
       // ===================== ROUTER (FIX 3: bad-hash redirect) =====================
@@ -2577,20 +2669,34 @@
         location.hash = hash;
       }
       function getRoute() {
-        return location.hash || "#/login";
+        if (location.hash) return location.hash;
+        return isLoggedIn() ? "#/dashboard" : "#/login";
       }
       function parseRoute() {
         const h = getRoute();
-        if (h.startsWith("#/builder/")) return { screen: "builder", id: h.split("/")[2] };
+        if (h.startsWith("#/builder/")) {
+          if (!isLoggedIn()) return { screen: "login", redirect: true };
+          return { screen: "builder", id: h.split("/")[2] };
+        }
         if (h === "#/submissions" || h.startsWith("#/submissions")) {
+          if (!isLoggedIn()) return { screen: "login", redirect: true };
           const parts = h.split("/");
           const allForms = forms();
           const formId = parts[2] || allForms[0]?.id || "new-patient-intake";
           return { screen: "submissions", formId };
         }
-        if (h === "#/dashboard") return { screen: "dashboard" };
-        if (h === "#/login") return { screen: "login" };
-        if (h === "#/new") return { screen: "choice" };
+        if (h === "#/dashboard") {
+          if (!isLoggedIn()) return { screen: "login", redirect: true };
+          return { screen: "dashboard" };
+        }
+        if (h === "#/new") {
+          if (!isLoggedIn()) return { screen: "login", redirect: true };
+          return { screen: "choice" };
+        }
+        if (h === "#/login") {
+          if (isLoggedIn()) return { screen: "dashboard", redirect: true };
+          return { screen: "login" };
+        }
         // Bad hash: redirect based on auth state
         return { screen: isLoggedIn() ? "dashboard" : "login", redirect: true };
       }
