@@ -6,14 +6,14 @@ export function BrandMark({
   inverse?: boolean | undefined;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
       <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
         <img
           src="/logo-mark.webp"
           alt="9forms logo"
           width={28}
           height={34}
-          className="h-7 w-auto object-contain drop-shadow-sm"
+          className="h-6 sm:h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
           decoding="async"
           fetchPriority="high"
@@ -22,7 +22,7 @@ export function BrandMark({
       {!compact && (
         <div className="min-w-0 leading-none">
           <span
-            className={`font-display text-[26px] font-black tracking-[-0.04em] select-none ${
+            className={`font-display text-[21px] sm:text-[25px] font-black tracking-[-0.04em] select-none ${
               inverse ? "text-white" : "text-ink"
             }`}
           >
@@ -42,14 +42,14 @@ export function PlatformMark({
   inverse?: boolean | undefined;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
       <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
         <img
           src="/logo-mark.webp"
           alt="9forms logo"
           width={28}
           height={34}
-          className="h-7 w-auto object-contain drop-shadow-sm"
+          className="h-6 sm:h-7 w-auto object-contain drop-shadow-sm"
           loading="eager"
           decoding="async"
           fetchPriority="high"
@@ -58,7 +58,7 @@ export function PlatformMark({
       {!compact && (
         <div className="min-w-0 leading-none">
           <span
-            className={`font-display text-[26px] font-black tracking-[-0.04em] select-none ${
+            className={`font-display text-[21px] sm:text-[25px] font-black tracking-[-0.04em] select-none ${
               inverse ? "text-white" : "text-ink"
             }`}
           >

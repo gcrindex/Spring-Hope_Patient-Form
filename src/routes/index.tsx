@@ -156,14 +156,8 @@ function BuilderLandingPage() {
                       height={26}
                       loading="lazy"
                       decoding="async"
-                      style={{
-                        width: "auto",
-                        height: 22,
-                        display: "inline-block",
-                        verticalAlign: "middle",
-                        marginRight: 6,
-                      }}
-                    />{" "}
+                      className="h-[22px] w-auto inline-block object-contain align-middle rounded-md bg-white p-0.5 shadow-xs mr-1.5"
+                    />
                     9forms
                   </span>
                   <div className="sf-mock-voice-pill">

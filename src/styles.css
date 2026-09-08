@@ -123,19 +123,21 @@ button:disabled {
 
 /* Shared brand */
 .brand-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
   background: #ffffff;
   border: 1px solid rgba(219, 234, 254, 0.85);
   box-shadow:
-    0 8px 20px rgba(17, 43, 74, 0.07),
+    0 4px 14px rgba(17, 43, 74, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
-  padding: 4px;
+  padding: 3px;
+  flex-shrink: 0;
 }
 .brand-mark-inverse {
   background: #ffffff;
@@ -3787,23 +3789,25 @@ button:disabled {
 }
 @media (max-width: 640px) {
   .marketing-nav {
-    height: 64px;
-    padding: 0 15px;
+    height: 60px;
+    padding: 0 14px;
+    gap: 10px;
   }
   .marketing-header .brand-mark {
     width: 34px;
     height: 34px;
-  }
-  .marketing-header .font-display + div {
-    display: none;
+    border-radius: 10px;
+    padding: 2px;
   }
   .nav-admin-link {
     display: none;
   }
   .button-nav {
-    min-height: 38px;
-    padding: 0 12px;
+    min-height: 34px;
+    padding: 0 10px;
     font-size: 11px;
+    gap: 4px;
+    border-radius: 9px;
   }
   .hero-section {
     padding: 113px 15px 0;
