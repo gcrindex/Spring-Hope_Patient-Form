@@ -1061,42 +1061,124 @@
         flex-direction: column;
       }
       .sub-topbar {
-        height: 56px;
+        height: 52px;
         background: var(--white);
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
-        padding: 0 20px;
+        padding: 0 16px;
         gap: 12px;
         flex-shrink: 0;
       }
       .sub-topbar .back-btn {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text2);
         transition: all var(--transition);
+        flex-shrink: 0;
       }
       .sub-topbar .back-btn:hover {
         background: var(--bg);
       }
+      .sub-topbar h2 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .sub-content {
         flex: 1;
         overflow-y: auto;
-        padding: 32px 40px;
+        -webkit-overflow-scrolling: touch;
+        padding: 24px 32px;
       }
       .sub-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 24px;
+        gap: 14px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .sub-header-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
       }
       .sub-header h1 {
-        font-size: 22px;
+        font-size: 20px;
+        font-weight: 800;
         color: var(--navy);
+        margin: 0;
+      }
+      .sub-filter-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 12px;
+      }
+      .sub-filter-box label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .sub-filter-box select {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--navy);
+        cursor: pointer;
+        max-width: 220px;
+      }
+
+      @media (max-width: 640px) {
+        .sub-content {
+          padding: 14px 14px 140px 14px;
+        }
+        .sub-header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .sub-header-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+        }
+        .sub-header h1 {
+          font-size: 18px;
+        }
+        .sub-filter-box {
+          width: 100%;
+          box-sizing: border-box;
+          justify-content: space-between;
+          padding: 8px 12px;
+        }
+        .sub-filter-box select {
+          flex: 1;
+          max-width: none;
+          font-size: 13px;
+        }
+        #export-csv-btn {
+          font-size: 12px;
+          padding: 6px 12px;
+        }
       }
 
       /* Modal overlay */
@@ -1815,36 +1897,18 @@
     <div id="submissions-screen" class="screen">
       <div class="sub-topbar">
         <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
-        <h2 style="font-size: 16px; color: var(--navy)" id="sub-topbar-title">Submissions</h2>
+        <h2 id="sub-topbar-title">Submissions</h2>
       </div>
       <div class="sub-content">
-        <div
-          class="sub-header"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-          "
-        >
-          <div style="display: flex; align-items: center; gap: 12px">
+        <div class="sub-header">
+          <div class="sub-header-top">
             <h1 id="sub-title">Submissions</h1>
-            <select
-              id="sub-form-filter"
-              style="
-                padding: 6px 12px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 600;
-                color: var(--navy);
-                border: 1px solid var(--border);
-                background: #fff;
-              "
-            ></select>
+            <button class="btn btn-ghost btn-sm" id="export-csv-btn">Export CSV</button>
           </div>
-          <button class="btn btn-ghost btn-sm" id="export-csv-btn">Export CSV</button>
+          <div class="sub-filter-box">
+            <label for="sub-form-filter">Form:</label>
+            <select id="sub-form-filter"></select>
+          </div>
         </div>
         <div class="stats-row" id="sub-stats"></div>
         <div class="forms-table-wrap">
@@ -3450,7 +3514,7 @@
         formId = f.id;
         const subs = submissions().filter((x) => x.formId === formId);
         $("#sub-topbar-title").textContent = f.title + " — Submissions";
-        $("#sub-title").textContent = f.title + " Submissions";
+        $("#sub-title").textContent = "Submissions";
 
         // Populate dropdown filter
         const filter = $("#sub-form-filter");

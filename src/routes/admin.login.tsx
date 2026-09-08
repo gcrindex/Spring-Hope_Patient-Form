@@ -1,17 +1,16 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/login")({
-  head: () => ({ meta: [{ title: "Staff Login — 9forms.com" }] }),
-  component: AdminLoginRedirect,
+  beforeLoad: () => {
+    throw redirect({
+      href: "/admin.html#/login",
+    });
+  },
+  head: () => ({
+    meta: [
+      { httpEquiv: "refresh", content: "0; url=/admin.html#/login" },
+      { title: "Staff Login — 9forms.com" },
+    ],
+  }),
+  component: () => null,
 });
-
-function AdminLoginRedirect() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate({ to: "/admin" });
-  }, [navigate]);
-
-  return null;
-}

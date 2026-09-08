@@ -171,7 +171,7 @@ function AICard({ onBack }: { onBack: () => void }) {
   const onVoiceFinal = useCallback((t: string) => {
     setInput((c) => [c, t].filter(Boolean).join(c ? " " : ""));
   }, []);
-  const voice = useSpeechRecognition({ locale: "en-SG", onFinal: onVoiceFinal });
+  const voice = useSpeechRecognition({ locale: "en-US", onFinal: onVoiceFinal });
 
   const send = async (override?: string) => {
     const content = (override ?? input).trim();

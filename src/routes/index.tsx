@@ -91,7 +91,7 @@ function BuilderLandingPage() {
             <a href="#industries">{t.navIndustries}</a>
             <a href="#demo">{t.navDemo}</a>
             <a href="#features">{t.navFeatures}</a>
-            <Link to="/admin">{t.navAdmin}</Link>
+            <a href="/admin.html">{t.navAdmin}</a>
           </nav>
           <div className="flex items-center gap-3">
             <LanguageSwitcher value={language} onChange={handleLang} compact />
@@ -120,9 +120,9 @@ function BuilderLandingPage() {
                 <a className="button-primary button-lg" href="#demo">
                   {t.heroCtaPrimary} <ArrowRight size={18} />
                 </a>
-                <Link className="button-secondary button-lg" to="/admin">
+                <a className="button-secondary button-lg" href="/admin.html">
                   {t.heroCtaSecondary}
-                </Link>
+                </a>
               </div>
               <div className="hero-trust-row">
                 <div>
@@ -448,9 +448,9 @@ function BuilderLandingPage() {
                   <Check size={15} /> {t.adminB4}
                 </li>
               </ul>
-              <Link className="button-primary button-lg" to="/admin">
+              <a className="button-primary button-lg" href="/admin.html">
                 {t.adminCta} <ArrowRight size={18} />
-              </Link>
+              </a>
             </div>
 
             <div className="admin-browser-mock" aria-hidden="true">

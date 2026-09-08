@@ -61,7 +61,7 @@ function AIAssistant() {
   const onVoiceFinal = useCallback((transcript: string) => {
     setInput((current) => [current, transcript].filter(Boolean).join(current ? " " : ""));
   }, []);
-  const voice = useSpeechRecognition({ locale: "en-SG", onFinal: onVoiceFinal });
+  const voice = useSpeechRecognition({ locale: "en-US", onFinal: onVoiceFinal });
 
   const send = async (override?: string) => {
     const content = (override ?? input).trim();

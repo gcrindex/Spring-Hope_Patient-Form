@@ -53,6 +53,7 @@ export function useSpeechRecognition({
   const sessionRef = useRef(0);
   const onFinalRef = useRef(onFinal);
   const localeRef = useRef(locale);
+  const hasRequestedMediaRef = useRef(false);
 
   onFinalRef.current = onFinal;
   localeRef.current = locale;
@@ -64,6 +65,10 @@ export function useSpeechRecognition({
   const speechWindow = typeof window !== "undefined" ? (window as SpeechWindow) : null;
   const Recognition = speechWindow?.SpeechRecognition ?? speechWindow?.webkitSpeechRecognition;
   const supported = Boolean(Recognition);
+
+  const isMobile =
+    typeof navigator !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   const clearTimers = useCallback(() => {
     if (completionTimerRef.current !== null && typeof window !== "undefined") {
@@ -116,9 +121,10 @@ export function useSpeechRecognition({
 
       const recognition = new Recognition();
       recognition.lang = localeRef.current;
-      recognition.continuous = true;
+      // On mobile browsers (Safari iOS and Chrome Android), continuous must be false to avoid immediate abort
+      recognition.continuous = !isMobile;
       recognition.interimResults = true;
-      recognition.maxAlternatives = 3;
+      recognition.maxAlternatives = 1;
       recognitionRef.current = recognition;
 
       recognition.onresult = (event) => {
@@ -177,7 +183,7 @@ export function useSpeechRecognition({
           setState("error");
           setError("permission-denied");
         } else if (reason === "no-speech") {
-          // Normal pause, keep listening state active
+          // Normal pause on mobile, keep listening state active
         } else if (reason === "aborted") {
           // Expected on navigation
         } else {
@@ -197,11 +203,14 @@ export function useSpeechRecognition({
           if (restartTimerRef.current !== null && typeof window !== "undefined") {
             window.clearTimeout(restartTimerRef.current);
           }
-          restartTimerRef.current = window.setTimeout(() => {
-            if (shouldListenRef.current && currentSession === sessionRef.current) {
-              launch(currentSession);
-            }
-          }, 100);
+          restartTimerRef.current = window.setTimeout(
+            () => {
+              if (shouldListenRef.current && currentSession === sessionRef.current) {
+                launch(currentSession);
+              }
+            },
+            isMobile ? 250 : 100,
+          );
         } else {
           setState((current) => (current === "listening" ? "idle" : current));
         }
@@ -213,15 +222,18 @@ export function useSpeechRecognition({
         setError(null);
       } catch {
         if (shouldListenRef.current && keepAlive) {
-          restartTimerRef.current = window.setTimeout(() => {
-            if (shouldListenRef.current && currentSession === sessionRef.current) {
-              launch(currentSession);
-            }
-          }, 200);
+          restartTimerRef.current = window.setTimeout(
+            () => {
+              if (shouldListenRef.current && currentSession === sessionRef.current) {
+                launch(currentSession);
+              }
+            },
+            isMobile ? 300 : 200,
+          );
         }
       }
     },
-    [Recognition, keepAlive],
+    [Recognition, isMobile, keepAlive],
   );
 
   const start = useCallback(() => {
@@ -229,6 +241,24 @@ export function useSpeechRecognition({
       setState("error");
       setError("not-supported");
       return;
+    }
+
+    // Prompt user microphone permission on mobile if supported
+    if (
+      !hasRequestedMediaRef.current &&
+      typeof navigator !== "undefined" &&
+      navigator.mediaDevices?.getUserMedia
+    ) {
+      hasRequestedMediaRef.current = true;
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          // Release track immediately, recognition will handle capture
+          stream.getTracks().forEach((track) => track.stop());
+        })
+        .catch(() => {
+          // Ignore getUserMedia error, let SpeechRecognition handle permission
+        });
     }
 
     shouldListenRef.current = true;

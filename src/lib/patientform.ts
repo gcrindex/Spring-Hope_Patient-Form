@@ -46,7 +46,7 @@ export type Submission = {
 };
 
 export const languages: Array<{ value: Language; short: string; label: string; locale: string }> = [
-  { value: "en", short: "EN", label: "English", locale: "en-SG" },
+  { value: "en", short: "EN", label: "English", locale: "en-US" },
   { value: "id", short: "ID", label: "Bahasa Indonesia", locale: "id-ID" },
   { value: "zh", short: "中文", label: "简体中文", locale: "zh-CN" },
 ];
