@@ -2975,7 +2975,11 @@
 
       // ===================== ROUTER =====================
       function navigate(hash) {
-        location.hash = hash;
+        if (location.hash === hash) {
+          route();
+        } else {
+          location.hash = hash;
+        }
       }
       function getRoute() {
         const h = location.hash;
@@ -3012,7 +3016,15 @@
       function route() {
         const r = parseRoute();
         if (r.redirect) {
-          navigate(isLoggedIn() ? "#/dashboard" : "#/login");
+          const target = isLoggedIn() ? "#/dashboard" : "#/login";
+          if (location.hash === target) {
+            $$(".screen").forEach((s) => s.classList.remove("active"));
+            const el = $("#" + (isLoggedIn() ? "dashboard" : "login") + "-screen");
+            if (el) el.classList.add("active");
+            if (isLoggedIn()) renderDashboard();
+            return;
+          }
+          navigate(target);
           return;
         }
         $$(".screen").forEach((s) => s.classList.remove("active"));
@@ -3083,16 +3095,18 @@
         const btn = $("#login-btn");
         btn.innerHTML = '<div class="spinner"></div> Signing in...';
         btn.disabled = true;
+        setLoggedIn(true);
         setTimeout(() => {
-          setLoggedIn(true);
-          navigate("#/dashboard");
           btn.innerHTML = "Sign In";
           btn.disabled = false;
-        }, 800);
+          navigate("#/dashboard");
+          route();
+        }, 150);
       });
       $("#logout-btn").addEventListener("click", () => {
         setLoggedIn(false);
         navigate("#/login");
+        route();
       });
 
       // ===================== DASHBOARD =====================
