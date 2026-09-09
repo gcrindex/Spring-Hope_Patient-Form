@@ -47,6 +47,16 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Expose Cloudflare bindings (D1, KV, R2) to global scope for API route handlers
+      if (env && typeof env === "object") {
+        const g = globalThis as unknown as Record<string, unknown>;
+        g["env"] = env;
+        const envRecord = env as Record<string, unknown>;
+        if (envRecord["springhope_db"]) {
+          g["springhope_db"] = envRecord["springhope_db"];
+        }
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

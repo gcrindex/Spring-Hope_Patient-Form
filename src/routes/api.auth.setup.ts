@@ -1,10 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  createAdmin,
-  createSession,
-  createSessionCookieHeader,
-  hashPassword,
-} from "../lib/auth";
+import { createAdmin, createSession, createSessionCookieHeader, hashPassword } from "../lib/auth";
 import { dbExecute, dbQueryOne } from "../lib/db";
 
 export const Route = createFileRoute("/api/auth/setup")({

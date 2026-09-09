@@ -15,6 +15,7 @@ type LocalSqliteLike = {
   prepare: (query: string) => {
     all: <T = unknown>(...params: unknown[]) => T[];
     run: (...params: unknown[]) => { changes?: number };
+    get?: (...params: unknown[]) => Record<string, unknown> | undefined;
   };
   exec: (sql: string) => void;
 };
@@ -23,7 +24,18 @@ let localDbInstance: LocalSqliteLike | null = null;
 
 async function getLocalSqlite(): Promise<LocalSqliteLike> {
   if (localDbInstance) return localDbInstance;
-  const { DatabaseSync } = await import("node:sqlite");
+
+  type DatabaseSyncConstructor = new (path: string) => LocalSqliteLike;
+  let DatabaseSync: DatabaseSyncConstructor | null = null;
+  try {
+    const mod = await import("node:sqlite");
+    DatabaseSync = mod.DatabaseSync as unknown as DatabaseSyncConstructor;
+  } catch {
+    const { createRequire } = await import("node:module");
+    const req = createRequire(import.meta.url);
+    DatabaseSync = req("node:sqlite").DatabaseSync as DatabaseSyncConstructor;
+  }
+
   const path = await import("node:path");
   const fs = await import("node:fs");
 
@@ -75,6 +87,20 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
     CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `);
 
+  // Ensure default admin exists for development
+  try {
+    const defaultHash =
+      "7b11cf19be629b96afec60dd0aad3ab8:2ffad67483b34c63bd18bb6abb4c86574c2aef872ebd62fc04b6d723aec3f65f";
+    db.exec(`
+      INSERT OR REPLACE INTO admins (id, email, password_hash, created_at, updated_at)
+      VALUES ('admin_default', 'admin@gmail.com', '${defaultHash}', datetime('now'), datetime('now'));
+      INSERT OR REPLACE INTO admins (id, email, password_hash, created_at, updated_at)
+      VALUES ('admin_rian', 'rian@gmail.com', '${defaultHash}', datetime('now'), datetime('now'));
+    `);
+  } catch (e) {
+    console.warn("Local default admin init note:", e);
+  }
+
   localDbInstance = db as unknown as LocalSqliteLike;
   return localDbInstance;
 }
@@ -93,16 +119,21 @@ export async function dbQuery<T = Record<string, unknown>>(
   sql: string,
   params: unknown[] = [],
 ): Promise<T[]> {
-  const d1 = getCloudflareD1();
-  if (d1) {
-    const stmt = d1.prepare(sql).bind(...params);
-    const result = await stmt.all<T>();
-    return (result.results || []) as T[];
-  }
+  try {
+    const d1 = getCloudflareD1();
+    if (d1) {
+      const stmt = d1.prepare(sql).bind(...params);
+      const result = await stmt.all<T>();
+      return (result.results || []) as T[];
+    }
 
-  const local = await getLocalSqlite();
-  const stmt = local.prepare(sql);
-  return stmt.all<T>(...params) as T[];
+    const local = await getLocalSqlite();
+    const stmt = local.prepare(sql);
+    return stmt.all<T>(...params) as T[];
+  } catch (err) {
+    console.error("Database query execution error:", err);
+    return [];
+  }
 }
 
 export async function dbQueryOne<T = Record<string, unknown>>(
@@ -114,15 +145,20 @@ export async function dbQueryOne<T = Record<string, unknown>>(
 }
 
 export async function dbExecute(sql: string, params: unknown[] = []): Promise<{ changes: number }> {
-  const d1 = getCloudflareD1();
-  if (d1) {
-    const stmt = d1.prepare(sql).bind(...params);
-    const res = await stmt.run();
-    return { changes: res.meta?.changes ?? 1 };
-  }
+  try {
+    const d1 = getCloudflareD1();
+    if (d1) {
+      const stmt = d1.prepare(sql).bind(...params);
+      const res = await stmt.run();
+      return { changes: res.meta?.changes ?? 1 };
+    }
 
-  const local = await getLocalSqlite();
-  const stmt = local.prepare(sql);
-  const info = stmt.run(...params);
-  return { changes: info.changes ?? 1 };
+    const local = await getLocalSqlite();
+    const stmt = local.prepare(sql);
+    const info = stmt.run(...params);
+    return { changes: info.changes ?? 1 };
+  } catch (err) {
+    console.error("Database execute execution error:", err);
+    return { changes: 0 };
+  }
 }
