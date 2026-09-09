@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import {
   elderlyFriendlyForm,
+  fetchFormByIdAsync,
   getActiveFormId,
   getFormById,
   getPatientName,
@@ -48,9 +49,12 @@ function IntakeStart() {
   useEffect(() => {
     const fId = formParam || getActiveFormId();
     setActiveFormId(fId);
-    setActiveForm(getFormById(fId));
     setLanguage(getStoredLanguage());
     setName(getPatientName());
+
+    fetchFormByIdAsync(fId).then((resolved) => {
+      setActiveForm(resolved);
+    });
   }, [formParam]);
 
   const setLang = (next: Language) => {

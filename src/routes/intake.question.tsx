@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Check, Mic, MicOff, Quote, Volume2 } from "lucide-react";
+import { ArrowRight, Check, Mic, MicOff, Quote, ShieldCheck, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import {
   copy,
+  fetchFormByIdAsync,
   getActiveFormId,
   getFormById,
   getStoredAnswers,
@@ -46,10 +47,10 @@ function QuestionPage() {
   const { form: formParam } = Route.useSearch();
   const navigate = useNavigate();
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
-  const activeForm = useMemo(() => {
+  const [activeForm, setActiveForm] = useState(() => {
     const fId = formParam || getActiveFormId();
     return getFormById(fId);
-  }, [formParam]);
+  });
 
   const [index, setIndex] = useState(() => {
     const stored = getStoredQuestionIndex();
@@ -61,19 +62,27 @@ function QuestionPage() {
   const [voiceIssue, setVoiceIssue] = useState("");
   const [voiceAuto, setVoiceAuto] = useState(() => isVoiceAutoMode());
   const [justSelected, setJustSelected] = useState<string | number | null>(null);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const voiceAutoStartTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const question = activeForm.questions[index] ?? activeForm.questions[0];
   const t = copy[language];
+  const isLastQuestion = index >= activeForm.questions.length - 1;
 
   useEffect(() => {
+    const fId = formParam || getActiveFormId();
     if (formParam) setActiveFormId(formParam);
     setLanguage(getStoredLanguage());
-    setIndex((prev) => Math.min(prev, activeForm.questions.length - 1));
     setAnswers(getStoredAnswers());
-  }, [formParam, activeForm]);
+
+    fetchFormByIdAsync(fId).then((resolved) => {
+      setActiveForm(resolved);
+      setIndex((prev) => Math.min(prev, Math.max(0, resolved.questions.length - 1)));
+    });
+  }, [formParam]);
 
   const answer = question ? answers[question.id] : undefined;
   const isAnswered = question
@@ -87,7 +96,9 @@ function QuestionPage() {
     autoAdvanceTimerRef.current = setTimeout(() => {
       setJustSelected(null);
       if (index >= activeForm.questions.length - 1) {
-        navigate({ to: "/intake/complete", search: { form: activeForm.id } });
+        if (privacyConsent) {
+          navigate({ to: "/intake/complete", search: { form: activeForm.id } });
+        }
       } else {
         const next = index + 1;
         setIndex(next);
@@ -96,7 +107,7 @@ function QuestionPage() {
         setVoiceIssue("");
       }
     }, 650);
-  }, [index, activeForm.questions.length, navigate, activeForm.id]);
+  }, [index, activeForm.questions.length, navigate, activeForm.id, privacyConsent]);
 
   const updateAnswer = useCallback(
     (value: string | number, autoAdvance = true) => {
@@ -112,11 +123,13 @@ function QuestionPage() {
         return next;
       });
 
-      if (
-        typeof value === "string" &&
-        (question.id.includes("name") || question.type === "text") &&
-        value.trim()
-      ) {
+      const isNameQuestion =
+        question.id.toLowerCase().includes("name") ||
+        question.id === "q_np_name" ||
+        question.id === "q_ef_name" ||
+        question.id === "patient_name";
+
+      if (typeof value === "string" && isNameQuestion && value.trim()) {
         setPatientName(value.trim());
       }
 
@@ -136,7 +149,12 @@ function QuestionPage() {
         const cleaned = transcript.trim();
         updateAnswer(cleaned, false);
         setVoiceMappedLabel(cleaned);
-        if (cleaned) {
+        const isNameQuestion =
+          question.id.toLowerCase().includes("name") ||
+          question.id === "q_np_name" ||
+          question.id === "q_ef_name" ||
+          question.id === "patient_name";
+        if (cleaned && isNameQuestion) {
           setPatientName(cleaned);
         }
         return;
@@ -206,6 +224,17 @@ function QuestionPage() {
   }, [index, voiceAuto]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleVoiceMode = () => {
+    if (!voice.supported) {
+      setVoiceIssue(
+        language === "id"
+          ? "Fitur input suara tidak didukung di browser ini. Silakan gunakan Google Chrome atau Microsoft Edge."
+          : language === "zh"
+            ? "当前浏览器不支持语音输入，请使用 Chrome 或 Edge 浏览器。"
+            : "Voice input is not supported on this browser. Please use Chrome or Edge.",
+      );
+      return;
+    }
+
     const nextMode = !voiceAuto;
     setVoiceAuto(nextMode);
     setVoiceAutoMode(nextMode);
@@ -271,23 +300,30 @@ function QuestionPage() {
           <div />
           <button
             type="button"
-            className={`sleek-voice-toggle ${voiceAuto ? "active" : ""}`}
+            className={`sleek-voice-toggle ${voiceAuto && voice.supported ? "active" : ""} ${!voice.supported ? "opacity-60 cursor-not-allowed" : ""}`}
             onClick={toggleVoiceMode}
+            disabled={!voice.supported}
             title={
-              voiceAuto
+              !voice.supported
                 ? language === "id"
-                  ? "Mode Suara Aktif"
+                  ? "Fitur suara tidak didukung di browser ini (Gunakan Chrome/Edge)"
                   : language === "zh"
-                    ? "语音模式已开启"
-                    : "Voice Mode Active"
-                : language === "id"
-                  ? "Aktifkan Mode Suara"
-                  : language === "zh"
-                    ? "开启语音模式"
-                    : "Enable Voice Mode"
+                    ? "当前浏览器不支持语音功能（请使用Chrome/Edge）"
+                    : "Voice input is not supported in this browser (Use Chrome/Edge)"
+                : voiceAuto
+                  ? language === "id"
+                    ? "Mode Suara Aktif"
+                    : language === "zh"
+                      ? "语音模式已开启"
+                      : "Voice Mode Active"
+                  : language === "id"
+                    ? "Aktifkan Mode Suara"
+                    : language === "zh"
+                      ? "开启语音模式"
+                      : "Enable Voice Mode"
             }
           >
-            {voiceAuto ? (
+            {voiceAuto && voice.supported ? (
               <>
                 <span className="sleek-live-dot" />
                 <span>
@@ -302,7 +338,17 @@ function QuestionPage() {
               <>
                 <MicOff size={16} strokeWidth={2.3} />
                 <span>
-                  {language === "id" ? "Pakai Suara" : language === "zh" ? "使用语音" : "Use Voice"}
+                  {!voice.supported
+                    ? language === "id"
+                      ? "Suara Tidak Didukung"
+                      : language === "zh"
+                        ? "不支持语音"
+                        : "Voice Unsupported"
+                    : language === "id"
+                      ? "Pakai Suara"
+                      : language === "zh"
+                        ? "使用语音"
+                        : "Use Voice"}
                 </span>
               </>
             )}
@@ -344,6 +390,7 @@ function QuestionPage() {
           value={answer}
           justSelected={justSelected}
           onSelect={(val, autoAdvance) => updateAnswer(val, autoAdvance)}
+          onSubmit={goNextManual}
         />
 
         {voiceIssue && (
@@ -353,17 +400,55 @@ function QuestionPage() {
           </div>
         )}
 
-        {/* Only show manual advance button for free-text inputs */}
-        {question.type === "text" && (
-          <div className="sleek-text-action-wrap">
+        {/* Consent & Medical Data Privacy Box on Last Question */}
+        {isLastQuestion && (
+          <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <label className="flex items-start gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={privacyConsent}
+                onChange={(e) => setPrivacyConsent(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
+              />
+              <span className="text-xs text-slate-700 leading-relaxed">
+                {language === "id"
+                  ? "Saya menyetujui pengumpulan dan pemrosesan data kesehatan ini untuk keperluan triase klinis & pendaftaran."
+                  : language === "zh"
+                    ? "我同意诊所收集并处理上述健康信息，用于就诊分流与登记。"
+                    : "I agree to the collection and processing of this health information for clinical triage and registration."}
+              </span>
+            </label>
+
+            <div className="mt-2 text-right">
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-xs text-blue-600 hover:underline font-medium inline-flex items-center gap-1"
+              >
+                <ShieldCheck size={13} />
+                <span>
+                  {language === "id"
+                    ? "Lihat Kebijakan Privasi & Retensi Medis →"
+                    : language === "zh"
+                      ? "查看医疗数据隐私与保存政策 →"
+                      : "View Medical Privacy & Retention Policy →"}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Action Button: Required on Last Question for Consent Confirmation, or for Text Questions */}
+        {(question.type === "text" || isLastQuestion) && (
+          <div className="sleek-text-action-wrap mt-4">
             <button
               type="button"
               className="sleek-primary-btn"
-              disabled={!isAnswered && !question.optional}
+              disabled={(!isAnswered && !question.optional) || (isLastQuestion && !privacyConsent)}
               onClick={goNextManual}
             >
               <span>
-                {index === activeForm.questions.length - 1
+                {isLastQuestion
                   ? language === "id"
                     ? "Selesai & Kirim"
                     : language === "zh"
@@ -379,6 +464,100 @@ function QuestionPage() {
             </button>
           </div>
         )}
+
+        {/* Privacy Policy & Retention Modal Dialog */}
+        {showPrivacyModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl overflow-y-auto max-h-[85vh] text-left">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                  <ShieldCheck size={20} className="text-emerald-600 flex-shrink-0" />
+                  <span>
+                    {language === "id"
+                      ? "Kebijakan Privasi & Retensi Data Medis"
+                      : language === "zh"
+                        ? "医疗数据隐私与留存政策"
+                        : "Medical Data Privacy & Retention Policy"}
+                  </span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="text-slate-400 hover:text-slate-600 text-xl font-bold p-1 leading-none"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="text-xs text-slate-600 space-y-3 leading-relaxed">
+                <div>
+                  <strong className="text-slate-800 block mb-1">
+                    {language === "id"
+                      ? "1. Enkripsi & Keamanan Data (Encryption at Rest)"
+                      : language === "zh"
+                        ? "1. 数据加密与安全存储"
+                        : "1. Data Encryption & Security"}
+                  </strong>
+                  <p>
+                    {language === "id"
+                      ? "Semua data klinis dan jawaban yang Anda kirimkan dienkripsi dengan standar AES-256-GCM saat disimpan di database server kami."
+                      : language === "zh"
+                        ? "您提交的所有临床信息均采用行业标准 AES-256-GCM 进行端到端加密存储。"
+                        : "All clinical answers you submit are encrypted at rest using AES-256-GCM industry standards."}
+                  </p>
+                </div>
+
+                <div>
+                  <strong className="text-slate-800 block mb-1">
+                    {language === "id"
+                      ? "2. Hak Akses Terbatas (Authorized Medical Access)"
+                      : language === "zh"
+                        ? "2. 严格的医护访问权限"
+                        : "2. Authorized Access Only"}
+                  </strong>
+                  <p>
+                    {language === "id"
+                      ? "Hanya staf medis dan dokter yang berwenang di klinik yang dapat membaca rekam triase Anda melalui portal terotentikasi."
+                      : language === "zh"
+                        ? "仅限本诊所持证医护人员及授权管理员可查阅您的预检分诊记录。"
+                        : "Only authorized medical staff and physicians at the clinic can access your triage record via secure authentication."}
+                  </p>
+                </div>
+
+                <div>
+                  <strong className="text-slate-800 block mb-1">
+                    {language === "id"
+                      ? "3. Retensi & Privasi Perangkat Bersama"
+                      : language === "zh"
+                        ? "3. 共享设备数据即时清除"
+                        : "3. Retention & Device Isolation"}
+                  </strong>
+                  <p>
+                    {language === "id"
+                      ? "Data sementara di browser langsung dihapus otomatis setelah pengiriman selesai untuk menjaga kerahasiaan saat menggunakan tablet/kiosk klinik bersama."
+                      : language === "zh"
+                        ? "提交完成后，本地浏览器缓存将立即自动彻底销毁，确保在诊所公用设备上无信息残留。"
+                        : "Draft responses are purged from local browser memory immediately upon submission to ensure complete privacy on shared clinic devices."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition text-xs"
+                >
+                  {language === "id"
+                    ? "Saya Mengerti"
+                    : language === "zh"
+                      ? "我知道了"
+                      : "I Understand"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </PatientShell>
   );
@@ -390,12 +569,14 @@ function SleekQuestionInput({
   value,
   justSelected,
   onSelect,
+  onSubmit,
 }: {
   question: Question;
   language: Language;
   value: string | number | undefined;
   justSelected: string | number | null;
   onSelect: (val: string | number, autoAdvance: boolean) => void;
+  onSubmit?: () => void;
 }) {
   if (question.type === "choice" || question.type === "yesno") {
     return (
@@ -485,14 +666,26 @@ function SleekQuestionInput({
     );
   }
 
-  // Text input
+  // Text input with Form wrapper and Enter key handler
   return (
-    <div className="sleek-text-container">
+    <form
+      className="sleek-text-container"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit?.();
+      }}
+    >
       <input
         type="text"
         className="sleek-input-field"
         value={typeof value === "string" ? value : ""}
         onChange={(e) => onSelect(e.target.value, false)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onSubmit?.();
+          }
+        }}
         placeholder={
           language === "id"
             ? "Ketik jawaban atau sebutkan lewat suara…"
@@ -502,6 +695,6 @@ function SleekQuestionInput({
         }
         autoFocus
       />
-    </div>
+    </form>
   );
 }

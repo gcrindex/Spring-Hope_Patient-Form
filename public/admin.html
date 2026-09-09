@@ -1632,6 +1632,29 @@
         }
       }
 
+      @media (max-width: 480px) {
+        .stats-row {
+          grid-template-columns: 1fr !important;
+          gap: 10px;
+        }
+        .page-header h1 {
+          font-size: 20px !important;
+        }
+        .login-card {
+          padding: 28px 16px !important;
+          border-radius: 14px !important;
+          max-width: 100% !important;
+        }
+        .forms-table th,
+        .forms-table td {
+          padding: 10px 8px !important;
+        }
+        .action-btn {
+          padding: 5px 8px !important;
+          font-size: 11px !important;
+        }
+      }
+
       /* ========== CHOICE SCREEN ========== */
       #choice-screen {
         overflow-y: auto !important;
@@ -1858,7 +1881,7 @@
     <!-- TOAST CONTAINER -->
     <div id="toast-container"></div>
 
-    <!-- LOGIN SCREEN -->
+    <!-- LOGIN & REGISTER SCREEN -->
     <div id="login-screen" class="screen active">
       <div class="login-card">
         <div class="login-logo">
@@ -1873,17 +1896,70 @@
               display: inline-block;
             "
           />
-          <h2>9forms</h2>
+          <h2 id="login-title">Admin Portal</h2>
+        </div>
+
+        <!-- Mode Switcher Tabs -->
+        <div
+          style="
+            display: flex;
+            background: rgba(0, 0, 0, 0.06);
+            padding: 3px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+          "
+        >
+          <button
+            type="button"
+            id="tab-login-btn"
+            style="
+              flex: 1;
+              padding: 9px;
+              border: none;
+              background: white;
+              font-weight: 600;
+              border-radius: 8px;
+              cursor: pointer;
+              color: var(--navy);
+              font-size: 13px;
+              transition: all 0.2s;
+            "
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            id="tab-register-btn"
+            style="
+              flex: 1;
+              padding: 9px;
+              border: none;
+              background: transparent;
+              font-weight: 600;
+              border-radius: 8px;
+              cursor: pointer;
+              color: var(--text3);
+              font-size: 13px;
+              transition: all 0.2s;
+            "
+          >
+            Buat Akun Baru
+          </button>
+        </div>
+
+        <div class="login-field">
+          <label id="login-email-label">Email Admin</label>
+          <input type="email" id="login-email" placeholder="admin@springhope.clinic" />
         </div>
         <div class="login-field">
-          <label>Email</label>
-          <input type="email" id="login-email" value="admin@9forms.com" />
+          <label id="login-pass-label">Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" />
         </div>
-        <div class="login-field">
-          <label>Password</label>
-          <input type="password" id="login-pass" value="demo123" />
+        <div class="login-field" id="login-confirm-field" style="display: none">
+          <label>Konfirmasi Password</label>
+          <input type="password" id="login-confirm-pass" placeholder="••••••••" />
         </div>
-        <p class="login-hint">Demo credentials &mdash; pre-filled</p>
+        <p class="login-hint" id="login-hint">Masukkan kredensial administrator Anda</p>
         <button class="login-btn" id="login-btn">Sign In</button>
         <a href="/" class="login-back-btn" id="login-back-btn">
           <svg
@@ -1985,9 +2061,9 @@
           </a>
         </nav>
         <div class="sidebar-user">
-          <div class="avatar">DT</div>
+          <div class="avatar" id="sidebar-avatar">AD</div>
           <div class="info">
-            <div class="name">Dr. Tony</div>
+            <div class="name" id="sidebar-username">Administrator</div>
             <div class="role" data-i18n="adminRole">Administrator</div>
           </div>
           <button class="logout-btn" id="logout-btn" data-i18n="signOut">Sign Out</button>
@@ -2119,23 +2195,70 @@
               <span data-i18n="subExportCsv">Export CSV</span>
             </button>
           </div>
-          <div class="sub-filter-wrap">
-            <span class="sub-filter-label" data-i18n="subFormLabel">Form:</span>
-            <div class="sub-filter-select-box">
-              <select id="sub-form-filter"></select>
-              <svg
-                class="sub-filter-arrow"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
+          <div
+            class="sub-filter-wrap"
+            style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center"
+          >
+            <div style="display: flex; align-items: center; gap: 6px">
+              <span class="sub-filter-label" data-i18n="subFormLabel">Form:</span>
+              <div class="sub-filter-select-box" style="min-width: 180px">
+                <select id="sub-form-filter"></select>
+                <svg
+                  class="sub-filter-arrow"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px">
+              <div class="sub-filter-select-box" style="min-width: 140px">
+                <select id="sub-risk-filter">
+                  <option value="">Semua Risiko (All)</option>
+                  <option value="high">High Risk (Tinggi)</option>
+                  <option value="mod">Moderate (Sedang)</option>
+                  <option value="low">Low Risk (Rendah)</option>
+                </select>
+                <svg
+                  class="sub-filter-arrow"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <div style="flex: 1; min-width: 200px">
+              <input
+                type="search"
+                id="sub-search-input"
+                placeholder="Cari nama pasien..."
+                style="
+                  width: 100%;
+                  height: 38px;
+                  padding: 0 14px;
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  font-size: 13px;
+                  outline: none;
+                  background: white;
+                "
+              />
             </div>
           </div>
         </div>
@@ -2153,6 +2276,29 @@
             </thead>
             <tbody id="sub-tbody"></tbody>
           </table>
+        </div>
+        <!-- Server Pagination Controls -->
+        <div
+          id="sub-pagination-bar"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding: 8px 4px;
+          "
+        >
+          <div id="sub-pagination-info" style="font-size: 12px; color: var(--text3)">
+            Showing 0 submissions
+          </div>
+          <div style="display: flex; gap: 8px">
+            <button type="button" id="sub-prev-page-btn" class="btn btn-ghost btn-sm" disabled>
+              ← Previous
+            </button>
+            <button type="button" id="sub-next-page-btn" class="btn btn-ghost btn-sm" disabled>
+              Next →
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2587,10 +2733,17 @@
         setTimeout(() => {
           t.classList.remove("show");
           setTimeout(() => t.remove(), 300);
-        }, 2800);
+        }, 4500);
       }
-      function showModal(html) {
-        $("#modal-content").innerHTML = html;
+      function showModal(content) {
+        const container = $("#modal-content");
+        if (!container) return;
+        if (typeof content === "string") {
+          container.innerHTML = content;
+        } else if (content instanceof Node) {
+          container.innerHTML = "";
+          container.appendChild(content);
+        }
         $("#modal-overlay").classList.add("show");
       }
       function hideModal() {
@@ -2660,9 +2813,13 @@
         if (changed) LS.set("pf_submissions", subs);
       }
       function escHtml(s) {
-        const d = document.createElement("div");
-        d.textContent = s;
-        return d.innerHTML;
+        if (s === null || s === undefined) return "";
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
       // ===================== SEED DATA (FIX 1: slug IDs) =====================
@@ -2685,8 +2842,8 @@
               text: "Who is this visit for?",
               type: "choice",
               options: [
-                { label: "Myself", score: 1 },
-                { label: "Family member / Parent", score: 2 },
+                { label: "Myself", value: "myself", score: 1 },
+                { label: "Family member / Parent", value: "family", score: 2 },
               ],
             },
             {
@@ -2694,10 +2851,10 @@
               text: "What hurts or bothers you most?",
               type: "choice",
               options: [
-                { label: "Knee or Leg Pain", score: 10 },
-                { label: "Back or Waist Pain", score: 10 },
-                { label: "Shoulder or Arm Pain", score: 8 },
-                { label: "Recent Fall or Injury", score: 15 },
+                { label: "Knee or Leg Pain", value: "knee-joint", score: 10 },
+                { label: "Back or Waist Pain", value: "back-spine", score: 10 },
+                { label: "Shoulder or Arm Pain", value: "shoulder-arm", score: 8 },
+                { label: "Recent Fall or Injury", value: "fall-injury", score: 15 },
               ],
             },
             {
@@ -2705,21 +2862,30 @@
               text: "How are you walking today?",
               type: "choice",
               options: [
-                { label: "Walking normally", score: 1 },
-                { label: "Using a cane or walker", score: 8 },
-                { label: "Using a wheelchair", score: 15 },
-                { label: "Severe difficulty standing", score: 20 },
+                { label: "Walk on my own", value: "independent", score: 0 },
+                { label: "Need a cane or someone helping", value: "cane-assisted", score: 10 },
+                { label: "Need wheelchair", value: "wheelchair", score: 18 },
               ],
             },
             {
-              id: "q_np_swelling",
-              text: "Is there noticeable swelling, heat, or redness?",
-              type: "yesno",
+              id: "q_np_pain_level",
+              text: "How strong is the pain today? (0-10)",
+              type: "scale",
+              max: 10,
             },
             {
-              id: "q_np_assistance",
-              text: "Do you need wheelchair assistance upon arrival at clinic?",
+              id: "q_np_first_time",
+              text: "Is this your first time at this clinic?",
               type: "yesno",
+              options: [
+                { label: "Yes, First Time", value: "yes", score: 5 },
+                { label: "No, Have Visited Before", value: "no", score: 0 },
+              ],
+            },
+            {
+              id: "q_np_name",
+              text: "Patient Name",
+              type: "text",
             },
           ],
         };
@@ -3145,33 +3311,76 @@
       }
 
       // ===================== SESSION / AUTH =====================
-      function isLoggedIn() {
-        try {
-          return (
-            localStorage.getItem("pf_loggedin") === "1" ||
-            sessionStorage.getItem("pf_loggedin") === "1" ||
-            document.cookie.indexOf("pf_loggedin=1") !== -1 ||
-            localStorage.getItem("pf_admin_auth") === "authenticated" ||
-            sessionStorage.getItem("pf_admin_auth") === "authenticated"
-          );
-        } catch {
-          return false;
-        }
+      let _serverAuth = { isSetup: true, isAuthenticated: false, checked: false };
+
+      function updateUserSidebar() {
+        const avEl = $("#sidebar-avatar");
+        const userEl = $("#sidebar-username");
+        if (avEl) avEl.textContent = "AD";
+        if (userEl) userEl.textContent = "Administrator";
       }
-      function setLoggedIn(v) {
+
+      async function checkServerAuth() {
+        try {
+          const res = await fetch("/api/admin/status", {
+            cache: "no-store",
+            credentials: "include",
+          });
+          if (res.ok) {
+            const data = await res.json();
+            _serverAuth = { ...data, checked: true };
+            if (data.isAuthenticated) {
+              localStorage.setItem("pf_loggedin", "1");
+              if (data.user?.email) {
+                localStorage.setItem("pf_admin_email", data.user.email);
+              }
+              updateUserSidebar();
+            } else {
+              localStorage.removeItem("pf_loggedin");
+              localStorage.removeItem("pf_admin_email");
+            }
+            return _serverAuth;
+          }
+        } catch (e) {
+          console.warn("Auth check error, using client cache", e);
+        }
+        _serverAuth.checked = true;
+        updateUserSidebar();
+        return _serverAuth;
+      }
+
+      function isLoggedIn() {
+        return (
+          _serverAuth.isAuthenticated === true ||
+          localStorage.getItem("pf_loggedin") === "1" ||
+          document.cookie.indexOf("pf_loggedin=1") !== -1
+        );
+      }
+
+      function setLoggedIn(v, userEmail) {
         try {
           if (v) {
+            _serverAuth.isAuthenticated = true;
+            if (userEmail) {
+              _serverAuth.user = { email: userEmail };
+              localStorage.setItem("pf_admin_email", userEmail);
+            }
             localStorage.setItem("pf_loggedin", "1");
             sessionStorage.setItem("pf_loggedin", "1");
             localStorage.setItem("pf_admin_auth", "authenticated");
             sessionStorage.setItem("pf_admin_auth", "authenticated");
-            document.cookie = "pf_loggedin=1; path=/; max-age=31536000; SameSite=Lax";
+            document.cookie = "pf_loggedin=1; path=/; max-age=2592000; SameSite=Lax";
+            updateUserSidebar();
           } else {
+            _serverAuth.isAuthenticated = false;
+            _serverAuth.user = null;
             localStorage.removeItem("pf_loggedin");
             sessionStorage.removeItem("pf_loggedin");
             localStorage.removeItem("pf_admin_auth");
             sessionStorage.removeItem("pf_admin_auth");
+            localStorage.removeItem("pf_admin_email");
             document.cookie = "pf_loggedin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            updateUserSidebar();
           }
         } catch {
           // ignore
@@ -3400,6 +3609,14 @@
           }
         });
 
+        // Update document title dynamically based on active language
+        document.title =
+          currentAdminLang === "id"
+            ? "Admin Form Builder — 9forms.com"
+            : currentAdminLang === "zh"
+              ? "表单设计后台 — 9forms.com"
+              : "Form Builder Admin — 9forms.com";
+
         if (aiRecognition) {
           aiRecognition.lang =
             currentAdminLang === "id" ? "id-ID" : currentAdminLang === "zh" ? "zh-CN" : "en-US";
@@ -3439,63 +3656,57 @@
           location.hash = hash;
         }
       }
+
       function getRoute() {
         const h = location.hash;
-        if (h && h !== "#" && h !== "#/") return h;
+        if (h && h !== "#" && h !== "#/") {
+          if (h === "#/login" && isLoggedIn()) return "#/dashboard";
+          return h;
+        }
         return isLoggedIn() ? "#/dashboard" : "#/login";
       }
+
       function parseRoute() {
         const h = getRoute();
         if (h.startsWith("#/builder/")) {
-          if (!isLoggedIn()) return { screen: "login", redirect: true };
-          return { screen: "builder", id: h.split("/")[2] };
+          if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
+          return { screen: "builder", id: h.split("/")[2], targetHash: h };
         }
         if (h === "#/submissions" || h.startsWith("#/submissions")) {
-          if (!isLoggedIn()) return { screen: "login", redirect: true };
+          if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           const parts = h.split("/");
           const allForms = forms();
           const formId = parts[2] || allForms[0]?.id || "new-patient-intake";
-          return { screen: "submissions", formId };
+          return { screen: "submissions", formId, targetHash: h };
         }
         if (h === "#/dashboard") {
-          if (!isLoggedIn()) return { screen: "login", redirect: true };
-          return { screen: "dashboard" };
+          if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
+          return { screen: "dashboard", targetHash: "#/dashboard" };
         }
         if (h === "#/new") {
-          if (!isLoggedIn()) return { screen: "login", redirect: true };
-          return { screen: "choice" };
+          if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
+          return { screen: "choice", targetHash: "#/new" };
         }
         if (h === "#/login") {
-          if (isLoggedIn()) return { screen: "dashboard", redirect: true };
-          return { screen: "login" };
+          if (isLoggedIn()) return { screen: "dashboard", targetHash: "#/dashboard" };
+          return { screen: "login", targetHash: "#/login" };
         }
-        return { screen: isLoggedIn() ? "dashboard" : "login", redirect: true };
+        return {
+          screen: isLoggedIn() ? "dashboard" : "login",
+          targetHash: isLoggedIn() ? "#/dashboard" : "#/login",
+        };
       }
-      function route() {
+
+      async function route() {
         const r = parseRoute();
-        if (r.redirect) {
-          const target = isLoggedIn() ? "#/dashboard" : "#/login";
-          if (location.hash === target) {
-            $$(".screen").forEach((s) => s.classList.remove("active"));
-            const el = $("#" + (isLoggedIn() ? "dashboard" : "login") + "-screen");
-            if (el) el.classList.add("active");
-            if (isLoggedIn()) renderDashboard();
-            return;
-          }
-          navigate(target);
-          return;
+
+        if (location.hash !== r.targetHash) {
+          history.replaceState(null, "", r.targetHash);
         }
+
         $$(".screen").forEach((s) => s.classList.remove("active"));
         const el = $("#" + r.screen + "-screen");
         if (el) el.classList.add("active");
-        if (
-          !location.hash ||
-          location.hash === "" ||
-          location.hash === "#" ||
-          location.hash === "#/"
-        ) {
-          history.replaceState(null, "", isLoggedIn() ? "#/dashboard" : "#/login");
-        }
 
         // Update sidebar active highlights
         $$(".nav-item").forEach((n) => {
@@ -3510,6 +3721,7 @@
           }
         });
 
+        if (r.screen === "login") updateLoginScreenState();
         if (r.screen === "dashboard") renderDashboard();
         if (r.screen === "builder") renderBuilder(r.id);
         if (r.screen === "submissions") renderSubmissions(r.formId);
@@ -3548,40 +3760,182 @@
         }
       });
 
-      // ===================== LOGIN / LOGOUT =====================
-      $("#login-btn").addEventListener("click", () => {
-        const btn = $("#login-btn");
-        btn.innerHTML = '<div class="spinner"></div> Signing in...';
-        btn.disabled = true;
-        setLoggedIn(true);
-        setTimeout(() => {
-          btn.innerHTML = "Sign In";
-          btn.disabled = false;
+      // ===================== LOGIN / REGISTER / LOGOUT =====================
+      let _authMode = "login"; // "login" | "register"
+
+      function setAuthMode(mode) {
+        _authMode = mode;
+        const isReg = mode === "register";
+        const tabLogin = $("#tab-login-btn");
+        const tabReg = $("#tab-register-btn");
+        const confirmField = $("#login-confirm-field");
+        const titleEl = $("#login-title");
+        const hintEl = $("#login-hint");
+        const btnEl = $("#login-btn");
+        const emailInput = $("#login-email");
+        const passInput = $("#login-pass");
+
+        if (tabLogin) {
+          tabLogin.style.background = isReg ? "transparent" : "white";
+          tabLogin.style.color = isReg ? "var(--text3)" : "var(--navy)";
+        }
+        if (tabReg) {
+          tabReg.style.background = isReg ? "white" : "transparent";
+          tabReg.style.color = isReg ? "var(--navy)" : "var(--text3)";
+        }
+        if (confirmField) {
+          confirmField.style.display = isReg ? "block" : "none";
+        }
+        if (titleEl) {
+          titleEl.textContent = isReg ? "Registrasi Admin" : "Admin Portal";
+        }
+        if (hintEl) {
+          hintEl.textContent = isReg
+            ? "Buat akun admin baru atau atur ulang password"
+            : "Masukkan email dan password admin Anda";
+        }
+        if (btnEl) {
+          btnEl.textContent = isReg ? "Daftar & Masuk" : "Sign In";
+        }
+
+        if (!isReg) {
+          if (emailInput && !emailInput.value) emailInput.value = "rian@gmail.com";
+          if (passInput && !passInput.value) passInput.value = "admin123";
+        } else {
+          if (passInput) passInput.value = "";
+          const confirmPass = $("#login-confirm-pass");
+          if (confirmPass) confirmPass.value = "";
+        }
+      }
+
+      $("#tab-login-btn")?.addEventListener("click", () => setAuthMode("login"));
+      $("#tab-register-btn")?.addEventListener("click", () => setAuthMode("register"));
+
+      async function updateLoginScreenState() {
+        const auth = await checkServerAuth();
+        if (auth.isAuthenticated) {
           navigate("#/dashboard");
-          route();
-        }, 150);
+          return;
+        }
+        if (!auth.isSetup) {
+          setAuthMode("register");
+          const hintEl = $("#login-hint");
+          if (hintEl)
+            hintEl.textContent =
+              "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
+        } else {
+          setAuthMode("login");
+        }
+      }
+
+      $("#login-email")?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("#login-btn")?.click();
       });
-      $("#logout-btn").addEventListener("click", () => {
+      $("#login-pass")?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("#login-btn")?.click();
+      });
+      $("#login-confirm-pass")?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("#login-btn")?.click();
+      });
+
+      $("#login-btn").addEventListener("click", async () => {
+        const btn = $("#login-btn");
+        const email = $("#login-email")?.value?.trim() || "";
+        const password = $("#login-pass")?.value || "";
+        const confirmPass = $("#login-confirm-pass")?.value || "";
+
+        if (!email || !password) {
+          toast("Harap isi email dan password.", "error");
+          return;
+        }
+
+        if (_authMode === "register") {
+          if (password.length < 6) {
+            toast("Password minimal 6 karakter.", "error");
+            return;
+          }
+          if (password !== confirmPass) {
+            toast("Konfirmasi password tidak cocok.", "error");
+            return;
+          }
+        }
+
+        btn.innerHTML = '<div class="spinner"></div> Memproses...';
+        btn.disabled = true;
+
+        try {
+          const endpoint = _authMode === "register" ? "/api/auth/setup" : "/api/admin/login";
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok && data.success) {
+            setLoggedIn(true, email);
+            toast(data.message || "Berhasil masuk!", "success");
+            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+            btn.disabled = false;
+            navigate("#/dashboard");
+            route();
+          } else {
+            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+            btn.disabled = false;
+            toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
+          }
+        } catch (err) {
+          console.error("Auth action failed", err);
+          btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+          btn.disabled = false;
+          toast("Terjadi kesalahan jaringan saat autentikasi.", "error");
+        }
+      });
+
+      $("#logout-btn").addEventListener("click", async () => {
+        try {
+          await fetch("/api/admin/logout", { method: "POST" });
+        } catch (e) {
+          // ignore
+        }
         setLoggedIn(false);
         navigate("#/login");
         route();
       });
 
-      // ===================== DASHBOARD =====================
+      // ===================== DASHBOARD & SUBMISSIONS =====================
       let forms = () => LS.get("pf_forms") || [];
-      let submissions = () => LS.get("pf_submissions") || [];
+      let liveSubmissions = null;
+      let submissions = () => liveSubmissions || LS.get("pf_submissions") || [];
 
-      function renderDashboard() {
+      async function syncServerSubmissions() {
+        try {
+          const res = await fetch("/api/submissions");
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && Array.isArray(data.submissions)) {
+              liveSubmissions = data.submissions;
+              return liveSubmissions;
+            }
+          }
+        } catch (e) {
+          console.warn("Could not sync server submissions", e);
+        }
+        return submissions();
+      }
+
+      async function renderDashboard() {
+        await syncServerSubmissions();
         const f = forms();
         const allSubs = submissions();
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
         $("#stats-row").innerHTML = `
-    <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${t("allFormsLabel")}</div></div>
-    <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
-    <div class="stat-card"><div class="label">${t("totalSubmissions")}</div><div class="value">${totalSub}</div><div class="sub">${t("receivedLabel")}</div></div>
-    <div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
+        <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${t("allFormsLabel")}</div></div>
+        <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
+        <div class="stat-card"><div class="label">${t("totalSubmissions")}</div><div class="value">${totalSub}</div><div class="sub">${t("receivedLabel")}</div></div>
+        <div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
         const tbody = $("#forms-tbody");
         tbody.innerHTML = f
           .map((x) => {
@@ -3603,19 +3957,19 @@
                   ? "草稿"
                   : "Draft";
             return `<tr>
-      <td><strong>${escHtml(titleDisplay)}</strong></td>
-      <td><span class="pill ${isPublished ? "pill-green" : "pill-amber"}">${statusLabel}</span></td>
-      <td>${x.questions.length}</td>
-      <td>${count}</td>
-      <td>${timeAgo(x.updatedAt)}</td>
-      <td class="actions-cell">
-        <button class="action-btn" onclick="navigate('#/builder/${x.id}')">${t("btnEdit")}</button>
-        <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">${t("submissions")} (${count})</button>
-        ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">${t("btnCopyLink")}</button>` : ""}
-        ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">${t("btnPublish")}</button>` : ""}
-        <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>
-      </td>
-    </tr>`;
+          <td><strong>${escHtml(titleDisplay)}</strong></td>
+          <td><span class="pill ${isPublished ? "pill-green" : "pill-amber"}">${statusLabel}</span></td>
+          <td>${x.questions.length}</td>
+          <td>${count}</td>
+          <td>${timeAgo(x.updatedAt)}</td>
+          <td class="actions-cell">
+            <button class="action-btn" onclick="navigate('#/builder/${x.id}')">${t("btnEdit")}</button>
+            <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">${t("submissions")} (${count})</button>
+            ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">${t("btnCopyLink")}</button>` : ""}
+            ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">${t("btnPublish")}</button>` : ""}
+            <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>
+          </td>
+        </tr>`;
           })
           .join("");
       }
@@ -3751,13 +4105,13 @@
         const fullUrl =
           (window.location.origin || "http://localhost:8080") + "/intake?form=" + builderForm.id;
         showModal(`<div class="publish-modal">
-    <h2>Your form is live!</h2>
-    <p style="color:var(--text2);font-size:14px;margin-bottom:4px">Share this link with your patients:</p>
-    <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('Copied!')">Copy</button></div>
-    <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">Open form &rarr;</a></div>
-    <div class="qr-placeholder" id="qr-ph"></div>
-    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:8px">Scan to open form</p>
-  </div>`);
+        <h2>Your form is live!</h2>
+        <p style="color:var(--text2);font-size:14px;margin-bottom:4px">Share this link with your patients:</p>
+        <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('Copied!')">Copy</button></div>
+        <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">Open form &rarr;</a></div>
+        <div class="qr-placeholder" id="qr-ph"></div>
+        <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:8px">Scan to open form</p>
+      </div>`);
         const ph = $("#qr-ph");
         ph.innerHTML = "";
         for (let i = 0; i < 49; i++) {
@@ -3779,18 +4133,18 @@
         list.innerHTML = qs
           .map(
             (q, i) => `
-    <div class="question-card ${editingQ === q.id ? "selected" : ""}" draggable="true" data-idx="${i}" onclick="selectQuestion('${q.id}')">
-      <span class="drag-handle" title="Drag to reorder">&#11041;</span>
-      <span class="q-num">${i + 1}</span>
-      <div class="q-info">
-        <div class="q-text">${escHtml(q.text)}</div>
-        <div class="q-type">${typeLabel(q.type)}</div>
-      </div>
-      <div class="q-actions">
-        <button onclick="event.stopPropagation();editQuestion('${q.id}')" title="Edit">&#9998;</button>
-        <button class="del" onclick="event.stopPropagation();deleteQuestion('${q.id}')" title="Delete">&#10005;</button>
-      </div>
-    </div>`,
+        <div class="question-card ${editingQ === q.id ? "selected" : ""}" draggable="true" data-idx="${i}" onclick="selectQuestion('${q.id}')">
+          <span class="drag-handle" title="Drag to reorder">&#11041;</span>
+          <span class="q-num">${i + 1}</span>
+          <div class="q-info">
+            <div class="q-text">${escHtml(q.text)}</div>
+            <div class="q-type">${typeLabel(q.type)}</div>
+          </div>
+          <div class="q-actions">
+            <button onclick="event.stopPropagation();editQuestion('${q.id}')" title="Edit">&#9998;</button>
+            <button class="del" onclick="event.stopPropagation();deleteQuestion('${q.id}')" title="Delete">&#10005;</button>
+          </div>
+        </div>`,
           )
           .join("");
         setupDragDrop();
@@ -3833,26 +4187,26 @@
           optionsHtml = `<div class="editor-field"><label>Options</label><div id="option-rows">${q.options
             .map(
               (o, i) => `
-      <div class="option-row"><input value="${escHtml(o.label)}" placeholder="Option label" oninput="updateOption('${q.id}',${i},'label',this.value)">
-      <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
-      <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
+          <div class="option-row"><input value="${escHtml(o.label)}" placeholder="Option label" oninput="updateOption('${q.id}',${i},'label',this.value)">
+          <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
+          <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
             )
             .join("")}</div>
-      <button class="add-option-btn" onclick="addOption('${q.id}')">+ Add Option</button></div>`;
+          <button class="add-option-btn" onclick="addOption('${q.id}')">+ Add Option</button></div>`;
         } else if (q.type === "scale") {
           optionsHtml = `<div class="editor-field"><label>Max Value</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
         }
         ed.innerHTML = `
-    <div class="editor-field"><label>Question Text</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
-    <div class="editor-field"><label>Type</label>
-      <div class="type-selector">${["choice", "yesno", "scale", "text"]
-        .map(
-          (t) =>
-            `<button class="type-btn ${q.type === t ? "active" : ""}" onclick="changeType('${q.id}','${t}')">${{ choice: "&#9673; Choice", yesno: "&#10003;&#10007; Yes/No", scale: "&#8596; Scale", text: "&#9998; Text" }[t]}</button>`,
-        )
-        .join("")}</div></div>
-    ${optionsHtml}
-    <button class="editor-done" onclick="doneEditing()">Done</button>`;
+        <div class="editor-field"><label>Question Text</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
+        <div class="editor-field"><label>Type</label>
+          <div class="type-selector">${["choice", "yesno", "scale", "text"]
+            .map(
+              (t) =>
+                `<button class="type-btn ${q.type === t ? "active" : ""}" onclick="changeType('${q.id}','${t}')">${{ choice: "&#9673; Choice", yesno: "&#10003;&#10007; Yes/No", scale: "&#8596; Scale", text: "&#9998; Text" }[t]}</button>`,
+            )
+            .join("")}</div></div>
+        ${optionsHtml}
+        <button class="editor-done" onclick="doneEditing()">Done</button>`;
       }
 
       function updateQText(id, v) {
@@ -4021,10 +4375,10 @@
           content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="Type your answer..."></textarea>`;
         }
         screen.innerHTML = `
-    <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
-    <div class="phone-qnum">Question ${qi + 1} of ${qs.length}</div>
-    <div class="phone-question">${escHtml(q.text)}</div>
-    ${content}`;
+        <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
+        <div class="phone-qnum">Question ${qi + 1} of ${qs.length}</div>
+        <div class="phone-question">${escHtml(q.text)}</div>
+        ${content}`;
       }
       function advancePhone() {
         if (!builderForm || !builderForm.questions.length) return;
@@ -4037,8 +4391,103 @@
         }
       }
 
-      // ===================== SUBMISSIONS (FIX 2: event delegation for clickable rows) =====================
-      function renderSubmissions(formId) {
+      // ===================== SUBMISSIONS (Server-side search, filter & pagination) =====================
+      let _subQuery = {
+        formId: "",
+        search: "",
+        risk: "",
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 1,
+        loading: false,
+      };
+
+      let _subSearchDebounce = null;
+
+      async function fetchServerSubmissions() {
+        const tbody = $("#sub-tbody");
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3);"><div class="spinner" style="margin:0 auto 10px auto;"></div>Memuat data dari database server...</td></tr>`;
+        }
+
+        try {
+          const params = new URLSearchParams({
+            formId: _subQuery.formId,
+            search: _subQuery.search,
+            risk: _subQuery.risk,
+            page: String(_subQuery.page),
+            limit: String(_subQuery.limit),
+          });
+
+          const res = await fetch(`/api/submissions?${params.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && Array.isArray(data.submissions)) {
+              liveSubmissions = data.submissions;
+              if (data.pagination) {
+                _subQuery.total = data.pagination.total;
+                _subQuery.totalPages = data.pagination.totalPages;
+              }
+              renderSubmissionsTable(data.submissions);
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn("Fetch server submissions error", err);
+        }
+
+        renderSubmissionsTable([]);
+      }
+
+      function renderSubmissionsTable(subs) {
+        const tbody = $("#sub-tbody");
+        if (!tbody) return;
+
+        if (!subs || subs.length === 0) {
+          tbody.innerHTML = `
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:48px 20px;color:var(--text3);">
+                    <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+                    <strong style="color:var(--navy);font-size:14px;display:block;margin-bottom:4px;">Tidak Ada Data Submissions</strong>
+                    <span>Belum ada data pasien yang sesuai dengan kata kunci atau filter ini.</span>
+                  </td>
+                </tr>
+              `;
+        } else {
+          tbody.innerHTML = subs
+            .map((s) => {
+              const riskPill =
+                s.risk === "high" ? "pill-red" : s.risk === "mod" ? "pill-amber" : "pill-green";
+              const riskLabel = s.risk === "high" ? "High" : s.risk === "mod" ? "Moderate" : "Low";
+              return `<tr data-sub-id="${s.id}">
+                    <td><strong>${escHtml(s.patientName)}</strong></td>
+                    <td>${safeDateStr(s.submittedAt)}</td>
+                    <td><strong>${s.score}</strong></td>
+                    <td><span class="pill ${riskPill}">${riskLabel}</span></td>
+                    <td><button class="action-btn sub-view-btn">View</button></td>
+                  </tr>`;
+            })
+            .join("");
+        }
+
+        // Update pagination bar
+        const infoEl = $("#sub-pagination-info");
+        const prevBtn = $("#sub-prev-page-btn");
+        const nextBtn = $("#sub-next-page-btn");
+
+        if (infoEl) {
+          infoEl.textContent = `Halaman ${_subQuery.page} dari ${_subQuery.totalPages} (Total ${_subQuery.total} data)`;
+        }
+        if (prevBtn) {
+          prevBtn.disabled = _subQuery.page <= 1;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = _subQuery.page >= _subQuery.totalPages;
+        }
+      }
+
+      async function renderSubmissions(formId) {
         const allForms = forms();
         let f = allForms.find((x) => x.id === formId) || allForms[0];
         if (!f) {
@@ -4046,11 +4495,13 @@
           return;
         }
         formId = f.id;
-        const subs = submissions().filter((x) => x.formId === formId);
+        window._currentSubFormId = formId;
+        _subQuery.formId = formId;
+
         $("#sub-topbar-title").textContent = f.title + " — Submissions";
         $("#sub-title").textContent = "Submissions";
 
-        // Populate dropdown filter
+        // Form filter dropdown
         const filter = $("#sub-form-filter");
         if (filter) {
           filter.innerHTML = allForms
@@ -4060,40 +4511,71 @@
             )
             .join("");
           filter.onchange = (e) => {
+            _subQuery.page = 1;
             navigate("#/submissions/" + e.target.value);
           };
         }
 
-        const high = subs.filter((x) => x.risk === "high").length;
-        const mod = subs.filter((x) => x.risk === "mod").length;
-        const low = subs.filter((x) => x.risk === "low").length;
-        const avg = subs.length
-          ? Math.round(subs.reduce((a, x) => a + x.score, 0) / subs.length)
+        // Risk filter dropdown
+        const riskFilter = $("#sub-risk-filter");
+        if (riskFilter) {
+          riskFilter.onchange = (e) => {
+            _subQuery.risk = e.target.value;
+            _subQuery.page = 1;
+            fetchServerSubmissions();
+          };
+        }
+
+        // Search input with debounce
+        const searchInput = $("#sub-search-input");
+        if (searchInput) {
+          searchInput.oninput = (e) => {
+            clearTimeout(_subSearchDebounce);
+            _subSearchDebounce = setTimeout(() => {
+              _subQuery.search = e.target.value.trim();
+              _subQuery.page = 1;
+              fetchServerSubmissions();
+            }, 300);
+          };
+        }
+
+        // Pagination buttons
+        const prevBtn = $("#sub-prev-page-btn");
+        if (prevBtn) {
+          prevBtn.onclick = () => {
+            if (_subQuery.page > 1) {
+              _subQuery.page--;
+              fetchServerSubmissions();
+            }
+          };
+        }
+        const nextBtn = $("#sub-next-page-btn");
+        if (nextBtn) {
+          nextBtn.onclick = () => {
+            if (_subQuery.page < _subQuery.totalPages) {
+              _subQuery.page++;
+              fetchServerSubmissions();
+            }
+          };
+        }
+
+        // Stats calculation
+        const allLocalSubs = submissions().filter((x) => x.formId === formId);
+        const high = allLocalSubs.filter((x) => x.risk === "high").length;
+        const mod = allLocalSubs.filter((x) => x.risk === "mod").length;
+        const low = allLocalSubs.filter((x) => x.risk === "low").length;
+        const avg = allLocalSubs.length
+          ? Math.round(allLocalSubs.reduce((a, x) => a + x.score, 0) / allLocalSubs.length)
           : 0;
+
         $("#sub-stats").innerHTML = `
-    <div class="stat-card"><div class="label">Total</div><div class="value">${subs.length}</div></div>
-    <div class="stat-card"><div class="label">High Risk</div><div class="value" style="color:var(--red)">${high}</div></div>
-    <div class="stat-card"><div class="label">Moderate</div><div class="value" style="color:var(--orange)">${mod}</div></div>
-    <div class="stat-card"><div class="label">Low Risk</div><div class="value" style="color:var(--green)">${low}</div><div class="sub">Avg Score: ${avg}</div></div>`;
-        // FIX 2: Store current formId for event delegation, render rows without inline onclick
-        window._currentSubFormId = formId;
-        $("#sub-tbody").innerHTML = subs.length
-          ? subs
-              .map((s) => {
-                const riskPill =
-                  s.risk === "high" ? "pill-red" : s.risk === "mod" ? "pill-amber" : "pill-green";
-                const riskLabel =
-                  s.risk === "high" ? "High" : s.risk === "mod" ? "Moderate" : "Low";
-                return `<tr data-sub-id="${s.id}">
-      <td><strong>${escHtml(s.patientName)}</strong></td>
-      <td>${safeDateStr(s.submittedAt)}</td>
-      <td><strong>${s.score}</strong></td>
-      <td><span class="pill ${riskPill}">${riskLabel}</span></td>
-      <td><button class="action-btn sub-view-btn">View</button></td>
-    </tr>`;
-              })
-              .join("")
-          : `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:30px">No submissions yet for this form.</td></tr>`;
+              <div class="stat-card"><div class="label">Total</div><div class="value">${allLocalSubs.length}</div></div>
+              <div class="stat-card"><div class="label">High Risk</div><div class="value" style="color:var(--red)">${high}</div></div>
+              <div class="stat-card"><div class="label">Moderate</div><div class="value" style="color:var(--orange)">${mod}</div></div>
+              <div class="stat-card"><div class="label">Low Risk</div><div class="value" style="color:var(--green)">${low}</div><div class="sub">Avg Score: ${avg}</div></div>
+            `;
+
+        await fetchServerSubmissions();
       }
 
       // FIX 2: Robust event delegation on submissions tbody
@@ -4108,6 +4590,16 @@
         }
       });
 
+      function sanitizeCsvCell(value) {
+        if (value === null || value === undefined) return '""';
+        let str = String(value).trim();
+        // Formula injection protection: prepend single quote on dangerous prefix characters
+        if (/^[=\+\-@\t\r]/.test(str)) {
+          str = "'" + str;
+        }
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+
       $("#export-csv-btn").addEventListener("click", () => {
         const formId = window._currentSubFormId;
         const form = forms().find((x) => x.id === formId);
@@ -4116,28 +4608,126 @@
           toast("No submissions to export", "error");
           return;
         }
-        let csv = "Patient Name,Date,Score,Risk\n";
+
+        const questions = form && Array.isArray(form.questions) ? form.questions : [];
+
+        // Build header columns with complete question prompts
+        const headers = [
+          "Submission ID",
+          "Patient Name",
+          "Submitted At",
+          "Score",
+          "Risk Level",
+          "Triage Status",
+          ...questions.map((q, i) => {
+            const prompt =
+              q.text ||
+              (typeof q.prompt === "object" ? q.prompt.en || q.prompt.id : q.prompt) ||
+              `Q${i + 1}`;
+            return `[Q${i + 1}] ${prompt}`;
+          }),
+        ];
+
+        let csv = "\uFEFF" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
+
         subs.forEach((s) => {
-          csv += `"${(s.patientName || "").replace(/"/g, '""')}","${safeDateStr(s.submittedAt)}",${s.score},${s.risk}\n`;
+          const rowValues = [
+            s.id,
+            s.patientName || "Patient",
+            safeDateLong(s.submittedAt),
+            s.score || 0,
+            s.risk === "high" ? "High Risk" : s.risk === "mod" ? "Moderate" : "Low Risk",
+            s.triageStatus ||
+              (s.risk === "high" ? "review" : s.risk === "mod" ? "scheduled" : "completed"),
+          ];
+
+          // Append each clinical question's human-readable answer
+          questions.forEach((q) => {
+            const ans = s.answers ? s.answers[q.id] : undefined;
+            const displayAns = formatDisplayAnswer(q, ans);
+            rowValues.push(displayAns);
+          });
+
+          csv += rowValues.map(sanitizeCsvCell).join(",") + "\r\n";
         });
+
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = (form ? slugify(form.title) : "submissions") + "-export.csv";
+        const formTitle =
+          form && typeof form.title === "object"
+            ? form.title.en || form.title.id
+            : form?.title || "submissions";
+        a.download = `${slugify(String(formTitle))}-clinical-export.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        toast("CSV exported successfully");
+        toast("Clinical CSV exported securely!");
       });
+
+      function formatDisplayAnswer(q, rawVal) {
+        if (rawVal === undefined || rawVal === null || rawVal === "") return "—";
+
+        const slugMap = {
+          myself: "Myself (Sendiri)",
+          family: "Family member / Parent (Keluarga / Orang Tua)",
+          "knee-joint": "Knee or Leg Pain (Nyeri Lutut / Kaki)",
+          "back-spine": "Back or Waist Pain (Sakit Pinggang / Punggung)",
+          "shoulder-arm": "Shoulder or Arm Pain (Nyeri Bahu / Lengan)",
+          "fall-injury": "Recent Fall or Injury (Baru Jatuh / Cedera)",
+          independent: "Walk on my own / Normal (Jalan Sendiri)",
+          "cane-assisted": "Need a cane or someone helping (Pakai Tongkat / Dipapah)",
+          wheelchair: "Need wheelchair (Perlu Kursi Roda)",
+          "under-30": "Under 30 years old",
+          "30-44": "30–44 years old",
+          "45-64": "45–64 years old",
+          "65-plus": "65 or older",
+          "lt-1m": "Less than 1 month",
+          "1-3m": "1–3 months",
+          "3-6m": "3–6 months",
+          "gt-6m": "More than 6 months",
+          yes: "Yes, First Time / Ya",
+          no: "No, Have Visited Before / Tidak",
+        };
+
+        if (typeof rawVal === "string" && slugMap[rawVal]) {
+          return slugMap[rawVal];
+        }
+
+        if (q && q.type === "choice" && Array.isArray(q.options)) {
+          const opt = q.options.find((o) => o.value === rawVal || o.score === rawVal);
+          if (opt) {
+            if (typeof opt.label === "object") return opt.label.en || opt.label.id || rawVal;
+            return String(opt.label);
+          }
+        }
+
+        if (q && q.type === "scale") {
+          return rawVal + " / " + (q.max || 10);
+        }
+
+        if (q && q.type === "yesno") {
+          return rawVal === "yes" ? "Yes (Ya)" : rawVal === "no" ? "No (Tidak)" : String(rawVal);
+        }
+
+        if (typeof rawVal === "string" && rawVal.includes("-") && !rawVal.includes(" ")) {
+          return rawVal
+            .split("-")
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
+        }
+
+        return String(rawVal);
+      }
 
       function viewSubmission(subId, formId) {
         const sub = submissions().find((x) => x.id === subId);
         const form = forms().find((x) => x.id === formId);
-        if (!sub || !form) return;
+        if (!sub) return;
         const circumference = 2 * Math.PI * 60;
-        const offset = circumference - (sub.score / 100) * circumference;
+        const offset = circumference - ((sub.score || 0) / 100) * circumference;
         const riskColor =
           sub.risk === "high"
             ? "var(--red)"
@@ -4146,27 +4736,99 @@
               : "var(--green)";
         const riskLabel =
           sub.risk === "high" ? "High Risk" : sub.risk === "mod" ? "Moderate" : "Low Risk";
-        const answersHtml = form.questions
-          .map((q) => {
-            let ans = sub.answers[q.id];
-            if (ans === undefined) ans = "—";
-            else if (q.type === "choice" && q.options)
-              ans = q.options.find((o) => o.score === ans)?.label || ans;
-            else if (q.type === "scale") ans = ans + "/" + (q.max || 10);
-            else if (q.type === "yesno") ans = ans === "yes" ? "Yes" : "No";
-            return `<div class="detail-answer"><div class="q">${escHtml(q.text)}</div><div class="a">${ans}</div></div>`;
-          })
-          .join("");
-        showModal(`<div style="position:relative">
-    <button class="modal-close" onclick="hideModal()">&times;</button>
-    <div class="detail-header"><div class="name">${escHtml(sub.patientName)}</div><div class="date">${safeDateLong(sub.submittedAt)}</div></div>
-    <div class="score-ring">
-      <svg viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="60"/><circle class="fg" cx="70" cy="70" r="60" stroke="${riskColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/></svg>
-      <div class="center"><div class="num">${sub.score}</div><div class="lbl">${riskLabel}</div></div>
-    </div>
-    <div class="detail-answers">${answersHtml}</div>
-    <button class="send-plato-btn ready" onclick="sendToPlato(this)">Send to Plato</button>
-  </div>`);
+
+        const container = document.createElement("div");
+        container.style.position = "relative";
+
+        const closeBtn = document.createElement("button");
+        closeBtn.className = "modal-close";
+        closeBtn.innerHTML = "&times;";
+        closeBtn.onclick = hideModal;
+        container.appendChild(closeBtn);
+
+        const header = document.createElement("div");
+        header.className = "detail-header";
+        const nameEl = document.createElement("div");
+        nameEl.className = "name";
+        nameEl.textContent = sub.patientName || "Patient";
+        const dateEl = document.createElement("div");
+        dateEl.className = "date";
+        dateEl.textContent = safeDateLong(sub.submittedAt);
+        header.appendChild(nameEl);
+        header.appendChild(dateEl);
+        container.appendChild(header);
+
+        const ring = document.createElement("div");
+        ring.className = "score-ring";
+        ring.innerHTML = `
+              <svg viewBox="0 0 140 140">
+                <circle class="bg" cx="70" cy="70" r="60"/>
+                <circle class="fg" cx="70" cy="70" r="60" stroke="${riskColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+              </svg>
+            `;
+        const center = document.createElement("div");
+        center.className = "center";
+        const num = document.createElement("div");
+        num.className = "num";
+        num.textContent = String(sub.score || 0);
+        const lbl = document.createElement("div");
+        lbl.className = "lbl";
+        lbl.textContent = riskLabel;
+        center.appendChild(num);
+        center.appendChild(lbl);
+        ring.appendChild(center);
+        container.appendChild(ring);
+
+        const answersWrap = document.createElement("div");
+        answersWrap.className = "detail-answers";
+
+        if (form && Array.isArray(form.questions) && form.questions.length > 0) {
+          form.questions.forEach((q) => {
+            let ans = sub.answers ? sub.answers[q.id] : undefined;
+            const displayAns = formatDisplayAnswer(q, ans);
+            const qText =
+              q.text ||
+              (typeof q.prompt === "object" ? q.prompt.en || q.prompt.id : q.prompt) ||
+              "Question";
+
+            const row = document.createElement("div");
+            row.className = "detail-answer";
+            const qEl = document.createElement("div");
+            qEl.className = "q";
+            qEl.textContent = qText;
+            const aEl = document.createElement("div");
+            aEl.className = "a";
+            aEl.textContent = displayAns;
+            row.appendChild(qEl);
+            row.appendChild(aEl);
+            answersWrap.appendChild(row);
+          });
+        } else if (sub.answers && typeof sub.answers === "object") {
+          Object.entries(sub.answers).forEach(([k, v]) => {
+            const row = document.createElement("div");
+            row.className = "detail-answer";
+            const qEl = document.createElement("div");
+            qEl.className = "q";
+            qEl.textContent = k;
+            const aEl = document.createElement("div");
+            aEl.className = "a";
+            aEl.textContent = formatDisplayAnswer(null, v);
+            row.appendChild(qEl);
+            row.appendChild(aEl);
+            answersWrap.appendChild(row);
+          });
+        }
+        container.appendChild(answersWrap);
+
+        const platoBtn = document.createElement("button");
+        platoBtn.className = "send-plato-btn ready";
+        platoBtn.textContent = "Send to Plato";
+        platoBtn.onclick = function () {
+          sendToPlato(this);
+        };
+        container.appendChild(platoBtn);
+
+        showModal(container);
       }
       function sendToPlato(btn) {
         btn.textContent = "Sent ✓";
@@ -4605,40 +5267,59 @@
 
       // Voice input
       function toggleVoice() {
-        if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+        const hasSpeech = "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
+        if (!hasSpeech) {
           toast(
-            "Speech recognition is not supported in this browser. Use Chrome or Edge.",
+            "Fitur suara tidak didukung di browser ini. Gunakan Google Chrome atau Microsoft Edge.",
             "error",
           );
+          const btn = $("#ai-voice-btn");
+          if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = "0.45";
+            btn.style.cursor = "not-allowed";
+            btn.title = "Fitur suara tidak didukung di browser ini";
+          }
           return;
         }
+
         if (aiVoiceActive) {
           stopVoice();
           return;
         }
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        aiRecognition = new SR();
-        aiRecognition.continuous = false;
-        aiRecognition.interimResults = true;
-        aiRecognition.lang = "en-US";
-        aiRecognition.onresult = (e) => {
-          let transcript = "";
-          for (let i = e.resultIndex; i < e.results.length; i++)
-            transcript += e.results[i][0].transcript;
-          $("#ai-chat-input").value = transcript;
-        };
-        aiRecognition.onend = () => {
+
+        try {
+          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+          aiRecognition = new SR();
+          aiRecognition.continuous = false;
+          aiRecognition.interimResults = true;
+          aiRecognition.lang = "en-US";
+          aiRecognition.onresult = (e) => {
+            let transcript = "";
+            for (let i = e.resultIndex; i < e.results.length; i++)
+              transcript += e.results[i][0].transcript;
+            $("#ai-chat-input").value = transcript;
+          };
+          aiRecognition.onend = () => {
+            aiVoiceActive = false;
+            $("#ai-voice-indicator").style.display = "none";
+          };
+          aiRecognition.onerror = (err) => {
+            console.warn("Voice recognition error", err);
+            aiVoiceActive = false;
+            $("#ai-voice-indicator").style.display = "none";
+            toast("Gagal mengakses mikrofon atau pengenalan suara terhenti.", "error");
+          };
+
+          aiRecognition.start();
+          aiVoiceActive = true;
+          $("#ai-voice-indicator").style.display = "block";
+        } catch (e) {
+          console.error("SpeechRecognition launch error", e);
           aiVoiceActive = false;
           $("#ai-voice-indicator").style.display = "none";
-        };
-        aiRecognition.onerror = () => {
-          aiVoiceActive = false;
-          $("#ai-voice-indicator").style.display = "none";
-          toast("Voice recognition error", "error");
-        };
-        aiVoiceActive = true;
-        $("#ai-voice-indicator").style.display = "block";
-        aiRecognition.start();
+          toast("Tidak dapat memulai pengenalan suara.", "error");
+        }
       }
 
       function stopVoice() {

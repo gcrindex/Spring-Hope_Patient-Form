@@ -14,7 +14,9 @@ import { Route as SpringHopeRouteImport } from './routes/spring-hope'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
+import { Route as ApiFormsRouteImport } from './routes/api.forms'
 import { Route as ApiHealthRouteImport } from './routes/api.health'
+import { Route as ApiSubmissionsRouteImport } from './routes/api.submissions'
 import { Route as IntakeIndexRouteImport } from './routes/intake.index'
 import { Route as IntakeCompleteRouteImport } from './routes/intake.complete'
 import { Route as IntakeMicrophoneRouteImport } from './routes/intake.microphone'
@@ -22,9 +24,16 @@ import { Route as IntakeQuestionRouteImport } from './routes/intake.question'
 import { Route as AdminFormsBuilderIndexRouteImport } from './routes/admin.forms-builder.index'
 import { Route as AdminFormsBuilderPublishRouteImport } from './routes/admin.forms-builder.publish'
 import { Route as AdminNewAiRouteImport } from './routes/admin.new.ai'
+import { Route as ApiAdminLoginRouteImport } from './routes/api.admin.login'
+import { Route as ApiAdminLogoutRouteImport } from './routes/api.admin.logout'
+import { Route as ApiAdminStatusRouteImport } from './routes/api.admin.status'
 import { Route as ApiAiExtractImageRouteImport } from './routes/api.ai.extract-image'
 import { Route as ApiAiExtractPdfRouteImport } from './routes/api.ai.extract-pdf'
 import { Route as ApiAiFormDraftRouteImport } from './routes/api.ai.form-draft'
+import { Route as ApiAuthLoginRouteImport } from './routes/api.auth.login'
+import { Route as ApiAuthLogoutRouteImport } from './routes/api.auth.logout'
+import { Route as ApiAuthSetupRouteImport } from './routes/api.auth.setup'
+import { Route as ApiAuthStatusRouteImport } from './routes/api.auth.status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,9 +60,19 @@ const AdminNewRoute = AdminNewRouteImport.update({
   path: '/admin/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFormsRoute = ApiFormsRouteImport.update({
+  id: '/api/forms',
+  path: '/api/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSubmissionsRoute = ApiSubmissionsRouteImport.update({
+  id: '/api/submissions',
+  path: '/api/submissions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntakeIndexRoute = IntakeIndexRouteImport.update({
@@ -92,6 +111,21 @@ const AdminNewAiRoute = AdminNewAiRouteImport.update({
   path: '/ai',
   getParentRoute: () => AdminNewRoute,
 } as any)
+const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
+  id: '/api/admin/login',
+  path: '/api/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLogoutRoute = ApiAdminLogoutRouteImport.update({
+  id: '/api/admin/logout',
+  path: '/api/admin/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminStatusRoute = ApiAdminStatusRouteImport.update({
+  id: '/api/admin/status',
+  path: '/api/admin/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiExtractImageRoute = ApiAiExtractImageRouteImport.update({
   id: '/api/ai/extract-image',
   path: '/api/ai/extract-image',
@@ -107,13 +141,35 @@ const ApiAiFormDraftRoute = ApiAiFormDraftRouteImport.update({
   path: '/api/ai/form-draft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
+  id: '/api/auth/login',
+  path: '/api/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
+  id: '/api/auth/logout',
+  path: '/api/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSetupRoute = ApiAuthSetupRouteImport.update({
+  id: '/api/auth/setup',
+  path: '/api/auth/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthStatusRoute = ApiAuthStatusRouteImport.update({
+  id: '/api/auth/status',
+  path: '/api/auth/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
+  '/api/forms': typeof ApiFormsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/submissions': typeof ApiSubmissionsRoute
   '/intake/complete': typeof IntakeCompleteRoute
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
@@ -121,9 +177,16 @@ export interface FileRoutesByFullPath {
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
+  '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/setup': typeof ApiAuthSetupRoute
+  '/api/auth/status': typeof ApiAuthStatusRoute
   '/admin/forms-builder/': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRoutesByTo {
@@ -131,7 +194,9 @@ export interface FileRoutesByTo {
   '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
+  '/api/forms': typeof ApiFormsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/submissions': typeof ApiSubmissionsRoute
   '/intake/complete': typeof IntakeCompleteRoute
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
@@ -139,9 +204,16 @@ export interface FileRoutesByTo {
   '/intake': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
+  '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/setup': typeof ApiAuthSetupRoute
+  '/api/auth/status': typeof ApiAuthStatusRoute
   '/admin/forms-builder': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRoutesById {
@@ -150,7 +222,9 @@ export interface FileRoutesById {
   '/spring-hope': typeof SpringHopeRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRouteWithChildren
+  '/api/forms': typeof ApiFormsRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/submissions': typeof ApiSubmissionsRoute
   '/intake/complete': typeof IntakeCompleteRoute
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
@@ -158,9 +232,16 @@ export interface FileRoutesById {
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
+  '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/setup': typeof ApiAuthSetupRoute
+  '/api/auth/status': typeof ApiAuthStatusRoute
   '/admin/forms-builder/': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRouteTypes {
@@ -170,7 +251,9 @@ export interface FileRouteTypes {
     | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
+    | '/api/forms'
     | '/api/health'
+    | '/api/submissions'
     | '/intake/complete'
     | '/intake/microphone'
     | '/intake/question'
@@ -178,9 +261,16 @@ export interface FileRouteTypes {
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/login'
+    | '/api/admin/logout'
+    | '/api/admin/status'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/api/auth/setup'
+    | '/api/auth/status'
     | '/admin/forms-builder/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -188,7 +278,9 @@ export interface FileRouteTypes {
     | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
+    | '/api/forms'
     | '/api/health'
+    | '/api/submissions'
     | '/intake/complete'
     | '/intake/microphone'
     | '/intake/question'
@@ -196,9 +288,16 @@ export interface FileRouteTypes {
     | '/intake'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/login'
+    | '/api/admin/logout'
+    | '/api/admin/status'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/api/auth/setup'
+    | '/api/auth/status'
     | '/admin/forms-builder'
   id:
     | '__root__'
@@ -206,7 +305,9 @@ export interface FileRouteTypes {
     | '/spring-hope'
     | '/admin/login'
     | '/admin/new'
+    | '/api/forms'
     | '/api/health'
+    | '/api/submissions'
     | '/intake/complete'
     | '/intake/microphone'
     | '/intake/question'
@@ -214,9 +315,16 @@ export interface FileRouteTypes {
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/login'
+    | '/api/admin/logout'
+    | '/api/admin/status'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/api/auth/setup'
+    | '/api/auth/status'
     | '/admin/forms-builder/'
   fileRoutesById: FileRoutesById
 }
@@ -225,16 +333,25 @@ export interface RootRouteChildren {
   SpringHopeRoute: typeof SpringHopeRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRouteWithChildren
+  ApiFormsRoute: typeof ApiFormsRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiSubmissionsRoute: typeof ApiSubmissionsRoute
   IntakeCompleteRoute: typeof IntakeCompleteRoute
   IntakeMicrophoneRoute: typeof IntakeMicrophoneRoute
   IntakeQuestionRoute: typeof IntakeQuestionRoute
   AdminIndexRoute: typeof AdminIndexRoute
   IntakeIndexRoute: typeof IntakeIndexRoute
   AdminFormsBuilderPublishRoute: typeof AdminFormsBuilderPublishRoute
+  ApiAdminLoginRoute: typeof ApiAdminLoginRoute
+  ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
+  ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAiExtractImageRoute: typeof ApiAiExtractImageRoute
   ApiAiExtractPdfRoute: typeof ApiAiExtractPdfRoute
   ApiAiFormDraftRoute: typeof ApiAiFormDraftRoute
+  ApiAuthLoginRoute: typeof ApiAuthLoginRoute
+  ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiAuthSetupRoute: typeof ApiAuthSetupRoute
+  ApiAuthStatusRoute: typeof ApiAuthStatusRoute
   AdminFormsBuilderIndexRoute: typeof AdminFormsBuilderIndexRoute
 }
 
@@ -275,11 +392,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/forms': {
+      id: '/api/forms'
+      path: '/api/forms'
+      fullPath: '/api/forms'
+      preLoaderRoute: typeof ApiFormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/health': {
       id: '/api/health'
       path: '/api/health'
       fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/submissions': {
+      id: '/api/submissions'
+      path: '/api/submissions'
+      fullPath: '/api/submissions'
+      preLoaderRoute: typeof ApiSubmissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/intake/': {
@@ -331,6 +462,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewAiRouteImport
       parentRoute: typeof AdminNewRoute
     }
+    '/api/admin/login': {
+      id: '/api/admin/login'
+      path: '/api/admin/login'
+      fullPath: '/api/admin/login'
+      preLoaderRoute: typeof ApiAdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/logout': {
+      id: '/api/admin/logout'
+      path: '/api/admin/logout'
+      fullPath: '/api/admin/logout'
+      preLoaderRoute: typeof ApiAdminLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/status': {
+      id: '/api/admin/status'
+      path: '/api/admin/status'
+      fullPath: '/api/admin/status'
+      preLoaderRoute: typeof ApiAdminStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/extract-image': {
       id: '/api/ai/extract-image'
       path: '/api/ai/extract-image'
@@ -350,6 +502,34 @@ declare module '@tanstack/react-router' {
       path: '/api/ai/form-draft'
       fullPath: '/api/ai/form-draft'
       preLoaderRoute: typeof ApiAiFormDraftRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/login': {
+      id: '/api/auth/login'
+      path: '/api/auth/login'
+      fullPath: '/api/auth/login'
+      preLoaderRoute: typeof ApiAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/logout': {
+      id: '/api/auth/logout'
+      path: '/api/auth/logout'
+      fullPath: '/api/auth/logout'
+      preLoaderRoute: typeof ApiAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/setup': {
+      id: '/api/auth/setup'
+      path: '/api/auth/setup'
+      fullPath: '/api/auth/setup'
+      preLoaderRoute: typeof ApiAuthSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/status': {
+      id: '/api/auth/status'
+      path: '/api/auth/status'
+      fullPath: '/api/auth/status'
+      preLoaderRoute: typeof ApiAuthStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -372,16 +552,25 @@ const rootRouteChildren: RootRouteChildren = {
   SpringHopeRoute: SpringHopeRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRouteWithChildren,
+  ApiFormsRoute: ApiFormsRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiSubmissionsRoute: ApiSubmissionsRoute,
   IntakeCompleteRoute: IntakeCompleteRoute,
   IntakeMicrophoneRoute: IntakeMicrophoneRoute,
   IntakeQuestionRoute: IntakeQuestionRoute,
   AdminIndexRoute: AdminIndexRoute,
   IntakeIndexRoute: IntakeIndexRoute,
   AdminFormsBuilderPublishRoute: AdminFormsBuilderPublishRoute,
+  ApiAdminLoginRoute: ApiAdminLoginRoute,
+  ApiAdminLogoutRoute: ApiAdminLogoutRoute,
+  ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAiExtractImageRoute: ApiAiExtractImageRoute,
   ApiAiExtractPdfRoute: ApiAiExtractPdfRoute,
   ApiAiFormDraftRoute: ApiAiFormDraftRoute,
+  ApiAuthLoginRoute: ApiAuthLoginRoute,
+  ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiAuthSetupRoute: ApiAuthSetupRoute,
+  ApiAuthStatusRoute: ApiAuthStatusRoute,
   AdminFormsBuilderIndexRoute: AdminFormsBuilderIndexRoute,
 }
 export const routeTree = rootRouteImport

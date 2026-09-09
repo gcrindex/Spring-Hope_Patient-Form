@@ -1,4 +1,4 @@
-import { Mic, RotateCcw, Square, Waves } from "lucide-react";
+import { Mic, MicOff, RotateCcw, Square, Waves } from "lucide-react";
 import { copy, type Language } from "../lib/patientform";
 
 type Props = {
@@ -6,6 +6,7 @@ type Props = {
   state: "idle" | "listening" | "processing" | "recognized" | "error";
   transcript: string;
   error: "permission-denied" | "not-supported" | "no-speech" | "generic" | null;
+  supported?: boolean;
   onStart: () => void;
   onStop: () => void;
   onReset: () => void;
@@ -17,12 +18,31 @@ export function VoiceControl({
   state,
   transcript,
   error,
+  supported = true,
   onStart,
   onStop,
   onReset,
   recognizedLabel,
 }: Props) {
   const t = copy[language];
+
+  if (!supported || error === "not-supported") {
+    return (
+      <div
+        className="voice-card voice-card-error opacity-75 cursor-not-allowed"
+        role="status"
+        title={t.unsupported}
+      >
+        <div className="voice-orb voice-orb-error">
+          <MicOff size={20} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-bold text-ink">{t.unsupported}</div>
+          <div className="mt-0.5 text-xs text-muted">{t.manual}</div>
+        </div>
+      </div>
+    );
+  }
 
   if (state === "listening") {
     return (

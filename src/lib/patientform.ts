@@ -69,6 +69,8 @@ export const copy = {
     voiceHint: "Say your answer naturally",
     questionOf: "Question",
     optional: "Optional",
+    docTitle: "Guided Form — 9forms.com",
+    completeDocTitle: "Form Completed — 9forms.com",
   },
   id: {
     continue: "Lanjut",
@@ -87,6 +89,8 @@ export const copy = {
     voiceHint: "Ucapkan jawaban Anda dengan natural",
     questionOf: "Pertanyaan",
     optional: "Opsional",
+    docTitle: "Formulir Terpandu — 9forms.com",
+    completeDocTitle: "Formulir Selesai — 9forms.com",
   },
   zh: {
     continue: "继续",
@@ -105,6 +109,8 @@ export const copy = {
     voiceHint: "请自然地说出您的答案",
     questionOf: "问题",
     optional: "可选",
+    docTitle: "引导式表单 — 9forms.com",
+    completeDocTitle: "表单填写完成 — 9forms.com",
   },
 } satisfies Record<Language, Record<string, string>>;
 
@@ -317,16 +323,16 @@ export const newPatientForm: AssessmentForm = {
     {
       id: "q_np_name",
       type: "text",
-      optional: true,
+      optional: false,
       prompt: {
         en: "What is your name?",
         id: "Siapa nama panggilan atau nama lengkap Anda?",
-        zh: "请问您的姓名或称呼是？",
+        zh: "请问您的姓名是？",
       },
       helper: {
-        en: "Speak or type your name. You may also skip.",
-        id: "Cukup ucapkan lewat suara atau ketik. Boleh dilewati.",
-        zh: "可直接语音说出姓名，或输入，也可跳过。",
+        en: "Please speak or type your name for your medical record.",
+        id: "Wajib diisi: sebutkan atau ketik nama Anda untuk data rekam medis.",
+        zh: "必填项：请语音报出或输入姓名以便建立就诊档案。",
       },
     },
   ],
@@ -560,13 +566,28 @@ export const kneePainForm: AssessmentForm = {
       optional: true,
       prompt: {
         en: "Anything else you'd like the clinic to know?",
-        id: "Ada hal lain yang ingin Anda sampaikan ke klinik?",
-        zh: "还有什么想告诉诊所的吗？",
+        id: "Ada keluhan atau catatan lain untuk dokter?",
+        zh: "还有什么其他症状想告诉诊所的吗？",
       },
       helper: {
-        en: "You can type or dictate a short note.",
-        id: "Anda bisa mengetik atau mendikte catatan singkat.",
-        zh: "您可以输入或语音记录一段简短说明。",
+        en: "Describe when pain occurs, medications, etc. You may also skip.",
+        id: "Jelaskan kapan nyeri bertambah atau obat yang diminum. Boleh dilewati.",
+        zh: "可补充说明加重情况或正在服用的药物，也可跳过。",
+      },
+    },
+    {
+      id: "q_kp_name",
+      type: "text",
+      optional: false,
+      prompt: {
+        en: "What is your name?",
+        id: "Siapa nama lengkap Anda?",
+        zh: "请问您的姓名是？",
+      },
+      helper: {
+        en: "Please speak or type your name for your medical record.",
+        id: "Wajib diisi: sebutkan atau ketik nama Anda untuk data rekam medis.",
+        zh: "必填项：请输入姓名以便建立就诊档案。",
       },
     },
   ],
@@ -749,16 +770,16 @@ export const elderlyFriendlyForm: AssessmentForm = {
     {
       id: "q_ef_name",
       type: "text",
-      optional: true,
+      optional: false,
       prompt: {
         en: "What is your name or nickname?",
-        id: "Siapa nama atau panggilan Anda?",
-        zh: "请问怎么称呼您？",
+        id: "Siapa nama lengkap atau panggilan Anda?",
+        zh: "请问怎么称呼您的姓名？",
       },
       helper: {
-        en: "Tap the box or speak your name. You may also skip.",
-        id: "Sentuh kotak atau sebutkan nama Anda. Boleh dilewati.",
-        zh: "点击输入框或直接报出姓名，也可跳过。",
+        en: "Please tap the box or speak your name.",
+        id: "Wajib diisi: sentuh kotak atau sebutkan nama Anda.",
+        zh: "必填项：请点击输入框或直接报出姓名。",
       },
     },
   ],
@@ -766,9 +787,234 @@ export const elderlyFriendlyForm: AssessmentForm = {
 
 export const allForms: AssessmentForm[] = [newPatientForm, kneePainForm, elderlyFriendlyForm];
 
+const dynamicFormsCache = new Map<string, AssessmentForm>();
+
+export function registerCustomForm(rawForm: Record<string, unknown>): AssessmentForm {
+  const id = String(rawForm["id"] || "custom-form");
+
+  const rawTitle = rawForm["title"];
+  const title: Localized =
+    typeof rawTitle === "object" && rawTitle !== null
+      ? {
+          en:
+            (rawTitle as Record<string, string>).en ||
+            (rawTitle as Record<string, string>).id ||
+            Object.values(rawTitle)[0] ||
+            "Custom Form",
+          id:
+            (rawTitle as Record<string, string>).id ||
+            (rawTitle as Record<string, string>).en ||
+            "Formulir Kustom",
+          zh:
+            (rawTitle as Record<string, string>).zh ||
+            (rawTitle as Record<string, string>).en ||
+            "自定义表单",
+        }
+      : {
+          en: String(rawTitle || "Custom Form"),
+          id: String(rawTitle || "Formulir Kustom"),
+          zh: String(rawTitle || "自定义表单"),
+        };
+
+  const rawDesc = rawForm["description"];
+  const description: Localized =
+    typeof rawDesc === "object" && rawDesc !== null
+      ? {
+          en:
+            (rawDesc as Record<string, string>).en ||
+            (rawDesc as Record<string, string>).id ||
+            "Please answer the questions below.",
+          id:
+            (rawDesc as Record<string, string>).id ||
+            (rawDesc as Record<string, string>).en ||
+            "Silakan jawab pertanyaan berikut.",
+          zh:
+            (rawDesc as Record<string, string>).zh ||
+            (rawDesc as Record<string, string>).en ||
+            "请回答以下问题。",
+        }
+      : {
+          en: String(rawDesc || "Please answer the questions below."),
+          id: String(rawDesc || "Silakan jawab pertanyaan berikut."),
+          zh: String(rawDesc || "请回答以下问题。"),
+        };
+
+  const rawQuestions = Array.isArray(rawForm["questions"])
+    ? (rawForm["questions"] as Record<string, unknown>[])
+    : [];
+  const questions: Question[] = rawQuestions.map((q: Record<string, unknown>, idx: number) => {
+    const qId = String(q["id"] || `q_${idx + 1}`);
+    const qTypeStr = String(q["type"] || "choice");
+    const qType: QuestionType = ["choice", "yesno", "scale", "text"].includes(qTypeStr)
+      ? (qTypeStr as QuestionType)
+      : "choice";
+
+    const promptText =
+      (typeof q["text"] === "string" ? q["text"] : undefined) ||
+      (typeof q["prompt"] === "object" && q["prompt"] !== null
+        ? (q["prompt"] as Record<string, string>).en || (q["prompt"] as Record<string, string>).id
+        : typeof q["prompt"] === "string"
+          ? q["prompt"]
+          : undefined) ||
+      `Question ${idx + 1}`;
+
+    const prompt: Localized =
+      typeof q["prompt"] === "object" && q["prompt"] !== null
+        ? {
+            en:
+              (q["prompt"] as Record<string, string>).en ||
+              (q["prompt"] as Record<string, string>).id ||
+              promptText,
+            id:
+              (q["prompt"] as Record<string, string>).id ||
+              (q["prompt"] as Record<string, string>).en ||
+              promptText,
+            zh:
+              (q["prompt"] as Record<string, string>).zh ||
+              (q["prompt"] as Record<string, string>).en ||
+              promptText,
+          }
+        : { en: promptText, id: promptText, zh: promptText };
+
+    const helperVal = q["helper"];
+    const helperText = helperVal
+      ? typeof helperVal === "object"
+        ? (helperVal as Record<string, string>).en
+        : String(helperVal)
+      : undefined;
+    const helper: Localized | undefined = helperText
+      ? typeof helperVal === "object" && helperVal !== null
+        ? {
+            en:
+              (helperVal as Record<string, string>).en ||
+              (helperVal as Record<string, string>).id ||
+              helperText,
+            id:
+              (helperVal as Record<string, string>).id ||
+              (helperVal as Record<string, string>).en ||
+              helperText,
+            zh:
+              (helperVal as Record<string, string>).zh ||
+              (helperVal as Record<string, string>).en ||
+              helperText,
+          }
+        : { en: helperText, id: helperText, zh: helperText }
+      : undefined;
+
+    let options: QuestionOption[] | undefined = undefined;
+    if (qType === "choice" && Array.isArray(q["options"])) {
+      options = (q["options"] as Record<string, unknown>[]).map(
+        (opt: Record<string, unknown>, optIdx: number) => {
+          const val = String(
+            opt["value"] ||
+              opt["id"] ||
+              (typeof opt["label"] === "string" ? opt["label"] : `opt_${optIdx + 1}`),
+          );
+          const labelText =
+            typeof opt["label"] === "object" && opt["label"] !== null
+              ? (opt["label"] as Record<string, string>).en ||
+                (opt["label"] as Record<string, string>).id
+              : String(opt["label"] || val);
+          const label: Localized =
+            typeof opt["label"] === "object" && opt["label"] !== null
+              ? {
+                  en:
+                    (opt["label"] as Record<string, string>).en ||
+                    (opt["label"] as Record<string, string>).id ||
+                    labelText,
+                  id:
+                    (opt["label"] as Record<string, string>).id ||
+                    (opt["label"] as Record<string, string>).en ||
+                    labelText,
+                  zh:
+                    (opt["label"] as Record<string, string>).zh ||
+                    (opt["label"] as Record<string, string>).en ||
+                    labelText,
+                }
+              : { en: labelText, id: labelText, zh: labelText };
+          return {
+            value: val,
+            label,
+            score: typeof opt["score"] === "number" ? opt["score"] : 0,
+          };
+        },
+      );
+    } else if (qType === "yesno") {
+      options = [
+        { value: "yes", label: { en: "Yes", id: "Ya", zh: "是" }, score: 5 },
+        { value: "no", label: { en: "No", id: "Tidak", zh: "否" }, score: 0 },
+      ];
+    }
+
+    return {
+      id: qId,
+      type: qType,
+      prompt,
+      helper,
+      options,
+      max: typeof q["max"] === "number" ? q["max"] : qType === "scale" ? 10 : undefined,
+      optional: Boolean(q["optional"]),
+    };
+  });
+
+  const normalizedForm: AssessmentForm = {
+    id,
+    title,
+    description,
+    status: rawForm["status"] === "draft" ? "draft" : "published",
+    theme: (rawForm["theme"] as "default" | "elderly-dark") || "default",
+    questions,
+  };
+
+  dynamicFormsCache.set(id, normalizedForm);
+  return normalizedForm;
+}
+
 export function getFormById(id?: string | null): AssessmentForm {
   if (!id) return newPatientForm;
-  return allForms.find((f) => f.id === id) ?? newPatientForm;
+
+  const preset = allForms.find((f) => f.id === id);
+  if (preset) return preset;
+
+  if (dynamicFormsCache.has(id)) {
+    return dynamicFormsCache.get(id)!;
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem("pf_forms") ?? "[]") as Record<
+        string,
+        unknown
+      >[];
+      const found = stored.find((f) => f && f["id"] === id);
+      if (found) {
+        return registerCustomForm(found);
+      }
+    } catch (e) {
+      void e;
+    }
+  }
+
+  return newPatientForm;
+}
+
+export async function fetchFormByIdAsync(id: string): Promise<AssessmentForm> {
+  const current = getFormById(id);
+  if (current.id === id) return current;
+
+  try {
+    const res = await fetch(`/api/forms?id=${encodeURIComponent(id)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.form) {
+        return registerCustomForm(data.form);
+      }
+    }
+  } catch (err) {
+    console.warn("Could not fetch remote form schema", err);
+  }
+
+  return getFormById(id);
 }
 
 export const demoSubmissions: Submission[] = [
@@ -1107,16 +1353,52 @@ const STORAGE = {
   pendingPapers: "pf_pending_papers",
   formId: "pf_active_form_id",
   voiceAuto: "pf_voice_auto_mode",
+  sessionTs: "pf_intake_session_ts",
 };
+
+const INTAKE_SESSION_TTL_MS = 20 * 60 * 1000; // 20 minutes expiration for patient privacy
+
+function checkAndExpireIntakeSession(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const rawTs =
+      sessionStorage.getItem(STORAGE.sessionTs) || localStorage.getItem(STORAGE.sessionTs);
+    if (rawTs) {
+      const ts = Number(rawTs);
+      if (Date.now() - ts > INTAKE_SESSION_TTL_MS) {
+        // Expired session: wipe all prior patient health draft data
+        resetAssessment();
+        return true;
+      }
+    }
+  } catch (e) {
+    void e;
+  }
+  return false;
+}
+
+function touchIntakeSession() {
+  if (typeof window === "undefined") return;
+  try {
+    const now = String(Date.now());
+    sessionStorage.setItem(STORAGE.sessionTs, now);
+  } catch (e) {
+    void e;
+  }
+}
 
 export function getActiveFormId(): string {
   if (typeof window === "undefined") return newPatientForm.id;
-  return window.localStorage.getItem(STORAGE.formId) || newPatientForm.id;
+  return (
+    sessionStorage.getItem(STORAGE.formId) ||
+    window.localStorage.getItem(STORAGE.formId) ||
+    newPatientForm.id
+  );
 }
 
 export function setActiveFormId(formId: string) {
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORAGE.formId, formId);
+    sessionStorage.setItem(STORAGE.formId, formId);
   }
 }
 
@@ -1156,8 +1438,11 @@ export function setStoredLanguage(language: Language) {
 
 export function getPatientName() {
   if (typeof window === "undefined") return "";
-  const val = window.localStorage.getItem(STORAGE.name) ?? "";
+  if (checkAndExpireIntakeSession()) return "";
+  const val =
+    sessionStorage.getItem(STORAGE.name) ?? window.localStorage.getItem(STORAGE.name) ?? "";
   if (val.trim().toLowerCase() === "tes" || val.trim().toLowerCase() === "test") {
+    sessionStorage.removeItem(STORAGE.name);
     window.localStorage.removeItem(STORAGE.name);
     return "";
   }
@@ -1166,43 +1451,74 @@ export function getPatientName() {
 
 export function setPatientName(name: string) {
   if (typeof window !== "undefined") {
+    touchIntakeSession();
     if (!name || name.trim().toLowerCase() === "tes" || name.trim().toLowerCase() === "test") {
+      sessionStorage.removeItem(STORAGE.name);
       window.localStorage.removeItem(STORAGE.name);
     } else {
-      window.localStorage.setItem(STORAGE.name, name);
+      sessionStorage.setItem(STORAGE.name, name);
     }
   }
 }
 
 export function getStoredAnswers(): Answers {
   if (typeof window === "undefined") return {};
+  if (checkAndExpireIntakeSession()) return {};
   try {
-    return JSON.parse(window.localStorage.getItem(STORAGE.answers) ?? "{}") as Answers;
+    const raw =
+      sessionStorage.getItem(STORAGE.answers) ?? window.localStorage.getItem(STORAGE.answers);
+    return raw ? (JSON.parse(raw) as Answers) : {};
   } catch {
     return {};
   }
 }
 
 export function setStoredAnswers(answers: Answers) {
-  if (typeof window !== "undefined")
-    window.localStorage.setItem(STORAGE.answers, JSON.stringify(answers));
+  if (typeof window !== "undefined") {
+    touchIntakeSession();
+    sessionStorage.setItem(STORAGE.answers, JSON.stringify(answers));
+  }
 }
 
 export function getStoredQuestionIndex() {
   if (typeof window === "undefined") return 0;
-  return Number(window.localStorage.getItem(STORAGE.questionIndex) ?? 0) || 0;
+  if (checkAndExpireIntakeSession()) return 0;
+  return (
+    Number(
+      sessionStorage.getItem(STORAGE.questionIndex) ??
+        window.localStorage.getItem(STORAGE.questionIndex) ??
+        0,
+    ) || 0
+  );
 }
 
 export function setStoredQuestionIndex(index: number) {
-  if (typeof window !== "undefined")
-    window.localStorage.setItem(STORAGE.questionIndex, String(index));
+  if (typeof window !== "undefined") {
+    touchIntakeSession();
+    sessionStorage.setItem(STORAGE.questionIndex, String(index));
+  }
 }
 
 export function resetAssessment() {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(STORAGE.answers);
-  window.localStorage.removeItem(STORAGE.questionIndex);
-  window.localStorage.removeItem(STORAGE.name);
+  try {
+    sessionStorage.removeItem(STORAGE.answers);
+    sessionStorage.removeItem(STORAGE.questionIndex);
+    sessionStorage.removeItem(STORAGE.name);
+    sessionStorage.removeItem(STORAGE.sessionTs);
+    sessionStorage.removeItem("sh_current_submission_id");
+
+    window.localStorage.removeItem(STORAGE.answers);
+    window.localStorage.removeItem(STORAGE.questionIndex);
+    window.localStorage.removeItem(STORAGE.name);
+    window.localStorage.removeItem(STORAGE.sessionTs);
+  } catch (e) {
+    void e;
+  }
+}
+
+export function clearIntakeState() {
+  resetAssessment();
 }
 
 export function saveSubmission(submission: Submission) {

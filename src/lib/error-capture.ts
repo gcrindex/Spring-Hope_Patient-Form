@@ -62,6 +62,23 @@ console.error = (...args: unknown[]) => {
   originalConsoleError(...expanded);
 };
 
+// Filter out noisy Sentry Replay sample rate warnings when Replay integration is disabled/unused
+if (typeof window !== "undefined") {
+  const originalWarn = console.warn.bind(console);
+  console.warn = (...args: unknown[]) => {
+    const msg = args.map((a) => (typeof a === "string" ? a : String(a))).join(" ");
+    if (
+      msg.includes("replaysSessionSampleRate") ||
+      msg.includes("replaysOnErrorSampleRate") ||
+      msg.includes("Sentry Replay") ||
+      msg.includes("Replay integration")
+    ) {
+      return;
+    }
+    originalWarn(...args);
+  };
+}
+
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
   globalThis.addEventListener("unhandledrejection", (event) =>

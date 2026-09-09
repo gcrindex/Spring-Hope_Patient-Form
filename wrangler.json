@@ -13,5 +13,13 @@
       "type": "ESModule",
       "globs": ["**/*.mjs", "**/*.js"]
     }
+  ],
+  "d1_databases": [
+    {
+      "binding": "springhope_db",
+      "database_name": "springhope-db",
+      "database_id": "b95de5af-caa2-4bfa-96c4-2e56957af865",
+      "remote": true
+    }
   ]
 }

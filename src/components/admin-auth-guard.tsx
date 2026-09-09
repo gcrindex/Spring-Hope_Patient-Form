@@ -1,22 +1,43 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export function AdminAuthGuard({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const isAuth =
-    typeof window !== "undefined" &&
-    (localStorage.getItem("pf_loggedin") === "1" ||
-      sessionStorage.getItem("pf_loggedin") === "1" ||
-      localStorage.getItem("pf_admin_auth") === "authenticated" ||
-      sessionStorage.getItem("pf_admin_auth") === "authenticated");
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!isAuth) {
-      navigate({ to: "/admin" });
-    }
-  }, [isAuth, navigate]);
+    let active = true;
+    fetch("/api/admin/status", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : { isAuthenticated: false }))
+      .then((data) => {
+        if (!active) return;
+        if (data && data.isAuthenticated) {
+          setIsAuthorized(true);
+        } else {
+          setIsAuthorized(false);
+          navigate({ to: "/admin" });
+        }
+      })
+      .catch(() => {
+        if (!active) return;
+        setIsAuthorized(false);
+        navigate({ to: "/admin" });
+      });
 
-  if (!isAuth) return null;
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
+
+  if (isAuthorized === null) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-50 text-slate-500 font-medium">
+        Memverifikasi sesi administrator...
+      </div>
+    );
+  }
+
+  if (!isAuthorized) return null;
 
   return <>{children}</>;
 }

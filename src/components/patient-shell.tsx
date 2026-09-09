@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { BrandMark } from "./brand";
 import { LanguageSwitcher } from "./language-switcher";
-import type { Language } from "../lib/patientform";
+import { copy, type Language } from "../lib/patientform";
 
 export function PatientShell({
   children,
@@ -11,6 +11,7 @@ export function PatientShell({
   progress,
   onBack,
   stepLabel,
+  docTitle,
   theme = "default",
 }: {
   children: ReactNode;
@@ -19,8 +20,15 @@ export function PatientShell({
   progress?: number | undefined;
   onBack?: (() => void) | undefined;
   stepLabel?: string | undefined;
+  docTitle?: string | undefined;
   theme?: "default" | "elderly-dark" | undefined;
 }) {
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.title = docTitle || copy[language]?.docTitle || "Guided Form — 9forms.com";
+    }
+  }, [language, docTitle]);
+
   return (
     <div className="patient-page" data-theme={theme}>
       <header className="patient-header">
