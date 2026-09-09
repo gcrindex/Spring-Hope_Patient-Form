@@ -108,11 +108,12 @@ export const Route = createFileRoute("/api/admin/login")({
           );
         } catch (err) {
           console.error("Server admin login error:", err);
+          const msg = err instanceof Error ? err.message : String(err);
           return Response.json(
             {
               success: false,
               error: "SERVER_ERROR",
-              message: "Terjadi kesalahan internal pada server autentikasi.",
+              message: `Terjadi kesalahan internal pada server autentikasi: ${msg}`,
             },
             { status: 500 },
           );

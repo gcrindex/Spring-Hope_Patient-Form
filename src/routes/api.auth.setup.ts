@@ -74,8 +74,13 @@ export const Route = createFileRoute("/api/auth/setup")({
           );
         } catch (err) {
           console.error("Setup error", err);
+          const msg = err instanceof Error ? err.message : String(err);
           return Response.json(
-            { success: false, error: "INTERNAL_ERROR", message: "Gagal memproses akun admin." },
+            {
+              success: false,
+              error: "INTERNAL_ERROR",
+              message: `Gagal memproses akun admin: ${msg}`,
+            },
             { status: 500 },
           );
         }

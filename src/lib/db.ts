@@ -1,5 +1,5 @@
 // src/lib/db.ts
-// Cloudflare D1 Database Adapter with local SQLite fallback for dev
+// Cloudflare D1 Database Adapter with automatic D1 resolution and local SQLite fallback for dev
 
 type D1PreparedStatement = {
   bind: (...values: unknown[]) => D1PreparedStatement;
@@ -21,19 +21,126 @@ type LocalSqliteLike = {
 };
 
 let localDbInstance: LocalSqliteLike | null = null;
+let d1InitDone = false;
+
+function isCloudflareWorker(): boolean {
+  if (typeof navigator !== "undefined" && navigator.userAgent?.includes("Cloudflare-Workers")) {
+    return true;
+  }
+  if (typeof WebSocketPair !== "undefined") {
+    return true;
+  }
+  return false;
+}
+
+function getCloudflareD1(): D1DatabaseLike | null {
+  const g = globalThis as unknown as Record<string, unknown>;
+
+  // 1. Check direct globalThis binding
+  if (g["springhope_db"] && typeof (g["springhope_db"] as D1DatabaseLike).prepare === "function") {
+    return g["springhope_db"] as D1DatabaseLike;
+  }
+
+  // 2. Check globalThis.__env__ (set by Nitro Cloudflare module runtime)
+  const nitroEnv = g["__env__"] as Record<string, unknown> | undefined;
+  if (
+    nitroEnv?.["springhope_db"] &&
+    typeof (nitroEnv["springhope_db"] as D1DatabaseLike).prepare === "function"
+  ) {
+    return nitroEnv["springhope_db"] as D1DatabaseLike;
+  }
+
+  // 3. Check globalThis.env
+  const env = g["env"] as Record<string, unknown> | undefined;
+  if (
+    env?.["springhope_db"] &&
+    typeof (env["springhope_db"] as D1DatabaseLike).prepare === "function"
+  ) {
+    return env["springhope_db"] as D1DatabaseLike;
+  }
+
+  // 4. Check process.env (Node / SSR shims)
+  const proc = g["process"] as { env?: Record<string, unknown> } | undefined;
+  if (
+    proc?.env?.["springhope_db"] &&
+    typeof (proc.env["springhope_db"] as D1DatabaseLike).prepare === "function"
+  ) {
+    return proc.env["springhope_db"] as D1DatabaseLike;
+  }
+
+  return null;
+}
+
+async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
+  if (d1InitDone) return;
+  try {
+    await d1
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS admins (
+          id TEXT PRIMARY KEY,
+          email TEXT UNIQUE NOT NULL,
+          password_hash TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );`,
+      )
+      .run();
+
+    await d1
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS forms (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          schema_json TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );`,
+      )
+      .run();
+
+    await d1
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS submissions (
+          id TEXT PRIMARY KEY,
+          form_id TEXT NOT NULL,
+          patient_name TEXT NOT NULL,
+          score INTEGER DEFAULT 0,
+          risk_level TEXT DEFAULT 'Normal',
+          data_json TEXT NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );`,
+      )
+      .run();
+
+    await d1
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS sessions (
+          id TEXT PRIMARY KEY,
+          admin_id TEXT NOT NULL,
+          expires_at DATETIME NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
+        );`,
+      )
+      .run();
+
+    d1InitDone = true;
+  } catch (e) {
+    console.warn("D1 table init notice:", e);
+  }
+}
 
 async function getLocalSqlite(): Promise<LocalSqliteLike> {
   if (localDbInstance) return localDbInstance;
 
-  type DatabaseSyncConstructor = new (path: string) => LocalSqliteLike;
-  let DatabaseSync: DatabaseSyncConstructor | null = null;
+  let DatabaseSync: (new (path: string) => LocalSqliteLike) | null = null;
   try {
     const mod = await import("node:sqlite");
-    DatabaseSync = mod.DatabaseSync as unknown as DatabaseSyncConstructor;
+    DatabaseSync = mod.DatabaseSync as unknown as new (path: string) => LocalSqliteLike;
   } catch {
     const { createRequire } = await import("node:module");
     const req = createRequire(import.meta.url);
-    DatabaseSync = req("node:sqlite").DatabaseSync as DatabaseSyncConstructor;
+    DatabaseSync = req("node:sqlite").DatabaseSync;
   }
 
   const path = await import("node:path");
@@ -44,7 +151,7 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
     fs.mkdirSync(dbDir, { recursive: true });
   }
   const dbPath = path.join(dbDir, "springhope_local.sqlite");
-  const db = new DatabaseSync(dbPath);
+  const db = new DatabaseSync!(dbPath);
 
   // Initialize tables in local sqlite
   db.exec(`
@@ -87,32 +194,8 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
     CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `);
 
-  // Ensure default admin exists for development
-  try {
-    const defaultHash =
-      "7b11cf19be629b96afec60dd0aad3ab8:2ffad67483b34c63bd18bb6abb4c86574c2aef872ebd62fc04b6d723aec3f65f";
-    db.exec(`
-      INSERT OR REPLACE INTO admins (id, email, password_hash, created_at, updated_at)
-      VALUES ('admin_default', 'admin@gmail.com', '${defaultHash}', datetime('now'), datetime('now'));
-      INSERT OR REPLACE INTO admins (id, email, password_hash, created_at, updated_at)
-      VALUES ('admin_rian', 'rian@gmail.com', '${defaultHash}', datetime('now'), datetime('now'));
-    `);
-  } catch (e) {
-    console.warn("Local default admin init note:", e);
-  }
-
   localDbInstance = db as unknown as LocalSqliteLike;
   return localDbInstance;
-}
-
-function getCloudflareD1(): D1DatabaseLike | null {
-  const g = globalThis as unknown as Record<string, unknown>;
-  if (g["springhope_db"]) return g["springhope_db"] as D1DatabaseLike;
-  const env = g["env"] as Record<string, unknown> | undefined;
-  if (env?.["springhope_db"]) return env["springhope_db"] as D1DatabaseLike;
-  const proc = g["process"] as { env?: Record<string, unknown> } | undefined;
-  if (proc?.env?.["springhope_db"]) return proc.env["springhope_db"] as D1DatabaseLike;
-  return null;
 }
 
 export async function dbQuery<T = Record<string, unknown>>(
@@ -122,9 +205,15 @@ export async function dbQuery<T = Record<string, unknown>>(
   try {
     const d1 = getCloudflareD1();
     if (d1) {
+      await ensureD1Tables(d1);
       const stmt = d1.prepare(sql).bind(...params);
       const result = await stmt.all<T>();
       return (result.results || []) as T[];
+    }
+
+    if (isCloudflareWorker()) {
+      console.error("Cloudflare D1 binding 'springhope_db' was not found on Worker environment.");
+      return [];
     }
 
     const local = await getLocalSqlite();
@@ -148,9 +237,15 @@ export async function dbExecute(sql: string, params: unknown[] = []): Promise<{ 
   try {
     const d1 = getCloudflareD1();
     if (d1) {
+      await ensureD1Tables(d1);
       const stmt = d1.prepare(sql).bind(...params);
       const res = await stmt.run();
       return { changes: res.meta?.changes ?? 1 };
+    }
+
+    if (isCloudflareWorker()) {
+      console.error("Cloudflare D1 binding 'springhope_db' was not found on Worker environment.");
+      return { changes: 0 };
     }
 
     const local = await getLocalSqlite();
