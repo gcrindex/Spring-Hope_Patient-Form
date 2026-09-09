@@ -86,28 +86,32 @@ function QuestionPage() {
 
   const answer = question ? answers[question.id] : undefined;
   const isAnswered = question
-    ? question.optional || (answer !== undefined && answer !== "")
+    ? question.optional ||
+      (typeof answer === "string" ? answer.trim().length > 0 : answer !== undefined && answer !== "")
     : false;
 
-  // Smooth auto-advance transition
-  const triggerAutoAdvance = useCallback(() => {
-    if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+  // Smooth auto-advance transition with forgiving delay for scale questions
+  const triggerAutoAdvance = useCallback(
+    (delayMs = 650) => {
+      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
 
-    autoAdvanceTimerRef.current = setTimeout(() => {
-      setJustSelected(null);
-      if (index >= activeForm.questions.length - 1) {
-        if (privacyConsent) {
-          navigate({ to: "/intake/complete", search: { form: activeForm.id } });
+      autoAdvanceTimerRef.current = setTimeout(() => {
+        setJustSelected(null);
+        if (index >= activeForm.questions.length - 1) {
+          if (privacyConsent) {
+            navigate({ to: "/intake/complete", search: { form: activeForm.id } });
+          }
+        } else {
+          const next = index + 1;
+          setIndex(next);
+          setStoredQuestionIndex(next);
+          setVoiceMappedLabel("");
+          setVoiceIssue("");
         }
-      } else {
-        const next = index + 1;
-        setIndex(next);
-        setStoredQuestionIndex(next);
-        setVoiceMappedLabel("");
-        setVoiceIssue("");
-      }
-    }, 650);
-  }, [index, activeForm.questions.length, navigate, activeForm.id, privacyConsent]);
+      }, delayMs);
+    },
+    [index, activeForm.questions.length, navigate, activeForm.id, privacyConsent],
+  );
 
   const updateAnswer = useCallback(
     (value: string | number, autoAdvance = true) => {
@@ -127,14 +131,16 @@ function QuestionPage() {
         question.id.toLowerCase().includes("name") ||
         question.id === "q_np_name" ||
         question.id === "q_ef_name" ||
-        question.id === "patient_name";
+        question.id === "patient_name" ||
+        question.id === "nama";
 
-      if (typeof value === "string" && isNameQuestion && value.trim()) {
+      if (typeof value === "string" && (isNameQuestion || question.type === "text") && value.trim()) {
         setPatientName(value.trim());
       }
 
       if (autoAdvance) {
-        triggerAutoAdvance();
+        const delay = question.type === "scale" ? 850 : 650;
+        triggerAutoAdvance(delay);
       }
     },
     [question, triggerAutoAdvance],

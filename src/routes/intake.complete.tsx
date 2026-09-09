@@ -9,6 +9,7 @@ import {
   Loader2,
   RefreshCw,
   RotateCcw,
+  ShieldCheck,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
@@ -92,7 +93,12 @@ function CompletionPage() {
   const rawName = useMemo(() => {
     const answerNameEntry = Object.entries(answers).find(
       ([k, v]) =>
-        (k.toLowerCase().includes("name") || k === "q_np_name" || k === "q_ef_name") &&
+        (k.toLowerCase().includes("name") ||
+          k === "q_np_name" ||
+          k === "q_ef_name" ||
+          k === "q_kp_name" ||
+          k === "patient_name" ||
+          k === "nama") &&
         !k.toLowerCase().includes("notes") &&
         !k.toLowerCase().includes("comment") &&
         typeof v === "string" &&
@@ -112,6 +118,21 @@ function CompletionPage() {
       stored !== "新患者"
     ) {
       return stored.trim();
+    }
+
+    // Dynamic fallback for custom/AI forms: take the first non-empty text answer
+    const textEntry = Object.entries(answers).find(
+      ([k, v]) =>
+        typeof v === "string" &&
+        v.trim().length >= 2 &&
+        v.trim().length <= 40 &&
+        !v.includes("\n") &&
+        !k.toLowerCase().includes("notes") &&
+        !k.toLowerCase().includes("comment") &&
+        !k.toLowerCase().includes("symptom"),
+    );
+    if (textEntry && typeof textEntry[1] === "string" && textEntry[1].trim()) {
+      return textEntry[1].trim();
     }
 
     return language === "id" ? "Pasien" : language === "zh" ? "患者" : "Patient";
@@ -141,6 +162,7 @@ function CompletionPage() {
       sent: "Saved & Synced to Cloud DB",
       restart: "Start over",
       backHome: "Back to Home",
+      kioskReset: "Clear Tablet for Next Patient",
       submittingTitle: "Saving your response...",
       submittingSubtitle: "Securing clinical data to database",
       errorTitle: "Submission Failed",
@@ -161,6 +183,7 @@ function CompletionPage() {
       sent: "Tersimpan & Terhubung ke Cloud DB",
       restart: "Mulai dari awal",
       backHome: "Kembali ke Beranda",
+      kioskReset: "Bersihkan Sesi untuk Pasien Berikutnya",
       submittingTitle: "Menyimpan jawaban Anda...",
       submittingSubtitle: "Mengamankan data klinis ke server database",
       errorTitle: "Gagal Mengirim Formulir",
@@ -182,6 +205,7 @@ function CompletionPage() {
       sent: "已同步至云端数据库",
       restart: "重新填写",
       backHome: "返回首页",
+      kioskReset: "清除平板缓存（接待下一位患者）",
       submittingTitle: "正在保存您的回答...",
       submittingSubtitle: "正在将数据安全同步至云端数据库",
       errorTitle: "提交失败",
@@ -281,8 +305,17 @@ function CompletionPage() {
 
   const handleClearAndReset = () => {
     try {
-      sessionStorage.removeItem("sh_current_submission_id");
-      sessionStorage.removeItem("sh_completed_summary");
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("sh_current_submission_id");
+        sessionStorage.removeItem("sh_completed_summary");
+        sessionStorage.removeItem("sh_answers");
+        sessionStorage.removeItem("sh_active_form_id");
+        sessionStorage.removeItem("sh_question_index");
+        sessionStorage.removeItem("sh_patient_name");
+        localStorage.removeItem("sh_answers");
+        localStorage.removeItem("sh_question_index");
+        localStorage.removeItem("sh_patient_name");
+      }
       resetAssessment();
       setStoredQuestionIndex(0);
     } catch (e) {
@@ -447,6 +480,18 @@ function CompletionPage() {
             <Link to="/" onClick={handleClearAndReset} className="sleek-action-btn ghost">
               <Home size={15} />
               <span>{strings.backHome}</span>
+            </Link>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100/80 text-center">
+            <Link
+              to="/intake"
+              search={{ form: activeForm.id }}
+              onClick={handleClearAndReset}
+              className="text-xs text-slate-500 hover:text-blue-600 transition inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-100/60"
+            >
+              <ShieldCheck size={14} className="text-emerald-600" />
+              <span>{strings.kioskReset}</span>
             </Link>
           </div>
         </div>

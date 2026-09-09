@@ -84,9 +84,9 @@ export const Route = createFileRoute("/api/submissions")({
           const totalPages = Math.ceil(total / limit) || 1;
 
           // Query paginated rows
-          const querySql = `SELECT id, form_id, patient_name, score, risk_level, data_json, created_at 
-                            FROM submissions ${whereClause} 
-                            ORDER BY created_at DESC 
+          const querySql = `SELECT id, form_id, patient_name, score, risk_level, data_json, created_at
+                            FROM submissions ${whereClause}
+                            ORDER BY created_at DESC
                             LIMIT ? OFFSET ?`;
           const rows = await dbQuery<{
             id: string;
@@ -97,6 +97,36 @@ export const Route = createFileRoute("/api/submissions")({
             data_json: string;
             created_at: string;
           }>(querySql, [...params, limit, offset]);
+
+          // Compute global stats for the selected form / filter
+          const statsSql = formId
+            ? `SELECT count(*) as total,
+                      COALESCE(SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END), 0) as high,
+                      COALESCE(SUM(CASE WHEN risk_level = 'mod' THEN 1 ELSE 0 END), 0) as mod,
+                      COALESCE(SUM(CASE WHEN risk_level = 'low' THEN 1 ELSE 0 END), 0) as low,
+                      COALESCE(AVG(score), 0) as avgScore
+               FROM submissions WHERE form_id = ?`
+            : `SELECT count(*) as total,
+                      COALESCE(SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END), 0) as high,
+                      COALESCE(SUM(CASE WHEN risk_level = 'mod' THEN 1 ELSE 0 END), 0) as mod,
+                      COALESCE(SUM(CASE WHEN risk_level = 'low' THEN 1 ELSE 0 END), 0) as low,
+                      COALESCE(AVG(score), 0) as avgScore
+               FROM submissions`;
+          const statsRow = await dbQueryOne<{
+            total: number;
+            high: number;
+            mod: number;
+            low: number;
+            avgScore: number;
+          }>(statsSql, formId ? [formId] : []).catch(() => null);
+
+          const stats = {
+            total: statsRow ? Number(statsRow.total) || 0 : total,
+            high: statsRow ? Number(statsRow.high) || 0 : 0,
+            mod: statsRow ? Number(statsRow.mod) || 0 : 0,
+            low: statsRow ? Number(statsRow.low) || 0 : 0,
+            avgScore: statsRow ? Math.round(Number(statsRow.avgScore) || 0) : 0,
+          };
 
           const submissions = await Promise.all(
             rows.map(async (r) => {
@@ -131,6 +161,7 @@ export const Route = createFileRoute("/api/submissions")({
             {
               success: true,
               submissions,
+              stats,
               pagination: {
                 page,
                 limit,
@@ -138,7 +169,7 @@ export const Route = createFileRoute("/api/submissions")({
                 totalPages,
               },
             },
-            { headers: { "Cache-Control": "no-store" } },
+            { status: 200 },
           );
         } catch (err) {
           console.error("Failed to fetch submissions", err);

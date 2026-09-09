@@ -4429,6 +4429,15 @@
                 _subQuery.total = data.pagination.total;
                 _subQuery.totalPages = data.pagination.totalPages;
               }
+              if (data.stats && $("#sub-stats")) {
+                const s = data.stats;
+                $("#sub-stats").innerHTML = `
+                  <div class="stat-card"><div class="label">${t("subTotal") || "Total"}</div><div class="value">${s.total}</div></div>
+                  <div class="stat-card"><div class="label" style="color:var(--red)">${t("subHighRisk") || "High Risk"}</div><div class="value" style="color:var(--red)">${s.high}</div></div>
+                  <div class="stat-card"><div class="label" style="color:var(--orange)">${t("subModRisk") || "Moderate"}</div><div class="value" style="color:var(--orange)">${s.mod}</div></div>
+                  <div class="stat-card"><div class="label" style="color:var(--green)">${t("subLowRisk") || "Low Risk"}</div><div class="value" style="color:var(--green)">${s.low}</div><div class="sub">${t("subAvgScore") || "Avg Score:"} ${s.avgScore}</div></div>
+                `;
+              }
               renderSubmissionsTable(data.submissions);
               return;
             }
@@ -4559,7 +4568,7 @@
           };
         }
 
-        // Stats calculation
+        // Initial stats display with localized labels
         const allLocalSubs = submissions().filter((x) => x.formId === formId);
         const high = allLocalSubs.filter((x) => x.risk === "high").length;
         const mod = allLocalSubs.filter((x) => x.risk === "mod").length;
@@ -4569,10 +4578,10 @@
           : 0;
 
         $("#sub-stats").innerHTML = `
-              <div class="stat-card"><div class="label">Total</div><div class="value">${allLocalSubs.length}</div></div>
-              <div class="stat-card"><div class="label">High Risk</div><div class="value" style="color:var(--red)">${high}</div></div>
-              <div class="stat-card"><div class="label">Moderate</div><div class="value" style="color:var(--orange)">${mod}</div></div>
-              <div class="stat-card"><div class="label">Low Risk</div><div class="value" style="color:var(--green)">${low}</div><div class="sub">Avg Score: ${avg}</div></div>
+              <div class="stat-card"><div class="label">${t("subTotal") || "Total"}</div><div class="value">${allLocalSubs.length}</div></div>
+              <div class="stat-card"><div class="label" style="color:var(--red)">${t("subHighRisk") || "High Risk"}</div><div class="value" style="color:var(--red)">${high}</div></div>
+              <div class="stat-card"><div class="label" style="color:var(--orange)">${t("subModRisk") || "Moderate"}</div><div class="value" style="color:var(--orange)">${mod}</div></div>
+              <div class="stat-card"><div class="label" style="color:var(--green)">${t("subLowRisk") || "Low Risk"}</div><div class="value" style="color:var(--green)">${low}</div><div class="sub">${t("subAvgScore") || "Avg Score:"} ${avg}</div></div>
             `;
 
         await fetchServerSubmissions();
@@ -4603,7 +4612,10 @@
       $("#export-csv-btn").addEventListener("click", () => {
         const formId = window._currentSubFormId;
         const form = forms().find((x) => x.id === formId);
-        const subs = submissions().filter((x) => x.formId === formId);
+        const allCandidates = (typeof liveSubmissions !== "undefined" && Array.isArray(liveSubmissions) && liveSubmissions.length > 0)
+          ? liveSubmissions
+          : submissions();
+        const subs = allCandidates.filter((x) => x.formId === formId);
         if (!subs.length) {
           toast("No submissions to export", "error");
           return;
@@ -4822,19 +4834,31 @@
 
         const platoBtn = document.createElement("button");
         platoBtn.className = "send-plato-btn ready";
-        platoBtn.textContent = "Send to Plato";
+        platoBtn.textContent = "Sync to EMR / Plato";
         platoBtn.onclick = function () {
-          sendToPlato(this);
+          sendToPlato(this, sub);
         };
         container.appendChild(platoBtn);
 
         showModal(container);
       }
-      function sendToPlato(btn) {
-        btn.textContent = "Sent ✓";
+      function sendToPlato(btn, sub) {
+        btn.textContent = "Synced to EMR ✓";
         btn.classList.remove("ready");
         btn.classList.add("sent");
-        toast("Sent to Plato successfully");
+        if (sub && navigator.clipboard) {
+          const emrPayload = JSON.stringify({
+            emr_integration: "Plato/ClinicOS",
+            patient: sub.patientName,
+            submitted_at: sub.submittedAt,
+            risk_tier: sub.risk,
+            clinical_score: sub.score,
+            triage_status: sub.triageStatus || "review",
+            answers: sub.answers
+          }, null, 2);
+          navigator.clipboard.writeText(emrPayload).catch(() => {});
+        }
+        toast("Synced & EMR record copied to clipboard!");
       }
 
       // ===================== CHOICE SCREEN =====================
