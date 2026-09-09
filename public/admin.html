@@ -3798,10 +3798,7 @@
           btnEl.textContent = isReg ? "Daftar & Masuk" : "Sign In";
         }
 
-        if (!isReg) {
-          if (emailInput && !emailInput.value) emailInput.value = "rian@gmail.com";
-          if (passInput && !passInput.value) passInput.value = "admin123";
-        } else {
+        if (isReg) {
           if (passInput) passInput.value = "";
           const confirmPass = $("#login-confirm-pass");
           if (confirmPass) confirmPass.value = "";
