@@ -1102,31 +1102,52 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     }
   }
 
-  // 3. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua")
+  // 3. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua", "第一个", "第二个")
   const ordinalMap: Record<string, number> = {
     pertama: 0,
     kesatu: 0,
     satu: 0,
     first: 0,
     one: 0,
+    "第1个": 0,
+    "第一个": 0,
+    "第1": 0,
+    "第一": 0,
     kedua: 1,
     dua: 1,
     second: 1,
     two: 1,
+    "第2个": 1,
+    "第二个": 1,
+    "第2": 1,
+    "第二": 1,
     ketiga: 2,
     tiga: 2,
     third: 2,
     three: 2,
+    "第3个": 2,
+    "第三个": 2,
+    "第3": 2,
+    "第三": 2,
     keempat: 3,
     empat: 3,
     fourth: 3,
     four: 3,
+    "第4个": 3,
+    "第四个": 3,
+    "第4": 3,
+    "第四": 3,
   };
   for (const [phrase, idx] of Object.entries(ordinalMap)) {
-    const regex = new RegExp(`\\b${phrase}\\b`, "i");
-    if (regex.test(normalized) && idx < options.length) {
+    const isChinese = /[\u4e00-\u9fa5]/.test(phrase);
+    const matched = isChinese
+      ? normalized.includes(phrase)
+      : new RegExp(`\\b${phrase}\\b`, "i").test(normalized);
+
+    if (matched && idx < options.length) {
       if (
         normalized === phrase ||
+        isChinese ||
         normalized.includes("pilihan") ||
         normalized.includes("opsi") ||
         normalized.includes("nomor") ||

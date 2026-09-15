@@ -4924,10 +4924,7 @@
         );
       }
 
-      const AI_API_BASE =
-        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-          ? ""
-          : "https://apps.pesat.ai/patient-form-server";
+      const AI_API_BASE = "";
 
       function openAiBuilder() {
         aiMessages = [];
@@ -4989,11 +4986,11 @@
         let generated = null;
         let replyText = "";
 
-        // 1. Try server endpoint
+        // 1. Try server endpoint (real AI model)
         try {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 3500);
-          const resp = await fetch(AI_API_BASE + "/api/ai/form-draft", {
+          const timer = setTimeout(() => controller.abort(), 25000);
+          const resp = await fetch("/api/ai/form-draft", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ messages: aiMessages }),
@@ -5010,7 +5007,7 @@
             }
           }
         } catch (e) {
-          // Network/local fallback
+          console.warn("AI endpoint notice:", e);
         }
 
         // 2. Intelligent Multi-Industry AI Form Generator fallback (offline-proof)
@@ -5209,12 +5206,14 @@
         const area = $("#ai-preview-area");
         const content = $("#ai-preview-content");
         area.style.display = "block";
+        const lang = currentAdminLang || "en";
+        const formTitle = typeof form.title === "object" ? (form.title[lang] || form.title.en || form.title.id) : form.title;
         let html =
           '<div style="margin-bottom:12px"><strong style="color:var(--navy);font-size:15px">' +
-          escHtml(form.title || "Untitled Form") +
+          escHtml(formTitle || "Untitled Form") +
           "</strong></div>";
         (form.questions || []).forEach((q, i) => {
-          const qText = q.text || q.prompt?.en || q.prompt?.id || "Question " + (i + 1);
+          const qText = (typeof q.prompt === "object" ? (q.prompt[lang] || q.prompt.en || q.prompt.id) : null) || q.text || "Question " + (i + 1);
           html +=
             '<div class="ai-preview-q"><div class="q-head"><span class="q-num">' +
             (i + 1) +
@@ -5229,7 +5228,7 @@
                 .map((o) => {
                   const lbl =
                     typeof o.label === "object"
-                      ? o.label.en || o.label.id || "Option"
+                      ? o.label[lang] || o.label.en || o.label.id || "Option"
                       : String(o.label || "Option");
                   return "<span>" + escHtml(lbl) + " (" + (o.score || 0) + ")</span>";
                 })
@@ -5253,17 +5252,20 @@
       function saveAiForm() {
         if (!aiGeneratedForm) return;
         const f = forms();
-        const title = aiGeneratedForm.title || "AI Generated Form";
+        const lang = currentAdminLang || "en";
+        const title = typeof aiGeneratedForm.title === "object"
+          ? (aiGeneratedForm.title[lang] || aiGeneratedForm.title.en || aiGeneratedForm.title.id)
+          : (aiGeneratedForm.title || "AI Generated Form");
         const id = uniqueSlug(title);
         const questions = (aiGeneratedForm.questions || []).map((q, i) => ({
           id: "q_" + uid(),
-          text: q.text || q.prompt?.en || q.prompt?.id || "Question " + (i + 1),
+          text: (typeof q.prompt === "object" ? (q.prompt[lang] || q.prompt.en || q.prompt.id) : null) || q.text || "Question " + (i + 1),
           type: q.type || "choice",
           options: q.options
             ? q.options.map((o) => ({
                 label:
                   typeof o.label === "object"
-                    ? o.label.en || o.label.id || "Option"
+                    ? o.label[lang] || o.label.en || o.label.id || "Option"
                     : String(o.label || "Option"),
                 score: typeof o.score === "number" ? o.score : 1,
               }))
@@ -5286,7 +5288,7 @@
         toast("AI form created! Review and edit in the builder.");
       }
 
-      // Voice input
+      // Voice input with multilingual support
       function toggleVoice() {
         const hasSpeech = "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
         if (!hasSpeech) {
@@ -5314,7 +5316,8 @@
           aiRecognition = new SR();
           aiRecognition.continuous = false;
           aiRecognition.interimResults = true;
-          aiRecognition.lang = "en-US";
+          const langMap = { id: "id-ID", zh: "zh-CN", en: "en-US" };
+          aiRecognition.lang = langMap[currentAdminLang] || "en-US";
           aiRecognition.onresult = (e) => {
             let transcript = "";
             for (let i = e.resultIndex; i < e.results.length; i++)
