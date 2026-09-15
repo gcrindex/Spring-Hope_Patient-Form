@@ -51,13 +51,19 @@ export const Route = createFileRoute("/api/forms")({
             "SELECT id, title, schema_json, created_at, updated_at FROM forms ORDER BY updated_at DESC",
           );
 
-          const forms = rows.map((r) => {
+          let forms = rows.map((r) => {
             try {
               return JSON.parse(r.schema_json);
             } catch {
               return { id: r.id, title: { en: r.title, id: r.title, zh: r.title }, questions: [] };
             }
           });
+
+          // Seed default template if database is completely empty
+          if (forms.length === 0) {
+            const { newPatientForm } = await import("../lib/patientform");
+            forms = [newPatientForm];
+          }
 
           return Response.json(
             { success: true, forms },
