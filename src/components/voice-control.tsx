@@ -104,12 +104,7 @@ export function VoiceControl({
   }
 
   if (state === "error") {
-    const message =
-      error === "permission-denied"
-        ? t.denied
-        : error === "not-supported"
-          ? t.unsupported
-          : t.noSpeech;
+    const message = error === "permission-denied" ? t.denied : t.noSpeech;
     return (
       <div className="voice-card voice-card-error" role="alert">
         <div className="voice-orb voice-orb-error">
@@ -119,11 +114,9 @@ export function VoiceControl({
           <div className="text-sm font-extrabold text-ink">{message}</div>
           <div className="mt-1 text-xs text-muted">{t.manual}</div>
         </div>
-        {error !== "not-supported" && (
-          <button type="button" className="small-text-button" onClick={onStart}>
-            {t.retry}
-          </button>
-        )}
+        <button type="button" className="small-text-button" onClick={onStart}>
+          {t.retry}
+        </button>
       </div>
     );
   }

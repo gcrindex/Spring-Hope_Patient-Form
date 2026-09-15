@@ -87,7 +87,7 @@ function QuestionPage() {
   const answer = question ? answers[question.id] : undefined;
   const isAnswered = question
     ? question.optional ||
-      (typeof answer === "string" ? answer.trim().length > 0 : answer !== undefined && answer !== "")
+      (typeof answer === "string" ? answer.trim().length > 0 : answer !== undefined)
     : false;
 
   // Smooth auto-advance transition with forgiving delay for scale questions

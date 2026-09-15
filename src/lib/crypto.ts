@@ -57,6 +57,7 @@ export async function decryptData(encryptedPayload: string): Promise<string> {
 
   const ivHex = parts[1];
   const cipherHex = parts[2];
+  if (!ivHex || !cipherHex) return encryptedPayload;
 
   const iv = new Uint8Array(ivHex.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || []);
   const cipherBytes = new Uint8Array(

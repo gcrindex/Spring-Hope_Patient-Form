@@ -101,7 +101,7 @@ export async function deleteSession(token: string): Promise<void> {
 export function parseSessionCookie(request: Request): string | null {
   const cookieHeader = request.headers.get("cookie") || "";
   const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
+  return match && match[1] ? decodeURIComponent(match[1]) : null;
 }
 
 export function createSessionCookieHeader(token: string, isHttps = false): string {

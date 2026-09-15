@@ -27,7 +27,7 @@ function isCloudflareWorker(): boolean {
   if (typeof navigator !== "undefined" && navigator.userAgent?.includes("Cloudflare-Workers")) {
     return true;
   }
-  if (typeof WebSocketPair !== "undefined") {
+  if (typeof (globalThis as Record<string, unknown>)["WebSocketPair"] !== "undefined") {
     return true;
   }
   return false;
@@ -230,7 +230,7 @@ export async function dbQueryOne<T = Record<string, unknown>>(
   params: unknown[] = [],
 ): Promise<T | null> {
   const rows = await dbQuery<T>(sql, params);
-  return rows.length > 0 ? rows[0] : null;
+  return rows.length > 0 && rows[0] !== undefined ? rows[0] : null;
 }
 
 export async function dbExecute(sql: string, params: unknown[] = []): Promise<{ changes: number }> {

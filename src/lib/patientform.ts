@@ -15,10 +15,10 @@ export type Question = {
   id: string;
   type: QuestionType;
   prompt: Localized;
-  helper?: Localized;
-  options?: QuestionOption[];
-  max?: number;
-  optional?: boolean;
+  helper?: Localized | undefined;
+  options?: QuestionOption[] | undefined;
+  max?: number | undefined;
+  optional?: boolean | undefined;
 };
 
 export type AssessmentForm = {
@@ -789,55 +789,22 @@ export const allForms: AssessmentForm[] = [newPatientForm, kneePainForm, elderly
 
 const dynamicFormsCache = new Map<string, AssessmentForm>();
 
+function parseLocalized(raw: unknown, fallback: string): Localized {
+  if (raw && typeof raw === "object") {
+    const rec = raw as Record<string, unknown>;
+    const en = typeof rec["en"] === "string" ? rec["en"] : typeof rec["id"] === "string" ? rec["id"] : fallback;
+    const id = typeof rec["id"] === "string" ? rec["id"] : typeof rec["en"] === "string" ? rec["en"] : fallback;
+    const zh = typeof rec["zh"] === "string" ? rec["zh"] : typeof rec["en"] === "string" ? rec["en"] : fallback;
+    return { en, id, zh };
+  }
+  const text = typeof raw === "string" && raw.trim().length > 0 ? raw : fallback;
+  return { en: text, id: text, zh: text };
+}
+
 export function registerCustomForm(rawForm: Record<string, unknown>): AssessmentForm {
   const id = String(rawForm["id"] || "custom-form");
-
-  const rawTitle = rawForm["title"];
-  const title: Localized =
-    typeof rawTitle === "object" && rawTitle !== null
-      ? {
-          en:
-            (rawTitle as Record<string, string>).en ||
-            (rawTitle as Record<string, string>).id ||
-            Object.values(rawTitle)[0] ||
-            "Custom Form",
-          id:
-            (rawTitle as Record<string, string>).id ||
-            (rawTitle as Record<string, string>).en ||
-            "Formulir Kustom",
-          zh:
-            (rawTitle as Record<string, string>).zh ||
-            (rawTitle as Record<string, string>).en ||
-            "自定义表单",
-        }
-      : {
-          en: String(rawTitle || "Custom Form"),
-          id: String(rawTitle || "Formulir Kustom"),
-          zh: String(rawTitle || "自定义表单"),
-        };
-
-  const rawDesc = rawForm["description"];
-  const description: Localized =
-    typeof rawDesc === "object" && rawDesc !== null
-      ? {
-          en:
-            (rawDesc as Record<string, string>).en ||
-            (rawDesc as Record<string, string>).id ||
-            "Please answer the questions below.",
-          id:
-            (rawDesc as Record<string, string>).id ||
-            (rawDesc as Record<string, string>).en ||
-            "Silakan jawab pertanyaan berikut.",
-          zh:
-            (rawDesc as Record<string, string>).zh ||
-            (rawDesc as Record<string, string>).en ||
-            "请回答以下问题。",
-        }
-      : {
-          en: String(rawDesc || "Please answer the questions below."),
-          id: String(rawDesc || "Silakan jawab pertanyaan berikut."),
-          zh: String(rawDesc || "请回答以下问题。"),
-        };
+  const title = parseLocalized(rawForm["title"], "Custom Form");
+  const description = parseLocalized(rawForm["description"], "Please answer the questions below.");
 
   const rawQuestions = Array.isArray(rawForm["questions"])
     ? (rawForm["questions"] as Record<string, unknown>[])
@@ -851,54 +818,12 @@ export function registerCustomForm(rawForm: Record<string, unknown>): Assessment
 
     const promptText =
       (typeof q["text"] === "string" ? q["text"] : undefined) ||
-      (typeof q["prompt"] === "object" && q["prompt"] !== null
-        ? (q["prompt"] as Record<string, string>).en || (q["prompt"] as Record<string, string>).id
-        : typeof q["prompt"] === "string"
-          ? q["prompt"]
-          : undefined) ||
       `Question ${idx + 1}`;
-
-    const prompt: Localized =
-      typeof q["prompt"] === "object" && q["prompt"] !== null
-        ? {
-            en:
-              (q["prompt"] as Record<string, string>).en ||
-              (q["prompt"] as Record<string, string>).id ||
-              promptText,
-            id:
-              (q["prompt"] as Record<string, string>).id ||
-              (q["prompt"] as Record<string, string>).en ||
-              promptText,
-            zh:
-              (q["prompt"] as Record<string, string>).zh ||
-              (q["prompt"] as Record<string, string>).en ||
-              promptText,
-          }
-        : { en: promptText, id: promptText, zh: promptText };
+    const prompt = parseLocalized(q["prompt"] || promptText, promptText);
 
     const helperVal = q["helper"];
-    const helperText = helperVal
-      ? typeof helperVal === "object"
-        ? (helperVal as Record<string, string>).en
-        : String(helperVal)
-      : undefined;
-    const helper: Localized | undefined = helperText
-      ? typeof helperVal === "object" && helperVal !== null
-        ? {
-            en:
-              (helperVal as Record<string, string>).en ||
-              (helperVal as Record<string, string>).id ||
-              helperText,
-            id:
-              (helperVal as Record<string, string>).id ||
-              (helperVal as Record<string, string>).en ||
-              helperText,
-            zh:
-              (helperVal as Record<string, string>).zh ||
-              (helperVal as Record<string, string>).en ||
-              helperText,
-          }
-        : { en: helperText, id: helperText, zh: helperText }
+    const helper: Localized | undefined = helperVal
+      ? parseLocalized(helperVal, "")
       : undefined;
 
     let options: QuestionOption[] | undefined = undefined;
@@ -910,28 +835,7 @@ export function registerCustomForm(rawForm: Record<string, unknown>): Assessment
               opt["id"] ||
               (typeof opt["label"] === "string" ? opt["label"] : `opt_${optIdx + 1}`),
           );
-          const labelText =
-            typeof opt["label"] === "object" && opt["label"] !== null
-              ? (opt["label"] as Record<string, string>).en ||
-                (opt["label"] as Record<string, string>).id
-              : String(opt["label"] || val);
-          const label: Localized =
-            typeof opt["label"] === "object" && opt["label"] !== null
-              ? {
-                  en:
-                    (opt["label"] as Record<string, string>).en ||
-                    (opt["label"] as Record<string, string>).id ||
-                    labelText,
-                  id:
-                    (opt["label"] as Record<string, string>).id ||
-                    (opt["label"] as Record<string, string>).en ||
-                    labelText,
-                  zh:
-                    (opt["label"] as Record<string, string>).zh ||
-                    (opt["label"] as Record<string, string>).en ||
-                    labelText,
-                }
-              : { en: labelText, id: labelText, zh: labelText };
+          const label = parseLocalized(opt["label"] || val, val);
           return {
             value: val,
             label,
