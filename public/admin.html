@@ -3429,6 +3429,11 @@
           subColRisk: "Risk",
           subColAction: "Action",
           subViewDetail: "View",
+          allRisks: "All Risks",
+          highRisk: "High Risk",
+          modRisk: "Moderate",
+          lowRisk: "Low Risk",
+          searchPatientPlaceholder: "Search patient name...",
           backToDashboard: "← Back to Dashboard",
           createFormTitle: "Create New Form",
           createFormDesc: "Choose how you'd like to build your assessment form",
@@ -3487,6 +3492,11 @@
           subColRisk: "Tingkat Risiko",
           subColAction: "Aksi",
           subViewDetail: "Lihat Detail",
+          allRisks: "Semua Tingkat Risiko",
+          highRisk: "Risiko Tinggi",
+          modRisk: "Risiko Sedang",
+          lowRisk: "Risiko Rendah",
+          searchPatientPlaceholder: "Cari nama pasien...",
           backToDashboard: "← Kembali ke Dashboard",
           createFormTitle: "Buat Formulir Baru",
           createFormDesc: "Pilih cara pembuatan formulir yang Anda inginkan",
@@ -3547,6 +3557,11 @@
           subColRisk: "风险等级",
           subColAction: "操作",
           subViewDetail: "查看详情",
+          allRisks: "所有风险等级",
+          highRisk: "高风险",
+          modRisk: "中风险",
+          lowRisk: "低风险",
+          searchPatientPlaceholder: "搜索患者姓名...",
           backToDashboard: "← 返回控制台",
           createFormTitle: "创建新表单",
           createFormDesc: "选择您想创建表单的方式",
@@ -4504,17 +4519,23 @@
         window._currentSubFormId = formId;
         _subQuery.formId = formId;
 
-        $("#sub-topbar-title").textContent = f.title + " — Submissions";
-        $("#sub-title").textContent = "Submissions";
+        const formTitle = typeof f.title === "object"
+          ? (f.title[currentAdminLang] || f.title.en || f.title.id || Object.values(f.title)[0])
+          : (f.title || "Form");
+
+        $("#sub-topbar-title").textContent = formTitle + " — " + t("subTitle");
+        $("#sub-title").textContent = t("subTitle");
 
         // Form filter dropdown
         const filter = $("#sub-form-filter");
         if (filter) {
           filter.innerHTML = allForms
-            .map(
-              (form) =>
-                `<option value="${form.id}" ${form.id === formId ? "selected" : ""}>${escHtml(form.title)}</option>`,
-            )
+            .map((form) => {
+              const optTitle = typeof form.title === "object"
+                ? (form.title[currentAdminLang] || form.title.en || form.title.id || Object.values(form.title)[0])
+                : (form.title || "Form");
+              return `<option value="${form.id}" ${form.id === formId ? "selected" : ""}>${escHtml(optTitle)}</option>`;
+            })
             .join("");
           filter.onchange = (e) => {
             _subQuery.page = 1;
@@ -4525,6 +4546,13 @@
         // Risk filter dropdown
         const riskFilter = $("#sub-risk-filter");
         if (riskFilter) {
+          const currentRisk = _subQuery.risk || "";
+          riskFilter.innerHTML = `
+            <option value="" ${currentRisk === "" ? "selected" : ""}>${t("allRisks")}</option>
+            <option value="high" ${currentRisk === "high" ? "selected" : ""}>${t("highRisk")}</option>
+            <option value="mod" ${currentRisk === "mod" ? "selected" : ""}>${t("modRisk")}</option>
+            <option value="low" ${currentRisk === "low" ? "selected" : ""}>${t("lowRisk")}</option>
+          `;
           riskFilter.onchange = (e) => {
             _subQuery.risk = e.target.value;
             _subQuery.page = 1;
@@ -4535,6 +4563,7 @@
         // Search input with debounce
         const searchInput = $("#sub-search-input");
         if (searchInput) {
+          searchInput.placeholder = t("searchPatientPlaceholder");
           searchInput.oninput = (e) => {
             clearTimeout(_subSearchDebounce);
             _subSearchDebounce = setTimeout(() => {
