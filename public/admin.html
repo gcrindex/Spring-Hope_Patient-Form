@@ -3483,17 +3483,6 @@
           // ignore
         }
       }
-            sessionStorage.removeItem("pf_loggedin");
-            localStorage.removeItem("pf_admin_auth");
-            sessionStorage.removeItem("pf_admin_auth");
-            localStorage.removeItem("pf_admin_email");
-            document.cookie = "pf_loggedin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            updateUserSidebar();
-          }
-        } catch {
-          // ignore
-        }
-      }
 
       // ===================== MULTILINGUAL I18N =====================
       const adminI18n = {
