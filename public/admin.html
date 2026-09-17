@@ -2751,6 +2751,13 @@
           localStorage.setItem(k, JSON.stringify(v));
         },
       };
+      let liveSubmissions = null;
+      function forms() {
+        return LS.get("pf_forms") || [];
+      }
+      function submissions() {
+        return liveSubmissions || LS.get("pf_submissions") || [];
+      }
       function uid() {
         return "_" + Math.random().toString(36).slice(2, 10);
       }
@@ -4086,10 +4093,6 @@
       });
 
       // ===================== DASHBOARD & SUBMISSIONS =====================
-      let forms = () => LS.get("pf_forms") || [];
-      let liveSubmissions = null;
-      let submissions = () => liveSubmissions || LS.get("pf_submissions") || [];
-
       async function syncServerSubmissions() {
         try {
           const res = await fetch("/api/submissions");
