@@ -8,13 +8,16 @@ export const Route = createFileRoute("/api/admin/status")({
         try {
           const totalAdmins = await countAdmins();
           const user = await authenticateRequest(request);
+          const canInvite =
+            user &&
+            (user.role === "superadmin" || user.role === "admin" || user.planTier === "business");
 
           return Response.json(
             {
               success: true,
               isSetup: totalAdmins > 0,
               isAuthenticated: Boolean(user),
-              inviteToken: user ? getBusinessInviteSecret() : null,
+              inviteToken: canInvite ? getBusinessInviteSecret() : null,
               user: user
                 ? {
                     adminId: user.adminId,
