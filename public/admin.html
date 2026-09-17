@@ -3801,18 +3801,15 @@
       function getRoute() {
         const rawHash = location.hash;
         const h = rawHash.split("?")[0];
-        const hasInvite = Boolean(getInviteCode());
         if (h && h !== "#" && h !== "#/") {
-          if (h === "#/login" && isLoggedIn() && !hasInvite) return "#/dashboard";
-          if (h === "#/register" && isLoggedIn() && !hasInvite) return "#/dashboard";
+          if (h === "#/login" && isLoggedIn()) return "#/dashboard";
           return h;
         }
-        return isLoggedIn() && !hasInvite ? "#/dashboard" : "#/login";
+        return isLoggedIn() ? "#/dashboard" : "#/login";
       }
 
       function parseRoute() {
         const h = getRoute();
-        const hasInvite = Boolean(getInviteCode());
         if (h.startsWith("#/builder/")) {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           return { screen: "builder", id: h.split("/")[2], targetHash: location.hash };
@@ -3833,16 +3830,15 @@
           return { screen: "choice", targetHash: "#/new" };
         }
         if (h === "#/register") {
-          if (isLoggedIn() && !hasInvite) return { screen: "dashboard", targetHash: "#/dashboard" };
           return { screen: "login", targetHash: location.hash, authMode: "register" };
         }
         if (h === "#/login") {
-          if (isLoggedIn() && !hasInvite) return { screen: "dashboard", targetHash: "#/dashboard" };
+          if (isLoggedIn()) return { screen: "dashboard", targetHash: "#/dashboard" };
           return { screen: "login", targetHash: location.hash, authMode: "login" };
         }
         return {
-          screen: isLoggedIn() && !hasInvite ? "dashboard" : "login",
-          targetHash: isLoggedIn() && !hasInvite ? "#/dashboard" : "#/login",
+          screen: isLoggedIn() ? "dashboard" : "login",
+          targetHash: isLoggedIn() ? "#/dashboard" : "#/login",
         };
       }
 
@@ -3980,22 +3976,27 @@
       $("#tab-register-btn")?.addEventListener("click", () => window.switchAuthTab("register"));
 
       async function updateLoginScreenState() {
+        const inviteCode = getInviteCode();
+        const isRegister = location.hash.startsWith("#/register") || _authMode === "register" || Boolean(inviteCode);
+
+        if (isRegister) {
+          setAuthMode("register");
+          return;
+        }
+
         const auth = await checkServerAuth();
         if (auth.isAuthenticated) {
           navigate("#/dashboard");
           return;
         }
-        const inviteCode = getInviteCode();
-        if (inviteCode || location.hash.startsWith("#/register") || _authMode === "register") {
-          setAuthMode("register");
-        } else if (!auth.isSetup) {
+        if (!auth.isSetup) {
           setAuthMode("register");
           const hintEl = $("#login-hint");
           if (hintEl)
             hintEl.textContent =
               "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
         } else {
-          setAuthMode(_authMode || "login");
+          setAuthMode("login");
         }
       }
 
