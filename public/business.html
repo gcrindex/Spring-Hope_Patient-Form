@@ -1896,7 +1896,7 @@
               display: inline-block;
             "
           />
-          <h2 id="login-title">Admin Portal</h2>
+          <h2 id="login-title">Business Portal</h2>
         </div>
 
         <!-- Mode Switcher Tabs -->
@@ -1945,7 +1945,7 @@
               transition: all 0.2s;
             "
           >
-            Buat Akun Baru
+            Registrasi Akun Bisnis
           </button>
         </div>
 
@@ -1967,26 +1967,26 @@
         >
           <span style="font-size: 15px">&#10024;</span>
           <div>
-            <div>Business Plan (Level Max) Invite Aktif</div>
-            <div style="font-size: 11px; font-weight: 400; color: #047857; margin-top: 2px">
-              Daftar sekarang untuk membuka akses akun Level Max otomatis.
+            <div id="invite-banner-title">Akun Bisnis (Level Max)</div>
+            <div id="invite-banner-sub" style="font-size: 11px; font-weight: 400; color: #047857; margin-top: 2px">
+              Lengkapi pendaftaran untuk mengaktifkan akun Business Plan Anda.
             </div>
           </div>
         </div>
 
         <div class="login-field">
-          <label id="login-email-label">Email Admin</label>
-          <input type="email" id="login-email" placeholder="admin@springhope.clinic" />
+          <label id="login-email-label">Email Bisnis</label>
+          <input type="email" id="login-email" placeholder="name@company.com" />
         </div>
         <div class="login-field">
           <label id="login-pass-label">Password</label>
           <input type="password" id="login-pass" placeholder="••••••••" />
         </div>
         <div class="login-field" id="login-confirm-field" style="display: none">
-          <label>Konfirmasi Password</label>
+          <label id="login-confirm-label">Konfirmasi Password</label>
           <input type="password" id="login-confirm-pass" placeholder="••••••••" />
         </div>
-        <p class="login-hint" id="login-hint">Masukkan kredensial administrator Anda</p>
+        <p class="login-hint" id="login-hint">Masukkan kredensial akun bisnis Anda</p>
         <button class="login-btn" id="login-btn">Sign In</button>
         <a href="/" class="login-back-btn" id="login-back-btn">
           <svg
@@ -2124,33 +2124,6 @@
             <h1 style="margin: 0" data-i18n="myForms">My Forms</h1>
           </div>
           <div class="page-header-actions">
-            <button
-              type="button"
-              class="btn btn-ghost"
-              id="invite-max-btn"
-              style="
-                border: 1px solid #bfdbfe;
-                background: #eff6ff;
-                color: #1d4ed8;
-                font-weight: 700;
-                font-size: 12px;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                padding: 7px 12px;
-                border-radius: 8px;
-                cursor: pointer;
-              "
-              title="Salin tautan invite Level Max (Business Plan) untuk tim/klien"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <line x1="19" y1="8" x2="19" y2="14"></line>
-                <line x1="22" y1="11" x2="16" y2="11"></line>
-              </svg>
-              <span>Invite Max User</span>
-            </button>
             <div class="admin-lang-picker-light">
               <button type="button" class="lang-btn" data-lang="en">EN</button>
               <button type="button" class="lang-btn" data-lang="id">ID</button>
@@ -3565,6 +3538,20 @@
           aiPlaceholder: "Describe your form or ask a question...",
           aiSend: "Send",
           aiListening: "Listening...",
+          loginPortalTitle: "Business Portal",
+          loginPortalDesc: "Enter your business account credentials",
+          registerPortalTitle: "Business Registration",
+          registerPortalDesc: "Complete registration to activate your Business Plan account",
+          tabSignIn: "Sign In",
+          tabRegister: "Business Registration",
+          labelEmail: "Business Email",
+          labelPassword: "Password",
+          labelConfirmPassword: "Confirm Password",
+          btnSignIn: "Sign In",
+          btnRegister: "Register & Sign In",
+          bannerTitle: "Business Plan (Level Max) Active",
+          bannerDesc: "Register now to automatically activate your Level Max Business Plan account.",
+          businessRole: "✦ Business Plan",
         },
         id: {
           myForms: "Formulir Saya",
@@ -3630,6 +3617,20 @@
           aiPlaceholder: "Ketik kebutuhan form atau gunakan suara...",
           aiSend: "Kirim",
           aiListening: "Mendengarkan suara...",
+          loginPortalTitle: "Business Portal",
+          loginPortalDesc: "Masukkan kredensial akun bisnis Anda",
+          registerPortalTitle: "Registrasi Akun Bisnis",
+          registerPortalDesc: "Lengkapi pendaftaran untuk mengaktifkan Akun Bisnis Anda",
+          tabSignIn: "Sign In",
+          tabRegister: "Registrasi Akun Bisnis",
+          labelEmail: "Email Bisnis",
+          labelPassword: "Password",
+          labelConfirmPassword: "Konfirmasi Password",
+          btnSignIn: "Sign In",
+          btnRegister: "Daftar & Masuk",
+          bannerTitle: "Undangan Akun Bisnis (Level Max) Aktif",
+          bannerDesc: "Daftar sekarang untuk langsung mengaktifkan akun Business Plan Anda.",
+          businessRole: "✦ Business Plan",
         },
         zh: {
           myForms: "我的表单",
@@ -3693,6 +3694,20 @@
           aiPlaceholder: "输入表单需求或使用语音...",
           aiSend: "发送",
           aiListening: "正在聆听语音...",
+          loginPortalTitle: "企业商业门户",
+          loginPortalDesc: "输入您的企业商业账户凭据",
+          registerPortalTitle: "企业账户注册",
+          registerPortalDesc: "完成注册以激活您的企业商业版账户",
+          tabSignIn: "登录",
+          tabRegister: "企业账户注册",
+          labelEmail: "企业邮箱",
+          labelPassword: "密码",
+          labelConfirmPassword: "确认密码",
+          btnSignIn: "登录",
+          btnRegister: "注册并登录",
+          bannerTitle: "企业商业版（最高级别）邀请已激活",
+          bannerDesc: "立即注册以自动激活最高级别的企业商业版功能。",
+          businessRole: "✦ 企业商业版",
         },
       };
 
@@ -3741,10 +3756,10 @@
         // Update document title dynamically based on active language
         document.title =
           currentAdminLang === "id"
-            ? "Admin Form Builder — 9forms.com"
+            ? "Business Portal — 9forms.com"
             : currentAdminLang === "zh"
-              ? "表单设计后台 — 9forms.com"
-              : "Form Builder Admin — 9forms.com";
+              ? "企业商业门户 — 9forms.com"
+              : "Business Portal — 9forms.com";
 
         if (aiRecognition) {
           aiRecognition.lang =
@@ -3764,6 +3779,7 @@
         }
 
         const r = parseRoute();
+        if (r.screen === "login") setAuthMode(_authMode || "login");
         if (r.screen === "dashboard") renderDashboard();
         if (r.screen === "submissions") renderSubmissions(r.formId);
         if (r.screen === "choice") renderChoiceScreen();
@@ -3918,40 +3934,44 @@
         const titleEl = $("#login-title");
         const hintEl = $("#login-hint");
         const btnEl = $("#login-btn");
-        const emailInput = $("#login-email");
+        const emailLabel = $("#login-email-label");
+        const passLabel = $("#login-pass-label");
+        const confirmLabel = $("#login-confirm-label");
         const passInput = $("#login-pass");
         const inviteBanner = $("#invite-badge-banner");
 
         if (tabLogin) {
+          tabLogin.textContent = t("tabSignIn");
           tabLogin.style.background = isReg ? "transparent" : "white";
           tabLogin.style.color = isReg ? "var(--text3)" : "var(--navy)";
         }
         if (tabReg) {
+          tabReg.textContent = t("tabRegister");
           tabReg.style.background = isReg ? "white" : "transparent";
           tabReg.style.color = isReg ? "var(--navy)" : "var(--text3)";
         }
         if (confirmField) {
           confirmField.style.display = isReg ? "block" : "none";
         }
+        if (emailLabel) emailLabel.textContent = t("labelEmail");
+        if (passLabel) passLabel.textContent = t("labelPassword");
+        if (confirmLabel) confirmLabel.textContent = t("labelConfirmPassword");
+
         if (inviteBanner) {
-          inviteBanner.style.display = isReg && inviteCode ? "flex" : "none";
+          inviteBanner.style.display = isReg ? "flex" : "none";
+          const bTitle = $("#invite-banner-title");
+          const bSub = $("#invite-banner-sub");
+          if (bTitle) bTitle.textContent = t("bannerTitle");
+          if (bSub) bSub.textContent = t("bannerDesc");
         }
         if (titleEl) {
-          titleEl.textContent = isReg
-            ? inviteCode
-              ? "Registrasi Level Max (Business)"
-              : "Registrasi Akun Baru"
-            : "Admin Portal";
+          titleEl.textContent = isReg ? t("registerPortalTitle") : t("loginPortalTitle");
         }
         if (hintEl) {
-          hintEl.textContent = isReg
-            ? inviteCode
-              ? "Lengkapi pendaftaran untuk mengaktifkan akun Business Plan (Level Max)"
-              : "Buat akun baru atau atur ulang password Anda"
-            : "Masukkan email dan password Anda";
+          hintEl.textContent = isReg ? t("registerPortalDesc") : t("loginPortalDesc");
         }
         if (btnEl) {
-          btnEl.textContent = isReg ? "Daftar & Masuk" : "Sign In";
+          btnEl.textContent = isReg ? t("btnRegister") : t("btnSignIn");
         }
 
         if (isReg) {
@@ -4088,18 +4108,18 @@
 
       $("#invite-max-btn")?.addEventListener("click", () => {
         const token = _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
-        const inviteUrl = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}`;
+        const inviteUrl = `${window.location.origin}/admin.html#/register?invite=${encodeURIComponent(token)}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(inviteUrl)
             .then(() => {
-              toast("Tautan Registrasi Akun Bisnis berhasil disalin!", "success");
+              toast("Tautan Rahasia Invite Level Max (Business) disalin!", "success");
             })
             .catch(() => {
-              prompt("Salin Tautan Registrasi Akun Bisnis:", inviteUrl);
+              prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
             });
         } else {
-          prompt("Salin Tautan Registrasi Akun Bisnis:", inviteUrl);
+          prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
         }
       });
 

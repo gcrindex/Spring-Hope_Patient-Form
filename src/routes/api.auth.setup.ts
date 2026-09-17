@@ -49,8 +49,19 @@ export const Route = createFileRoute("/api/auth/setup")({
             email === "superadmin@9forms.com";
           const isBusinessInvite = isValidBusinessInvite(rawInvite);
 
-          const role = isSuperAdminEmail || isFirstUser ? "superadmin" : isBusinessInvite ? "admin" : "member";
-          const planTier = isSuperAdminEmail || isFirstUser || isBusinessInvite ? "business" : "free";
+          if (!isSuperAdminEmail && !isFirstUser && !isBusinessInvite) {
+            return Response.json(
+              {
+                success: false,
+                error: "INVITE_REQUIRED",
+                message: "Pendaftaran akun bisnis memerlukan tautan undangan resmi.",
+              },
+              { status: 403 },
+            );
+          }
+
+          const role = isSuperAdminEmail || isFirstUser ? "superadmin" : "admin";
+          const planTier = "business";
 
           const passwordHash = await hashPassword(password);
           const existing = await dbQueryOne<{ id: string; role?: string; plan_tier?: string }>(
@@ -61,8 +72,8 @@ export const Route = createFileRoute("/api/auth/setup")({
           let adminId = "";
           if (existing) {
             adminId = existing.id;
-            const updatedTier = isSuperAdminEmail ? "business" : isBusinessInvite ? "business" : existing.plan_tier || planTier;
-            const updatedRole = isSuperAdminEmail ? "superadmin" : isBusinessInvite ? "admin" : existing.role || role;
+            const updatedTier = "business";
+            const updatedRole = isSuperAdminEmail ? "superadmin" : existing.role || role;
             await dbExecute(
               "UPDATE admins SET password_hash = ?, role = ?, plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
               [passwordHash, updatedRole, updatedTier, adminId],
