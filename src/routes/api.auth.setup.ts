@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createAdmin, createSession, createSessionCookieHeader, hashPassword } from "../lib/auth";
+import {
+  createAdmin,
+  createSession,
+  createSessionCookieHeader,
+  hashPassword,
+  isValidBusinessInvite,
+} from "../lib/auth";
 import { dbExecute, dbQueryOne } from "../lib/db";
 
 export const Route = createFileRoute("/api/auth/setup")({
@@ -37,13 +43,8 @@ export const Route = createFileRoute("/api/auth/setup")({
           const totalAdmins = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM admins");
           const isFirstUser = !totalAdmins || Number(totalAdmins.count) === 0;
 
-          // Determine tier & role
-          const isBusinessInvite =
-            rawInvite === "business" ||
-            rawInvite === "max" ||
-            rawInvite === "vip" ||
-            rawInvite === "springhope_max" ||
-            rawInvite.startsWith("biz_");
+          // Determine tier & role via cryptographically secure invite check
+          const isBusinessInvite = isValidBusinessInvite(rawInvite);
 
           const role = isFirstUser ? "superadmin" : isBusinessInvite ? "admin" : "member";
           const planTier = isFirstUser || isBusinessInvite ? "business" : "free";

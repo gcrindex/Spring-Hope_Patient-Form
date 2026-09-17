@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authenticateRequest, countAdmins } from "../lib/auth";
+import { authenticateRequest, countAdmins, getBusinessInviteSecret } from "../lib/auth";
 
 export const Route = createFileRoute("/api/admin/status")({
   server: {
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/api/admin/status")({
               success: true,
               isSetup: totalAdmins > 0,
               isAuthenticated: Boolean(user),
+              inviteToken: user ? getBusinessInviteSecret() : null,
               user: user
                 ? {
                     adminId: user.adminId,

@@ -4069,18 +4069,19 @@
       });
 
       $("#invite-max-btn")?.addEventListener("click", () => {
-        const inviteUrl = `${window.location.origin}/admin.html#/register?invite=business`;
+        const token = _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
+        const inviteUrl = `${window.location.origin}/admin.html#/register?invite=${encodeURIComponent(token)}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(inviteUrl)
             .then(() => {
-              toast("Tautan Invite Level Max (Business) berhasil disalin!", "success");
+              toast("Tautan Rahasia Invite Level Max (Business) disalin!", "success");
             })
             .catch(() => {
-              prompt("Salin Tautan Invite Level Max (Business Plan):", inviteUrl);
+              prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
             });
         } else {
-          prompt("Salin Tautan Invite Level Max (Business Plan):", inviteUrl);
+          prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
         }
       });
 

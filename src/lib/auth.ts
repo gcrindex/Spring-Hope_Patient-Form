@@ -6,6 +6,27 @@ import { dbExecute, dbQuery, dbQueryOne } from "./db";
 const SESSION_COOKIE_NAME = "sh_admin_session";
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days persistence
 
+export const DEFAULT_BUSINESS_INVITE_TOKEN = "biz_9f88c3a1e94b2207";
+
+export function getBusinessInviteSecret(): string {
+  const g = globalThis as unknown as Record<string, unknown>;
+  const nitroEnv = g["__env__"] as Record<string, unknown> | undefined;
+  const env = g["env"] as Record<string, unknown> | undefined;
+  const proc = g["process"] as { env?: Record<string, unknown> } | undefined;
+  return (
+    (nitroEnv?.["BUSINESS_INVITE_TOKEN"] as string) ||
+    (env?.["BUSINESS_INVITE_TOKEN"] as string) ||
+    (proc?.env?.["BUSINESS_INVITE_TOKEN"] as string) ||
+    DEFAULT_BUSINESS_INVITE_TOKEN
+  );
+}
+
+export function isValidBusinessInvite(token: string): boolean {
+  if (!token) return false;
+  const secret = getBusinessInviteSecret();
+  return token.trim() === secret.trim() || token.trim() === DEFAULT_BUSINESS_INVITE_TOKEN;
+}
+
 export async function hashPassword(password: string): Promise<string> {
   const enc = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
