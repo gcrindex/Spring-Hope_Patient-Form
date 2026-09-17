@@ -3801,15 +3801,18 @@
       function getRoute() {
         const rawHash = location.hash;
         const h = rawHash.split("?")[0];
+        const hasInvite = Boolean(getInviteCode());
         if (h && h !== "#" && h !== "#/") {
-          if ((h === "#/login" || h === "#/register") && isLoggedIn()) return "#/dashboard";
+          if (h === "#/login" && isLoggedIn() && !hasInvite) return "#/dashboard";
+          if (h === "#/register" && isLoggedIn() && !hasInvite) return "#/dashboard";
           return h;
         }
-        return isLoggedIn() ? "#/dashboard" : "#/login";
+        return isLoggedIn() && !hasInvite ? "#/dashboard" : "#/login";
       }
 
       function parseRoute() {
         const h = getRoute();
+        const hasInvite = Boolean(getInviteCode());
         if (h.startsWith("#/builder/")) {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           return { screen: "builder", id: h.split("/")[2], targetHash: location.hash };
@@ -3830,16 +3833,16 @@
           return { screen: "choice", targetHash: "#/new" };
         }
         if (h === "#/register") {
-          if (isLoggedIn()) return { screen: "dashboard", targetHash: "#/dashboard" };
+          if (isLoggedIn() && !hasInvite) return { screen: "dashboard", targetHash: "#/dashboard" };
           return { screen: "login", targetHash: location.hash, authMode: "register" };
         }
         if (h === "#/login") {
-          if (isLoggedIn()) return { screen: "dashboard", targetHash: "#/dashboard" };
+          if (isLoggedIn() && !hasInvite) return { screen: "dashboard", targetHash: "#/dashboard" };
           return { screen: "login", targetHash: location.hash, authMode: "login" };
         }
         return {
-          screen: isLoggedIn() ? "dashboard" : "login",
-          targetHash: isLoggedIn() ? "#/dashboard" : "#/login",
+          screen: isLoggedIn() && !hasInvite ? "dashboard" : "login",
+          targetHash: isLoggedIn() && !hasInvite ? "#/dashboard" : "#/login",
         };
       }
 
