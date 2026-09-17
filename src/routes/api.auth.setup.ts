@@ -21,6 +21,7 @@ export const Route = createFileRoute("/api/auth/setup")({
 
           const email = body.email.trim().toLowerCase();
           const password = body.password;
+          const rawInvite = typeof body.invite_code === "string" ? body.invite_code.trim().toLowerCase() : "";
 
           if (!email.includes("@") || password.length < 6) {
             return Response.json(
@@ -33,21 +34,37 @@ export const Route = createFileRoute("/api/auth/setup")({
             );
           }
 
+          const totalAdmins = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM admins");
+          const isFirstUser = !totalAdmins || Number(totalAdmins.count) === 0;
+
+          // Determine tier & role
+          const isBusinessInvite =
+            rawInvite === "business" ||
+            rawInvite === "max" ||
+            rawInvite === "vip" ||
+            rawInvite === "springhope_max" ||
+            rawInvite.startsWith("biz_");
+
+          const role = isFirstUser ? "superadmin" : isBusinessInvite ? "admin" : "member";
+          const planTier = isFirstUser || isBusinessInvite ? "business" : "free";
+
           const passwordHash = await hashPassword(password);
-          const existing = await dbQueryOne<{ id: string }>(
-            "SELECT id FROM admins WHERE email = ?",
+          const existing = await dbQueryOne<{ id: string; role?: string; plan_tier?: string }>(
+            "SELECT id, role, plan_tier FROM admins WHERE email = ?",
             [email],
           );
 
           let adminId = "";
           if (existing) {
             adminId = existing.id;
+            const updatedTier = isBusinessInvite ? "business" : existing.plan_tier || planTier;
+            const updatedRole = isBusinessInvite ? "admin" : existing.role || role;
             await dbExecute(
-              "UPDATE admins SET password_hash = ?, updated_at = datetime('now') WHERE id = ?",
-              [passwordHash, adminId],
+              "UPDATE admins SET password_hash = ?, role = ?, plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
+              [passwordHash, updatedRole, updatedTier, adminId],
             );
           } else {
-            adminId = await createAdmin(email, passwordHash);
+            adminId = await createAdmin(email, passwordHash, role, planTier);
           }
 
           const token = await createSession(adminId);
@@ -57,11 +74,16 @@ export const Route = createFileRoute("/api/auth/setup")({
           return Response.json(
             {
               success: true,
-              message: "Akun admin berhasil disimpan & Anda otomatis login!",
+              message:
+                planTier === "business"
+                  ? "Akun Business Plan (Level Max) berhasil dibuat!"
+                  : "Akun berhasil dibuat & Anda berhasil login!",
               token,
               user: {
                 id: adminId,
                 email,
+                role,
+                planTier,
               },
             },
             {

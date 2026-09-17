@@ -55,10 +55,15 @@ export const Route = createFileRoute("/api/admin/login")({
           const email = rawEmail.toLowerCase();
 
           // Query admin from DB
-          const admin = await dbQueryOne<{ id: string; email: string; password_hash: string }>(
-            "SELECT id, email, password_hash FROM admins WHERE email = ?",
-            [email],
-          );
+          const admin = await dbQueryOne<{
+            id: string;
+            email: string;
+            password_hash: string;
+            role?: string;
+            plan_tier?: string;
+          }>("SELECT id, email, password_hash, role, plan_tier FROM admins WHERE email = ?", [
+            email,
+          ]);
 
           if (!admin) {
             return Response.json(
@@ -96,6 +101,8 @@ export const Route = createFileRoute("/api/admin/login")({
               user: {
                 id: admin.id,
                 email: admin.email,
+                role: admin.role || "admin",
+                planTier: admin.plan_tier || "business",
               },
             },
             {

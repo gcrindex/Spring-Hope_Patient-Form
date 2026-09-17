@@ -80,11 +80,24 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
           id TEXT PRIMARY KEY,
           email TEXT UNIQUE NOT NULL,
           password_hash TEXT NOT NULL,
+          role TEXT DEFAULT 'admin',
+          plan_tier TEXT DEFAULT 'business',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );`,
       )
       .run();
+
+    try {
+      await d1.prepare("ALTER TABLE admins ADD COLUMN role TEXT DEFAULT 'admin';").run();
+    } catch {
+      // column already exists
+    }
+    try {
+      await d1.prepare("ALTER TABLE admins ADD COLUMN plan_tier TEXT DEFAULT 'business';").run();
+    } catch {
+      // column already exists
+    }
 
     await d1
       .prepare(
@@ -159,6 +172,8 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      role TEXT DEFAULT 'admin',
+      plan_tier TEXT DEFAULT 'business',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -193,6 +208,13 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
     CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at);
     CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `);
+
+  try {
+    db.exec("ALTER TABLE admins ADD COLUMN role TEXT DEFAULT 'admin';");
+  } catch {}
+  try {
+    db.exec("ALTER TABLE admins ADD COLUMN plan_tier TEXT DEFAULT 'business';");
+  } catch {}
 
   localDbInstance = db as unknown as LocalSqliteLike;
   return localDbInstance;

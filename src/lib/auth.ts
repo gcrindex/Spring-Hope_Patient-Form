@@ -52,11 +52,16 @@ export async function countAdmins(): Promise<number> {
   return row ? Number(row.count) : 0;
 }
 
-export async function createAdmin(email: string, passwordHash: string): Promise<string> {
+export async function createAdmin(
+  email: string,
+  passwordHash: string,
+  role = "admin",
+  planTier = "business",
+): Promise<string> {
   const id = `admin_${crypto.randomUUID()}`;
   await dbExecute(
-    "INSERT INTO admins (id, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, datetime('now'), datetime('now'))",
-    [id, email.toLowerCase().trim(), passwordHash],
+    "INSERT INTO admins (id, email, password_hash, role, plan_tier, created_at, updated_at) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
+    [id, email.toLowerCase().trim(), passwordHash, role, planTier],
   );
   return id;
 }
@@ -74,12 +79,18 @@ export async function createSession(adminId: string): Promise<string> {
 
 export async function validateSession(
   token: string,
-): Promise<{ adminId: string; email: string } | null> {
+): Promise<{ adminId: string; email: string; role: string; planTier: string } | null> {
   if (!token) return null;
-  const row = await dbQueryOne<{ admin_id: string; email: string; expires_at: string }>(
-    `SELECT s.admin_id, s.expires_at, a.email 
-     FROM sessions s 
-     JOIN admins a ON a.id = s.admin_id 
+  const row = await dbQueryOne<{
+    admin_id: string;
+    email: string;
+    expires_at: string;
+    role?: string;
+    plan_tier?: string;
+  }>(
+    `SELECT s.admin_id, s.expires_at, a.email, a.role, a.plan_tier
+     FROM sessions s
+     JOIN admins a ON a.id = s.admin_id
      WHERE s.id = ?`,
     [token],
   );
@@ -90,7 +101,12 @@ export async function validateSession(
     await deleteSession(token).catch(() => {});
     return null;
   }
-  return { adminId: row.admin_id, email: row.email };
+  return {
+    adminId: row.admin_id,
+    email: row.email,
+    role: row.role || "admin",
+    planTier: row.plan_tier || "business",
+  };
 }
 
 export async function deleteSession(token: string): Promise<void> {
@@ -116,7 +132,7 @@ export function clearSessionCookieHeader(): string {
 
 export async function authenticateRequest(
   request: Request,
-): Promise<{ adminId: string; email: string } | null> {
+): Promise<{ adminId: string; email: string; role: string; planTier: string } | null> {
   const token = parseSessionCookie(request);
   if (!token) return null;
   return await validateSession(token);

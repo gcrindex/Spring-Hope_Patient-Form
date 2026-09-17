@@ -13,7 +13,14 @@ export const Route = createFileRoute("/api/auth/status")({
             {
               isSetup: totalAdmins > 0,
               isAuthenticated: Boolean(user),
-              user: user ? { email: user.email } : null,
+              user: user
+                ? {
+                    id: user.adminId,
+                    email: user.email,
+                    role: user.role,
+                    planTier: user.planTier,
+                  }
+                : null,
             },
             {
               headers: { "Cache-Control": "no-store" },
