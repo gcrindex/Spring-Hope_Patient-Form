@@ -1912,6 +1912,7 @@
           <button
             type="button"
             id="tab-login-btn"
+            onclick="window.switchAuthTab('login')"
             style="
               flex: 1;
               padding: 9px;
@@ -1930,6 +1931,7 @@
           <button
             type="button"
             id="tab-register-btn"
+            onclick="window.switchAuthTab('register')"
             style="
               flex: 1;
               padding: 9px;
@@ -3946,8 +3948,19 @@
         }
       }
 
-      $("#tab-login-btn")?.addEventListener("click", () => setAuthMode("login"));
-      $("#tab-register-btn")?.addEventListener("click", () => setAuthMode("register"));
+      window.switchAuthTab = function (mode) {
+        setAuthMode(mode);
+        if (mode === "register") {
+          const invite = getInviteCode();
+          const target = invite ? `#/register?invite=${encodeURIComponent(invite)}` : "#/register";
+          if (location.hash !== target) history.replaceState(null, "", target);
+        } else {
+          if (location.hash !== "#/login") history.replaceState(null, "", "#/login");
+        }
+      };
+
+      $("#tab-login-btn")?.addEventListener("click", () => window.switchAuthTab("login"));
+      $("#tab-register-btn")?.addEventListener("click", () => window.switchAuthTab("register"));
 
       async function updateLoginScreenState() {
         const auth = await checkServerAuth();
@@ -3956,7 +3969,7 @@
           return;
         }
         const inviteCode = getInviteCode();
-        if (inviteCode || location.hash.startsWith("#/register")) {
+        if (inviteCode || location.hash.startsWith("#/register") || _authMode === "register") {
           setAuthMode("register");
         } else if (!auth.isSetup) {
           setAuthMode("register");
@@ -3965,7 +3978,7 @@
             hintEl.textContent =
               "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
         } else {
-          setAuthMode("login");
+          setAuthMode(_authMode || "login");
         }
       }
 
