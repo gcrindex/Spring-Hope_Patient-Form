@@ -1381,11 +1381,23 @@ button:disabled {
 }
 .pricing-figure {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
   margin-bottom: 24px;
-  padding-bottom: 20px;
+  padding-bottom: 18px;
   border-bottom: 1px solid #f1f5f9;
+}
+.pricing-figure-top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.pricing-subnote {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: lowercase;
 }
 .pricing-amount {
   font-size: 38px;

@@ -754,6 +754,11 @@ export const builderI18n: Record<
     tierEntF2: string;
     tierEntF3: string;
     tierEntCta: string;
+    pricingMonthlyNote: string;
+    pricingBasicYearlyNote: string;
+    pricingPlusYearlyNote: string;
+    pricingBizYearlyNote: string;
+    pricingEntNote: string;
     closingBadge: string;
     closingTitle: string;
     closingDesc: string;
@@ -942,6 +947,11 @@ export const builderI18n: Record<
     tierEntF2: "Dedicated account manager",
     tierEntF3: "Custom SLA & HIPAA/GDPR terms",
     tierEntCta: "Contact Sales",
+    pricingMonthlyNote: "billed monthly",
+    pricingBasicYearlyNote: "billed annually ($300/yr)",
+    pricingPlusYearlyNote: "billed annually ($600/yr)",
+    pricingBizYearlyNote: "billed annually ($996/yr)",
+    pricingEntNote: "custom billing schedule",
     closingBadge: "Start Free Today",
     closingTitle: "Turn form drop-offs into completed submissions.",
     closingDesc:
@@ -1130,6 +1140,11 @@ export const builderI18n: Record<
     tierEntF2: "Dedicated account manager",
     tierEntF3: "SLA khusus & kesepakatan HIPAA/GDPR",
     tierEntCta: "Hubungi Sales",
+    pricingMonthlyNote: "ditagih bulanan",
+    pricingBasicYearlyNote: "ditagih tahunan ($300/thn)",
+    pricingPlusYearlyNote: "ditagih tahunan ($600/thn)",
+    pricingBizYearlyNote: "ditagih tahunan ($996/thn)",
+    pricingEntNote: "jadwal penagihan khusus",
     closingBadge: "Mulai Gratis",
     closingTitle: "Tingkatkan respon formulir Anda hingga 3x lipat.",
     closingDesc:
@@ -1318,6 +1333,11 @@ export const builderI18n: Record<
     tierEntF2: "专属客户成功经理",
     tierEntF3: "定制 SLA 保障与隐私合规协议",
     tierEntCta: "联系销售团队",
+    pricingMonthlyNote: "按月结算",
+    pricingBasicYearlyNote: "按年计费（每年 $300）",
+    pricingPlusYearlyNote: "按年计费（每年 $600）",
+    pricingBizYearlyNote: "按年计费（每年 $996）",
+    pricingEntNote: "专属定制账期",
     closingBadge: "立即免费体验",
     closingTitle: "让流失的访客转化为满分的答卷。",
     closingDesc:

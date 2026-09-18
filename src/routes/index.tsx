@@ -570,10 +570,15 @@ function BuilderLandingPage() {
                 <h3>{t.tierBasicName}</h3>
                 <p>{t.tierBasicDesc}</p>
                 <div className="pricing-figure">
-                  <span className="pricing-amount">
-                    {isYearly ? t.tierBasicPriceYearly : t.tierBasicPriceMonthly}
+                  <div className="pricing-figure-top">
+                    <span className="pricing-amount">
+                      {isYearly ? t.tierBasicPriceYearly : t.tierBasicPriceMonthly}
+                    </span>
+                    <span className="pricing-period">{t.tierBasicPeriod}</span>
+                  </div>
+                  <span className="pricing-subnote">
+                    {isYearly ? t.pricingBasicYearlyNote : t.pricingMonthlyNote}
                   </span>
-                  <span className="pricing-period">{t.tierBasicPeriod}</span>
                 </div>
               </div>
               <ul className="pricing-features">
@@ -601,10 +606,15 @@ function BuilderLandingPage() {
                 <h3>{t.tierPlusName}</h3>
                 <p>{t.tierPlusDesc}</p>
                 <div className="pricing-figure">
-                  <span className="pricing-amount">
-                    {isYearly ? t.tierPlusPriceYearly : t.tierPlusPriceMonthly}
+                  <div className="pricing-figure-top">
+                    <span className="pricing-amount">
+                      {isYearly ? t.tierPlusPriceYearly : t.tierPlusPriceMonthly}
+                    </span>
+                    <span className="pricing-period">{t.tierPlusPeriod}</span>
+                  </div>
+                  <span className="pricing-subnote">
+                    {isYearly ? t.pricingPlusYearlyNote : t.pricingMonthlyNote}
                   </span>
-                  <span className="pricing-period">{t.tierPlusPeriod}</span>
                 </div>
               </div>
               <ul className="pricing-features">
@@ -635,10 +645,15 @@ function BuilderLandingPage() {
                 <h3>{t.tierBizName}</h3>
                 <p>{t.tierBizDesc}</p>
                 <div className="pricing-figure">
-                  <span className="pricing-amount">
-                    {isYearly ? t.tierBizPriceYearly : t.tierBizPriceMonthly}
+                  <div className="pricing-figure-top">
+                    <span className="pricing-amount">
+                      {isYearly ? t.tierBizPriceYearly : t.tierBizPriceMonthly}
+                    </span>
+                    <span className="pricing-period">{t.tierBizPeriod}</span>
+                  </div>
+                  <span className="pricing-subnote">
+                    {isYearly ? t.pricingBizYearlyNote : t.pricingMonthlyNote}
                   </span>
-                  <span className="pricing-period">{t.tierBizPeriod}</span>
                 </div>
               </div>
               <ul className="pricing-features">
@@ -674,8 +689,11 @@ function BuilderLandingPage() {
                 <h3>{t.tierEntName}</h3>
                 <p>{t.tierEntDesc}</p>
                 <div className="pricing-figure">
-                  <span className="pricing-amount pricing-amount-custom">{t.tierEntPrice}</span>
-                  <span className="pricing-period">{t.tierEntPeriod}</span>
+                  <div className="pricing-figure-top">
+                    <span className="pricing-amount pricing-amount-custom">{t.tierEntPrice}</span>
+                    <span className="pricing-period">{t.tierEntPeriod}</span>
+                  </div>
+                  <span className="pricing-subnote">{t.pricingEntNote}</span>
                 </div>
               </div>
               <ul className="pricing-features">
