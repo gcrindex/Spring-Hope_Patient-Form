@@ -69,6 +69,7 @@ const features = [
 function BuilderLandingPage() {
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
   const [researchOpen, setResearchOpen] = useState(false);
+  const [isYearly, setIsYearly] = useState(true);
 
   useEffect(() => {
     setLanguage(getStoredLanguage());
@@ -91,6 +92,7 @@ function BuilderLandingPage() {
             <a href="#industries">{t.navIndustries}</a>
             <a href="#demo">{t.navDemo}</a>
             <a href="#features">{t.navFeatures}</a>
+            <a href="#pricing">{t.navPricing}</a>
             <a href="/admin.html">{t.navAdmin}</a>
           </nav>
           <div className="flex items-center gap-3">
@@ -528,6 +530,171 @@ function BuilderLandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── Pricing Section ──────────────────────────── */}
+        <section className="section-shell sf-section-pricing" id="pricing">
+          <div className="section-kicker">{t.pricingKicker}</div>
+          <div className="section-title-row">
+            <h2>
+              {t.pricingTitle1}
+              <br />
+              {t.pricingTitle2}
+            </h2>
+            <p>{t.pricingDesc}</p>
+          </div>
+
+          <div className="pricing-toggle-wrap">
+            <button
+              type="button"
+              className={`pricing-toggle-btn ${!isYearly ? "active" : ""}`}
+              onClick={() => setIsYearly(false)}
+            >
+              {t.pricingMonthly}
+            </button>
+            <button
+              type="button"
+              className={`pricing-toggle-btn ${isYearly ? "active" : ""}`}
+              onClick={() => setIsYearly(true)}
+            >
+              <span>{t.pricingYearly}</span>
+              <span className="pricing-save-pill">{t.pricingSave}</span>
+            </button>
+          </div>
+
+          <div className="pricing-grid">
+            {/* Basic Tier */}
+            <article className="pricing-card">
+              <div className="pricing-header">
+                <h3>{t.tierBasicName}</h3>
+                <p>{t.tierBasicDesc}</p>
+                <div className="pricing-figure">
+                  <span className="pricing-amount">
+                    {isYearly ? t.tierBasicPriceYearly : t.tierBasicPriceMonthly}
+                  </span>
+                  <span className="pricing-period">{t.tierBasicPeriod}</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>
+                  <Check size={16} /> {t.tierBasicF1}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBasicF2}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBasicF3}
+                </li>
+              </ul>
+              <div className="pricing-cta-wrap">
+                <a className="button-secondary pricing-cta-btn" href="#demo">
+                  {t.tierBasicCta}
+                </a>
+              </div>
+            </article>
+
+            {/* Plus Tier */}
+            <article className="pricing-card pricing-card-popular">
+              <div className="pricing-badge">{t.tierPlusBadge}</div>
+              <div className="pricing-header">
+                <h3>{t.tierPlusName}</h3>
+                <p>{t.tierPlusDesc}</p>
+                <div className="pricing-figure">
+                  <span className="pricing-amount">
+                    {isYearly ? t.tierPlusPriceYearly : t.tierPlusPriceMonthly}
+                  </span>
+                  <span className="pricing-period">{t.tierPlusPeriod}</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>
+                  <Check size={16} /> {t.tierPlusF1}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierPlusF2}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierPlusF3}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierPlusF4}
+                </li>
+              </ul>
+              <div className="pricing-cta-wrap">
+                <a className="button-primary pricing-cta-btn" href="#demo">
+                  {t.tierPlusCta}
+                </a>
+              </div>
+            </article>
+
+            {/* Business Tier (Level Max) */}
+            <article className="pricing-card pricing-card-featured">
+              <div className="pricing-badge pricing-badge-featured">{t.tierBizBadge}</div>
+              <div className="pricing-header">
+                <h3>{t.tierBizName}</h3>
+                <p>{t.tierBizDesc}</p>
+                <div className="pricing-figure">
+                  <span className="pricing-amount">
+                    {isYearly ? t.tierBizPriceYearly : t.tierBizPriceMonthly}
+                  </span>
+                  <span className="pricing-period">{t.tierBizPeriod}</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>
+                  <Check size={16} /> {t.tierBizF1}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBizF2}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBizF3}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBizF4}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierBizF5}
+                </li>
+              </ul>
+              <div className="pricing-cta-wrap">
+                <a
+                  className="button-primary pricing-cta-btn btn-biz-highlight"
+                  href="/business.html"
+                >
+                  {t.tierBizCta} <ArrowRight size={16} />
+                </a>
+              </div>
+            </article>
+
+            {/* Enterprise Tier */}
+            <article className="pricing-card">
+              <div className="pricing-header">
+                <h3>{t.tierEntName}</h3>
+                <p>{t.tierEntDesc}</p>
+                <div className="pricing-figure">
+                  <span className="pricing-amount pricing-amount-custom">{t.tierEntPrice}</span>
+                  <span className="pricing-period">{t.tierEntPeriod}</span>
+                </div>
+              </div>
+              <ul className="pricing-features">
+                <li>
+                  <Check size={16} /> {t.tierEntF1}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierEntF2}
+                </li>
+                <li>
+                  <Check size={16} /> {t.tierEntF3}
+                </li>
+              </ul>
+              <div className="pricing-cta-wrap">
+                <a className="button-secondary pricing-cta-btn" href="#demo">
+                  {t.tierEntCta}
+                </a>
+              </div>
+            </article>
           </div>
         </section>
       </main>

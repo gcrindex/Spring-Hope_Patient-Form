@@ -706,6 +706,54 @@ export const builderI18n: Record<
     adminStat1: string;
     adminStat2: string;
     adminStat3: string;
+    navPricing: string;
+    pricingKicker: string;
+    pricingTitle1: string;
+    pricingTitle2: string;
+    pricingDesc: string;
+    pricingMonthly: string;
+    pricingYearly: string;
+    pricingSave: string;
+    tierBasicName: string;
+    tierBasicDesc: string;
+    tierBasicPriceMonthly: string;
+    tierBasicPriceYearly: string;
+    tierBasicPeriod: string;
+    tierBasicF1: string;
+    tierBasicF2: string;
+    tierBasicF3: string;
+    tierBasicCta: string;
+    tierPlusName: string;
+    tierPlusBadge: string;
+    tierPlusDesc: string;
+    tierPlusPriceMonthly: string;
+    tierPlusPriceYearly: string;
+    tierPlusPeriod: string;
+    tierPlusF1: string;
+    tierPlusF2: string;
+    tierPlusF3: string;
+    tierPlusF4: string;
+    tierPlusCta: string;
+    tierBizName: string;
+    tierBizBadge: string;
+    tierBizDesc: string;
+    tierBizPriceMonthly: string;
+    tierBizPriceYearly: string;
+    tierBizPeriod: string;
+    tierBizF1: string;
+    tierBizF2: string;
+    tierBizF3: string;
+    tierBizF4: string;
+    tierBizF5: string;
+    tierBizCta: string;
+    tierEntName: string;
+    tierEntDesc: string;
+    tierEntPrice: string;
+    tierEntPeriod: string;
+    tierEntF1: string;
+    tierEntF2: string;
+    tierEntF3: string;
+    tierEntCta: string;
     closingBadge: string;
     closingTitle: string;
     closingDesc: string;
@@ -718,6 +766,7 @@ export const builderI18n: Record<
     navFeatures: "Features",
     navIndustries: "Industries",
     navDemo: "Live Demo",
+    navPricing: "Pricing",
     navAdmin: "Admin Workspace",
     navCta: "Try Interactive Demo",
     badge: "Next-Gen Conversational Forms & AI Workflows",
@@ -845,6 +894,54 @@ export const builderI18n: Record<
     adminStat1: "Submissions",
     adminStat2: "High Risk",
     adminStat3: "Avg. Triage Score",
+    pricingKicker: "Transparent Pricing",
+    pricingTitle1: "Simple plans that scale",
+    pricingTitle2: "with your business.",
+    pricingDesc:
+      "All the power of next-gen conversational forms. Choose the plan that matches your monthly volume and team size.",
+    pricingMonthly: "Monthly",
+    pricingYearly: "Yearly",
+    pricingSave: "Save up to 17%",
+    tierBasicName: "Basic",
+    tierBasicDesc: "For individuals creating simple conversational forms.",
+    tierBasicPriceMonthly: "$29",
+    tierBasicPriceYearly: "$25",
+    tierBasicPeriod: "/ month",
+    tierBasicF1: "100 responses / month",
+    tierBasicF2: "1 user seat included",
+    tierBasicF3: "Unlimited forms & questions",
+    tierBasicCta: "Get Started",
+    tierPlusName: "Plus",
+    tierPlusBadge: "Most Popular",
+    tierPlusDesc: "For growing teams ready to brand and scale interactions.",
+    tierPlusPriceMonthly: "$59",
+    tierPlusPriceYearly: "$50",
+    tierPlusPeriod: "/ month",
+    tierPlusF1: "1,000 responses / month",
+    tierPlusF2: "3 user seats included",
+    tierPlusF3: "Remove 9forms branding",
+    tierPlusF4: "Custom subdomain & redirect",
+    tierPlusCta: "Choose Plus",
+    tierBizName: "Business",
+    tierBizBadge: "Level Max",
+    tierBizDesc: "For power users, clinics & high-volume organizations.",
+    tierBizPriceMonthly: "$99",
+    tierBizPriceYearly: "$83",
+    tierBizPeriod: "/ month",
+    tierBizF1: "10,000 responses / month",
+    tierBizF2: "5 user seats included",
+    tierBizF3: "Drop-off rate & funnel analytics",
+    tierBizF4: "Priority support & live triage sync",
+    tierBizF5: "EMR & custom webhook integrations",
+    tierBizCta: "Upgrade to Business",
+    tierEntName: "Enterprise",
+    tierEntDesc: "Custom volume, dedicated SLA & security compliance.",
+    tierEntPrice: "Custom",
+    tierEntPeriod: "tailored billing",
+    tierEntF1: "Unlimited responses & seats",
+    tierEntF2: "Dedicated account manager",
+    tierEntF3: "Custom SLA & HIPAA/GDPR terms",
+    tierEntCta: "Contact Sales",
     closingBadge: "Start Free Today",
     closingTitle: "Turn form drop-offs into completed submissions.",
     closingDesc:
@@ -857,6 +954,7 @@ export const builderI18n: Record<
     navFeatures: "Fitur",
     navIndustries: "Solusi Industri",
     navDemo: "Demo Interaktif",
+    navPricing: "Harga",
     navAdmin: "Workspace Admin",
     navCta: "Coba Demo Interaktif",
     badge: "Formulir Interaktif Generasi Baru & Alur Kerja AI",
@@ -984,6 +1082,54 @@ export const builderI18n: Record<
     adminStat1: "Total Respons",
     adminStat2: "Risiko Tinggi",
     adminStat3: "Rata-rata Skor",
+    pricingKicker: "Pilihan Harga Transparan",
+    pricingTitle1: "Paket simpel yang tumbuh",
+    pricingTitle2: "bersama bisnis Anda.",
+    pricingDesc:
+      "Nikmati keunggulan formulir interaktif generasi baru. Pilih paket yang sesuai dengan volume respon dan ukuran tim Anda.",
+    pricingMonthly: "Bulanan",
+    pricingYearly: "Tahunan",
+    pricingSave: "Hemat hingga 17%",
+    tierBasicName: "Basic",
+    tierBasicDesc: "Untuk individu yang membutuhkan formulir interaktif simpel.",
+    tierBasicPriceMonthly: "$29",
+    tierBasicPriceYearly: "$25",
+    tierBasicPeriod: "/ bulan",
+    tierBasicF1: "100 respon / bulan",
+    tierBasicF2: "Termasuk 1 akses pengguna",
+    tierBasicF3: "Jumlah form & pertanyaan tanpa batas",
+    tierBasicCta: "Mulai Sekarang",
+    tierPlusName: "Plus",
+    tierPlusBadge: "Paling Populer",
+    tierPlusDesc: "Untuk tim berkembang yang ingin branding profesional.",
+    tierPlusPriceMonthly: "$59",
+    tierPlusPriceYearly: "$50",
+    tierPlusPeriod: "/ bulan",
+    tierPlusF1: "1.000 respon / bulan",
+    tierPlusF2: "Termasuk 3 akses pengguna",
+    tierPlusF3: "Hapus branding 9forms",
+    tierPlusF4: "Custom subdomain & redirect link",
+    tierPlusCta: "Pilih Plus",
+    tierBizName: "Business",
+    tierBizBadge: "Level Max",
+    tierBizDesc: "Untuk klinik, organisasi & operasional bervolume tinggi.",
+    tierBizPriceMonthly: "$99",
+    tierBizPriceYearly: "$83",
+    tierBizPeriod: "/ bulan",
+    tierBizF1: "10.000 respon / bulan",
+    tierBizF2: "Termasuk 5 akses pengguna",
+    tierBizF3: "Analitik drop-off rate & corong konversi",
+    tierBizF4: "Prioritas dukungan & sinkronisasi triase",
+    tierBizF5: "Integrasi EMR & webhook API kustom",
+    tierBizCta: "Upgrade ke Business",
+    tierEntName: "Enterprise",
+    tierEntDesc: "Volume kustom, SLA dedikasi & kepatuhan privasi ketat.",
+    tierEntPrice: "Kustom",
+    tierEntPeriod: "penagihan khusus",
+    tierEntF1: "Respon & akun pengguna tanpa batas",
+    tierEntF2: "Dedicated account manager",
+    tierEntF3: "SLA khusus & kesepakatan HIPAA/GDPR",
+    tierEntCta: "Hubungi Sales",
     closingBadge: "Mulai Gratis",
     closingTitle: "Tingkatkan respon formulir Anda hingga 3x lipat.",
     closingDesc:
@@ -996,6 +1142,7 @@ export const builderI18n: Record<
     navFeatures: "功能特性",
     navIndustries: "行业方案",
     navDemo: "在线演示",
+    navPricing: "价格方案",
     navAdmin: "管理工作区",
     navCta: "体验互动演示",
     badge: "新一代对话式表单与 AI 自动化工作流",
@@ -1123,6 +1270,54 @@ export const builderI18n: Record<
     adminStat1: "总回复数",
     adminStat2: "高风险预警",
     adminStat3: "平均分诊得分",
+    pricingKicker: "透明价格体系",
+    pricingTitle1: "简单灵活的方案，",
+    pricingTitle2: "随业务规模自由扩展。",
+    pricingDesc:
+      "体验新一代对话式表单的全部潜能。根据团队每月答卷量与席位需求选择最适合的方案。",
+    pricingMonthly: "按月结算",
+    pricingYearly: "按年结算",
+    pricingSave: "立省最高 17%",
+    tierBasicName: "基础版",
+    tierBasicDesc: "适用于制作简单交互表单的个人或自由职业者。",
+    tierBasicPriceMonthly: "$29",
+    tierBasicPriceYearly: "$25",
+    tierBasicPeriod: "/ 月",
+    tierBasicF1: "每月 100 条答卷额度",
+    tierBasicF2: "包含 1 个管理员席位",
+    tierBasicF3: "不限表单数量与题目数",
+    tierBasicCta: "立即开通",
+    tierPlusName: "进阶版",
+    tierPlusBadge: "最受欢迎",
+    tierPlusDesc: "适用于需要独立品牌形象与多席位协作的成长型团队。",
+    tierPlusPriceMonthly: "$59",
+    tierPlusPriceYearly: "$50",
+    tierPlusPeriod: "/ 月",
+    tierPlusF1: "每月 1,000 条答卷额度",
+    tierPlusF2: "包含 3 个协作席位",
+    tierPlusF3: "移除 9forms 官方标识",
+    tierPlusF4: "自定义二级域名与跳转链接",
+    tierPlusCta: "选择进阶版",
+    tierBizName: "企业商业版",
+    tierBizBadge: "Level Max",
+    tierBizDesc: "专为诊所、高频业务机构与大型组织深度定制。",
+    tierBizPriceMonthly: "$99",
+    tierBizPriceYearly: "$83",
+    tierBizPeriod: "/ 月",
+    tierBizF1: "每月 10,000 条答卷额度",
+    tierBizF2: "包含 5 个协作席位",
+    tierBizF3: "用户跳出率与漏斗转化分析",
+    tierBizF4: "优先专属技术支持与实时分流同步",
+    tierBizF5: "EMR 电子病历与自定义 Webhook 对接",
+    tierBizCta: "升级至企业商业版",
+    tierEntName: "尊享定制版",
+    tierEntDesc: "无限用量、专属 SLA 保障与合规企业支持。",
+    tierEntPrice: "定制",
+    tierEntPeriod: "专属报价结算",
+    tierEntF1: "无限答卷额度与协作席位",
+    tierEntF2: "专属客户成功经理",
+    tierEntF3: "定制 SLA 保障与隐私合规协议",
+    tierEntCta: "联系销售团队",
     closingBadge: "立即免费体验",
     closingTitle: "让流失的访客转化为满分的答卷。",
     closingDesc:
