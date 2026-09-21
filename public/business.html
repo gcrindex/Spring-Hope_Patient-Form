@@ -3816,7 +3816,18 @@
           const hashParams = new URLSearchParams(hashQuery);
           code = hashParams.get("invite") || "";
         }
-        return (code || "").trim();
+        if (!code) {
+          try {
+            code = sessionStorage.getItem("sh_business_invite") || "";
+          } catch (e) {}
+        }
+        code = (code || "").trim();
+        if (code) {
+          try {
+            sessionStorage.setItem("sh_business_invite", code);
+          } catch (e) {}
+        }
+        return code;
       }
 
       function getRoute() {
@@ -3963,7 +3974,7 @@
         if (confirmLabel) confirmLabel.textContent = t("labelConfirmPassword");
 
         if (inviteBanner) {
-          inviteBanner.style.display = isReg ? "flex" : "none";
+          inviteBanner.style.display = isReg && inviteCode ? "flex" : "none";
           const bTitle = $("#invite-banner-title");
           const bSub = $("#invite-banner-sub");
           if (bTitle) bTitle.textContent = t("bannerTitle");
@@ -4109,23 +4120,6 @@
         setLoggedIn(false);
         navigate("#/login");
         route();
-      });
-
-      $("#invite-max-btn")?.addEventListener("click", () => {
-        const token = _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
-        const inviteUrl = `${window.location.origin}/admin.html#/register?invite=${encodeURIComponent(token)}`;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard
-            .writeText(inviteUrl)
-            .then(() => {
-              toast("Tautan Rahasia Invite Level Max (Business) disalin!", "success");
-            })
-            .catch(() => {
-              prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
-            });
-        } else {
-          prompt("Salin Tautan Rahasia Invite Level Max (Business Plan):", inviteUrl);
-        }
       });
 
       // ===================== DASHBOARD & SUBMISSIONS =====================

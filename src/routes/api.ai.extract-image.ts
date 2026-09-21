@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { aiDraftFormSchema, extractJsonObject } from "../lib/ai-draft";
+import { authenticateRequest } from "../lib/auth";
 
 const DEFAULT_BASE_URL = "https://api.pesatrouter.com/v1";
 const DEFAULT_MODEL = "pesat-flash";
@@ -36,6 +37,18 @@ export const Route = createFileRoute("/api/ai/extract-image")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const user = await authenticateRequest(request);
+        if (!user) {
+          return json(
+            {
+              success: false,
+              error: "UNAUTHORIZED",
+              message: "Authentication required to use AI image extraction.",
+            },
+            401,
+          );
+        }
+
         const contentType = request.headers.get("content-type") ?? "";
         if (!contentType.includes("multipart/form-data")) {
           return json(

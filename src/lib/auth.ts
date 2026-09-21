@@ -154,7 +154,13 @@ export function clearSessionCookieHeader(): string {
 export async function authenticateRequest(
   request: Request,
 ): Promise<{ adminId: string; email: string; role: string; planTier: string } | null> {
-  const token = parseSessionCookie(request);
+  let token = parseSessionCookie(request);
+  if (!token) {
+    const authHeader = request.headers.get("authorization") || "";
+    if (authHeader.toLowerCase().startsWith("bearer ")) {
+      token = authHeader.slice(7).trim();
+    }
+  }
   if (!token) return null;
   return await validateSession(token);
 }

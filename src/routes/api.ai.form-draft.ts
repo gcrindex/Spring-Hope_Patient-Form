@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { aiConversationSchema, aiDraftFormSchema, extractJsonObject } from "../lib/ai-draft";
+import { authenticateRequest } from "../lib/auth";
 
 const DEFAULT_BASE_URL = "https://api.pesatrouter.com/v1";
 const DEFAULT_MODEL = "pesat-flash";
@@ -57,6 +58,18 @@ export const Route = createFileRoute("/api/ai/form-draft")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const user = await authenticateRequest(request);
+        if (!user) {
+          return json(
+            {
+              success: false,
+              error: "UNAUTHORIZED",
+              message: "Authentication required to use AI form drafting.",
+            },
+            401,
+          );
+        }
+
         const contentType = request.headers.get("content-type") ?? "";
         if (!contentType.includes("application/json")) {
           return json(

@@ -3800,7 +3800,18 @@
           const hashParams = new URLSearchParams(hashQuery);
           code = hashParams.get("invite") || "";
         }
-        return (code || "").trim();
+        if (!code) {
+          try {
+            code = sessionStorage.getItem("sh_business_invite") || "";
+          } catch (e) {}
+        }
+        code = (code || "").trim();
+        if (code) {
+          try {
+            sessionStorage.setItem("sh_business_invite", code);
+          } catch (e) {}
+        }
+        return code;
       }
 
       function getRoute() {
@@ -4092,7 +4103,11 @@
       });
 
       $("#invite-max-btn")?.addEventListener("click", () => {
-        const token = _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
+        const token = _serverAuth?.inviteToken;
+        if (!token) {
+          toast("Akses invite hanya untuk Superadmin.", "error");
+          return;
+        }
         const inviteUrl = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
