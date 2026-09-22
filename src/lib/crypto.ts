@@ -1,8 +1,10 @@
 // src/lib/crypto.ts
 // AES-256-GCM Encryption at Rest for sensitive clinical & patient health data
 
+import { getEnv } from "./env";
+
 const SECRET_KEY_RAW =
-  process.env["SESSION_SECRET"] ||
+  getEnv("SESSION_SECRET") ||
   "e7b4c91a03f84826d79e62c19b0f4a8e52c938d74a1f6305b8219c67ea9f2501";
 
 let cryptoKeyPromise: Promise<CryptoKey> | null = null;

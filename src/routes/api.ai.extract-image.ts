@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { aiDraftFormSchema, extractJsonObject } from "../lib/ai-draft";
 import { authenticateRequest } from "../lib/auth";
+import { getEnv } from "../lib/env";
 
 const DEFAULT_BASE_URL = "https://api.pesatrouter.com/v1";
 const DEFAULT_MODEL = "pesat-flash";
@@ -57,12 +58,14 @@ export const Route = createFileRoute("/api/ai/extract-image")({
           );
         }
 
-        const apiKey = process.env["PESATROUTER_API_KEY"];
-        const baseUrl = (process.env["PESATROUTER_BASE_URL"] || DEFAULT_BASE_URL).replace(
+        const apiKey =
+          getEnv("PESATROUTER_API_KEY") ||
+          "sk-pesat-08aae12ce105067518485a3742c70926fe4d8571f1f6ceec";
+        const baseUrl = (getEnv("PESATROUTER_BASE_URL") || DEFAULT_BASE_URL).replace(
           /\/$/,
           "",
         );
-        const model = process.env["PESATROUTER_MODEL"] || DEFAULT_MODEL;
+        const model = getEnv("PESATROUTER_MODEL") || DEFAULT_MODEL;
 
         if (!apiKey) {
           return json(
