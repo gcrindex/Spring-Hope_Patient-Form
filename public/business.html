@@ -1927,6 +1927,41 @@
         transform: translateY(-1px);
       }
 
+      /* Wordmarks-style Interactive Logo Animation */
+      .wordmark-logo {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.2s ease;
+      }
+      .wordmark-text {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-weight: 900;
+        letter-spacing: -0.055em;
+        line-height: 1;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .wordmark-dot {
+        display: inline-block;
+        border-radius: 50%;
+        background: #FF4F18;
+        transform-origin: center;
+        box-shadow: 0 0 10px rgba(255, 79, 24, 0.45);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+      }
+      .wordmark-logo:hover .wordmark-dot {
+        transform: scale(1.6) translateY(-2px);
+        box-shadow: 0 0 16px rgba(255, 79, 24, 0.8), 0 0 24px rgba(255, 79, 24, 0.4);
+      }
+      .wordmark-logo:hover .wordmark-text {
+        transform: translateX(-1px);
+      }
+      .wordmark-logo:active .wordmark-dot {
+        transform: scale(1.1) translateY(0);
+      }
+
       /* ========== UPLOAD MODAL ========== */
       #upload-dropzone.dragover {
         border-color: var(--teal);
@@ -1952,9 +1987,9 @@
       <div class="login-card">
         <div class="login-logo">
           <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px">
-            <span style="font-family: 'Inter', -apple-system, sans-serif; font-size: 36px; font-weight: 900; letter-spacing: -0.055em; color: var(--navy); display: inline-flex; align-items: center; line-height: 1">
-              <span>9forms</span>
-              <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #FF4F18; margin-left: 3px; margin-bottom: 3px; box-shadow: 0 0 10px rgba(255, 79, 24, 0.4)" aria-hidden="true"></span>
+            <span class="wordmark-logo">
+              <span class="wordmark-text" style="font-size: 36px; color: var(--navy)">9forms</span>
+              <span class="wordmark-dot" style="width: 9px; height: 9px; margin-left: 3px; margin-bottom: 3px" aria-hidden="true"></span>
             </span>
           </div>
           <h2 id="login-title">Business Portal</h2>
@@ -2084,9 +2119,9 @@
           "
         >
           <div style="min-width: 0; display: flex; align-items: center">
-            <span style="font-family: 'Inter', -apple-system, sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -0.055em; color: #ffffff; display: inline-flex; align-items: center; line-height: 1">
-              <span>9forms</span>
-              <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #FF4F18; margin-left: 2px; margin-bottom: 2px; box-shadow: 0 0 8px rgba(255, 79, 24, 0.5)" aria-hidden="true"></span>
+            <span class="wordmark-logo">
+              <span class="wordmark-text" style="font-size: 24px; color: #ffffff">9forms</span>
+              <span class="wordmark-dot" style="width: 6.5px; height: 6.5px; margin-left: 2.5px; margin-bottom: 2px" aria-hidden="true"></span>
             </span>
           </div>
           <button
