@@ -150,17 +150,18 @@ function BuilderLandingPage() {
 
               <div className="sf-mock-card">
                 <div className="sf-mock-topline">
-                  <span className="sf-mock-brand">
-                    <img
-                      src="/logo-mark.webp"
-                      alt="9forms"
-                      width={22}
-                      height={26}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-[22px] w-auto inline-block object-contain align-middle rounded-md bg-white p-0.5 shadow-xs mr-1.5"
+                  <span className="sf-mock-brand inline-flex items-center font-black tracking-tight text-[#111827]">
+                    <span>9forms</span>
+                    <span
+                      className="inline-block rounded-full bg-[#FF4F18] shrink-0"
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        marginLeft: "2px",
+                        marginBottom: "2px",
+                      }}
+                      aria-hidden="true"
                     />
-                    9forms
                   </span>
                   <div className="sf-mock-voice-pill">
                     <Mic size={13} />

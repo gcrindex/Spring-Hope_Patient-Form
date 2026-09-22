@@ -6,30 +6,26 @@ export function BrandMark({
   inverse?: boolean | undefined;
 }) {
   return (
-    <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
-        <img
-          src="/logo-mark.webp"
-          alt="9forms logo"
-          width={28}
-          height={34}
-          className="h-6 sm:h-7 w-auto object-contain drop-shadow-sm"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
+    <div className="flex items-center shrink-0">
+      <span
+        className={`font-sans text-[22px] sm:text-[26px] font-black tracking-[-0.05em] select-none inline-flex items-center ${
+          inverse ? "text-white" : "text-[#111827]"
+        }`}
+        style={{ letterSpacing: "-0.055em" }}
+      >
+        <span>9forms</span>
+        <span
+          className="inline-block rounded-full bg-[#FF4F18] shrink-0"
+          style={{
+            width: "7px",
+            height: "7px",
+            marginLeft: "2px",
+            marginBottom: "3px",
+            boxShadow: "0 0 8px rgba(255, 79, 24, 0.4)",
+          }}
+          aria-hidden="true"
         />
-      </div>
-      {!compact && (
-        <div className="min-w-0 leading-none">
-          <span
-            className={`font-display text-[21px] sm:text-[25px] font-black tracking-[-0.04em] select-none ${
-              inverse ? "text-white" : "text-ink"
-            }`}
-          >
-            9forms
-          </span>
-        </div>
-      )}
+      </span>
     </div>
   );
 }
@@ -42,30 +38,26 @@ export function PlatformMark({
   inverse?: boolean | undefined;
 }) {
   return (
-    <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-      <div className={`brand-mark ${inverse ? "brand-mark-inverse" : ""}`}>
-        <img
-          src="/logo-mark.webp"
-          alt="9forms logo"
-          width={28}
-          height={34}
-          className="h-6 sm:h-7 w-auto object-contain drop-shadow-sm"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
+    <div className="flex items-center shrink-0">
+      <span
+        className={`font-sans text-[22px] sm:text-[26px] font-black tracking-[-0.05em] select-none inline-flex items-center ${
+          inverse ? "text-white" : "text-[#111827]"
+        }`}
+        style={{ letterSpacing: "-0.055em" }}
+      >
+        <span>9forms</span>
+        <span
+          className="inline-block rounded-full bg-[#FF4F18] shrink-0"
+          style={{
+            width: "7px",
+            height: "7px",
+            marginLeft: "2px",
+            marginBottom: "3px",
+            boxShadow: "0 0 8px rgba(255, 79, 24, 0.4)",
+          }}
+          aria-hidden="true"
         />
-      </div>
-      {!compact && (
-        <div className="min-w-0 leading-none">
-          <span
-            className={`font-display text-[21px] sm:text-[25px] font-black tracking-[-0.04em] select-none ${
-              inverse ? "text-white" : "text-ink"
-            }`}
-          >
-            9forms
-          </span>
-        </div>
-      )}
+      </span>
     </div>
   );
 }
