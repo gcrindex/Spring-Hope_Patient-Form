@@ -2598,12 +2598,14 @@
             -webkit-overflow-scrolling: touch;
           "
         >
-          <span style="font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0">
+          <span id="ai-preset-quick-label" style="font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0" data-i18n="aiPresetQuick">
             Quick Prompts:
           </span>
           <button
             type="button"
             class="ai-chip-pill"
+            id="ai-preset-clinic-btn"
+            data-i18n="aiPresetClinic"
             onclick="applyAiPreset('clinic')"
           >
             🏥 Patient Health Intake
@@ -2611,6 +2613,8 @@
           <button
             type="button"
             class="ai-chip-pill"
+            id="ai-preset-csat-btn"
+            data-i18n="aiPresetCsat"
             onclick="applyAiPreset('csat')"
           >
             ⭐ Customer Satisfaction (CSAT)
@@ -2618,6 +2622,8 @@
           <button
             type="button"
             class="ai-chip-pill"
+            id="ai-preset-event-btn"
+            data-i18n="aiPresetEvent"
             onclick="applyAiPreset('event')"
           >
             🎟️ Event & Workshop RSVP
@@ -2625,6 +2631,8 @@
           <button
             type="button"
             class="ai-chip-pill"
+            id="ai-preset-hr-btn"
+            data-i18n="aiPresetHr"
             onclick="applyAiPreset('hr')"
           >
             💼 Candidate Recruitment (HR)
@@ -2632,6 +2640,8 @@
           <button
             type="button"
             class="ai-chip-pill"
+            id="ai-preset-lead-btn"
+            data-i18n="aiPresetLead"
             onclick="applyAiPreset('lead')"
           >
             🚀 B2B Sales Lead Qualification
@@ -3751,6 +3761,20 @@
           aiPlaceholder: "Describe your form or ask a question...",
           aiSend: "Send",
           aiListening: "Listening...",
+          aiPresetQuick: "Quick Prompts:",
+          aiPresetClinic: "🏥 Patient Health Intake",
+          aiPresetCsat: "⭐ Customer Satisfaction (CSAT)",
+          aiPresetEvent: "🎟️ Event & Workshop RSVP",
+          aiPresetHr: "💼 Candidate Recruitment (HR)",
+          aiPresetLead: "🚀 B2B Sales Lead Qualification",
+          aiPreviewTitle: "✨ Ready-to-Use Form Draft",
+          aiPreviewSub: "Review questions below, or refine via chat prompt.",
+          aiRedraftBtn: "↻ Re-draft",
+          aiUseFormBtn: "✓ Use This Form",
+          aiEstTime: "Est. Completion Time:",
+          aiQuestionsUnit: "Questions",
+          aiCreatedToast: "AI form created! Review and edit in the builder.",
+          aiVoiceNotSupported: "Voice input is not supported in this browser. Please use Chrome or Edge.",
         },
         id: {
           myForms: "Formulir Saya",
@@ -3816,6 +3840,20 @@
           aiPlaceholder: "Ketik kebutuhan form atau gunakan suara...",
           aiSend: "Kirim",
           aiListening: "Mendengarkan suara...",
+          aiPresetQuick: "Pilihan Cepat:",
+          aiPresetClinic: "🏥 Asesmen Pasien Klinik",
+          aiPresetCsat: "⭐ Kepuasan Pelanggan (CSAT)",
+          aiPresetEvent: "🎟️ Registrasi Event & Seminar",
+          aiPresetHr: "💼 Rekrutmen Karyawan (HR)",
+          aiPresetLead: "🚀 Kualifikasi Lead Bisnis",
+          aiPreviewTitle: "✨ Draf Formulir Siap Pakai",
+          aiPreviewSub: "Tinjau pertanyaan di bawah, atau sempurnakan lewat chat prompt.",
+          aiRedraftBtn: "↻ Buat Ulang",
+          aiUseFormBtn: "✓ Gunakan Form Ini",
+          aiEstTime: "Est. Waktu Pengisian:",
+          aiQuestionsUnit: "Pertanyaan",
+          aiCreatedToast: "Form AI berhasil dibuat! Tinjau dan edit di builder.",
+          aiVoiceNotSupported: "Fitur suara tidak didukung di browser ini. Gunakan Chrome atau Edge.",
         },
         zh: {
           myForms: "我的表单",
@@ -3879,6 +3917,20 @@
           aiPlaceholder: "输入表单需求或使用语音...",
           aiSend: "发送",
           aiListening: "正在聆听语音...",
+          aiPresetQuick: "快捷预设:",
+          aiPresetClinic: "🏥 患者健康评估问卷",
+          aiPresetCsat: "⭐ 客户满意度调查 (CSAT)",
+          aiPresetEvent: "🎟️ 活动与研讨会报名表",
+          aiPresetHr: "💼 候选人求职招聘筛选 (HR)",
+          aiPresetLead: "🚀 B2B 销售线索资格评估",
+          aiPreviewTitle: "✨ 智能生成的表单草稿",
+          aiPreviewSub: "在下方预览题目，或通过对话微调题目。",
+          aiRedraftBtn: "↻ 重新生成",
+          aiUseFormBtn: "✓ 使用此表单",
+          aiEstTime: "预计答题时间:",
+          aiQuestionsUnit: "道题目",
+          aiCreatedToast: "AI 表单已创建！可在编辑器中进一步调整。",
+          aiVoiceNotSupported: "当前浏览器不支持语音输入，请使用 Chrome 或 Edge 浏览器。",
         },
       };
 
@@ -5619,14 +5671,32 @@
       window.applyAiPreset = function(type) {
         const input = $("#ai-chat-input");
         if (!input) return;
+        const lang = currentAdminLang || "id";
         const presets = {
-          clinic: "Buat form asesmen pasien baru ortopedi dengan pertanyaan keluhan nyeri, riwayat jatuh, skala sakit 0-10, pembengkakan, dan riwayat operasi.",
-          csat: "Buat survei kepuasan pelanggan (CSAT/NPS) untuk mengevaluasi kualitas layanan, respon staf, rating 1-10, rekomendasi, dan saran peningkatan.",
-          event: "Buat formulir registrasi workshop & seminar interaktif dengan nama, sesi pilihan, kebutuhan sertifikat, dan topik yang ingin dipelajari.",
-          hr: "Buat kuesioner screening rekrutmen karyawan baru dengan pengalaman kerja, keahlian teknis (skala 1-10), ketersediaan mulai kerja, dan portfolio.",
-          lead: "Buat form kualifikasi B2B sales lead dengan ukuran perusahaan, anggaran/budget bulanan, kendala utama, dan waktu meeting konsultasi."
+          en: {
+            clinic: "Create a new patient health intake form assessing primary symptoms, pain severity (0-10), fall history, swelling, and surgical history.",
+            csat: "Create a customer satisfaction and NPS survey evaluating service quality, staff responsiveness (rating 1-10), recommendations, and suggestions.",
+            event: "Create an interactive workshop and seminar registration form capturing participant name, preferred sessions, certificate requirement, and topics of interest.",
+            hr: "Create a candidate recruitment screening questionnaire with work experience, technical proficiency (scale 1-10), start date availability, and portfolio.",
+            lead: "Create a B2B sales lead qualification form capturing company size, monthly budget, primary business challenges, and consultation schedule."
+          },
+          id: {
+            clinic: "Buat form asesmen pasien baru ortopedi dengan pertanyaan keluhan nyeri, riwayat jatuh, skala sakit 0-10, pembengkakan, dan riwayat operasi.",
+            csat: "Buat survei kepuasan pelanggan (CSAT/NPS) untuk mengevaluasi kualitas layanan, respon staf, rating 1-10, rekomendasi, dan saran peningkatan.",
+            event: "Buat formulir registrasi workshop & seminar interaktif dengan nama, sesi pilihan, kebutuhan sertifikat, dan topik yang ingin dipelajari.",
+            hr: "Buat kuesioner screening rekrutmen karyawan baru dengan pengalaman kerja, keahlian teknis (skala 1-10), ketersediaan mulai kerja, dan portfolio.",
+            lead: "Buat form kualifikasi B2B sales lead dengan ukuran perusahaan, anggaran/budget bulanan, kendala utama, dan waktu meeting konsultasi."
+          },
+          zh: {
+            clinic: "创建一份门诊新患者健康评估问卷，涵盖主要症状、疼痛等级评分（0-10分）、跌倒史、肿胀情况以及既往手术史。",
+            csat: "创建一份客户满意度与 NPS 调查表，评估服务质量、员工响应速度（1-10评分）、推荐意愿以及改进建议。",
+            event: "创建一份研讨会与培训活动报名表，包含参与者姓名、所选课程场次、证书需求以及感兴趣的专题。",
+            hr: "创建一份招聘候选人初筛问卷，包含相关工作经验年限、专业技能自评（1-10分）、到岗时间以及作品集链接。",
+            lead: "创建一份 B2B 销售线索资质评估表，包含企业规模、月度预算、核心痛点诉求以及预约咨询时间。"
+          }
         };
-        input.value = presets[type] || "";
+        const langPresets = presets[lang] || presets.id || presets.en;
+        input.value = langPresets[type] || "";
         sendAiMessage();
       };
 
@@ -5638,28 +5708,38 @@
         const formTitle = typeof form.title === "object" ? (form.title[lang] || form.title.en || form.title.id) : form.title;
         const totalQ = (form.questions || []).length;
         const estMin = Math.max(1, Math.round(totalQ * 0.4));
+        const estTimeText = t("aiEstTime") || (lang === "id" ? "Est. Waktu Pengisian:" : lang === "zh" ? "预计答题时间:" : "Est. Completion Time:");
+        const qUnit = t("aiQuestionsUnit") || (lang === "id" ? "Pertanyaan" : lang === "zh" ? "道题目" : "Questions");
+        const badgeLabel = lang === "id" ? "✦ Draf AI Multibahasa" : lang === "zh" ? "✦ AI 多语言智能表单" : "✦ AI Generated & Multilingual";
         
         let html =
           '<div style="margin-bottom:14px; padding: 12px 14px; background:#fff; border: 1px solid var(--border); border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">' +
           '<div><strong style="color:var(--navy);font-size:15px;display:block">' +
           escHtml(formTitle || "Untitled Form") +
           '</strong><span style="font-size:12px;color:var(--text3)">' +
-          totalQ + ' Pertanyaan • Est. Waktu Pengisian: ~' + estMin + ' menit</span></div>' +
-          '<div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#e0f2fe;color:#0284c7;border-radius:999px;font-size:11px;font-weight:700">✦ AI Generated & Multilingual</div>' +
+          totalQ + ' ' + qUnit + ' • ' + estTimeText + ' ~' + estMin + ' ' + (lang === "id" ? "menit" : lang === "zh" ? "分钟" : "min") + '</span></div>' +
+          '<div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#e0f2fe;color:#0284c7;border-radius:999px;font-size:11px;font-weight:700">' + badgeLabel + '</div>' +
           '</div>';
 
         (form.questions || []).forEach((q, i) => {
           const qText = (typeof q.prompt === "object" ? (q.prompt[lang] || q.prompt.en || q.prompt.id) : null) || q.text || "Question " + (i + 1);
           const typeClass = q.type === "scale" ? "badge-scale" : q.type === "yesno" ? "badge-yesno" : q.type === "text" ? "badge-text" : "badge-choice";
-          const typeName = q.type === "scale" ? "Rating 0-10" : q.type === "yesno" ? "Yes / No" : q.type === "text" ? "Open Text" : "Multiple Choice";
-          
+          const typeName =
+            q.type === "scale"
+              ? (lang === "id" ? "Skala 0-10" : lang === "zh" ? "0-10 评分" : "Rating 0-10")
+              : q.type === "yesno"
+                ? (lang === "id" ? "Ya / Tidak" : lang === "zh" ? "是 / 否" : "Yes / No")
+                : q.type === "text"
+                  ? (lang === "id" ? "Teks Bebas" : lang === "zh" ? "开放文本" : "Open Text")
+                  : (lang === "id" ? "Pilihan Ganda" : lang === "zh" ? "多项选择" : "Multiple Choice");
+
           html +=
             '<div class="ai-preview-q"><div class="q-head"><span class="q-num">' +
             (i + 1) +
             '</span><div><span class="q-text">' +
             escHtml(qText) +
             '</span><div style="margin-top:4px"><span class="q-type-badge ' + typeClass + '">' + typeName + '</span></div></div></div>';
-            
+
           if (q.options && q.options.length) {
             html +=
               '<div class="q-opts">' +
@@ -5674,11 +5754,15 @@
                 .join("") +
               "</div>";
           } else if (q.type === "scale") {
-            html += '<div style="font-size:12px;color:var(--text3);margin-top:4px;background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:6px;display:inline-block">Skala numerik interaktif (0 s/d ' + (q.max || 10) + ')</div>';
+            const scaleDesc = lang === "id" ? "Skala numerik interaktif (0 s/d " + (q.max || 10) + ")" : lang === "zh" ? "交互式数值评分 (0 至 " + (q.max || 10) + ")" : "Interactive numeric rating (0 to " + (q.max || 10) + ")";
+            html += '<div style="font-size:12px;color:var(--text3);margin-top:4px;background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:6px;display:inline-block">' + scaleDesc + '</div>';
           } else if (q.type === "text") {
-            html += '<div style="font-size:12px;color:var(--text3);margin-top:4px;background:#f3e8ff;color:#6b21a8;padding:4px 10px;border-radius:6px;display:inline-block">Kotak jawaban esai / masukan terbuka</div>';
+            const textDesc = lang === "id" ? "Kotak jawaban esai / masukan terbuka" : lang === "zh" ? "开放式问答与补充反馈输入框" : "Open-ended response text area";
+            html += '<div style="font-size:12px;color:var(--text3);margin-top:4px;background:#f3e8ff;color:#6b21a8;padding:4px 10px;border-radius:6px;display:inline-block">' + textDesc + '</div>';
           } else if (q.type === "yesno") {
-            html += '<div class="q-opts"><span>✓ Ya</span><span>✗ Tidak</span></div>';
+            const yesLabel = lang === "id" ? "✓ Ya" : lang === "zh" ? "✓ 是" : "✓ Yes";
+            const noLabel = lang === "id" ? "✗ Tidak" : lang === "zh" ? "✗ 否" : "✗ No";
+            html += '<div class="q-opts"><span>' + yesLabel + '</span><span>' + noLabel + '</span></div>';
           }
           html += "</div>";
         });
