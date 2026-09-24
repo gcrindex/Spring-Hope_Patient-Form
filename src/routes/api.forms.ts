@@ -125,6 +125,47 @@ export const Route = createFileRoute("/api/forms")({
           );
         }
       },
+
+      DELETE: async ({ request }) => {
+        try {
+          const user = await authenticateRequest(request);
+          if (!user) {
+            return Response.json(
+              { success: false, error: "UNAUTHORIZED", message: "Admin authentication required." },
+              { status: 401 },
+            );
+          }
+
+          const url = new URL(request.url);
+          let formId = url.searchParams.get("id") || "";
+          if (!formId) {
+            const body = await request.json().catch(() => null);
+            if (body && body.id) formId = String(body.id).trim();
+          }
+
+          if (!formId) {
+            return Response.json(
+              { success: false, error: "MISSING_ID", message: "Form ID is required." },
+              { status: 400 },
+            );
+          }
+
+          await dbExecute("DELETE FROM forms WHERE id = ?", [formId]);
+          await dbExecute("DELETE FROM submissions WHERE form_id = ?", [formId]);
+
+          return Response.json({
+            success: true,
+            id: formId,
+            message: "Form and associated submissions deleted successfully from database.",
+          });
+        } catch (err) {
+          console.error("Failed to delete form", err);
+          return Response.json(
+            { success: false, error: "INTERNAL_ERROR", message: "Failed to delete form." },
+            { status: 500 },
+          );
+        }
+      },
     },
   },
 });

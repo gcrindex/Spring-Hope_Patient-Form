@@ -356,6 +356,55 @@ export const Route = createFileRoute("/api/submissions")({
           );
         }
       },
+
+      // DELETE /api/submissions: Delete a patient submission (Admin only)
+      DELETE: async ({ request }) => {
+        try {
+          const user = await authenticateRequest(request);
+          if (!user) {
+            return Response.json(
+              {
+                success: false,
+                error: "UNAUTHORIZED",
+                message: "Akses ditolak: Wajib autentikasi admin.",
+              },
+              { status: 401 },
+            );
+          }
+
+          const url = new URL(request.url);
+          let id = url.searchParams.get("id") || "";
+          if (!id) {
+            const body = await request.json().catch(() => null);
+            if (body && body.id) id = String(body.id).trim();
+          }
+
+          if (!id) {
+            return Response.json(
+              { success: false, error: "MISSING_ID", message: "ID submission wajib disertakan." },
+              { status: 400 },
+            );
+          }
+
+          await dbExecute("DELETE FROM submissions WHERE id = ?", [id]);
+
+          return Response.json({
+            success: true,
+            id,
+            message: "Data submission berhasil dihapus dari database server.",
+          });
+        } catch (err) {
+          console.error("Failed to delete submission", err);
+          return Response.json(
+            {
+              success: false,
+              error: "INTERNAL_ERROR",
+              message: "Gagal menghapus data submission.",
+            },
+            { status: 500 },
+          );
+        }
+      },
     },
   },
 });
