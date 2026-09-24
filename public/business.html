@@ -32,6 +32,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=block"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
       /* ========== RESET & BASE ========== */
       *,
@@ -1522,26 +1523,27 @@
         font-size: 13px;
         font-weight: 500;
       }
-      .qr-placeholder {
-        width: 140px;
-        height: 140px;
-        margin: 20px auto 0;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(7, 1fr);
-        gap: 2px;
-        padding: 8px;
+      .qr-box-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 16px;
       }
-      .qr-placeholder span {
-        border-radius: 2px;
+      .qr-canvas-wrapper {
+        padding: 12px;
+        background: #ffffff;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .qr-placeholder .on {
-        background: var(--navy);
-      }
-      .qr-placeholder .off {
-        background: var(--white);
+      .qr-canvas-wrapper canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
       }
 
       /* Submission detail modal */
@@ -2336,21 +2338,30 @@
 
     <!-- BUILDER SCREEN -->
     <div id="builder-screen" class="screen">
-      <div class="builder-topbar">
-        <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
-        <input class="title-input" id="builder-title" value="" spellcheck="false" />
-        <span class="pill" id="builder-status-pill"></span>
-        <button class="publish-btn" id="builder-publish-btn"></button>
+      <div class="builder-topbar" style="display: flex; align-items: center; justify-content: space-between">
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0">
+          <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
+          <input class="title-input" id="builder-title" value="" spellcheck="false" />
+          <span class="pill" id="builder-status-pill"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="admin-lang-picker-light">
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="id">ID</button>
+            <button type="button" class="lang-btn" data-lang="zh">中文</button>
+          </div>
+          <button class="publish-btn" id="builder-publish-btn"></button>
+        </div>
       </div>
       <div class="builder-body">
         <div class="builder-left">
           <div class="panel-header">
-            <h3>Questions</h3>
+            <h3 data-i18n="builderQuestionsHeader">Questions</h3>
             <span id="builder-qcount"></span>
           </div>
           <div class="question-list" id="question-list"></div>
           <div style="padding: 12px">
-            <button class="add-question-btn" id="add-q-btn">+ Add Question</button>
+            <button class="add-question-btn" id="add-q-btn" data-i18n="builderAddQBtn">+ Add Question</button>
           </div>
           <div class="question-editor" id="question-editor" style="display: none"></div>
         </div>
@@ -2359,7 +2370,7 @@
             <div class="phone-notch"></div>
             <div class="phone-screen" id="phone-screen"></div>
           </div>
-          <div class="scoring-chip">
+          <div class="scoring-chip" data-i18n="builderScoringChip">
             Scoring: choice = options' score, scale = x3, yes/no = 12/0
           </div>
         </div>
@@ -3388,80 +3399,6 @@
               ],
             },
             defaultElderlyFriendlyForm,
-            {
-              id: "hip-function-score",
-              title: "Hip Function Score",
-              status: "draft",
-              submissions: 0,
-              createdAt: d(15),
-              updatedAt: d(5),
-              questions: [
-                {
-                  id: "q1",
-                  text: "How old are you?",
-                  type: "choice",
-                  options: [
-                    { label: "Under 40", score: 1 },
-                    { label: "40-59", score: 2 },
-                    { label: "60-74", score: 3 },
-                    { label: "75 or older", score: 4 },
-                  ],
-                },
-                { id: "q2", text: "Rate your hip pain level", type: "scale", max: 10 },
-                { id: "q3", text: "Do you have a noticeable limp?", type: "yesno" },
-                {
-                  id: "q4",
-                  text: "How many flights of stairs can you manage?",
-                  type: "choice",
-                  options: [
-                    { label: "3 or more", score: 1 },
-                    { label: "1-2 flights", score: 2 },
-                    { label: "Half a flight", score: 3 },
-                    { label: "Unable to climb stairs", score: 4 },
-                  ],
-                },
-              ],
-            },
-            {
-              id: "post-surgery-follow-up",
-              title: "Post-Surgery Follow-up",
-              status: "published",
-              submissions: 12,
-              createdAt: d(14),
-              updatedAt: d(1),
-              questions: [
-                { id: "q1", text: "Rate your current pain level", type: "scale", max: 10 },
-                {
-                  id: "q2",
-                  text: "How has your sleep quality been?",
-                  type: "choice",
-                  options: [
-                    { label: "Excellent", score: 1 },
-                    { label: "Good", score: 2 },
-                    { label: "Fair", score: 3 },
-                    { label: "Poor", score: 4 },
-                  ],
-                },
-                {
-                  id: "q3",
-                  text: "Describe your mobility level",
-                  type: "choice",
-                  options: [
-                    { label: "Fully mobile", score: 1 },
-                    { label: "Mostly independent", score: 2 },
-                    { label: "Some assistance needed", score: 3 },
-                    { label: "Significant help required", score: 4 },
-                  ],
-                },
-                {
-                  id: "q4",
-                  text: "How satisfied are you with your recovery so far?",
-                  type: "scale",
-                  max: 10,
-                },
-                { id: "q5", text: "Would you recommend this procedure to others?", type: "yesno" },
-              ],
-            },
           ];
           const efSubs = [
             {
@@ -3834,6 +3771,31 @@
           aiQuestionsUnit: "Questions",
           aiCreatedToast: "AI form created! Review and edit in the builder.",
           aiVoiceNotSupported: "Voice input is not supported in this browser. Please use Chrome or Edge.",
+          uploadPdfTitle: "Upload PDF Form",
+          uploadImageTitle: "Scan Image Form",
+          uploadDropzoneText: "Click or drag a file here",
+          uploadDropzoneHintPdf: "PDF up to 10MB",
+          uploadDropzoneHintImage: "PNG, JPG, or WebP up to 10MB",
+          uploadProgressText: "Uploading & extracting form...",
+          uploadSuccessText: "Form extracted successfully!",
+          uploadUseFormBtn: "Use This Form",
+          uploadErrorLarge: "File is too large. Maximum size is 10MB.",
+          uploadErrorPdf: "Invalid file type. Please upload a PDF.",
+          uploadErrorImage: "Invalid file type. Please upload a PNG, JPG, or WebP image.",
+          builderQuestionsHeader: "Questions",
+          builderAddQBtn: "+ Add Question",
+          builderQTextLabel: "Question Text",
+          builderTypeLabel: "Type",
+          builderOptionsLabel: "Options",
+          builderOptPlaceholder: "Option label",
+          builderAddOptionBtn: "+ Add Option",
+          builderMaxValueLabel: "Max Value",
+          builderDoneBtn: "Done",
+          builderScoringChip: "Scoring: choice = options' score, scale = x3, yes/no = 12/0",
+          typeChoice: "Choice",
+          typeYesNo: "Yes / No",
+          typeScale: "Scale",
+          typeText: "Text",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Enter your business account credentials",
           registerPortalTitle: "Business Registration",
@@ -3927,6 +3889,31 @@
           aiQuestionsUnit: "Pertanyaan",
           aiCreatedToast: "Form AI berhasil dibuat! Tinjau dan edit di builder.",
           aiVoiceNotSupported: "Fitur suara tidak didukung di browser ini. Gunakan Chrome atau Edge.",
+          uploadPdfTitle: "Unggah Dokumen PDF",
+          uploadImageTitle: "Pindai Gambar / Foto Form",
+          uploadDropzoneText: "Klik atau seret file dokumen ke sini",
+          uploadDropzoneHintPdf: "PDF maks hingga 10MB",
+          uploadDropzoneHintImage: "PNG, JPG, atau WebP maks 10MB",
+          uploadProgressText: "Mengunggah & mengekstrak formulir...",
+          uploadSuccessText: "Formulir berhasil diekstrak!",
+          uploadUseFormBtn: "Gunakan Formulir Ini",
+          uploadErrorLarge: "Ukuran file terlalu besar. Maksimum 10MB.",
+          uploadErrorPdf: "Format file tidak valid. Silakan unggah dokumen PDF.",
+          uploadErrorImage: "Format file tidak valid. Silakan unggah gambar PNG, JPG, atau WebP.",
+          builderQuestionsHeader: "Daftar Pertanyaan",
+          builderAddQBtn: "+ Tambah Pertanyaan",
+          builderQTextLabel: "Teks Pertanyaan",
+          builderTypeLabel: "Tipe Input",
+          builderOptionsLabel: "Opsi Jawaban",
+          builderOptPlaceholder: "Label opsi jawaban",
+          builderAddOptionBtn: "+ Tambah Opsi",
+          builderMaxValueLabel: "Nilai Maksimal",
+          builderDoneBtn: "Selesai",
+          builderScoringChip: "Penilaian: pilihan = skor opsi, skala = x3, ya/tidak = 12/0",
+          typeChoice: "Pilihan Ganda",
+          typeYesNo: "Ya / Tidak",
+          typeScale: "Skala Nilai",
+          typeText: "Teks Bebas",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Masukkan kredensial akun bisnis Anda",
           registerPortalTitle: "Registrasi Akun Bisnis",
@@ -4018,6 +4005,31 @@
           aiQuestionsUnit: "道题目",
           aiCreatedToast: "AI 表单已创建！可在编辑器中进一步调整。",
           aiVoiceNotSupported: "当前浏览器不支持语音输入，请使用 Chrome 或 Edge 浏览器。",
+          uploadPdfTitle: "上传 PDF 表单",
+          uploadImageTitle: "扫描图片 / 照片表单",
+          uploadDropzoneText: "点击或拖拽文件至此区域",
+          uploadDropzoneHintPdf: "PDF 格式，最大 10MB",
+          uploadDropzoneHintImage: "PNG、JPG 或 WebP 格式，最大 10MB",
+          uploadProgressText: "正在上传并智能提取题目...",
+          uploadSuccessText: "表单内容提取成功！",
+          uploadUseFormBtn: "使用此提取表单",
+          uploadErrorLarge: "文件过大，最大限制为 10MB。",
+          uploadErrorPdf: "文件格式无效，请上传 PDF 文件。",
+          uploadErrorImage: "文件格式无效，请上传 PNG、JPG 或 WebP 图片。",
+          builderQuestionsHeader: "题目列表",
+          builderAddQBtn: "+ 添加题目",
+          builderQTextLabel: "题目内容",
+          builderTypeLabel: "题型分类",
+          builderOptionsLabel: "选项设置",
+          builderOptPlaceholder: "输入选项文字",
+          builderAddOptionBtn: "+ 添加选项",
+          builderMaxValueLabel: "最大分值",
+          builderDoneBtn: "完成编辑",
+          builderScoringChip: "计分说明: 选项 = 选项分值, 量表 = x3, 是/否 = 12/0",
+          typeChoice: "单项选择",
+          typeYesNo: "是 / 否",
+          typeScale: "量表打分",
+          typeText: "开放文本",
           loginPortalTitle: "企业商业门户",
           loginPortalDesc: "输入您的企业商业账户凭据",
           registerPortalTitle: "企业账户注册",
@@ -4595,26 +4607,18 @@
         }
       }
 
-      // FIX 1: Title input live-updates slug + migrates submissions on rename
+      // Title input live-updates title (maintains stable form id to prevent duplicate records)
+      let _titleDebounceTimer = null;
       $("#builder-title").addEventListener("input", (e) => {
         if (!builderForm) return;
-        const oldId = builderForm.id;
         const newTitle = e.target.value;
-        const newId = uniqueSlug(newTitle, oldId);
         builderForm.title = newTitle;
-        if (newId !== oldId) {
-          builderForm.id = newId;
-          // Migrate all submissions from old formId to new formId
-          const subs = submissions();
-          subs.forEach((s) => {
-            if (s.formId === oldId) s.formId = newId;
-          });
-          LS.set("pf_submissions", subs);
-          // Update builder URL hash to new id (without triggering re-render)
-          history.replaceState(null, "", "#/builder/" + newId);
-        }
-        saveForm();
         renderPhonePreview();
+
+        clearTimeout(_titleDebounceTimer);
+        _titleDebounceTimer = setTimeout(() => {
+          saveForm();
+        }, 300);
       });
 
       // FIX 4: Publish modal — clickable link, slug URL
@@ -4635,23 +4639,40 @@
 
       function showPublishModal() {
         const localUrl =
-          (window.location.host || "localhost:8080") + "/intake?form=" + builderForm.id;
+          (window.location.host || "9forms.com") + "/intake?form=" + builderForm.id;
         const fullUrl =
-          (window.location.origin || "http://localhost:8080") + "/intake?form=" + builderForm.id;
+          (window.location.origin || "https://9forms.com") + "/intake?form=" + builderForm.id;
         showModal(`<div class="publish-modal">
         <h2>Your form is live!</h2>
         <p style="color:var(--text2);font-size:14px;margin-bottom:4px">Share this link with your patients:</p>
         <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('Copied!')">Copy</button></div>
         <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">Open form &rarr;</a></div>
-        <div class="qr-placeholder" id="qr-ph"></div>
-        <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:8px">Scan to open form</p>
+        <div class="qr-box-container">
+          <div class="qr-canvas-wrapper">
+            <canvas id="publish-qr-canvas"></canvas>
+          </div>
+          <p style="text-align:center;font-size:12px;font-weight:600;color:var(--navy);margin-top:10px">Scan QR code to open form</p>
+        </div>
       </div>`);
-        const ph = $("#qr-ph");
-        ph.innerHTML = "";
-        for (let i = 0; i < 49; i++) {
-          const s = document.createElement("span");
-          s.className = Math.random() > 0.45 ? "on" : "off";
-          ph.appendChild(s);
+        const canvas = $("#publish-qr-canvas");
+        if (canvas) {
+          if (typeof QRCode !== "undefined" && QRCode.toCanvas) {
+            QRCode.toCanvas(canvas, fullUrl, {
+              width: 148,
+              margin: 1,
+              color: {
+                dark: "#1b2a4a",
+                light: "#ffffff",
+              },
+            }, function(err) {
+              if (err) console.error(err);
+            });
+          } else {
+            const wrapper = canvas.parentElement;
+            if (wrapper) {
+              wrapper.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=148x148&data=${encodeURIComponent(fullUrl)}" alt="QR Code" width="148" height="148" style="display:block;border-radius:4px" />`;
+            }
+          }
         }
       }
 
@@ -4685,14 +4706,12 @@
       }
 
       function typeLabel(t) {
-        return (
-          {
-            choice: "&#9673; Choice",
-            yesno: "&#10003;&#10007; Yes / No",
-            scale: "&#8596; Scale",
-            text: "&#9998; Text",
-          }[t] || t
-        );
+        const lang = currentAdminLang || "id";
+        if (t === "choice") return `&#9673; ${t("typeChoice") || "Choice"}`;
+        if (t === "yesno") return `&#10003;&#10007; ${t("typeYesNo") || "Yes / No"}`;
+        if (t === "scale") return `&#8596; ${t("typeScale") || "Scale"}`;
+        if (t === "text") return `&#9998; ${t("typeText") || "Text"}`;
+        return t;
       }
 
       function selectQuestion(id) {
@@ -4726,29 +4745,29 @@
         ed.style.display = "block";
         let optionsHtml = "";
         if (q.type === "choice") {
-          optionsHtml = `<div class="editor-field"><label>Options</label><div id="option-rows">${q.options
+          optionsHtml = `<div class="editor-field"><label>${t("builderOptionsLabel") || "Options"}</label><div id="option-rows">${q.options
             .map(
               (o, i) => `
-          <div class="option-row"><input value="${escHtml(o.label)}" placeholder="Option label" oninput="updateOption('${q.id}',${i},'label',this.value)">
+          <div class="option-row"><input value="${escHtml(o.label)}" placeholder="${t("builderOptPlaceholder") || "Option label"}" oninput="updateOption('${q.id}',${i},'label',this.value)">
           <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
           <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
             )
             .join("")}</div>
-          <button class="add-option-btn" onclick="addOption('${q.id}')">+ Add Option</button></div>`;
+          <button class="add-option-btn" onclick="addOption('${q.id}')">${t("builderAddOptionBtn") || "+ Add Option"}</button></div>`;
         } else if (q.type === "scale") {
-          optionsHtml = `<div class="editor-field"><label>Max Value</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
+          optionsHtml = `<div class="editor-field"><label>${t("builderMaxValueLabel") || "Max Value"}</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
         }
         ed.innerHTML = `
-        <div class="editor-field"><label>Question Text</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
-        <div class="editor-field"><label>Type</label>
+        <div class="editor-field"><label>${t("builderQTextLabel") || "Question Text"}</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
+        <div class="editor-field"><label>${t("builderTypeLabel") || "Type"}</label>
           <div class="type-selector">${["choice", "yesno", "scale", "text"]
             .map(
-              (t) =>
-                `<button class="type-btn ${q.type === t ? "active" : ""}" onclick="changeType('${q.id}','${t}')">${{ choice: "&#9673; Choice", yesno: "&#10003;&#10007; Yes/No", scale: "&#8596; Scale", text: "&#9998; Text" }[t]}</button>`,
+              (typeKey) =>
+                `<button class="type-btn ${q.type === typeKey ? "active" : ""}" onclick="changeType('${q.id}','${typeKey}')">${typeLabel(typeKey)}</button>`,
             )
             .join("")}</div></div>
         ${optionsHtml}
-        <button class="editor-done" onclick="doneEditing()">Done</button>`;
+        <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>`;
       }
 
       function updateQText(id, v) {
@@ -5216,7 +5235,7 @@
           }),
         ];
 
-        let csv = "\uFEFF" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
+        let csv = "\uFEFFsep=,\r\n" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
 
         subs.forEach((s) => {
           const rowValues = [
@@ -6007,12 +6026,13 @@
         uploadType = type;
         uploadedFile = null;
         uploadedFormResult = null;
-        const title = type === "pdf" ? "Upload PDF Form" : "Scan Image Form";
+        const title = type === "pdf" ? (t("uploadPdfTitle") || "Upload PDF Form") : (t("uploadImageTitle") || "Scan Image Form");
         const icon = type === "pdf" ? "&#128196;" : "&#128247;";
-        const hint = type === "pdf" ? "PDF up to 10MB" : "PNG, JPG, or WebP up to 10MB";
+        const hint = type === "pdf" ? (t("uploadDropzoneHintPdf") || "PDF up to 10MB") : (t("uploadDropzoneHintImage") || "PNG, JPG, or WebP up to 10MB");
         const accept = type === "pdf" ? ".pdf" : ".png,.jpg,.jpeg,.webp";
         $("#upload-modal-title").textContent = title;
         $("#upload-dropzone-icon").innerHTML = icon;
+        $("#upload-dropzone-text").textContent = t("uploadDropzoneText") || "Click or drag a file here";
         $("#upload-dropzone-hint").textContent = hint;
         $("#upload-file-input").accept = accept;
         $("#upload-progress").style.display = "none";
@@ -6020,6 +6040,12 @@
         $("#upload-success").style.display = "none";
         $("#upload-fallback").style.display = "none";
         $("#upload-dropzone").style.display = "";
+
+        const successTextP = $("#upload-success p");
+        if (successTextP) successTextP.textContent = t("uploadSuccessText") || "Form extracted successfully!";
+        const useBtn = $("#upload-success button");
+        if (useBtn) useBtn.textContent = t("uploadUseFormBtn") || "Use This Form";
+
         // Show the upload modal overlay (already in DOM)
         $("#upload-modal-overlay").classList.add("show");
         // Bind events
@@ -6123,21 +6149,50 @@
 
       function saveUploadedForm() {
         if (!uploadedFormResult) return;
+        const lang = currentAdminLang || "id";
         const f = forms();
-        const title =
-          uploadedFormResult.title ||
-          (uploadType === "pdf" ? "PDF Imported Form" : "Image Scanned Form");
-        const id = uniqueSlug(title);
-        const questions = (uploadedFormResult.questions || []).map((q, i) => ({
-          id: "q_" + uid(),
-          text: q.text,
-          type: q.type || "choice",
-          options: q.options || undefined,
-          max: q.max || undefined,
-        }));
+        const rawTitle = uploadedFormResult.title;
+        const titleStr =
+          typeof rawTitle === "object" && rawTitle !== null
+            ? rawTitle[lang] || rawTitle.id || rawTitle.en || "Imported Form"
+            : String(rawTitle || (uploadType === "pdf" ? "PDF Imported Form" : "Image Scanned Form"));
+
+        const id = uniqueSlug(titleStr);
+        const questions = (uploadedFormResult.questions || []).map((q, i) => {
+          const rawText = q.prompt || q.text;
+          const textStr =
+            typeof rawText === "object" && rawText !== null
+              ? rawText[lang] || rawText.id || rawText.en || `Question ${i + 1}`
+              : String(rawText || `Question ${i + 1}`);
+
+          let cleanOptions = undefined;
+          if (Array.isArray(q.options) && q.options.length > 0) {
+            cleanOptions = q.options.map((opt, optIdx) => {
+              const rawLabel = opt.label;
+              const labelStr =
+                typeof rawLabel === "object" && rawLabel !== null
+                  ? rawLabel[lang] || rawLabel.id || rawLabel.en || `Option ${optIdx + 1}`
+                  : String(rawLabel || `Option ${optIdx + 1}`);
+              return {
+                value: String(opt.value || `opt_${optIdx + 1}`),
+                label: labelStr,
+                score: typeof opt.score === "number" ? opt.score : (optIdx + 1),
+              };
+            });
+          }
+
+          return {
+            id: "q_" + uid(),
+            text: textStr,
+            type: q.type || "choice",
+            options: cleanOptions,
+            max: typeof q.max === "number" ? q.max : undefined,
+          };
+        });
+
         const nf = {
           id,
-          title,
+          title: titleStr,
           status: "draft",
           questions,
           createdAt: new Date().toISOString(),
@@ -6148,7 +6203,7 @@
         LS.set("pf_forms", f);
         closeUploadModal();
         navigate("#/builder/" + nf.id);
-        toast("Form imported! Review and edit in the builder.");
+        toast(t("aiCreatedToast") || "Form imported! Review and edit in the builder.");
       }
 
       // ===================== INIT =====================

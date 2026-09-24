@@ -6,33 +6,36 @@ import { getEnv } from "../lib/env";
 const DEFAULT_BASE_URL = "https://api.pesatrouter.com/v1";
 const DEFAULT_MODEL = "pesat-flash";
 
-const SYSTEM_PROMPT = `You are PatientForm's clinical form drafting assistant for Spring Hope Orthopaedic Clinic.
-You receive the content description of an uploaded image/photo of a clinical form. Your job is to convert it into a patient assessment form.
+const SYSTEM_PROMPT = `You are 9forms.com's advanced Vision Document & Clinical OCR AI Specialist.
+You receive an image or photo of a physical paper form, handwritten questionnaire, clinical document, or intake sheet.
 
-Return ONLY valid JSON, no markdown, no commentary, matching exactly this shape:
+Your job is to read the image visually, understand messy or human phrasing, and extract it into a structured conversational digital form.
+
+Guidelines:
+1. Optical & Contextual Reading: Read handwritten text, printed questionnaires, checkbox tables, and rating scales accurately.
+2. Translate Human Intent: Turn abbreviations, bullet points, or informal prompts into clear, polite conversational questions.
+3. Determine Types Accurately:
+   - Numerical ratings or pain bars -> type "scale" (max 10).
+   - Yes/No, Pernah/Tidak, Checkbox ticks -> type "yesno".
+   - Multiple options/lists -> type "choice" with options and score points.
+   - Narrative fields / open notes -> type "text".
+4. Provide Tri-Lingual Sync: Every field MUST include natural translations for "en" (English), "id" (Bahasa Indonesia), and "zh" (Simplified Chinese).
+5. Return ONLY valid JSON, no markdown, matching this shape:
 {
   "title": {"en":"...","id":"...","zh":"..."},
   "description": {"en":"...","id":"...","zh":"..."},
   "questions": [
     {
-      "id":"stable-kebab-id",
+      "id":"q-kebab-name",
       "type":"choice|yesno|scale|text",
       "prompt":{"en":"...","id":"...","zh":"..."},
       "helper":{"en":"...","id":"...","zh":"..."},
-      "options":[{"value":"stable-value","label":{"en":"...","id":"...","zh":"..."},"score":0}],
+      "options":[{"value":"opt_val","label":{"en":"...","id":"...","zh":"..."},"score":0}],
       "max":10,
       "optional":false
     }
   ]
-}
-
-Rules:
-- 4 to 12 questions based on what you can read from the image.
-- If text is unclear, make reasonable clinical assumptions but flag them.
-- Include multilingual EN / Bahasa Indonesia / Simplified Chinese.
-- Do not diagnose, prescribe, or make clinical decisions.
-- Scores are draft configuration only.
-- Do not wrap JSON in code fences.`;
+}`;
 
 export const Route = createFileRoute("/api/ai/extract-image")({
   server: {
@@ -104,9 +107,15 @@ export const Route = createFileRoute("/api/ai/extract-image")({
             );
           }
 
-          // Convert to base64 data URI for the AI provider
+          // Convert to base64 data URI safely in chunks
           const buffer = await file.arrayBuffer();
-          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+          const bytes = new Uint8Array(buffer);
+          let binary = "";
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i += 8192) {
+            binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, Math.min(i + 8192, len))));
+          }
+          const base64 = btoa(binary);
           const dataUri = `data:${file.type};base64,${base64}`;
 
           const response = await fetch(`${baseUrl}/chat/completions`, {
