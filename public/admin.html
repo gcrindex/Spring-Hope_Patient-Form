@@ -4324,9 +4324,13 @@
         if (mode === "register") {
           const invite = getInviteCode();
           const target = invite ? `#/register?invite=${encodeURIComponent(invite)}` : "#/register";
-          if (location.hash !== target) history.replaceState(null, "", target);
+          if (location.hash !== target) {
+            location.hash = target;
+          }
         } else {
-          if (location.hash !== "#/login") history.replaceState(null, "", "#/login");
+          if (location.hash !== "#/login") {
+            location.hash = "#/login";
+          }
         }
       };
 
