@@ -4629,18 +4629,39 @@
         }
       }
 
-      // Title input live-updates title (maintains stable form id to prevent duplicate records)
+      // Title input live-updates title (updates slug for draft/untitled forms)
       let _titleDebounceTimer = null;
       $("#builder-title").addEventListener("input", (e) => {
         if (!builderForm) return;
-        const newTitle = e.target.value;
-        builderForm.title = newTitle;
+        const oldId = builderForm.id;
+        const newTitle = e.target.value.trim();
+        builderForm.title = e.target.value;
         renderPhonePreview();
 
         clearTimeout(_titleDebounceTimer);
         _titleDebounceTimer = setTimeout(() => {
+          if (
+            newTitle &&
+            (oldId.startsWith("untitled") ||
+              oldId.startsWith("custom") ||
+              builderForm.status === "draft")
+          ) {
+            const newId = uniqueSlug(newTitle, oldId);
+            if (newId !== oldId) {
+              const f = forms();
+              const oldIdx = f.findIndex((x) => x.id === oldId);
+              builderForm.id = newId;
+              if (oldIdx >= 0) {
+                f[oldIdx] = builderForm;
+              } else {
+                f.push(builderForm);
+              }
+              LS.set("pf_forms", f);
+              history.replaceState(null, "", "#/builder/" + newId);
+            }
+          }
           saveForm();
-        }, 300);
+        }, 400);
       });
 
       // FIX 4: Publish modal — clickable link, slug URL
@@ -4885,6 +4906,17 @@
         renderPhonePreview();
       }
 
+      function syncFormToServer(formData) {
+        if (!formData || !formData.id) return;
+        try {
+          fetch("/api/forms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }).catch(() => {});
+        } catch (e) {}
+      }
+
       function saveForm() {
         const f = forms();
         const idx = f.findIndex((x) => x.id === builderForm.id);
@@ -4892,6 +4924,7 @@
         if (idx >= 0) f[idx] = builderForm;
         else f.push(builderForm);
         LS.set("pf_forms", f);
+        syncFormToServer(builderForm);
       }
 
       // FIX 3: Drag-and-drop with reorder toast + preview update
