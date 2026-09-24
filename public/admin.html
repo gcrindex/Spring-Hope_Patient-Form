@@ -844,27 +844,19 @@
         background: var(--teal);
         color: #fff;
       }
-        border-radius: 8px;
-        background: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text2);
-        flex-shrink: 0;
-      }
       .question-card .q-info {
-        flex: 1;
+        flex: 1 1 auto;
         min-width: 0;
+        overflow: hidden;
       }
       .question-card .q-text {
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: var(--text);
+        color: var(--navy);
+        word-break: break-all;
       }
       .question-card .q-type {
         font-size: 11px;
@@ -873,10 +865,14 @@
         display: flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
       }
       .question-card .q-actions {
         display: flex;
         gap: 4px;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
         flex-shrink: 0;
       }
       .question-card .q-actions button {

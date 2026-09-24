@@ -845,16 +845,18 @@
         color: #fff;
       }
       .question-card .q-info {
-        flex: 1;
+        flex: 1 1 auto;
         min-width: 0;
+        overflow: hidden;
       }
       .question-card .q-text {
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: var(--text);
+        color: var(--navy);
+        word-break: break-all;
       }
       .question-card .q-type {
         font-size: 11px;
@@ -863,11 +865,13 @@
         display: flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
       }
       .question-card .q-actions {
         display: flex;
         gap: 4px;
         flex-shrink: 0;
+        margin-left: auto;
       }
       .question-card .q-actions button {
         width: 28px;
