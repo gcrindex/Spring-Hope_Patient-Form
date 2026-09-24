@@ -3021,7 +3021,18 @@
       };
       let liveSubmissions = null;
       function forms() {
-        return LS.get("pf_forms") || [];
+        const stored = LS.get("pf_forms");
+        if (Array.isArray(stored)) {
+          // Permanently strip legacy mock forms
+          const filtered = stored.filter(
+            (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up"
+          );
+          if (filtered.length !== stored.length) {
+            LS.set("pf_forms", filtered);
+          }
+          return filtered;
+        }
+        return [];
       }
       function submissions() {
         return liveSubmissions || LS.get("pf_submissions") || [];
@@ -3536,9 +3547,17 @@
             },
           ];
           LS.set("pf_forms", forms);
-          LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...efSubs, ...fuSubs]);
+          LS.set("pf_submissions", [...npSubs, ...kneeSubs, ...efSubs]);
         } else {
-          let updated = false;
+          // Clean up legacy mock forms if still present in user's browser localStorage
+          storedForms = storedForms.filter(
+            (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up"
+          );
+          storedSubs = storedSubs.filter(
+            (s) => s.formId !== "hip-function-score" && s.formId !== "post-surgery-follow-up"
+          );
+          let updated = true;
+
           const efIdx = storedForms.findIndex((f) => f.id === "elderly-friendly-intake");
           if (efIdx === -1) {
             storedForms.splice(2, 0, defaultElderlyFriendlyForm);
@@ -3557,6 +3576,8 @@
           }
           if (updated) {
             LS.set("pf_forms", storedForms);
+            LS.set("pf_submissions", storedSubs);
+          }
           }
 
           if (!storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
