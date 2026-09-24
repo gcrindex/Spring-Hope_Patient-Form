@@ -2885,19 +2885,19 @@
             "
           >
             <div>
-              <h3 style="font-size: 15px; margin: 0; color: var(--navy); font-weight: 700">
+              <h3 id="ai-preview-title" style="font-size: 15px; margin: 0; color: var(--navy); font-weight: 700">
                 ✨ Ready-to-Use Form Draft
               </h3>
-              <div style="font-size: 11px; color: var(--text3); margin-top: 2px">
-                Review questions below, or refine via chat prompt.
+              <div id="ai-preview-sub" style="font-size: 11px; color: var(--text3); margin-top: 2px">
+                Review below, refine via chat, or click Edit to customize in builder.
               </div>
             </div>
             <div style="display: flex; gap: 8px">
-              <button class="btn btn-ghost btn-sm" onclick="regenerateAiForm()" style="border: 1px solid var(--border)">
+              <button class="btn btn-ghost btn-sm" id="ai-redraft-btn" onclick="regenerateAiForm()" style="border: 1px solid var(--border)">
                 ↻ Re-draft
               </button>
-              <button class="btn btn-primary btn-sm" onclick="saveAiForm()" style="box-shadow: 0 2px 8px rgba(46, 134, 171, 0.3)">
-                ✓ Use This Form
+              <button class="btn btn-primary btn-sm" id="ai-use-btn" onclick="saveAiForm()" style="box-shadow: 0 2px 8px rgba(46, 134, 171, 0.3)">
+                ✏️ Edit & Customize Form &rarr;
               </button>
             </div>
           </div>
@@ -3803,9 +3803,9 @@
           aiPresetHr: "💼 Candidate Recruitment (HR)",
           aiPresetLead: "🚀 B2B Sales Lead Qualification",
           aiPreviewTitle: "✨ Ready-to-Use Form Draft",
-          aiPreviewSub: "Review questions below, or refine via chat prompt.",
+          aiPreviewSub: "Review questions below, refine via chat, or click Edit to customize in builder.",
           aiRedraftBtn: "↻ Re-draft",
-          aiUseFormBtn: "✓ Use This Form",
+          aiUseFormBtn: "✏️ Edit in Builder &rarr;",
           aiEstTime: "Est. Completion Time:",
           aiQuestionsUnit: "Questions",
           aiCreatedToast: "AI form created! Review and edit in the builder.",
@@ -3907,9 +3907,9 @@
           aiPresetHr: "💼 Rekrutmen Karyawan (HR)",
           aiPresetLead: "🚀 Kualifikasi Lead Bisnis",
           aiPreviewTitle: "✨ Draf Formulir Siap Pakai",
-          aiPreviewSub: "Tinjau pertanyaan di bawah, atau sempurnakan lewat chat prompt.",
+          aiPreviewSub: "Tinjau pertanyaan di bawah, revisi via chat, atau klik Edit untuk menyesuaikan di builder.",
           aiRedraftBtn: "↻ Buat Ulang",
-          aiUseFormBtn: "✓ Gunakan Form Ini",
+          aiUseFormBtn: "✏️ Buka & Edit di Builder &rarr;",
           aiEstTime: "Est. Waktu Pengisian:",
           aiQuestionsUnit: "Pertanyaan",
           aiCreatedToast: "Form AI berhasil dibuat! Tinjau dan edit di builder.",
@@ -4009,9 +4009,9 @@
           aiPresetHr: "💼 候选人求职招聘筛选 (HR)",
           aiPresetLead: "🚀 B2B 销售线索资格评估",
           aiPreviewTitle: "✨ 智能生成的表单草稿",
-          aiPreviewSub: "在下方预览题目，或通过对话微调题目。",
+          aiPreviewSub: "在下方预览题目，通过对话微调，或点击进入编辑器自定义修改。",
           aiRedraftBtn: "↻ 重新生成",
-          aiUseFormBtn: "✓ 使用此表单",
+          aiUseFormBtn: "✏️ 进入编辑器微调修改 &rarr;",
           aiEstTime: "预计答题时间:",
           aiQuestionsUnit: "道题目",
           aiCreatedToast: "AI 表单已创建！可在编辑器中进一步调整。",
@@ -5898,7 +5898,16 @@
         const estTimeText = t("aiEstTime") || (lang === "id" ? "Est. Waktu Pengisian:" : lang === "zh" ? "预计答题时间:" : "Est. Completion Time:");
         const qUnit = t("aiQuestionsUnit") || (lang === "id" ? "Pertanyaan" : lang === "zh" ? "道题目" : "Questions");
         const badgeLabel = lang === "id" ? "✦ Draf AI Multibahasa" : lang === "zh" ? "✦ AI 多语言智能表单" : "✦ AI Generated & Multilingual";
-        
+
+        const previewTitle = $("#ai-preview-title");
+        if (previewTitle) previewTitle.textContent = t("aiPreviewTitle") || "✨ Ready-to-Use Form Draft";
+        const previewSub = $("#ai-preview-sub");
+        if (previewSub) previewSub.textContent = t("aiPreviewSub") || "Review questions below, refine via chat, or click Edit to customize in builder.";
+        const useBtn = $("#ai-use-btn");
+        if (useBtn) useBtn.innerHTML = t("aiUseFormBtn") || "✏️ Edit in Builder &rarr;";
+        const redraftBtn = $("#ai-redraft-btn");
+        if (redraftBtn) redraftBtn.innerHTML = t("aiRedraftBtn") || "↻ Re-draft";
+
         let html =
           '<div style="margin-bottom:14px; padding: 12px 14px; background:#fff; border: 1px solid var(--border); border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">' +
           '<div><strong style="color:var(--navy);font-size:15px;display:block">' +
