@@ -4335,9 +4335,10 @@
 
       async function updateLoginScreenState() {
         const inviteCode = getInviteCode();
-        const isRegisterHash = location.hash.startsWith("#/register");
+        const r = parseRoute();
+        const isRegister = r.authMode === "register" || (Boolean(inviteCode) && _authMode === "register");
 
-        if (isRegisterHash || (Boolean(inviteCode) && _authMode === "register")) {
+        if (isRegister) {
           setAuthMode("register");
           return;
         }
@@ -4354,7 +4355,7 @@
             hintEl.textContent =
               "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
         } else {
-          setAuthMode(_authMode === "register" ? "register" : "login");
+          setAuthMode("login");
         }
       }
 
