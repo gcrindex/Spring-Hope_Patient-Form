@@ -4160,7 +4160,6 @@
         const rawHash = location.hash;
         const h = rawHash.split("?")[0];
         if (h && h !== "#" && h !== "#/") {
-          if (h === "#/login" && isLoggedIn()) return "#/dashboard";
           return h;
         }
         return isLoggedIn() ? "#/dashboard" : "#/login";
@@ -4191,7 +4190,6 @@
           return { screen: "login", targetHash: location.hash, authMode: "register" };
         }
         if (h === "#/login") {
-          if (isLoggedIn()) return { screen: "dashboard", targetHash: "#/dashboard" };
           return { screen: "login", targetHash: location.hash, authMode: "login" };
         }
         return {
@@ -4204,7 +4202,8 @@
         const r = parseRoute();
 
         if (location.hash !== r.targetHash) {
-          history.replaceState(null, "", r.targetHash);
+          location.hash = r.targetHash;
+          return;
         }
 
         $$(".screen").forEach((s) => s.classList.remove("active"));
@@ -4722,13 +4721,13 @@
         setupDragDrop();
       }
 
-      function typeLabel(t) {
+      function typeLabel(tName) {
         const lang = currentAdminLang || "id";
-        if (t === "choice") return `&#9673; ${t("typeChoice") || "Choice"}`;
-        if (t === "yesno") return `&#10003;&#10007; ${t("typeYesNo") || "Yes / No"}`;
-        if (t === "scale") return `&#8596; ${t("typeScale") || "Scale"}`;
-        if (t === "text") return `&#9998; ${t("typeText") || "Text"}`;
-        return t;
+        if (tName === "choice") return `&#9673; ${t("typeChoice") || "Choice"}`;
+        if (tName === "yesno") return `&#10003;&#10007; ${t("typeYesNo") || "Yes / No"}`;
+        if (tName === "scale") return `&#8596; ${t("typeScale") || "Scale"}`;
+        if (tName === "text") return `&#9998; ${t("typeText") || "Text"}`;
+        return tName;
       }
 
       function selectQuestion(id) {
