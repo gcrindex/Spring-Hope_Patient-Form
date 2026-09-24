@@ -3578,8 +3578,6 @@
             LS.set("pf_forms", storedForms);
             LS.set("pf_submissions", storedSubs);
           }
-          }
-
           if (!storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
             LS.set("pf_submissions", [...storedSubs, ...efSubs]);
           }
