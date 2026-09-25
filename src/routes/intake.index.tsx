@@ -146,7 +146,11 @@ function IntakeStart() {
         )}
 
         <div className="sleek-card-hero">
-          <h1 className="sleek-main-title">{activeForm.title[language] ?? activeForm.title.en}</h1>
+          <h1 className="sleek-main-title">
+            {typeof activeForm.title === "object" && activeForm.title !== null
+              ? activeForm.title[language] ?? activeForm.title.en ?? activeForm.title.id
+              : String(activeForm.title || "")}
+          </h1>
 
           <p className="sleek-main-desc">
             {isSeniorNewPatient
@@ -155,7 +159,9 @@ function IntakeStart() {
                 : language === "zh"
                   ? "清晰简短问卷，支持直接触屏点击或语音快速作答。"
                   : "A clean, guided intake. Touch your answer or speak naturally."
-              : (activeForm.description[language] ?? activeForm.description.en)}
+              : typeof activeForm.description === "object" && activeForm.description !== null
+                ? activeForm.description[language] ?? activeForm.description.en ?? activeForm.description.id
+                : String(activeForm.description || "")}
           </p>
         </div>
 
