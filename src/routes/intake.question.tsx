@@ -62,7 +62,7 @@ function QuestionPage() {
   const [voiceIssue, setVoiceIssue] = useState("");
   const [voiceAuto, setVoiceAuto] = useState(() => isVoiceAutoMode());
   const [justSelected, setJustSelected] = useState<string | number | null>(null);
-  const [privacyConsent, setPrivacyConsent] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(true);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -98,9 +98,7 @@ function QuestionPage() {
       autoAdvanceTimerRef.current = setTimeout(() => {
         setJustSelected(null);
         if (index >= activeForm.questions.length - 1) {
-          if (privacyConsent) {
-            navigate({ to: "/intake/complete", search: { form: activeForm.id } });
-          }
+          navigate({ to: "/intake/complete", search: { form: activeForm.id } });
         } else {
           const next = index + 1;
           setIndex(next);
@@ -110,7 +108,7 @@ function QuestionPage() {
         }
       }, delayMs);
     },
-    [index, activeForm.questions.length, navigate, activeForm.id, privacyConsent],
+    [index, activeForm.questions.length, navigate, activeForm.id],
   );
 
   const updateAnswer = useCallback(
@@ -363,8 +361,18 @@ function QuestionPage() {
 
         {/* Clean, high-legibility prompt */}
         <div className="sleek-q-body">
-          <h1 className="sleek-q-title">{question.prompt[language]}</h1>
-          {question.helper && <p className="sleek-q-helper">{question.helper[language]}</p>}
+          <h1 className="sleek-q-title">
+            {typeof question.prompt === "object" && question.prompt !== null
+              ? question.prompt[language] || question.prompt.en || question.prompt.id || question.prompt.zh
+              : String(question.prompt || question.text || "")}
+          </h1>
+          {question.helper && (
+            <p className="sleek-q-helper">
+              {typeof question.helper === "object" && question.helper !== null
+                ? question.helper[language] || question.helper.en || question.helper.id || question.helper.zh
+                : String(question.helper || "")}
+            </p>
+          )}
         </div>
 
         {/* Subtle, sleek voice status line */}
@@ -588,18 +596,23 @@ function SleekQuestionInput({
     return (
       <div className="sleek-options-stack">
         {question.options?.map((option, idx) => {
-          const isSelected = value === option.value;
-          const isFadingNext = justSelected === option.value;
+          const optVal = option.value || `opt_${idx + 1}`;
+          const isSelected = value === optVal || value === option.value;
+          const isFadingNext = justSelected === optVal || justSelected === option.value;
+          const optLabel =
+            typeof option.label === "object" && option.label !== null
+              ? option.label[language] || option.label.en || option.label.id || option.label.zh || ""
+              : String(option.label || "");
 
           return (
             <button
-              key={option.value}
+              key={optVal}
               type="button"
               className={`sleek-option-card ${isSelected ? "selected" : ""} ${isFadingNext ? "just-answered" : ""}`}
-              onClick={() => onSelect(option.value, true)}
+              onClick={() => onSelect(optVal, true)}
             >
               <span className="sleek-option-tag">{String.fromCharCode(65 + idx)}</span>
-              <span className="sleek-option-text">{option.label[language]}</span>
+              <span className="sleek-option-text">{optLabel}</span>
               {isSelected && (
                 <span className="sleek-check-icon">
                   <Check size={18} strokeWidth={2.8} />

@@ -2340,16 +2340,25 @@
     <div id="builder-screen" class="screen">
       <div class="builder-topbar" style="display: flex; align-items: center; justify-content: space-between">
         <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0">
-          <button class="back-btn" onclick="navigate('#/dashboard')">&#8592;</button>
+          <button class="back-btn" onclick="saveDraftAndExit()" title="Back to dashboard">&#8592;</button>
           <input class="title-input" id="builder-title" value="" spellcheck="false" />
           <span class="pill" id="builder-status-pill"></span>
         </div>
-        <div style="display: flex; align-items: center; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
           <div class="admin-lang-picker-light">
             <button type="button" class="lang-btn" data-lang="en">EN</button>
             <button type="button" class="lang-btn" data-lang="id">ID</button>
             <button type="button" class="lang-btn" data-lang="zh">中文</button>
           </div>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            id="builder-draft-btn"
+            onclick="saveDraftAndExit()"
+            style="border: 1.5px solid var(--border); font-weight: 600; padding: 7px 14px; background: #fff; border-radius: 8px; font-size: 12px; color: var(--navy)"
+          >
+            💾 <span data-i18n="builderSaveDraft">Save Draft & Exit</span>
+          </button>
           <button class="publish-btn" id="builder-publish-btn"></button>
         </div>
       </div>
@@ -3062,6 +3071,15 @@
           n++;
         }
         return slug;
+      }
+
+      function getLocalized(val, lang) {
+        if (val === null || val === undefined) return "";
+        if (typeof val === "object") {
+          const l = lang || currentAdminLang || "id";
+          return val[l] || val.en || val.id || val.zh || "";
+        }
+        return String(val);
       }
 
       function toast(msg, type = "success") {
@@ -3815,6 +3833,8 @@
           typeYesNo: "Yes / No",
           typeScale: "Scale",
           typeText: "Text",
+          builderSaveDraft: "Save Draft & Exit",
+          toastDraftSaved: "Form saved as Draft",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Enter your business account credentials",
           registerPortalTitle: "Business Registration",
@@ -3933,6 +3953,8 @@
           typeYesNo: "Ya / Tidak",
           typeScale: "Skala Nilai",
           typeText: "Teks Bebas",
+          builderSaveDraft: "Simpan Draf & Keluar",
+          toastDraftSaved: "Formulir tersimpan sebagai Draf",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Masukkan kredensial akun bisnis Anda",
           registerPortalTitle: "Registrasi Akun Bisnis",
@@ -4049,6 +4071,8 @@
           typeYesNo: "是 / 否",
           typeScale: "量表打分",
           typeText: "开放文本",
+          builderSaveDraft: "保存草稿并返回",
+          toastDraftSaved: "表单已成功保存为草稿",
           loginPortalTitle: "企业商业门户",
           loginPortalDesc: "输入您的企业商业账户凭据",
           registerPortalTitle: "企业账户注册",
@@ -4138,6 +4162,16 @@
         if (r.screen === "dashboard") renderDashboard();
         if (r.screen === "submissions") renderSubmissions(r.formId);
         if (r.screen === "choice") renderChoiceScreen();
+        if (r.screen === "builder") {
+          const f = forms().find((x) => x.id === r.id);
+          if (f) {
+            builderForm = f;
+            $("#builder-title").value = getLocalized(f.title, currentAdminLang);
+            renderQuestionList();
+            renderQuestionEditor();
+            renderPhonePreview();
+          }
+        }
         updateUserSidebar();
       }
 
@@ -4605,7 +4639,8 @@
         builderForm = f;
         editingQ = null;
         phonePreviewIdx = 0;
-        $("#builder-title").value = f.title;
+        const lang = currentAdminLang || "id";
+        $("#builder-title").value = getLocalized(f.title, lang);
         updateStatusPill(f.status);
         updatePublishBtn(f.status);
         renderQuestionList();
@@ -4638,9 +4673,14 @@
       let _titleDebounceTimer = null;
       $("#builder-title").addEventListener("input", (e) => {
         if (!builderForm) return;
+        const lang = currentAdminLang || "id";
         const oldId = builderForm.id;
         const newTitle = e.target.value.trim();
-        builderForm.title = e.target.value;
+        if (typeof builderForm.title === "object" && builderForm.title !== null) {
+          builderForm.title[lang] = e.target.value;
+        } else {
+          builderForm.title = e.target.value;
+        }
         renderPhonePreview();
 
         clearTimeout(_titleDebounceTimer);
@@ -4685,6 +4725,17 @@
         showPublishModal();
       });
 
+      function saveDraftAndExit() {
+        if (!builderForm) {
+          navigate("#/dashboard");
+          return;
+        }
+        builderForm.status = "draft";
+        saveForm();
+        toast(t("toastDraftSaved") || "Form saved as Draft", "info");
+        navigate("#/dashboard");
+      }
+
       function showPublishModal() {
         const localUrl =
           (window.location.host || "9forms.com") + "/intake?form=" + builderForm.id;
@@ -4726,7 +4777,9 @@
 
       function renderQuestionList() {
         const qs = builderForm.questions;
-        $("#builder-qcount").textContent = qs.length + " question" + (qs.length !== 1 ? "s" : "");
+        const lang = currentAdminLang || "id";
+        const qUnit = t("aiQuestionsUnit") || "questions";
+        $("#builder-qcount").textContent = qs.length + " " + qUnit;
         const list = $("#question-list");
         if (!qs.length) {
           list.innerHTML =
@@ -4740,7 +4793,7 @@
           <span class="drag-handle" title="Drag to reorder">&#11041;</span>
           <span class="q-num">${i + 1}</span>
           <div class="q-info">
-            <div class="q-text">${escHtml(q.text)}</div>
+            <div class="q-text">${escHtml(getLocalized(q.prompt || q.text, lang))}</div>
             <div class="q-type">${typeLabel(q.type)}</div>
           </div>
           <div class="q-actions">
@@ -4789,14 +4842,15 @@
           $("#question-editor").style.display = "none";
           return;
         }
+        const lang = currentAdminLang || "id";
         const ed = $("#question-editor");
         ed.style.display = "block";
         let optionsHtml = "";
         if (q.type === "choice") {
-          optionsHtml = `<div class="editor-field"><label>${t("builderOptionsLabel") || "Options"}</label><div id="option-rows">${q.options
+          optionsHtml = `<div class="editor-field"><label>${t("builderOptionsLabel") || "Options"}</label><div id="option-rows">${(q.options || [])
             .map(
               (o, i) => `
-          <div class="option-row"><input value="${escHtml(o.label)}" placeholder="${t("builderOptPlaceholder") || "Option label"}" oninput="updateOption('${q.id}',${i},'label',this.value)">
+          <div class="option-row"><input value="${escHtml(getLocalized(o.label, lang))}" placeholder="${t("builderOptPlaceholder") || "Option label"}" oninput="updateOption('${q.id}',${i},'label',this.value)">
           <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
           <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
             )
@@ -4806,7 +4860,7 @@
           optionsHtml = `<div class="editor-field"><label>${t("builderMaxValueLabel") || "Max Value"}</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
         }
         ed.innerHTML = `
-        <div class="editor-field"><label>${t("builderQTextLabel") || "Question Text"}</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(q.text)}</textarea></div>
+        <div class="editor-field"><label>${t("builderQTextLabel") || "Question Text"}</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(getLocalized(q.prompt || q.text, lang))}</textarea></div>
         <div class="editor-field"><label>${t("builderTypeLabel") || "Type"}</label>
           <div class="type-selector">${["choice", "yesno", "scale", "text"]
             .map(
@@ -4821,7 +4875,15 @@
       function updateQText(id, v) {
         const q = builderForm.questions.find((x) => x.id === id);
         if (q) {
-          q.text = v;
+          const lang = currentAdminLang || "id";
+          if (typeof q.prompt === "object" && q.prompt !== null) {
+            q.prompt[lang] = v;
+          }
+          if (typeof q.text === "object" && q.text !== null) {
+            q.text[lang] = v;
+          } else {
+            q.text = v;
+          }
           saveForm();
           renderQuestionList();
           renderPhonePreview();
@@ -4833,8 +4895,8 @@
         q.type = t;
         if (t === "choice" && !q.options)
           q.options = [
-            { label: "Option 1", score: 1 },
-            { label: "Option 2", score: 2 },
+            { label: { en: "Option 1", id: "Pilihan 1", zh: "选项 1" }, score: 1 },
+            { label: { en: "Option 2", id: "Pilihan 2", zh: "选项 2" }, score: 2 },
           ];
         if (t === "scale") q.max = q.max || 10;
         saveForm();
@@ -4843,8 +4905,17 @@
       }
       function updateOption(qid, idx, key, val) {
         const q = builderForm.questions.find((x) => x.id === qid);
-        if (q && q.options[idx]) {
-          q.options[idx][key] = val;
+        if (q && q.options && q.options[idx]) {
+          const lang = currentAdminLang || "id";
+          if (key === "label") {
+            if (typeof q.options[idx].label === "object" && q.options[idx].label !== null) {
+              q.options[idx].label[lang] = val;
+            } else {
+              q.options[idx].label = val;
+            }
+          } else {
+            q.options[idx][key] = val;
+          }
           saveForm();
           renderPhonePreview();
         }
@@ -4853,7 +4924,15 @@
         const q = builderForm.questions.find((x) => x.id === qid);
         if (q) {
           q.options = q.options || [];
-          q.options.push({ label: "New option", score: 1 });
+          const optIdx = q.options.length + 1;
+          q.options.push({
+            label: {
+              en: `Option ${optIdx}`,
+              id: `Pilihan ${optIdx}`,
+              zh: `选项 ${optIdx}`
+            },
+            score: 1
+          });
           saveForm();
           renderQuestionEditor();
           renderPhonePreview();
@@ -4884,13 +4963,19 @@
 
       $("#add-q-btn").addEventListener("click", () => {
         const id = "q_" + uid();
+        const qNum = builderForm.questions.length + 1;
         builderForm.questions.push({
           id,
-          text: "New question",
+          prompt: {
+            en: `Question ${qNum}`,
+            id: `Pertanyaan ${qNum}`,
+            zh: `题目 ${qNum}`
+          },
+          text: `Question ${qNum}`,
           type: "choice",
           options: [
-            { label: "Option 1", score: 1 },
-            { label: "Option 2", score: 2 },
+            { label: { en: "Option 1", id: "Pilihan 1", zh: "选项 1" }, score: 1 },
+            { label: { en: "Option 2", id: "Pilihan 2", zh: "选项 2" }, score: 2 },
           ],
         });
         saveForm();
@@ -4977,15 +5062,18 @@
             '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:14px">Add questions to see preview</div>';
           return;
         }
+        const lang = currentAdminLang || "id";
         const qi = Math.min(phonePreviewIdx, qs.length - 1);
         phonePreviewIdx = qi; // clamp index
         const q = qs[qi];
         const pct = (((qi + 1) / qs.length) * 100).toFixed(0);
         let content = "";
         if (q.type === "choice") {
-          content = `<div class="phone-options">${q.options.map((o) => `<button class="phone-opt" onclick="advancePhone()">${escHtml(o.label)}</button>`).join("")}</div>`;
+          content = `<div class="phone-options">${(q.options || []).map((o) => `<button class="phone-opt" onclick="advancePhone()">${escHtml(getLocalized(o.label, lang))}</button>`).join("")}</div>`;
         } else if (q.type === "yesno") {
-          content = `<div class="phone-yesno"><button class="yes" onclick="advancePhone()">Yes</button><button class="no" onclick="advancePhone()">No</button></div>`;
+          const yesTxt = lang === "id" ? "Ya" : lang === "zh" ? "是" : "Yes";
+          const noTxt = lang === "id" ? "Tidak" : lang === "zh" ? "否" : "No";
+          content = `<div class="phone-yesno"><button class="yes" onclick="advancePhone()">${yesTxt}</button><button class="no" onclick="advancePhone()">${noTxt}</button></div>`;
         } else if (q.type === "scale") {
           const max = q.max || 10;
           let dots = "";
@@ -4993,18 +5081,23 @@
             dots += `<button class="scale-dot ${i === Math.floor(max / 2) ? "active" : ""}" onclick="advancePhone()">${i}</button>`;
           content = `<div class="phone-scale"><div class="scale-value">${Math.floor(max / 2)}</div><div class="scale-track">${dots}</div></div>`;
         } else {
-          content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="Type your answer..."></textarea>`;
+          const placeh = lang === "id" ? "Ketik jawaban Anda..." : lang === "zh" ? "请输入您的回答..." : "Type your answer...";
+          content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="${placeh}"></textarea>`;
         }
+        const qOfText = lang === "id" ? `Pertanyaan ${qi + 1} dari ${qs.length}` : lang === "zh" ? `第 ${qi + 1} 题 / 共 ${qs.length} 题` : `Question ${qi + 1} of ${qs.length}`;
+        const prevText = lang === "id" ? "← Seb" : lang === "zh" ? "← 上一题" : "← Prev";
+        const nextText = lang === "id" ? "Lanjut →" : lang === "zh" ? "下一题 →" : "Next →";
+
         screen.innerHTML = `
         <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
         <div class="phone-qnum">
-          <span>Question ${qi + 1} of ${qs.length}</span>
+          <span>${qOfText}</span>
           <div class="phone-nav-pills">
-            <button class="phone-nav-btn" onclick="prevPhone()" ${qi === 0 ? "disabled" : ""}>&larr; Prev</button>
-            <button class="phone-nav-btn" onclick="nextPhone()" ${qi >= qs.length - 1 ? "disabled" : ""}>Next &rarr;</button>
+            <button class="phone-nav-btn" onclick="prevPhone()" ${qi === 0 ? "disabled" : ""}>${prevText}</button>
+            <button class="phone-nav-btn" onclick="nextPhone()" ${qi >= qs.length - 1 ? "disabled" : ""}>${nextText}</button>
           </div>
         </div>
-        <div class="phone-question">${escHtml(q.text)}</div>
+        <div class="phone-question">${escHtml(getLocalized(q.prompt || q.text, lang))}</div>
         ${content}`;
       }
       function prevPhone() {
@@ -5297,11 +5390,18 @@
 
         let csv = "\uFEFFsep=,\r\n" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
 
+        function formatCsvDate(d) {
+          const dt = new Date(d);
+          if (isNaN(dt.getTime())) return "-";
+          const pad = (n) => String(n).padStart(2, "0");
+          return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+        }
+
         subs.forEach((s) => {
           const rowValues = [
             s.id,
             s.patientName || "Patient",
-            safeDateLong(s.submittedAt),
+            formatCsvDate(s.submittedAt),
             s.score || 0,
             s.risk === "high" ? "High Risk" : s.risk === "mod" ? "Moderate" : "Low Risk",
             s.triageStatus ||
@@ -5335,7 +5435,7 @@
       });
 
       function formatDisplayAnswer(q, rawVal) {
-        if (rawVal === undefined || rawVal === null || rawVal === "") return "—";
+        if (rawVal === undefined || rawVal === null || rawVal === "") return "-";
 
         const slugMap = {
           myself: "Myself (Sendiri)",
@@ -5348,12 +5448,12 @@
           "cane-assisted": "Need a cane or someone helping (Pakai Tongkat / Dipapah)",
           wheelchair: "Need wheelchair (Perlu Kursi Roda)",
           "under-30": "Under 30 years old",
-          "30-44": "30–44 years old",
-          "45-64": "45–64 years old",
+          "30-44": "30-44 years old",
+          "45-64": "45-64 years old",
           "65-plus": "65 or older",
           "lt-1m": "Less than 1 month",
-          "1-3m": "1–3 months",
-          "3-6m": "3–6 months",
+          "1-3m": "1-3 months",
+          "3-6m": "3-6 months",
           "gt-6m": "More than 6 months",
           yes: "Yes, First Time / Ya",
           no: "No, Have Visited Before / Tidak",
@@ -5372,11 +5472,15 @@
         }
 
         if (q && q.type === "scale") {
-          return rawVal + " / " + (q.max || 10);
+          return `${rawVal} / ${q.max || 10} pts`;
         }
 
         if (q && q.type === "yesno") {
-          return rawVal === "yes" ? "Yes (Ya)" : rawVal === "no" ? "No (Tidak)" : String(rawVal);
+          return rawVal === "yes" || rawVal === true
+            ? "Yes (Ya)"
+            : rawVal === "no" || rawVal === false
+              ? "No (Tidak)"
+              : String(rawVal);
         }
 
         if (typeof rawVal === "string" && rawVal.includes("-") && !rawVal.includes(" ")) {
@@ -5622,11 +5726,11 @@
         aiVoiceActive = false;
       }
 
-      async function sendAiMessage() {
+      async function sendAiMessage(customText) {
         const input = $("#ai-chat-input");
-        const text = (input.value || "").trim();
+        const text = (customText || (input ? input.value : "") || "").trim();
         if (!text) return;
-        input.value = "";
+        if (input) input.value = "";
 
         // Add user message to UI
         addAiMsg("user", text);
@@ -5971,40 +6075,82 @@
       }
 
       function regenerateAiForm() {
-        // Re-send the last user message
         const lastUser = aiMessages.filter((m) => m.role === "user").pop();
-        if (lastUser) {
-          aiMessages = aiMessages.filter((m) => m.role !== "assistant");
-          sendAiMessage();
+        if (lastUser && lastUser.content) {
+          aiMessages = aiMessages.filter((m) => m !== lastUser && m.role !== "assistant");
+          const chatArea = $("#ai-chat-area");
+          if (chatArea) {
+            const lastAiMsg = chatArea.querySelector(".ai-msg-ai:last-child");
+            if (lastAiMsg) lastAiMsg.remove();
+          }
+          sendAiMessage(lastUser.content);
+        } else {
+          const input = $("#ai-chat-input");
+          if (input && input.value) {
+            sendAiMessage();
+          }
         }
       }
 
       function saveAiForm() {
         if (!aiGeneratedForm) return;
         const f = forms();
-        const lang = currentAdminLang || "en";
-        const title = typeof aiGeneratedForm.title === "object"
-          ? (aiGeneratedForm.title[lang] || aiGeneratedForm.title.en || aiGeneratedForm.title.id)
-          : (aiGeneratedForm.title || "AI Generated Form");
-        const id = uniqueSlug(title);
-        const questions = (aiGeneratedForm.questions || []).map((q, i) => ({
-          id: "q_" + uid(),
-          text: (typeof q.prompt === "object" ? (q.prompt[lang] || q.prompt.en || q.prompt.id) : null) || q.text || "Question " + (i + 1),
-          type: q.type || "choice",
-          options: q.options
-            ? q.options.map((o) => ({
-                label:
-                  typeof o.label === "object"
-                    ? o.label[lang] || o.label.en || o.label.id || "Option"
-                    : String(o.label || "Option"),
-                score: typeof o.score === "number" ? o.score : 1,
-              }))
-            : undefined,
-          max: q.max || (q.type === "scale" ? 10 : undefined),
-        }));
+        const lang = currentAdminLang || "id";
+        const rawTitle = aiGeneratedForm.title;
+        const titleObj =
+          typeof rawTitle === "object" && rawTitle !== null
+            ? rawTitle
+            : {
+                en: String(rawTitle || "AI Generated Form"),
+                id: String(rawTitle || "Formulir AI"),
+                zh: String(rawTitle || "AI 表单"),
+              };
+        const id = uniqueSlug(getLocalized(titleObj, lang));
+
+        const questions = (aiGeneratedForm.questions || []).map((q, i) => {
+          const rawPrompt = q.prompt || q.text;
+          const promptObj =
+            typeof rawPrompt === "object" && rawPrompt !== null
+              ? rawPrompt
+              : {
+                  en: String(rawPrompt || `Question ${i + 1}`),
+                  id: String(rawPrompt || `Pertanyaan ${i + 1}`),
+                  zh: String(rawPrompt || `题目 ${i + 1}`),
+                };
+
+          let cleanOptions = undefined;
+          if (Array.isArray(q.options) && q.options.length > 0) {
+            cleanOptions = q.options.map((opt, optIdx) => {
+              const rawLabel = opt.label;
+              const labelObj =
+                typeof rawLabel === "object" && rawLabel !== null
+                  ? rawLabel
+                  : {
+                      en: String(rawLabel || `Option ${optIdx + 1}`),
+                      id: String(rawLabel || `Opsi ${optIdx + 1}`),
+                      zh: String(rawLabel || `选项 ${optIdx + 1}`),
+                    };
+              return {
+                value: String(opt.value || `opt_${optIdx + 1}`),
+                label: labelObj,
+                score: typeof opt.score === "number" ? opt.score : (optIdx + 1),
+              };
+            });
+          }
+
+          return {
+            id: "q_" + uid(),
+            prompt: promptObj,
+            text: getLocalized(promptObj, lang),
+            type: q.type || "choice",
+            options: cleanOptions,
+            max: typeof q.max === "number" ? q.max : (q.type === "scale" ? 10 : undefined),
+          };
+        });
+
         const nf = {
           id,
-          title,
+          title: titleObj,
           status: "draft",
           questions,
           createdAt: new Date().toISOString(),
@@ -6015,7 +6161,7 @@
         LS.set("pf_forms", f);
         closeAiModal();
         navigate("#/builder/" + nf.id);
-        toast("AI form created! Review and edit in the builder.");
+        toast(t("aiCreatedToast") || "AI form created! Review and edit in the builder.");
       }
 
       // Voice input with multilingual support
