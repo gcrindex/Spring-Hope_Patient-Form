@@ -408,7 +408,7 @@
         flex-shrink: 0;
       }
       .sidebar-user {
-        padding: 16px 24px;
+        padding: 16px 20px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
         align-items: center;
@@ -423,31 +423,49 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 14px;
+        font-size: 13px;
         flex-shrink: 0;
+        color: #ffffff;
       }
       .sidebar-user .info {
-        flex: 1;
+        flex: 1 1 auto;
         min-width: 0;
+        overflow: hidden;
       }
       .sidebar-user .name {
         font-size: 13px;
         font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #ffffff;
+        line-height: 1.2;
       }
       .sidebar-user .role {
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.6);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 2px;
       }
       .sidebar-user .logout-btn {
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 12px;
-        padding: 4px 8px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 9px;
         border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        white-space: nowrap;
+        flex-shrink: 0;
         transition: all var(--transition);
+        margin-left: auto;
       }
       .sidebar-user .logout-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
       }
 
       /* ========== MAIN CONTENT ========== */
@@ -6367,30 +6385,42 @@
         const lang = currentAdminLang || "id";
         const f = forms();
         const rawTitle = uploadedFormResult.title;
-        const titleStr =
+        const titleObj =
           typeof rawTitle === "object" && rawTitle !== null
-            ? rawTitle[lang] || rawTitle.id || rawTitle.en || "Imported Form"
-            : String(rawTitle || (uploadType === "pdf" ? "PDF Imported Form" : "Image Scanned Form"));
+            ? rawTitle
+            : {
+                en: String(rawTitle || (uploadType === "pdf" ? "PDF Imported Form" : "Image Scanned Form")),
+                id: String(rawTitle || (uploadType === "pdf" ? "Formulir PDF Diimpor" : "Formulir Gambar Dipindai")),
+                zh: String(rawTitle || (uploadType === "pdf" ? "PDF 导入表单" : "图片扫描表单")),
+              };
+        const id = uniqueSlug(getLocalized(titleObj, lang));
 
-        const id = uniqueSlug(titleStr);
         const questions = (uploadedFormResult.questions || []).map((q, i) => {
-          const rawText = q.prompt || q.text;
-          const textStr =
-            typeof rawText === "object" && rawText !== null
-              ? rawText[lang] || rawText.id || rawText.en || `Question ${i + 1}`
-              : String(rawText || `Question ${i + 1}`);
+          const rawPrompt = q.prompt || q.text;
+          const promptObj =
+            typeof rawPrompt === "object" && rawPrompt !== null
+              ? rawPrompt
+              : {
+                  en: String(rawPrompt || `Question ${i + 1}`),
+                  id: String(rawPrompt || `Pertanyaan ${i + 1}`),
+                  zh: String(rawPrompt || `题目 ${i + 1}`),
+                };
 
           let cleanOptions = undefined;
           if (Array.isArray(q.options) && q.options.length > 0) {
             cleanOptions = q.options.map((opt, optIdx) => {
               const rawLabel = opt.label;
-              const labelStr =
+              const labelObj =
                 typeof rawLabel === "object" && rawLabel !== null
-                  ? rawLabel[lang] || rawLabel.id || rawLabel.en || `Option ${optIdx + 1}`
-                  : String(rawLabel || `Option ${optIdx + 1}`);
+                  ? rawLabel
+                  : {
+                      en: String(rawLabel || `Option ${optIdx + 1}`),
+                      id: String(rawLabel || `Opsi ${optIdx + 1}`),
+                      zh: String(rawLabel || `选项 ${optIdx + 1}`),
+                    };
               return {
                 value: String(opt.value || `opt_${optIdx + 1}`),
-                label: labelStr,
+                label: labelObj,
                 score: typeof opt.score === "number" ? opt.score : (optIdx + 1),
               };
             });
@@ -6398,16 +6428,17 @@
 
           return {
             id: "q_" + uid(),
-            text: textStr,
+            prompt: promptObj,
+            text: getLocalized(promptObj, lang),
             type: q.type || "choice",
             options: cleanOptions,
-            max: typeof q.max === "number" ? q.max : undefined,
+            max: typeof q.max === "number" ? q.max : (q.type === "scale" ? 10 : undefined),
           };
         });
 
         const nf = {
           id,
-          title: titleStr,
+          title: titleObj,
           status: "draft",
           questions,
           createdAt: new Date().toISOString(),

@@ -6,18 +6,18 @@ import { getEnv } from "../lib/env";
 const DEFAULT_BASE_URL = "https://api.pesatrouter.com/v1";
 const DEFAULT_MODEL = "pesat-flash";
 
-const SYSTEM_PROMPT = `You are 9forms.com's advanced AI Document & Clinical Form Extraction Specialist.
-You receive raw text extracted from uploaded PDF documents, clinical paperwork, intake surveys, contracts, or human-written forms.
+const SYSTEM_PROMPT = `You are 9forms.com's advanced AI Document Form Extraction Specialist.
+You receive raw text extracted from uploaded PDF documents of ANY domain: HR candidate screening, employee onboarding, job application forms, customer satisfaction (CSAT), event registration, feedback surveys, sales qualification, medical intake, or financial paperwork.
 
-Your task is to deeply understand, interpret, and convert the document into a high-conversion, highly readable digital conversational form.
+Your task is to analyze the actual uploaded document content and convert its specific questions and topics into a structured, highly conversational digital form.
 
-Guidelines:
-1. Understand Human Phrasing: Interpret informal wording, medical jargon, questionnaire prompts, and messy formatting into clean, conversational questions.
+Strict Guidelines:
+1. Faithful to Uploaded Topic: Do NOT default or hallucinate medical/orthopaedic questions if the document is about HR, recruitment, job application, customer survey, education, or other topics. Extract questions strictly representing the actual document's contents.
 2. Determine Question Types Smartly:
-   - Numerical ratings or pain scales -> type "scale" with max 10.
-   - Binary questions (Yes/No, Pernah/Tidak, True/False) -> type "yesno".
-   - Multiple choice or multiple options -> type "choice" with clear options and score weights.
-   - Narrative feedback or complaints -> type "text".
+   - Numerical ratings or 1-10 scales -> type "scale" with max 10.
+   - Binary questions (Yes/No, Ya/Tidak, True/False) -> type "yesno".
+   - Multiple choice or multiple options -> type "choice" with clear options and score weights (1, 2, 3...).
+   - Open narrative / text / address / essay -> type "text".
 3. Provide Tri-Lingual Sync: Every field MUST include natural translations for "en" (English), "id" (Bahasa Indonesia), and "zh" (Simplified Chinese).
 4. Return ONLY valid JSON, no markdown codeblocks, matching this structure:
 {
@@ -124,7 +124,7 @@ export const Route = createFileRoute("/api/ai/extract-pdf")({
                 { role: "system", content: SYSTEM_PROMPT },
                 {
                   role: "user",
-                  content: `Convert this PDF content into a patient assessment form:\n\n${truncatedText}`,
+                  content: `Carefully read and convert this uploaded PDF document into a structured digital form matching its exact topic and questions:\n\n${truncatedText}`,
                 },
               ],
               temperature: 0.4,
