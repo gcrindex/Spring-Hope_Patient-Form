@@ -1447,38 +1447,59 @@
       }
       @media (max-width: 640px) {
         .modal-overlay {
-          padding: 8px !important;
+          padding: 6px !important;
         }
         .modal {
           max-width: 100% !important;
           width: 100% !important;
-          max-height: 94vh !important;
-          max-height: 94dvh !important;
-          padding: 16px 14px !important;
-          border-radius: 16px !important;
+          max-height: 96vh !important;
+          max-height: 96dvh !important;
+          padding: 14px 12px !important;
+          border-radius: 14px !important;
+          margin: 0 !important;
         }
         #ai-modal-content {
           max-width: 100% !important;
           width: 100% !important;
-          max-height: 94dvh !important;
-          border-radius: 16px !important;
+          max-height: 96dvh !important;
+          border-radius: 14px !important;
+          margin: 0 !important;
+          overflow: hidden !important;
         }
         #ai-presets-bar {
           padding: 8px 10px !important;
           gap: 6px !important;
         }
         .ai-chip-pill {
-          padding: 5px 10px !important;
+          padding: 5px 9px !important;
           font-size: 11px !important;
         }
         #ai-chat-area {
           padding: 12px 10px !important;
-          min-height: 160px !important;
-          max-height: 32vh !important;
+          min-height: 140px !important;
+          max-height: 30vh !important;
+        }
+        #ai-input-bar {
+          padding: 10px 10px !important;
+          gap: 6px !important;
+        }
+        #ai-voice-btn {
+          width: 36px !important;
+          height: 36px !important;
+          font-size: 16px !important;
+        }
+        #ai-chat-input {
+          padding: 8px 10px !important;
+          font-size: 13px !important;
+          min-width: 0 !important;
+        }
+        #ai-send-btn {
+          padding: 8px 14px !important;
+          font-size: 13px !important;
         }
         #ai-preview-area {
           padding: 10px !important;
-          max-height: 44vh !important;
+          max-height: 42vh !important;
         }
       }
       .modal-overlay.show .modal {
@@ -2858,12 +2879,15 @@
         </div>
         <!-- Input area -->
         <div
+          id="ai-input-bar"
           style="
             padding: 16px 24px;
             border-top: 1px solid var(--border);
             display: flex;
             gap: 8px;
             flex-shrink: 0;
+            box-sizing: border-box;
+            width: 100%;
           "
         >
           <button
