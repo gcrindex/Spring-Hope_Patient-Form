@@ -924,9 +924,21 @@
       .btn-test-form:active {
         transform: translateY(0);
       }
+      .btn-text-full {
+        display: inline;
+      }
+      .btn-text-mobile {
+        display: none;
+      }
       @media (max-width: 640px) {
+        .btn-text-full {
+          display: none !important;
+        }
+        .btn-text-mobile {
+          display: inline !important;
+        }
         .btn-test-form {
-          padding: 6px 9px !important;
+          padding: 0 4px !important;
           font-size: 11px !important;
         }
       }
@@ -2245,10 +2257,11 @@
         }
         .builder-topbar-actions {
           width: 100% !important;
-          display: grid !important;
-          grid-template-columns: auto 1fr 1fr 1fr !important;
+          display: flex !important;
           align-items: center !important;
-          gap: 5px !important;
+          justify-content: space-between !important;
+          gap: 4px !important;
+          box-sizing: border-box !important;
         }
         .builder-topbar .title-input {
           font-size: 14.5px !important;
@@ -2265,38 +2278,54 @@
           display: flex !important;
           height: 32px !important;
           padding: 2px !important;
+          flex-shrink: 0 !important;
         }
         .admin-lang-picker-light .lang-btn {
-          padding: 0 5px !important;
-          font-size: 10.5px !important;
-          font-weight: 700 !important;
+          padding: 0 4px !important;
+          font-size: 10px !important;
+          font-weight: 750 !important;
         }
         .btn-test-form {
+          flex: 1 1 0 !important;
+          min-width: 0 !important;
           height: 32px !important;
-          padding: 0 6px !important;
+          padding: 0 4px !important;
           font-size: 11px !important;
-          font-weight: 700 !important;
+          font-weight: 750 !important;
+          display: inline-flex !important;
+          align-items: center !important;
           justify-content: center !important;
           white-space: nowrap !important;
           border-radius: 8px !important;
+          box-sizing: border-box !important;
         }
         #builder-draft-btn {
+          flex: 1 1 0 !important;
+          min-width: 0 !important;
           height: 32px !important;
-          padding: 0 6px !important;
+          padding: 0 4px !important;
           font-size: 11px !important;
-          font-weight: 700 !important;
+          font-weight: 750 !important;
+          display: inline-flex !important;
+          align-items: center !important;
           justify-content: center !important;
           white-space: nowrap !important;
           border-radius: 8px !important;
+          box-sizing: border-box !important;
         }
         .builder-topbar .publish-btn {
+          flex: 1 1 0 !important;
+          min-width: 0 !important;
           height: 32px !important;
-          padding: 0 8px !important;
-          font-size: 11.5px !important;
+          padding: 0 4px !important;
+          font-size: 11px !important;
           font-weight: 750 !important;
+          display: inline-flex !important;
+          align-items: center !important;
           justify-content: center !important;
           white-space: nowrap !important;
           border-radius: 8px !important;
+          box-sizing: border-box !important;
         }
         .builder-left {
           width: 100%;
@@ -2986,7 +3015,7 @@
             onclick="openTestModal()"
             title="Test Form Live Simulation"
           >
-            🧪 <span data-i18n="builderTestBtn">Test Form</span>
+            🧪 <span class="btn-text-full" data-i18n="builderTestBtn">Test Form</span><span class="btn-text-mobile" data-i18n="builderTestBtnShort">Test</span>
           </button>
           <button
             type="button"
@@ -2995,7 +3024,7 @@
             onclick="saveDraftAndExit()"
             style="border: 1.5px solid var(--border); font-weight: 600; padding: 7px 12px; background: #fff; border-radius: 8px; font-size: 12px; color: var(--navy)"
           >
-            💾 <span data-i18n="builderSaveDraft">Save Draft & Exit</span>
+            💾 <span class="btn-text-full" data-i18n="builderSaveDraft">Save Draft & Exit</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">Draft</span>
           </button>
           <button class="publish-btn" id="builder-publish-btn"></button>
         </div>
@@ -4521,8 +4550,13 @@
           typeScale: "Scale",
           typeText: "Text",
           builderSaveDraft: "Save Draft & Exit",
+          builderSaveDraftShort: "Draft",
           builderBackToDashboard: "← Back to Dashboard",
+          builderBackShort: "Back",
+          builderPublish: "Publish",
+          builderPublishShort: "Publish",
           builderTestBtn: "Test Form",
+          builderTestBtnShort: "Test",
           builderEditSectionTitle: "Question Settings",
           testBadge: "LIVE TEST SIMULATION",
           testNoDataNotice: "Test mode: responses are not saved to DB",
@@ -4642,8 +4676,13 @@
           typeScale: "Skala Nilai",
           typeText: "Teks Bebas",
           builderSaveDraft: "Simpan Draf & Keluar",
+          builderSaveDraftShort: "Draf",
           builderBackToDashboard: "← Kembali ke Dashboard",
+          builderBackShort: "Kembali",
+          builderPublish: "Publikasikan",
+          builderPublishShort: "Publikasi",
           builderTestBtn: "Tes Form",
+          builderTestBtnShort: "Tes",
           builderEditSectionTitle: "Pengaturan Pertanyaan",
           testBadge: "SIMULASI UJI COBA LANGSUNG",
           testNoDataNotice: "Mode tes: respon tidak disimpan ke database",
@@ -4761,8 +4800,13 @@
           typeScale: "量表打分",
           typeText: "开放文本",
           builderSaveDraft: "保存草稿并返回",
+          builderSaveDraftShort: "草稿",
           builderBackToDashboard: "← 返回表单列表",
+          builderBackShort: "返回",
+          builderPublish: "发布表单",
+          builderPublishShort: "发布",
           builderTestBtn: "测试表单",
+          builderTestBtnShort: "测试",
           builderEditSectionTitle: "题目设置",
           testBadge: "实时交互测试模拟",
           testNoDataNotice: "测试模式：答题记录不会保存到数据库",
@@ -5377,15 +5421,15 @@
         const draftBtn = $("#builder-draft-btn");
         if (status === "published") {
           btn.className = "publish-btn published";
-          btn.textContent = "Published  ✓";
+          btn.innerHTML = `<span class="btn-text-full">Published ✓</span><span class="btn-text-mobile">Live ✓</span>`;
           if (draftBtn) {
-            draftBtn.innerHTML = "← <span data-i18n=\"builderBackToDashboard\">" + (t("builderBackToDashboard") || "Back to Dashboard") + "</span>";
+            draftBtn.innerHTML = `← <span class="btn-text-full" data-i18n="builderBackToDashboard">${t("builderBackToDashboard") || "Back to Dashboard"}</span><span class="btn-text-mobile" data-i18n="builderBackShort">${t("builderBackShort") || "Back"}</span>`;
           }
         } else {
           btn.className = "publish-btn draft";
-          btn.textContent = "Publish";
+          btn.innerHTML = `<span class="btn-text-full" data-i18n="builderPublish">${t("builderPublish") || "Publish"}</span><span class="btn-text-mobile" data-i18n="builderPublishShort">${t("builderPublishShort") || "Publish"}</span>`;
           if (draftBtn) {
-            draftBtn.innerHTML = "💾 <span data-i18n=\"builderSaveDraft\">" + (t("builderSaveDraft") || "Save Draft & Exit") + "</span>";
+            draftBtn.innerHTML = `💾 <span class="btn-text-full" data-i18n="builderSaveDraft">${t("builderSaveDraft") || "Save Draft & Exit"}</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">${t("builderSaveDraftShort") || "Draft"}</span>`;
           }
         }
       }
