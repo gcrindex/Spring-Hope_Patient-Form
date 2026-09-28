@@ -6991,10 +6991,23 @@ html {
 .sf-mock-brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   color: #ffffff;
-  font-size: 18px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 20px;
   font-weight: 900;
+  letter-spacing: -0.055em;
+  user-select: none;
+}
+.sf-mock-brand .wordmark-dot {
+  width: 6px;
+  height: 6px;
+  margin-left: 2px;
+  margin-bottom: 2px;
+  background-color: #ff4f18;
+  border-radius: 9999px;
+  display: inline-block;
+  flex-shrink: 0;
 }
 .sf-mock-voice-pill {
   display: inline-flex;

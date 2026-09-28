@@ -143,18 +143,9 @@ function BuilderLandingPage() {
 
               <div className="sf-mock-card">
                 <div className="sf-mock-topline">
-                  <span className="sf-mock-brand inline-flex items-center font-black tracking-tight text-[#111827]">
+                  <span className="sf-mock-brand">
                     <span>9forms</span>
-                    <span
-                      className="inline-block rounded-full bg-[#FF4F18] shrink-0"
-                      style={{
-                        width: "6px",
-                        height: "6px",
-                        marginLeft: "2px",
-                        marginBottom: "2px",
-                      }}
-                      aria-hidden="true"
-                    />
+                    <span className="wordmark-dot" aria-hidden="true" />
                   </span>
                   <div className="sf-mock-voice-pill">
                     <Mic size={13} className="text-emerald-500" />
