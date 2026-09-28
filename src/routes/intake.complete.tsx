@@ -145,7 +145,12 @@ function CompletionPage() {
     setStoredLanguage(next);
   };
 
-  const isSenior = activeForm.id === newPatientForm.id;
+  const isSenior =
+    activeForm.id === "elderly-friendly-intake" || activeForm.id === newPatientForm.id;
+  const isDemoForm =
+    activeForm.id === "new-patient-intake" ||
+    activeForm.id === "knee-pain-assessment" ||
+    activeForm.id === "elderly-friendly-intake";
 
   const strings = {
     en: {
@@ -457,21 +462,23 @@ function CompletionPage() {
 
           {/* Clean Action Buttons */}
           <div className="sleek-complete-actions">
-            <Link
-              to="/intake"
-              search={{ form: isSenior ? kneePainForm.id : newPatientForm.id }}
-              onClick={handleClearAndReset}
-              className="sleek-action-btn secondary"
-            >
-              <HeartHandshake size={15} />
-              <span>{strings.tryOther}</span>
-            </Link>
+            {isDemoForm && (
+              <Link
+                to="/intake"
+                search={{ form: isSenior ? kneePainForm.id : newPatientForm.id }}
+                onClick={handleClearAndReset}
+                className="sleek-action-btn secondary"
+              >
+                <HeartHandshake size={15} />
+                <span>{strings.tryOther}</span>
+              </Link>
+            )}
 
             <Link
               to="/intake"
               search={{ form: activeForm.id }}
               onClick={handleClearAndReset}
-              className="sleek-action-btn ghost"
+              className={`sleek-action-btn ${isDemoForm ? "ghost" : "secondary"}`}
             >
               <RotateCcw size={15} />
               <span>{strings.restart}</span>
