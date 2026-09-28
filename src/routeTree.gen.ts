@@ -27,6 +27,7 @@ import { Route as AdminNewAiRouteImport } from './routes/admin.new.ai'
 import { Route as ApiAdminLoginRouteImport } from './routes/api.admin.login'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api.admin.logout'
 import { Route as ApiAdminStatusRouteImport } from './routes/api.admin.status'
+import { Route as ApiAdminUsersRouteImport } from './routes/api.admin.users'
 import { Route as ApiAiExtractImageRouteImport } from './routes/api.ai.extract-image'
 import { Route as ApiAiExtractPdfRouteImport } from './routes/api.ai.extract-pdf'
 import { Route as ApiAiFormDraftRouteImport } from './routes/api.ai.form-draft'
@@ -126,6 +127,11 @@ const ApiAdminStatusRoute = ApiAdminStatusRouteImport.update({
   path: '/api/admin/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminUsersRoute = ApiAdminUsersRouteImport.update({
+  id: '/api/admin/users',
+  path: '/api/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiExtractImageRoute = ApiAiExtractImageRouteImport.update({
   id: '/api/ai/extract-image',
   path: '/api/ai/extract-image',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/status'
+    | '/api/admin/users'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/status'
+    | '/api/admin/users'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/status'
+    | '/api/admin/users'
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
+  ApiAdminUsersRoute: typeof ApiAdminUsersRoute
   ApiAiExtractImageRoute: typeof ApiAiExtractImageRoute
   ApiAiExtractPdfRoute: typeof ApiAiExtractPdfRoute
   ApiAiFormDraftRoute: typeof ApiAiFormDraftRoute
@@ -483,6 +496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/users': {
+      id: '/api/admin/users'
+      path: '/api/admin/users'
+      fullPath: '/api/admin/users'
+      preLoaderRoute: typeof ApiAdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/extract-image': {
       id: '/api/ai/extract-image'
       path: '/api/ai/extract-image'
@@ -564,6 +584,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminLoginRoute: ApiAdminLoginRoute,
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
   ApiAdminStatusRoute: ApiAdminStatusRoute,
+  ApiAdminUsersRoute: ApiAdminUsersRoute,
   ApiAiExtractImageRoute: ApiAiExtractImageRoute,
   ApiAiExtractPdfRoute: ApiAiExtractPdfRoute,
   ApiAiFormDraftRoute: ApiAiFormDraftRoute,

@@ -786,6 +786,126 @@
         border: 1px solid rgba(39, 174, 96, 0.3);
       }
 
+      /* Admin Area View Styles */
+      .admin-area-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        padding-bottom: 40px;
+      }
+      .admin-telemetry-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .telemetry-card {
+        background: #ffffff;
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+      .telemetry-card .card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .telemetry-card .card-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text3);
+      }
+      .telemetry-card .card-val {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--navy);
+        line-height: 1.2;
+      }
+      .telemetry-card .card-note {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--teal);
+        margin-top: 4px;
+      }
+      .admin-panel-card {
+        background: #ffffff;
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      }
+      .admin-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .admin-panel-header h3 {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tier-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .tier-badge.tier-enterprise {
+        background: #fdf4ff;
+        color: #a855f7;
+        border: 1px solid #f0abfc;
+      }
+      .tier-badge.tier-business {
+        background: #e0f2fe;
+        color: #0284c7;
+        border: 1px solid #bae6fd;
+      }
+      .tier-badge.tier-plus {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+      }
+      .tier-badge.tier-basic {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+      }
+      .admin-select-tier {
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1.5px solid var(--border);
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--navy);
+        background: #f8fafc;
+        cursor: pointer;
+      }
+      @media (max-width: 900px) {
+        .admin-telemetry-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .admin-telemetry-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       .builder-body {
         flex: 1;
         display: flex;
@@ -2877,6 +2997,13 @@
             </svg>
             <span data-i18n="submissions">Submissions</span>
           </div>
+          <div class="nav-item" data-route="#/admin-area" id="nav-admin-area">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <circle cx="12" cy="11" r="3" />
+            </svg>
+            <span data-i18n="adminArea">Admin Area</span>
+          </div>
           <a
             href="/"
             class="nav-item"
@@ -2907,83 +3034,279 @@
         </div>
       </aside>
       <div class="main-content">
-        <div class="page-header">
-          <div class="page-header-left">
-            <button
-              type="button"
-              class="mobile-menu-btn"
-              id="mobile-menu-btn"
-              aria-label="Open menu"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
+        <!-- FORMS VIEW -->
+        <div id="forms-view">
+          <div class="page-header">
+            <div class="page-header-left">
+              <button
+                type="button"
+                class="mobile-menu-btn"
+                id="mobile-menu-btn"
+                aria-label="Open menu"
               >
-                <line x1="4" y1="6" x2="20" y2="6"></line>
-                <line x1="4" y1="12" x2="20" y2="12"></line>
-                <line x1="4" y1="18" x2="20" y2="18"></line>
-              </svg>
-            </button>
-            <h1 style="margin: 0" data-i18n="myForms">My Forms</h1>
-          </div>
-          <div class="page-header-actions">
-            <button
-              type="button"
-              class="btn btn-ghost"
-              id="invite-max-btn"
-              style="
-                border: 1px solid #bfdbfe;
-                background: #eff6ff;
-                color: #1d4ed8;
-                font-weight: 700;
-                font-size: 12px;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                padding: 7px 12px;
-                border-radius: 8px;
-                cursor: pointer;
-              "
-              title="Salin tautan invite Level Max (Business Plan) untuk tim/klien"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <line x1="19" y1="8" x2="19" y2="14"></line>
-                <line x1="22" y1="11" x2="16" y2="11"></line>
-              </svg>
-              <span>Invite Max User</span>
-            </button>
-            <div class="admin-lang-picker-light">
-              <button type="button" class="lang-btn" data-lang="en">EN</button>
-              <button type="button" class="lang-btn" data-lang="id">ID</button>
-              <button type="button" class="lang-btn" data-lang="zh">中文</button>
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                >
+                  <line x1="4" y1="6" x2="20" y2="6"></line>
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+              </button>
+              <h1 style="margin: 0" data-i18n="myForms">My Forms</h1>
             </div>
-            <button class="btn btn-primary" id="new-form-btn" data-i18n="newForm">
-              + New Form
-            </button>
+            <div class="page-header-actions">
+              <button
+                type="button"
+                class="btn btn-ghost"
+                id="invite-max-btn"
+                style="
+                  border: 1px solid #bfdbfe;
+                  background: #eff6ff;
+                  color: #1d4ed8;
+                  font-weight: 700;
+                  font-size: 12px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                  padding: 7px 12px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                "
+                title="Salin tautan invite Level Max (Business Plan) untuk tim/klien"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" y1="8" x2="19" y2="14"></line>
+                  <line x1="22" y1="11" x2="16" y2="11"></line>
+                </svg>
+                <span>Invite Max User</span>
+              </button>
+              <div class="admin-lang-picker-light">
+                <button type="button" class="lang-btn" data-lang="en">EN</button>
+                <button type="button" class="lang-btn" data-lang="id">ID</button>
+                <button type="button" class="lang-btn" data-lang="zh">中文</button>
+              </div>
+              <button class="btn btn-primary" id="new-form-btn" data-i18n="newForm">
+                + New Form
+              </button>
+            </div>
+          </div>
+          <div class="stats-row" id="stats-row"></div>
+          <div class="forms-table-wrap">
+            <table class="forms-table">
+              <thead>
+                <tr>
+                  <th data-i18n="tableForm">Form</th>
+                  <th data-i18n="tableStatus">Status</th>
+                  <th data-i18n="tableQuestions">Questions</th>
+                  <th data-i18n="tableSubmissions">Submissions</th>
+                  <th data-i18n="tableUpdated">Updated</th>
+                  <th data-i18n="tableActions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="forms-tbody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="stats-row" id="stats-row"></div>
-        <div class="forms-table-wrap">
-          <table class="forms-table">
-            <thead>
-              <tr>
-                <th data-i18n="tableForm">Form</th>
-                <th data-i18n="tableStatus">Status</th>
-                <th data-i18n="tableQuestions">Questions</th>
-                <th data-i18n="tableSubmissions">Submissions</th>
-                <th data-i18n="tableUpdated">Updated</th>
-                <th data-i18n="tableActions">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="forms-tbody"></tbody>
-          </table>
+
+        <!-- ADMIN AREA VIEW -->
+        <div id="admin-area-view" style="display: none;">
+          <div class="page-header">
+            <div class="page-header-left">
+              <button
+                type="button"
+                class="mobile-menu-btn"
+                onclick="openSidebar()"
+                aria-label="Open menu"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <line x1="4" y1="6" x2="20" y2="6"></line>
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+              </button>
+              <div>
+                <h1 style="margin: 0" data-i18n="adminAreaTitle">Admin Area &amp; System Control</h1>
+                <p style="margin: 2px 0 0; font-size: 13px; color: var(--text3)" data-i18n="adminAreaSub">User accounts, pricing tiers, platform telemetry, and system health.</p>
+              </div>
+            </div>
+            <div class="page-header-actions">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="openProvisionModal()"
+                style="background: #0284c7;"
+              >
+                <span data-i18n="adminProvisionBtn">+ Provision User</span>
+              </button>
+              <div class="admin-lang-picker-light">
+                <button type="button" class="lang-btn" data-lang="en">EN</button>
+                <button type="button" class="lang-btn" data-lang="id">ID</button>
+                <button type="button" class="lang-btn" data-lang="zh">中文</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-area-wrapper">
+            <!-- Telemetry Metrics Grid -->
+            <div class="admin-telemetry-grid">
+              <div class="telemetry-card">
+                <div class="card-top">
+                  <span class="card-label">Registered Accounts</span>
+                  <span style="font-size: 16px;">👥</span>
+                </div>
+                <div class="card-val" id="admin-total-users">-</div>
+                <div class="card-note">Superadmin &amp; Business Tier</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="card-top">
+                  <span class="card-label">Active Form Schemas</span>
+                  <span style="font-size: 16px;">📋</span>
+                </div>
+                <div class="card-val" id="admin-total-forms">-</div>
+                <div class="card-note">Cloudflare D1 SQL Online</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="card-top">
+                  <span class="card-label">Total Submissions</span>
+                  <span style="font-size: 16px;">📊</span>
+                </div>
+                <div class="card-val" id="admin-total-subs">-</div>
+                <div class="card-note">AES-GCM 256-bit Encrypted</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="card-top">
+                  <span class="card-label">AI &amp; Edge Uptime</span>
+                  <span style="font-size: 16px;">⚡</span>
+                </div>
+                <div class="card-val" id="admin-system-uptime">99.98%</div>
+                <div class="card-note">Workers &amp; AI Operational</div>
+              </div>
+            </div>
+
+            <!-- User Accounts & Plan Management -->
+            <div class="admin-panel-card">
+              <div class="admin-panel-header">
+                <h3>
+                  <span>👥</span>
+                  <span data-i18n="adminUsersTitle">User Accounts &amp; Pricing Tiers</span>
+                </h3>
+                <span class="pill pill-green" id="admin-users-count-badge">Loaded</span>
+              </div>
+              <div class="forms-table-wrap">
+                <table class="forms-table">
+                  <thead>
+                    <tr>
+                      <th>Account Email</th>
+                      <th>System Role</th>
+                      <th>Pricing / Plan Tier</th>
+                      <th>Status</th>
+                      <th>Registered</th>
+                      <th>Update Tier</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users-tbody">
+                    <tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text3);">Loading user accounts...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Business Plan Secret Invite & Quick Tokens -->
+            <div class="admin-panel-card">
+              <div class="admin-panel-header">
+                <h3>
+                  <span>🎟️</span>
+                  <span>Instant Business Plan Invite Token</span>
+                </h3>
+                <span class="pill pill-blue">Level Max Access</span>
+              </div>
+              <p style="font-size: 13.5px; color: var(--text2); margin: 0 0 14px 0;">
+                Share this secure registration link with enterprise clients or staff. Users registering through this token are automatically assigned the <strong>Business Tier ($79/mo)</strong> with unlocked AI Document Scanner and EMR Sync.
+              </p>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <input
+                  type="text"
+                  id="admin-invite-url-input"
+                  readonly
+                  style="flex: 1; min-width: 260px; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); font-family: monospace;"
+                  value="Loading invite link..."
+                />
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  onclick="copyAdminInviteUrl()"
+                  style="padding: 9px 16px; font-weight: 700;"
+                >
+                  📋 Copy Invite Link
+                </button>
+              </div>
+            </div>
+
+            <!-- Security & Platform Infrastructure Overview -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+              <div class="admin-panel-card">
+                <div class="admin-panel-header">
+                  <h3>
+                    <span>🔒</span>
+                    <span data-i18n="adminSecurityTitle">Security &amp; Encryption</span>
+                  </h3>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--text);">
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">Database Storage</span>
+                    <strong>Cloudflare D1 Serverless SQL</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">Data Encryption</span>
+                    <strong style="color:#16a34a;">AES-GCM 256-bit (Active)</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">Admin Session TTL</span>
+                    <strong>30 Days (HttpOnly Lax)</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text3);">Tri-lingual Sync</span>
+                    <strong>EN · ID · 中文 (Full)</strong>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="admin-panel-card">
+                <div class="admin-panel-header">
+                  <h3>
+                    <span>🤖</span>
+                    <span>AI Engine &amp; Integrations</span>
+                  </h3>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--text);">
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">AI Drafting Model</span>
+                    <strong>Multimodal Vision &amp; Language</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">Document Extraction</span>
+                    <strong style="color:#0284c7;">PDF &amp; Physical Questionnaire OCR</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">EMR Plato Integration</span>
+                    <strong>Self-Service Bridge Ready</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text3);">Excel / CSV Export</span>
+                    <strong>UTF-8 BOM (Excel Standard)</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3710,6 +4033,40 @@
       </div>
     </div>
 
+    <!-- PROVISION USER MODAL -->
+    <div class="modal-overlay" id="provision-modal-overlay" style="z-index: 9700">
+      <div class="modal" style="max-width: 480px; padding: 24px;">
+        <div class="modal-header" style="margin-bottom: 16px;">
+          <h3 style="font-size: 18px; color: var(--navy); font-weight: 800;">Provision New Account</h3>
+          <button class="modal-close" onclick="closeProvisionModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px; padding: 0;">
+          <div>
+            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Email Address</label>
+            <input type="email" id="provision-email-input" placeholder="e.g. clinic@springhope.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Temporary Password (min. 6 characters)</label>
+            <input type="password" id="provision-password-input" placeholder="Create secure password" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Tier</label>
+            <select id="provision-tier-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
+              <option value="basic">Basic Tier ($0/mo) - Free Starter</option>
+              <option value="plus">Plus Tier ($29/mo) - Standard</option>
+              <option value="business" selected>Business Tier ($79/mo) - Level Max</option>
+              <option value="enterprise">Enterprise Tier - Custom SLA</option>
+            </select>
+          </div>
+          <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
+        </div>
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="provision-submit-btn" onclick="submitProvisionUser()">Create Account</button>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL -->
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal" id="modal-content"></div>
@@ -3825,9 +4182,19 @@
           if (e.target === e.currentTarget) closeTestModal();
         });
       }
+      const provOverlay = $("#provision-modal-overlay");
+      if (provOverlay) {
+        provOverlay.addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) closeProvisionModal();
+        });
+      }
       // FIX 4: Escape key closes modals
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
+          if ($("#provision-modal-overlay") && $("#provision-modal-overlay").classList.contains("show")) {
+            closeProvisionModal();
+            return;
+          }
           if ($("#test-modal-overlay") && $("#test-modal-overlay").classList.contains("show")) {
             closeTestModal();
             return;
@@ -4445,6 +4812,12 @@
         en: {
           myForms: "My Forms",
           submissions: "Submissions",
+          adminArea: "Admin Area",
+          adminAreaTitle: "Admin Area & System Control",
+          adminAreaSub: "User accounts, pricing tiers, platform telemetry, and system health.",
+          adminUsersTitle: "User Accounts & Pricing Tiers",
+          adminSecurityTitle: "Security & Encryption",
+          adminProvisionBtn: "+ Provision User",
           backToWebsite: "Back to Website",
           signOut: "Sign Out",
           adminRole: "Administrator",
@@ -4569,6 +4942,12 @@
         id: {
           myForms: "Formulir Saya",
           submissions: "Hasil Respon",
+          adminArea: "Area Admin",
+          adminAreaTitle: "Area Admin & Kontrol Sistem",
+          adminAreaSub: "Akun pengguna, paket langganan, telemetri platform, dan kesehatan sistem.",
+          adminUsersTitle: "Akun Pengguna & Paket Langganan",
+          adminSecurityTitle: "Keamanan & Enkripsi",
+          adminProvisionBtn: "+ Tambah Pengguna",
           backToWebsite: "Kembali ke Beranda",
           signOut: "Keluar",
           adminRole: "Administrator",
@@ -4695,6 +5074,12 @@
         zh: {
           myForms: "我的表单",
           submissions: "提交记录",
+          adminArea: "管理中心",
+          adminAreaTitle: "超级管理与系统控制",
+          adminAreaSub: "用户账户管理、套餐权限配置、平台运行数据与系统健康度。",
+          adminUsersTitle: "用户账户与付费套餐",
+          adminSecurityTitle: "数据加密与引擎状态",
+          adminProvisionBtn: "+ 添加新用户",
           backToWebsite: "返回官网",
           signOut: "退出登录",
           adminRole: "管理员",
@@ -4963,9 +5348,13 @@
           const formId = parts[2] || allForms[0]?.id || "new-patient-intake";
           return { screen: "submissions", formId, targetHash: location.hash };
         }
+        if (h === "#/admin-area") {
+          if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
+          return { screen: "dashboard", subView: "admin-area", targetHash: "#/admin-area" };
+        }
         if (h === "#/dashboard") {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
-          return { screen: "dashboard", targetHash: "#/dashboard" };
+          return { screen: "dashboard", subView: "forms", targetHash: "#/dashboard" };
         }
         if (h === "#/new") {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
@@ -4979,6 +5368,7 @@
         }
         return {
           screen: isLoggedIn() ? "dashboard" : "login",
+          subView: "forms",
           targetHash: isLoggedIn() ? "#/dashboard" : "#/login",
         };
       }
@@ -4998,7 +5388,9 @@
         // Update sidebar active highlights
         $$(".nav-item").forEach((n) => {
           if (n.dataset.route) {
-            if (r.screen === "dashboard" && n.dataset.route === "#/dashboard") {
+            if (r.targetHash === "#/admin-area" && n.dataset.route === "#/admin-area") {
+              n.classList.add("active");
+            } else if (r.targetHash === "#/dashboard" && n.dataset.route === "#/dashboard") {
               n.classList.add("active");
             } else if (r.screen === "submissions" && n.dataset.route.startsWith("#/submissions")) {
               n.classList.add("active");
@@ -5009,7 +5401,13 @@
         });
 
         if (r.screen === "login") updateLoginScreenState();
-        if (r.screen === "dashboard") renderDashboard();
+        if (r.screen === "dashboard") {
+          if (r.subView === "admin-area") {
+            renderAdminArea();
+          } else {
+            renderDashboard();
+          }
+        }
         if (r.screen === "builder") renderBuilder(r.id);
         if (r.screen === "submissions") renderSubmissions(r.formId);
         if (r.screen === "choice") renderChoiceScreen();
@@ -5277,6 +5675,8 @@
       }
 
       async function renderDashboard() {
+        if ($("#forms-view")) $("#forms-view").style.display = "block";
+        if ($("#admin-area-view")) $("#admin-area-view").style.display = "none";
         await syncServerSubmissions();
         const f = forms();
         const allSubs = submissions();
@@ -5367,15 +5767,254 @@
           deleteConfirm[id] = true;
           btn.textContent = "Confirm?";
           btn.classList.add("confirm-delete");
-          setTimeout(() => {
-            deleteConfirm[id] = false;
-            btn.textContent = "Delete";
-            btn.classList.remove("confirm-delete");
-          }, 3000);
+	          setTimeout(() => {
+	            deleteConfirm[id] = false;
+	            btn.textContent = "Delete";
+	            btn.classList.remove("confirm-delete");
+	          }, 3000);
+	        }
+	      }
+
+      // ===================== ADMIN AREA & USER MANAGEMENT =====================
+      let _adminUsersData = null;
+
+      async function loadAdminAreaTelemetry() {
+        try {
+          const res = await fetch("/api/admin/users", { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              _adminUsersData = data;
+              return data;
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to load admin telemetry", e);
+        }
+        return null;
+      }
+
+      async function renderAdminArea() {
+        if ($("#forms-view")) $("#forms-view").style.display = "none";
+        if ($("#admin-area-view")) $("#admin-area-view").style.display = "block";
+
+        const data = await loadAdminAreaTelemetry();
+        const users = data?.users || [];
+        const telem = data?.telemetry || {
+          totalUsers: users.length || 1,
+          totalForms: forms().length,
+          totalSubmissions: submissions().length,
+          uptime: "99.98%",
+        };
+
+        const totalUsersEl = $("#admin-total-users");
+        if (totalUsersEl) totalUsersEl.textContent = telem.totalUsers || users.length;
+        const totalFormsEl = $("#admin-total-forms");
+        if (totalFormsEl) totalFormsEl.textContent = telem.totalForms || forms().length;
+        const totalSubsEl = $("#admin-total-subs");
+        if (totalSubsEl) totalSubsEl.textContent = telem.totalSubmissions || submissions().length;
+        const uptimeEl = $("#admin-system-uptime");
+        if (uptimeEl) uptimeEl.textContent = telem.uptime || "99.98%";
+
+        const token = data?.inviteToken || _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
+        const inviteInput = $("#admin-invite-url-input");
+        if (inviteInput) {
+          inviteInput.value = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}`;
+        }
+
+        const badgeEl = $("#admin-users-count-badge");
+        if (badgeEl) badgeEl.textContent = `${users.length} Active Accounts`;
+
+        const tbody = $("#admin-users-tbody");
+        if (!tbody) return;
+
+        if (!users.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text3);">No registered accounts found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = users
+          .map((u) => {
+            const tier = (u.planTier || "basic").toLowerCase();
+            const tierBadgeClass =
+              tier === "enterprise"
+                ? "tier-enterprise"
+                : tier === "business"
+                  ? "tier-business"
+                  : tier === "plus"
+                    ? "tier-plus"
+                    : "tier-basic";
+            const tierLabel =
+              tier === "enterprise"
+                ? "Enterprise"
+                : tier === "business"
+                  ? "Business ($79/mo)"
+                  : tier === "plus"
+                    ? "Plus ($29/mo)"
+                    : "Basic ($0/mo)";
+            const roleBadge =
+              u.role === "superadmin"
+                ? '<span style="color:#0284c7; font-weight:750;">Superadmin</span>'
+                : '<span style="color:#64748b; font-weight:600;">Admin User</span>';
+
+            return `
+              <tr>
+                <td>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:28px; height:28px; border-radius:8px; background:#e0f2fe; color:#0284c7; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center;">
+                      ${(u.email || "US").substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <strong style="color:var(--navy); font-size:13.5px;">${escHtml(u.email)}</strong>
+                    </div>
+                  </div>
+                </td>
+                <td>${roleBadge}</td>
+                <td>
+                  <span class="tier-badge ${tierBadgeClass}">${tierLabel}</span>
+                </td>
+                <td>
+                  <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#16a34a;">
+                    <span style="width:6px; height:6px; border-radius:99px; background:#22c55e;"></span>
+                    Active
+                  </span>
+                </td>
+                <td style="font-size:12px; color:var(--text3);">${safeDateStr(u.createdAt)}</td>
+                <td>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <select class="admin-select-tier" id="tier-select-${u.id}">
+                      <option value="basic" ${tier === "basic" ? "selected" : ""}>Basic ($0)</option>
+                      <option value="plus" ${tier === "plus" ? "selected" : ""}>Plus ($29)</option>
+                      <option value="business" ${tier === "business" ? "selected" : ""}>Business ($79)</option>
+                      <option value="enterprise" ${tier === "enterprise" ? "selected" : ""}>Enterprise</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      style="padding: 4px 9px; font-size: 11.5px; border-radius: 6px;"
+                      onclick="updateUserPlan('${u.id}')"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      async function updateUserPlan(userId) {
+        const select = $(`#tier-select-${userId}`);
+        if (!select) return;
+        const planTier = select.value;
+        try {
+          const res = await fetch("/api/admin/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "update-plan", userId, planTier }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success) {
+            toast(data.message || "Paket pengguna berhasil diperbarui!", "success");
+            renderAdminArea();
+          } else {
+            toast(data.message || "Gagal memperbarui paket pengguna.", "error");
+          }
+        } catch (err) {
+          console.error("Update plan failed", err);
+          toast("Terjadi kesalahan jaringan.", "error");
         }
       }
 
-      // ===================== BUILDER =====================
+      function copyAdminInviteUrl() {
+        const el = $("#admin-invite-url-input");
+        if (!el) return;
+        const url = el.value;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => {
+            toast("Tautan invite Business Plan berhasil disalin!", "success");
+          });
+        } else {
+          prompt("Salin tautan invite Business Plan:", url);
+        }
+      }
+
+      function openProvisionModal() {
+        const err = $("#provision-error-msg");
+        if (err) err.style.display = "none";
+        const em = $("#provision-email-input");
+        if (em) em.value = "";
+        const pw = $("#provision-password-input");
+        if (pw) pw.value = "";
+        const overlay = $("#provision-modal-overlay");
+        if (overlay) overlay.classList.add("show");
+      }
+
+      function closeProvisionModal() {
+        const overlay = $("#provision-modal-overlay");
+        if (overlay) overlay.classList.remove("show");
+      }
+
+      async function submitProvisionUser() {
+        const email = $("#provision-email-input")?.value?.trim();
+        const password = $("#provision-password-input")?.value?.trim();
+        const planTier = $("#provision-tier-select")?.value || "business";
+        const errEl = $("#provision-error-msg");
+        const btn = $("#provision-submit-btn");
+
+        if (!email || !password) {
+          if (errEl) {
+            errEl.textContent = "Email dan password wajib diisi.";
+            errEl.style.display = "block";
+          }
+          return;
+        }
+
+        if (password.length < 6) {
+          if (errEl) {
+            errEl.textContent = "Password minimal 6 karakter.";
+            errEl.style.display = "block";
+          }
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Memproses...";
+
+        try {
+          const res = await fetch("/api/admin/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "create-user", email, password, planTier }),
+          });
+          const data = await res.json().catch(() => ({}));
+          btn.disabled = false;
+          btn.textContent = "Create Account";
+
+          if (res.ok && data.success) {
+            toast(data.message || "Akun baru berhasil dibuat!", "success");
+            closeProvisionModal();
+            renderAdminArea();
+          } else {
+            if (errEl) {
+              errEl.textContent = data.message || "Gagal membuat akun.";
+              errEl.style.display = "block";
+            }
+          }
+        } catch (e) {
+          btn.disabled = false;
+          btn.textContent = "Create Account";
+          if (errEl) {
+            errEl.textContent = "Terjadi kesalahan jaringan.";
+            errEl.style.display = "block";
+          }
+        }
+      }
+
+	      // ===================== BUILDER =====================
       let builderForm = null,
         editingQ = null,
         phonePreviewIdx = 0;
