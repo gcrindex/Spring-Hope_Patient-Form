@@ -1,61 +1,71 @@
+import { Link } from "@tanstack/react-router";
+
 export function BrandMark({
-  compact = false,
   inverse = false,
+  className = "",
+  size = "md",
 }: {
-  compact?: boolean | undefined;
-  inverse?: boolean | undefined;
+  inverse?: boolean;
+  className?: string;
+  size?: "sm" | "md" | "lg";
 }) {
+  const heightClass =
+    size === "sm"
+      ? "h-[22px]"
+      : size === "lg"
+        ? "h-[34px]"
+        : "h-[28px]";
+
   return (
-    <div className="wordmark-logo flex items-center shrink-0">
-      <span
-        className={`wordmark-text font-sans text-[23px] sm:text-[27px] font-black tracking-[-0.055em] select-none inline-flex items-center ${
-          inverse ? "text-white" : "text-[#111827]"
-        }`}
-        style={{ letterSpacing: "-0.055em" }}
+    <div className="flex items-center shrink-0">
+      <Link
+        to="/"
+        className={`inline-flex items-center no-underline text-inherit transition-transform duration-200 hover:scale-[1.02] ${className}`}
+        aria-label="9forms home"
       >
-        <span>9forms</span>
-        <span
-          className="wordmark-dot shrink-0"
-          style={{
-            width: "7.5px",
-            height: "7.5px",
-            marginLeft: "2.5px",
-            marginBottom: "3px",
-          }}
-          aria-hidden="true"
+        <img
+          src={inverse ? "/logo-white.webp" : "/logo-full.webp"}
+          alt="9forms"
+          className={`${heightClass} w-auto object-contain select-none`}
+          loading="eager"
         />
-      </span>
+      </Link>
     </div>
   );
 }
 
 export function PlatformMark({
-  compact = false,
+  href = "/",
+  className = "",
+  size = "md",
   inverse = false,
 }: {
-  compact?: boolean | undefined;
-  inverse?: boolean | undefined;
+  href?: string;
+  className?: string;
+  size?: "sm" | "md" | "lg";
+  inverse?: boolean;
 }) {
+  const heightClass =
+    size === "sm"
+      ? "h-[22px]"
+      : size === "lg"
+        ? "h-[34px]"
+        : "h-[28px]";
+
   return (
-    <div className="wordmark-logo flex items-center shrink-0">
-      <span
-        className={`wordmark-text font-sans text-[23px] sm:text-[27px] font-black tracking-[-0.055em] select-none inline-flex items-center ${
-          inverse ? "text-white" : "text-[#111827]"
-        }`}
-        style={{ letterSpacing: "-0.055em" }}
+    <div className="flex items-center shrink-0">
+      <Link
+        to={href}
+        className={`inline-flex items-center no-underline text-inherit transition-transform duration-200 hover:scale-[1.02] ${className}`}
+        aria-label="9forms home"
       >
-        <span>9forms</span>
-        <span
-          className="wordmark-dot shrink-0"
-          style={{
-            width: "7.5px",
-            height: "7.5px",
-            marginLeft: "2.5px",
-            marginBottom: "3px",
-          }}
-          aria-hidden="true"
+        <img
+          src={inverse ? "/logo-white.webp" : "/logo-full.webp"}
+          alt="9forms"
+          className={`${heightClass} w-auto object-contain select-none`}
+          loading="eager"
         />
-      </span>
+      </Link>
     </div>
   );
 }

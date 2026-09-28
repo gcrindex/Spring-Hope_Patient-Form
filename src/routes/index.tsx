@@ -143,10 +143,12 @@ function BuilderLandingPage() {
 
               <div className="sf-mock-card">
                 <div className="sf-mock-topline">
-                  <span className="sf-mock-brand">
-                    <span>9forms</span>
-                    <span className="wordmark-dot" aria-hidden="true" />
-                  </span>
+                  <img
+                    src="/logo-white.webp"
+                    alt="9forms"
+                    className="h-[20px] w-auto object-contain select-none"
+                    loading="eager"
+                  />
                   <div className="sf-mock-voice-pill">
                     <Mic size={13} className="text-emerald-500" />
                     <span>Live Voice</span>
