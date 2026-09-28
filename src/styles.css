@@ -8101,6 +8101,33 @@ html {
   flex-wrap: wrap;
 }
 
+.senior-modal-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 24px;
+  border-radius: 10px;
+  background: #0284c7;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 750;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+}
+
+.senior-modal-close-btn:hover {
+  background: #0369a1;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+  transform: translateY(-1px);
+}
+
+.senior-modal-close-btn:active {
+  transform: translateY(0);
+}
+
 .senior-modal-citation {
   font-size: 11px;
   color: #64748b;

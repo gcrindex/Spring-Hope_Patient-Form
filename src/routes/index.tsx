@@ -978,7 +978,7 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
             Reference: ISO 9241-171 / WCAG 2.2 AAA / Gerontological Society of America Digital Health
             Guidelines
           </span>
-          <button type="button" className="button-primary button-md" onClick={onClose}>
+          <button type="button" className="senior-modal-close-btn" onClick={onClose}>
             Close
           </button>
         </div>
