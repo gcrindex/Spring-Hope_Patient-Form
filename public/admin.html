@@ -3061,33 +3061,6 @@
               <h1 style="margin: 0" data-i18n="myForms">My Forms</h1>
             </div>
             <div class="page-header-actions">
-              <button
-                type="button"
-                class="btn btn-ghost"
-                id="invite-max-btn"
-                style="
-                  border: 1px solid #bfdbfe;
-                  background: #eff6ff;
-                  color: #1d4ed8;
-                  font-weight: 700;
-                  font-size: 12px;
-                  display: inline-flex;
-                  align-items: center;
-                  gap: 6px;
-                  padding: 7px 12px;
-                  border-radius: 8px;
-                  cursor: pointer;
-                "
-                title="Salin tautan invite Level Max (Business Plan) untuk tim/klien"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <line x1="19" y1="8" x2="19" y2="14"></line>
-                  <line x1="22" y1="11" x2="16" y2="11"></line>
-                </svg>
-                <span>Invite Max User</span>
-              </button>
               <div class="admin-lang-picker-light">
                 <button type="button" class="lang-btn" data-lang="en">EN</button>
                 <button type="button" class="lang-btn" data-lang="id">ID</button>
@@ -4050,12 +4023,21 @@
             <input type="password" id="provision-password-input" placeholder="Create secure password" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
           </div>
           <div>
-            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Tier</label>
+            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Plan &amp; Billing Limit</label>
             <select id="provision-tier-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
-              <option value="basic">Basic Tier ($0/mo) - Free Starter</option>
-              <option value="plus">Plus Tier ($29/mo) - Standard</option>
-              <option value="business" selected>Business Tier ($79/mo) - Level Max</option>
-              <option value="enterprise">Enterprise Tier - Custom SLA</option>
+              <optgroup label="Monthly Billing (Billed Monthly)">
+                <option value="basic_monthly">Basic ($29/mo) - 100 responses/mo · 1 seat</option>
+                <option value="plus_monthly">Plus ($59/mo) - 1,000 responses/mo · 3 seats</option>
+                <option value="business_monthly" selected>Business ($99/mo) - 10,000 responses/mo · 5 seats · EMR Sync</option>
+              </optgroup>
+              <optgroup label="Annual Billing (Billed Annually - Save Up to 20%)">
+                <option value="basic_yearly">Basic ($25/mo - $300/yr) - 100 responses/mo · 1 seat</option>
+                <option value="plus_yearly">Plus ($50/mo - $600/yr) - 1,000 responses/mo · 3 seats</option>
+                <option value="business_yearly">Business ($83/mo - $996/yr) - 10,000 responses/mo · 5 seats · EMR Sync</option>
+              </optgroup>
+              <optgroup label="Enterprise">
+                <option value="enterprise">Enterprise Custom - Unlimited responses &amp; seats · Dedicated SLA</option>
+              </optgroup>
             </select>
           </div>
           <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
@@ -5835,27 +5817,48 @@
 
         tbody.innerHTML = users
           .map((u) => {
-            const tier = (u.planTier || "basic").toLowerCase();
+            const rawTier = (u.planTier || "basic").toLowerCase();
+            const isYearly = rawTier.includes("yearly") || rawTier.includes("annual");
+            const baseTier = rawTier.replace(/_monthly|_yearly/g, "");
+
             const tierBadgeClass =
-              tier === "enterprise"
+              baseTier === "enterprise"
                 ? "tier-enterprise"
-                : tier === "business"
+                : baseTier === "business"
                   ? "tier-business"
-                  : tier === "plus"
+                  : baseTier === "plus"
                     ? "tier-plus"
                     : "tier-basic";
-            const tierLabel =
-              tier === "enterprise"
-                ? "Enterprise"
-                : tier === "business"
-                  ? "Business ($79/mo)"
-                  : tier === "plus"
-                    ? "Plus ($29/mo)"
-                    : "Basic ($0/mo)";
+
+            const tierDisplay =
+              baseTier === "enterprise"
+                ? "Enterprise Custom"
+                : baseTier === "business"
+                  ? (isYearly ? "Business ($83/mo · $996/yr)" : "Business ($99/mo · Monthly)")
+                  : baseTier === "plus"
+                    ? (isYearly ? "Plus ($50/mo · $600/yr)" : "Plus ($59/mo · Monthly)")
+                    : (isYearly ? "Basic ($25/mo · $300/yr)" : "Basic ($29/mo · Monthly)");
+
+            const limitsNote =
+              baseTier === "enterprise"
+                ? "Unlimited responses &amp; seats · Dedicated SLA"
+                : baseTier === "business"
+                  ? "10,000 resp/mo · 5 seats · EMR Sync"
+                  : baseTier === "plus"
+                    ? "1,000 resp/mo · 3 seats · Custom Domain"
+                    : "100 resp/mo · 1 seat · Standard";
+
             const roleBadge =
               u.role === "superadmin"
                 ? '<span style="color:#0284c7; font-weight:750;">Superadmin</span>'
                 : '<span style="color:#64748b; font-weight:600;">Admin User</span>';
+
+            const selectedVal =
+              baseTier === "enterprise"
+                ? "enterprise"
+                : isYearly
+                  ? `${baseTier}_yearly`
+                  : `${baseTier}_monthly`;
 
             return `
               <tr>
@@ -5871,7 +5874,10 @@
                 </td>
                 <td>${roleBadge}</td>
                 <td>
-                  <span class="tier-badge ${tierBadgeClass}">${tierLabel}</span>
+                  <div style="display:flex; flex-direction:column; gap:3px;">
+                    <span class="tier-badge ${tierBadgeClass}">${tierDisplay}</span>
+                    <small style="font-size:11px; color:var(--text3); font-weight:600;">${limitsNote}</small>
+                  </div>
                 </td>
                 <td>
                   <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#16a34a;">
@@ -5882,16 +5888,25 @@
                 <td style="font-size:12px; color:var(--text3);">${safeDateStr(u.createdAt)}</td>
                 <td>
                   <div style="display:flex; align-items:center; gap:6px;">
-                    <select class="admin-select-tier" id="tier-select-${u.id}">
-                      <option value="basic" ${tier === "basic" ? "selected" : ""}>Basic ($0)</option>
-                      <option value="plus" ${tier === "plus" ? "selected" : ""}>Plus ($29)</option>
-                      <option value="business" ${tier === "business" ? "selected" : ""}>Business ($79)</option>
-                      <option value="enterprise" ${tier === "enterprise" ? "selected" : ""}>Enterprise</option>
+                    <select class="admin-select-tier" id="tier-select-${u.id}" style="max-width: 190px;">
+                      <optgroup label="Monthly Billing">
+                        <option value="basic_monthly" ${selectedVal === "basic_monthly" ? "selected" : ""}>Basic ($29/mo)</option>
+                        <option value="plus_monthly" ${selectedVal === "plus_monthly" ? "selected" : ""}>Plus ($59/mo)</option>
+                        <option value="business_monthly" ${selectedVal === "business_monthly" ? "selected" : ""}>Business ($99/mo)</option>
+                      </optgroup>
+                      <optgroup label="Annual Billing (Save 20%)">
+                        <option value="basic_yearly" ${selectedVal === "basic_yearly" ? "selected" : ""}>Basic ($25/mo · $300/yr)</option>
+                        <option value="plus_yearly" ${selectedVal === "plus_yearly" ? "selected" : ""}>Plus ($50/mo · $600/yr)</option>
+                        <option value="business_yearly" ${selectedVal === "business_yearly" ? "selected" : ""}>Business ($83/mo · $996/yr)</option>
+                      </optgroup>
+                      <optgroup label="Enterprise">
+                        <option value="enterprise" ${selectedVal === "enterprise" ? "selected" : ""}>Enterprise Custom</option>
+                      </optgroup>
                     </select>
                     <button
                       type="button"
                       class="btn btn-primary btn-sm"
-                      style="padding: 4px 9px; font-size: 11.5px; border-radius: 6px;"
+                      style="padding: 5px 10px; font-size: 11.5px; border-radius: 6px;"
                       onclick="updateUserPlan('${u.id}')"
                     >
                       Save
