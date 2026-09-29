@@ -3171,7 +3171,19 @@
                   <span>👥</span>
                   <span data-i18n="adminUsersTitle">User Accounts &amp; Pricing Tiers</span>
                 </h3>
-                <span class="pill pill-green" id="admin-users-count-badge">Loaded</span>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <div style="position: relative; min-width: 220px;">
+                    <input
+                      type="text"
+                      id="admin-user-search-input"
+                      placeholder="🔍 Search account email..."
+                      oninput="filterAdminUsers(this.value)"
+                      style="width: 100%; padding: 6px 12px 6px 30px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                    />
+                    <span style="position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--text3); pointer-events: none;">🔍</span>
+                  </div>
+                  <span class="pill pill-green" id="admin-users-count-badge">Loaded</span>
+                </div>
               </div>
               <div class="forms-table-wrap">
                 <table class="forms-table">
@@ -4023,20 +4035,20 @@
             <input type="password" id="provision-password-input" placeholder="Create secure password" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
           </div>
           <div>
-            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Plan &amp; Billing Limit</label>
+            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Tier</label>
             <select id="provision-tier-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
-              <optgroup label="Monthly Billing (Billed Monthly)">
-                <option value="basic_monthly">Basic ($29/mo) - 100 responses/mo · 1 seat</option>
-                <option value="plus_monthly">Plus ($59/mo) - 1,000 responses/mo · 3 seats</option>
-                <option value="business_monthly" selected>Business ($99/mo) - 10,000 responses/mo · 5 seats · EMR Sync</option>
+              <optgroup label="Monthly Billing">
+                <option value="basic_monthly">Basic — $29/mo (100 resp · 1 seat)</option>
+                <option value="plus_monthly">Plus — $59/mo (1,000 resp · 3 seats)</option>
+                <option value="business_monthly" selected>Business — $99/mo (10,000 resp · 5 seats · Level Max)</option>
               </optgroup>
-              <optgroup label="Annual Billing (Billed Annually - Save Up to 20%)">
-                <option value="basic_yearly">Basic ($25/mo - $300/yr) - 100 responses/mo · 1 seat</option>
-                <option value="plus_yearly">Plus ($50/mo - $600/yr) - 1,000 responses/mo · 3 seats</option>
-                <option value="business_yearly">Business ($83/mo - $996/yr) - 10,000 responses/mo · 5 seats · EMR Sync</option>
+              <optgroup label="Annual Billing (Save 20%)">
+                <option value="basic_yearly">Basic — $25/mo · $300/yr (100 resp · 1 seat)</option>
+                <option value="plus_yearly">Plus — $50/mo · $600/yr (1,000 resp · 3 seats)</option>
+                <option value="business_yearly">Business — $83/mo · $996/yr (10,000 resp · 5 seats · Level Max)</option>
               </optgroup>
               <optgroup label="Enterprise">
-                <option value="enterprise">Enterprise Custom - Unlimited responses &amp; seats · Dedicated SLA</option>
+                <option value="enterprise">Enterprise — Custom Dedicated SLA</option>
               </optgroup>
             </select>
           </div>
@@ -5807,15 +5819,32 @@
         const badgeEl = $("#admin-users-count-badge");
         if (badgeEl) badgeEl.textContent = `${users.length} Active Accounts`;
 
+        const searchInput = $("#admin-user-search-input");
+        const query = searchInput ? searchInput.value.trim() : "";
+        filterAdminUsers(query);
+      }
+
+      function filterAdminUsers(query) {
+        const users = _adminUsersData?.users || [];
+        const q = String(query || "").toLowerCase().trim();
+        const filtered = q
+          ? users.filter((u) => (u.email || "").toLowerCase().includes(q) || (u.planTier || "").toLowerCase().includes(q) || (u.role || "").toLowerCase().includes(q))
+          : users;
+
+        const badgeEl = $("#admin-users-count-badge");
+        if (badgeEl) {
+          badgeEl.textContent = q ? `${filtered.length} of ${users.length} Found` : `${users.length} Active Accounts`;
+        }
+
         const tbody = $("#admin-users-tbody");
         if (!tbody) return;
 
-        if (!users.length) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text3);">No registered accounts found.</td></tr>`;
+        if (!filtered.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text3);">No matching user accounts found for "${escHtml(query)}".</td></tr>`;
           return;
         }
 
-        tbody.innerHTML = users
+        tbody.innerHTML = filtered
           .map((u) => {
             const rawTier = (u.planTier || "basic").toLowerCase();
             const isYearly = rawTier.includes("yearly") || rawTier.includes("annual");
@@ -5834,10 +5863,10 @@
               baseTier === "enterprise"
                 ? "Enterprise Custom"
                 : baseTier === "business"
-                  ? (isYearly ? "Business ($83/mo · $996/yr)" : "Business ($99/mo · Monthly)")
+                  ? (isYearly ? "Business · $83/mo (Annual)" : "Business · $99/mo")
                   : baseTier === "plus"
-                    ? (isYearly ? "Plus ($50/mo · $600/yr)" : "Plus ($59/mo · Monthly)")
-                    : (isYearly ? "Basic ($25/mo · $300/yr)" : "Basic ($29/mo · Monthly)");
+                    ? (isYearly ? "Plus · $50/mo (Annual)" : "Plus · $59/mo")
+                    : (isYearly ? "Basic · $25/mo (Annual)" : "Basic · $29/mo");
 
             const limitsNote =
               baseTier === "enterprise"
@@ -5888,25 +5917,25 @@
                 <td style="font-size:12px; color:var(--text3);">${safeDateStr(u.createdAt)}</td>
                 <td>
                   <div style="display:flex; align-items:center; gap:6px;">
-                    <select class="admin-select-tier" id="tier-select-${u.id}" style="max-width: 190px;">
-                      <optgroup label="Monthly Billing">
-                        <option value="basic_monthly" ${selectedVal === "basic_monthly" ? "selected" : ""}>Basic ($29/mo)</option>
-                        <option value="plus_monthly" ${selectedVal === "plus_monthly" ? "selected" : ""}>Plus ($59/mo)</option>
-                        <option value="business_monthly" ${selectedVal === "business_monthly" ? "selected" : ""}>Business ($99/mo)</option>
+                    <select class="admin-select-tier" id="tier-select-${u.id}" style="min-width: 140px; padding: 6px 8px;">
+                      <optgroup label="Monthly">
+                        <option value="basic_monthly" ${selectedVal === "basic_monthly" ? "selected" : ""}>Basic · $29/mo</option>
+                        <option value="plus_monthly" ${selectedVal === "plus_monthly" ? "selected" : ""}>Plus · $59/mo</option>
+                        <option value="business_monthly" ${selectedVal === "business_monthly" ? "selected" : ""}>Business · $99/mo</option>
                       </optgroup>
-                      <optgroup label="Annual Billing (Save 20%)">
-                        <option value="basic_yearly" ${selectedVal === "basic_yearly" ? "selected" : ""}>Basic ($25/mo · $300/yr)</option>
-                        <option value="plus_yearly" ${selectedVal === "plus_yearly" ? "selected" : ""}>Plus ($50/mo · $600/yr)</option>
-                        <option value="business_yearly" ${selectedVal === "business_yearly" ? "selected" : ""}>Business ($83/mo · $996/yr)</option>
+                      <optgroup label="Annual (Save 20%)">
+                        <option value="basic_yearly" ${selectedVal === "basic_yearly" ? "selected" : ""}>Basic · $25/mo (Yr)</option>
+                        <option value="plus_yearly" ${selectedVal === "plus_yearly" ? "selected" : ""}>Plus · $50/mo (Yr)</option>
+                        <option value="business_yearly" ${selectedVal === "business_yearly" ? "selected" : ""}>Business · $83/mo (Yr)</option>
                       </optgroup>
                       <optgroup label="Enterprise">
-                        <option value="enterprise" ${selectedVal === "enterprise" ? "selected" : ""}>Enterprise Custom</option>
+                        <option value="enterprise" ${selectedVal === "enterprise" ? "selected" : ""}>Enterprise</option>
                       </optgroup>
                     </select>
                     <button
                       type="button"
                       class="btn btn-primary btn-sm"
-                      style="padding: 5px 10px; font-size: 11.5px; border-radius: 6px;"
+                      style="padding: 6px 12px; font-size: 11.5px; border-radius: 6px; font-weight: 700;"
                       onclick="updateUserPlan('${u.id}')"
                     >
                       Save
@@ -5917,6 +5946,7 @@
             `;
           })
           .join("");
+      }
       }
 
       async function updateUserPlan(userId) {
