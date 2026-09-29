@@ -839,6 +839,60 @@
         padding: 22px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
       }
+      .admin-users-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: #ffffff;
+      }
+      .admin-users-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        border-collapse: collapse;
+      }
+      .admin-users-table th {
+        padding: 10px 12px !important;
+        font-size: 11px !important;
+        font-weight: 750 !important;
+        color: var(--text3) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        border-bottom: 1.5px solid var(--border) !important;
+        background: #f8fafc !important;
+        white-space: nowrap !important;
+      }
+      .admin-users-table td {
+        padding: 10px 12px !important;
+        font-size: 12.5px !important;
+        border-bottom: 1px solid var(--border) !important;
+        vertical-align: middle !important;
+      }
+      .invite-tier-pill {
+        padding: 6px 14px;
+        border-radius: 99px;
+        border: 1.5px solid var(--border);
+        background: #f8fafc;
+        color: var(--text2);
+        font-size: 12px;
+        font-weight: 750;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .invite-tier-pill:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: var(--navy);
+      }
+      .invite-tier-pill.active {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #0284c7;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+      }
       .admin-panel-header {
         display: flex;
         align-items: center;
@@ -3185,16 +3239,16 @@
                   <span class="pill pill-green" id="admin-users-count-badge">Loaded</span>
                 </div>
               </div>
-              <div class="forms-table-wrap">
-                <table class="forms-table">
+              <div class="admin-users-table-wrap">
+                <table class="admin-users-table">
                   <thead>
                     <tr>
-                      <th>Account Email</th>
-                      <th>System Role</th>
-                      <th>Pricing / Plan Tier</th>
-                      <th>Status</th>
-                      <th>Registered</th>
-                      <th>Update Tier</th>
+                      <th style="width: 26%;">Account Email</th>
+                      <th style="width: 14%;">System Role</th>
+                      <th style="width: 25%;">Pricing / Plan Tier</th>
+                      <th style="width: 11%;">Status</th>
+                      <th style="width: 11%;">Registered</th>
+                      <th style="width: 13%;">Update Tier</th>
                     </tr>
                   </thead>
                   <tbody id="admin-users-tbody">
@@ -3204,18 +3258,35 @@
               </div>
             </div>
 
-            <!-- Business Plan Secret Invite & Quick Tokens -->
+            <!-- Dynamic Pricing Tier Secret Invite Generator -->
             <div class="admin-panel-card">
               <div class="admin-panel-header">
                 <h3>
                   <span>🎟️</span>
-                  <span>Instant Business Plan Invite Token</span>
+                  <span>Instant Client &amp; Staff Registration Token</span>
                 </h3>
-                <span class="pill pill-blue">Level Max Access</span>
+                <span class="pill pill-blue" id="invite-tier-badge">Business · Level Max</span>
               </div>
-              <p style="font-size: 13.5px; color: var(--text2); margin: 0 0 14px 0;">
-                Share this secure registration link with enterprise clients or staff. Users registering through this token are automatically assigned the <strong>Business Tier ($79/mo)</strong> with unlocked AI Document Scanner and EMR Sync.
+              <p style="font-size: 13px; color: var(--text2); margin: 0 0 12px 0;" id="invite-tier-desc">
+                Select a pricing tier below to generate a direct registration link. Users who register using this link will automatically be assigned the selected tier without manual configuration.
               </p>
+              
+              <!-- Tier Selector Pills -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+                <button type="button" class="invite-tier-pill" data-tier="basic" onclick="setInviteTier('basic')">
+                  <span>⚡</span> <span>Basic ($29/mo)</span>
+                </button>
+                <button type="button" class="invite-tier-pill" data-tier="plus" onclick="setInviteTier('plus')">
+                  <span>🚀</span> <span>Plus ($59/mo)</span>
+                </button>
+                <button type="button" class="invite-tier-pill active" data-tier="business" onclick="setInviteTier('business')">
+                  <span>👑</span> <span>Business ($99/mo · Max)</span>
+                </button>
+                <button type="button" class="invite-tier-pill" data-tier="enterprise" onclick="setInviteTier('enterprise')">
+                  <span>🏢</span> <span>Enterprise</span>
+                </button>
+              </div>
+
               <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                 <input
                   type="text"
@@ -5810,11 +5881,7 @@
         const uptimeEl = $("#admin-system-uptime");
         if (uptimeEl) uptimeEl.textContent = telem.uptime || "99.98%";
 
-        const token = data?.inviteToken || _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
-        const inviteInput = $("#admin-invite-url-input");
-        if (inviteInput) {
-          inviteInput.value = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}`;
-        }
+        setInviteTier(_selectedInviteTier);
 
         const badgeEl = $("#admin-users-count-badge");
         if (badgeEl) badgeEl.textContent = `${users.length} Active Accounts`;
@@ -5947,6 +6014,40 @@
           })
           .join("");
       }
+
+      let _selectedInviteTier = "business";
+
+      function setInviteTier(tier) {
+        _selectedInviteTier = tier || "business";
+        $$(".invite-tier-pill").forEach((btn) => {
+          if (btn.dataset.tier === _selectedInviteTier) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+
+        const token = _adminUsersData?.inviteToken || _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
+        const inviteInput = $("#admin-invite-url-input");
+        if (inviteInput) {
+          inviteInput.value = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}&tier=${encodeURIComponent(_selectedInviteTier)}`;
+        }
+
+        const badgeEl = $("#invite-tier-badge");
+        const descEl = $("#invite-tier-desc");
+        if (_selectedInviteTier === "enterprise") {
+          if (badgeEl) badgeEl.textContent = "Enterprise · Custom Access";
+          if (descEl) descEl.innerHTML = "Registration link for <strong>Enterprise Plan</strong> with unlimited responses, unlimited seats, and custom SLA.";
+        } else if (_selectedInviteTier === "plus") {
+          if (badgeEl) badgeEl.textContent = "Plus · $59/mo";
+          if (descEl) descEl.innerHTML = "Registration link for <strong>Plus Tier ($59/mo)</strong> with 1,000 responses/mo, 3 team seats, and removed 9forms branding.";
+        } else if (_selectedInviteTier === "basic") {
+          if (badgeEl) badgeEl.textContent = "Basic · $29/mo";
+          if (descEl) descEl.innerHTML = "Registration link for <strong>Basic Tier ($29/mo)</strong> with 100 responses/mo and 1 user seat.";
+        } else {
+          if (badgeEl) badgeEl.textContent = "Business · Level Max";
+          if (descEl) descEl.innerHTML = "Registration link for <strong>Business Tier ($99/mo)</strong> with 10,000 responses/mo, 5 team seats, AI Document Scanner, and EMR Plato sync.";
+        }
       }
 
       async function updateUserPlan(userId) {
@@ -5977,12 +6078,13 @@
         const el = $("#admin-invite-url-input");
         if (!el) return;
         const url = el.value;
+        const tierName = _selectedInviteTier.toUpperCase();
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(url).then(() => {
-            toast("Tautan invite Business Plan berhasil disalin!", "success");
+            toast(`Tautan invite ${tierName} berhasil disalin!`, "success");
           });
         } else {
-          prompt("Salin tautan invite Business Plan:", url);
+          prompt(`Salin tautan invite ${tierName}:`, url);
         }
       }
 

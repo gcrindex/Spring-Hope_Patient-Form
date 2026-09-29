@@ -4964,6 +4964,28 @@
         return code;
       }
 
+      function getInviteTier() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let tier = urlParams.get("tier") || "";
+        if (!tier && location.hash.includes("?")) {
+          const hashQuery = location.hash.split("?")[1];
+          const hashParams = new URLSearchParams(hashQuery);
+          tier = hashParams.get("tier") || "";
+        }
+        if (!tier) {
+          try {
+            tier = sessionStorage.getItem("sh_business_tier") || "";
+          } catch (e) {}
+        }
+        tier = (tier || "").trim().toLowerCase();
+        if (tier) {
+          try {
+            sessionStorage.setItem("sh_business_tier", tier);
+          } catch (e) {}
+        }
+        return tier || "business";
+      }
+
       function getRoute() {
         const rawHash = location.hash;
         const h = rawHash.split("?")[0];
@@ -5210,10 +5232,11 @@
         btn.disabled = true;
 
         try {
+          const inviteTier = getInviteTier();
           const endpoint = _authMode === "register" ? "/api/auth/setup" : "/api/admin/login";
           const payload =
             _authMode === "register"
-              ? { email, password, invite_code: inviteCode }
+              ? { email, password, invite_code: inviteCode, plan_tier: inviteTier }
               : { email, password };
 
           const res = await fetch(endpoint, {

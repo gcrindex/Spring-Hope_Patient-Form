@@ -61,7 +61,8 @@ export const Route = createFileRoute("/api/auth/setup")({
           }
 
           const role = isSuperAdminEmail || isFirstUser ? "superadmin" : "admin";
-          const planTier = "business";
+          const requestedTier = typeof body.plan_tier === "string" ? body.plan_tier.trim().toLowerCase() : "";
+          const planTier = ["basic", "plus", "business", "enterprise"].includes(requestedTier) ? requestedTier : "business";
 
           const passwordHash = await hashPassword(password);
           const existing = await dbQueryOne<{ id: string; role?: string; plan_tier?: string }>(
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/api/auth/setup")({
           let adminId = "";
           if (existing) {
             adminId = existing.id;
-            const updatedTier = "business";
+            const updatedTier = planTier;
             const updatedRole = isSuperAdminEmail ? "superadmin" : existing.role || role;
             await dbExecute(
               "UPDATE admins SET password_hash = ?, role = ?, plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
@@ -89,10 +90,7 @@ export const Route = createFileRoute("/api/auth/setup")({
           return Response.json(
             {
               success: true,
-              message:
-                planTier === "business"
-                  ? "Akun Business Plan (Level Max) berhasil dibuat!"
-                  : "Akun berhasil dibuat & Anda berhasil login!",
+              message: `Akun ${planTier.toUpperCase()} berhasil dibuat!`,
               token,
               user: {
                 id: adminId,
