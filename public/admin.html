@@ -519,15 +519,46 @@
       }
       @media (max-width: 640px) {
         .page-header {
-          gap: 10px;
-          margin-bottom: 18px;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 8px !important;
+          margin-bottom: 16px !important;
+          flex-wrap: nowrap !important;
+        }
+        .page-header-left {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          min-width: 0 !important;
+          flex: 1 1 auto !important;
         }
         .page-header h1 {
-          font-size: 19px;
+          font-size: 17px !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        .page-header-actions {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          flex-shrink: 0 !important;
+          margin-left: auto !important;
         }
         .page-header-actions .btn {
-          padding: 8px 12px;
-          font-size: 13px;
+          padding: 7px 10px !important;
+          font-size: 12px !important;
+          white-space: nowrap !important;
+        }
+        .admin-lang-picker-light {
+          height: 32px !important;
+          padding: 2px !important;
+        }
+        .admin-lang-picker-light .lang-btn {
+          padding: 0 4px !important;
+          font-size: 10px !important;
         }
       }
       .btn {
@@ -841,18 +872,18 @@
       }
       .admin-users-table-wrap {
         width: 100%;
-        overflow-x: auto;
+        overflow-x: hidden;
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         background: #ffffff;
       }
       .admin-users-table {
         width: 100% !important;
-        min-width: 0 !important;
+        table-layout: fixed !important;
         border-collapse: collapse;
       }
       .admin-users-table th {
-        padding: 10px 12px !important;
+        padding: 10px 10px !important;
         font-size: 11px !important;
         font-weight: 750 !important;
         color: var(--text3) !important;
@@ -861,12 +892,15 @@
         border-bottom: 1.5px solid var(--border) !important;
         background: #f8fafc !important;
         white-space: nowrap !important;
+        box-sizing: border-box !important;
       }
       .admin-users-table td {
-        padding: 10px 12px !important;
-        font-size: 12.5px !important;
+        padding: 10px 10px !important;
+        font-size: 12px !important;
         border-bottom: 1px solid var(--border) !important;
         vertical-align: middle !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
       .invite-tier-pill {
         padding: 6px 14px;
@@ -953,10 +987,25 @@
         .admin-telemetry-grid {
           grid-template-columns: 1fr 1fr;
         }
+        .admin-users-table-wrap {
+          overflow-x: auto !important;
+        }
+        .admin-users-table {
+          min-width: 700px !important;
+          table-layout: auto !important;
+        }
       }
       @media (max-width: 600px) {
         .admin-telemetry-grid {
           grid-template-columns: 1fr;
+        }
+        .admin-panel-card {
+          padding: 14px !important;
+        }
+        .admin-panel-header {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 10px !important;
         }
       }
 
@@ -2530,19 +2579,12 @@
         .forms-table-wrap {
           margin-bottom: 40px;
         }
-        .page-header {
-          flex-wrap: wrap;
-          gap: 12px;
-        }
       }
 
       @media (max-width: 480px) {
         .stats-row {
           grid-template-columns: 1fr !important;
           gap: 10px;
-        }
-        .page-header h1 {
-          font-size: 20px !important;
         }
         .login-card {
           padding: 28px 16px !important;
@@ -3230,7 +3272,7 @@
                     <input
                       type="text"
                       id="admin-user-search-input"
-                      placeholder="🔍 Search account email..."
+                      placeholder="Search account email..."
                       oninput="filterAdminUsers(this.value)"
                       style="width: 100%; padding: 6px 12px 6px 30px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
                     />
@@ -3243,12 +3285,12 @@
                 <table class="admin-users-table">
                   <thead>
                     <tr>
-                      <th style="width: 26%;">Account Email</th>
-                      <th style="width: 14%;">System Role</th>
-                      <th style="width: 25%;">Pricing / Plan Tier</th>
-                      <th style="width: 11%;">Status</th>
+                      <th style="width: 25%;">Account Email</th>
+                      <th style="width: 12%;">System Role</th>
+                      <th style="width: 27%;">Pricing / Plan Tier</th>
+                      <th style="width: 10%;">Status</th>
                       <th style="width: 11%;">Registered</th>
-                      <th style="width: 13%;">Update Tier</th>
+                      <th style="width: 15%;">Update Tier</th>
                     </tr>
                   </thead>
                   <tbody id="admin-users-tbody">
@@ -3271,19 +3313,30 @@
                 Select a pricing tier below to generate a direct registration link. Users who register using this link will automatically be assigned the selected tier without manual configuration.
               </p>
               
+              <!-- Billing Cycle Toggle for Invite Generator -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: center;">
+                <span style="font-size: 11.5px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px;">Billing Cycle:</span>
+                <button type="button" class="invite-tier-pill active" id="invite-cycle-monthly" onclick="setInviteCycle('monthly')">
+                  <span>📅</span> <span>Monthly Billing</span>
+                </button>
+                <button type="button" class="invite-tier-pill" id="invite-cycle-yearly" onclick="setInviteCycle('yearly')">
+                  <span>✨</span> <span>Annual (Save 20%)</span>
+                </button>
+              </div>
+
               <!-- Tier Selector Pills -->
               <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-                <button type="button" class="invite-tier-pill" data-tier="basic" onclick="setInviteTier('basic')">
-                  <span>⚡</span> <span>Basic ($29/mo)</span>
+                <button type="button" class="invite-tier-pill" id="pill-tier-basic" onclick="setInviteTier('basic')">
+                  <span>⚡</span> <span id="label-tier-basic">Basic ($29/mo)</span>
                 </button>
-                <button type="button" class="invite-tier-pill" data-tier="plus" onclick="setInviteTier('plus')">
-                  <span>🚀</span> <span>Plus ($59/mo)</span>
+                <button type="button" class="invite-tier-pill" id="pill-tier-plus" onclick="setInviteTier('plus')">
+                  <span>🚀</span> <span id="label-tier-plus">Plus ($59/mo)</span>
                 </button>
-                <button type="button" class="invite-tier-pill active" data-tier="business" onclick="setInviteTier('business')">
-                  <span>👑</span> <span>Business ($99/mo · Max)</span>
+                <button type="button" class="invite-tier-pill active" id="pill-tier-business" onclick="setInviteTier('business')">
+                  <span>👑</span> <span id="label-tier-business">Business ($99/mo · Max)</span>
                 </button>
-                <button type="button" class="invite-tier-pill" data-tier="enterprise" onclick="setInviteTier('enterprise')">
-                  <span>🏢</span> <span>Enterprise</span>
+                <button type="button" class="invite-tier-pill" id="pill-tier-enterprise" onclick="setInviteTier('enterprise')">
+                  <span>🏢</span> <span>Enterprise Custom</span>
                 </button>
               </div>
 
@@ -4893,6 +4946,7 @@
           liveLabel: "Live",
           totalSubmissions: "Total Submissions",
           receivedLabel: "Received",
+          planQuotaLabel: "Plan Quota & Limit",
           avgCompletionRate: "Avg. Completion Rate",
           standardFlowLabel: "Standard flow",
           tableForm: "Form",
@@ -5023,6 +5077,7 @@
           liveLabel: "Online",
           totalSubmissions: "Total Respon",
           receivedLabel: "Terkumpul",
+          planQuotaLabel: "Kuota & Limit Paket",
           avgCompletionRate: "Rata-rata Selesai",
           standardFlowLabel: "Alur standar",
           tableForm: "Formulir",
@@ -5155,6 +5210,7 @@
           liveLabel: "在线",
           totalSubmissions: "总提交数",
           receivedLabel: "已接收",
+          planQuotaLabel: "套餐配额与上限",
           avgCompletionRate: "平均完成率",
           standardFlowLabel: "标准流程",
           tableForm: "表单名称",
@@ -5336,7 +5392,13 @@
         }
 
         const r = parseRoute();
-        if (r.screen === "dashboard") renderDashboard();
+        if (r.screen === "dashboard") {
+          if (r.subView === "admin-area") {
+            renderAdminArea();
+          } else {
+            renderDashboard();
+          }
+        }
         if (r.screen === "submissions") renderSubmissions(r.formId);
         if (r.screen === "choice") renderChoiceScreen();
         if (r.screen === "builder") {
@@ -5748,11 +5810,32 @@
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
+        const q = _serverAuth?.quota;
+        let quotaCardHtml = `<div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
+        if (q) {
+          if (q.responseLimit !== null) {
+            const remaining = Math.max(0, q.responseLimit - totalSub);
+            const remainingText = currentAdminLang === "id"
+              ? `Sisa ${remaining.toLocaleString()} respons (${q.tier.toUpperCase()})`
+              : currentAdminLang === "zh"
+                ? `剩余 ${remaining.toLocaleString()} 条 (${q.tier.toUpperCase()})`
+                : `${remaining.toLocaleString()} remaining (${q.tier.toUpperCase()})`;
+            quotaCardHtml = `<div class="stat-card" style="border-color: #bae6fd; background: #f0f9ff;"><div class="label" style="color: #0284c7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #0369a1;">${totalSub} / ${q.responseLimit.toLocaleString()}</div><div class="sub" style="color: #0284c7; font-weight: 700;">${remainingText}</div></div>`;
+          } else {
+            const unlimText = currentAdminLang === "id"
+              ? "Tanpa batas (Enterprise SLA)"
+              : currentAdminLang === "zh"
+                ? "无上限配额（企业定制SLA）"
+                : "Unlimited responses (Enterprise SLA)";
+            quotaCardHtml = `<div class="stat-card" style="border-color: #f0abfc; background: #fdf4ff;"><div class="label" style="color: #a855f7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #7e22ce;">${totalSub} · Unlimited</div><div class="sub" style="color: #9333ea; font-weight: 700;">${unlimText}</div></div>`;
+          }
+        }
+
         $("#stats-row").innerHTML = `
         <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${t("allFormsLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("totalSubmissions")}</div><div class="value">${totalSub}</div><div class="sub">${t("receivedLabel")}</div></div>
-        <div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
+        ${quotaCardHtml}`;
         const tbody = $("#forms-tbody");
         tbody.innerHTML = f
           .map((x) => {
@@ -5959,32 +6042,32 @@
             return `
               <tr>
                 <td>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <div style="width:28px; height:28px; border-radius:8px; background:#e0f2fe; color:#0284c7; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center;">
+                  <div style="display:flex; align-items:center; gap:7px; min-width:0;">
+                    <div style="width:26px; height:26px; flex-shrink:0; border-radius:7px; background:#e0f2fe; color:#0284c7; font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center;">
                       ${(u.email || "US").substring(0, 2).toUpperCase()}
                     </div>
-                    <div>
-                      <strong style="color:var(--navy); font-size:13.5px;">${escHtml(u.email)}</strong>
+                    <div style="min-width:0; overflow:hidden; text-overflow:ellipsis;">
+                      <strong style="color:var(--navy); font-size:12.5px; white-space:nowrap;" title="${escHtml(u.email)}">${escHtml(u.email)}</strong>
                     </div>
                   </div>
                 </td>
                 <td>${roleBadge}</td>
                 <td>
-                  <div style="display:flex; flex-direction:column; gap:3px;">
+                  <div style="display:flex; flex-direction:column; gap:2px;">
                     <span class="tier-badge ${tierBadgeClass}">${tierDisplay}</span>
-                    <small style="font-size:11px; color:var(--text3); font-weight:600;">${limitsNote}</small>
+                    <small style="font-size:10.5px; color:var(--text3); font-weight:600; line-height:1.2;">${limitsNote}</small>
                   </div>
                 </td>
                 <td>
-                  <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:#16a34a;">
+                  <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; color:#16a34a;">
                     <span style="width:6px; height:6px; border-radius:99px; background:#22c55e;"></span>
                     Active
                   </span>
                 </td>
-                <td style="font-size:12px; color:var(--text3);">${safeDateStr(u.createdAt)}</td>
+                <td style="font-size:11.5px; color:var(--text3); white-space:nowrap;">${safeDateStr(u.createdAt)}</td>
                 <td>
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <select class="admin-select-tier" id="tier-select-${u.id}" style="min-width: 140px; padding: 6px 8px;">
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <select class="admin-select-tier" id="tier-select-${u.id}" style="width: 100%; min-width: 0; padding: 4px 6px; font-size: 11px;">
                       <optgroup label="Monthly">
                         <option value="basic_monthly" ${selectedVal === "basic_monthly" ? "selected" : ""}>Basic · $29/mo</option>
                         <option value="plus_monthly" ${selectedVal === "plus_monthly" ? "selected" : ""}>Plus · $59/mo</option>
@@ -6002,7 +6085,7 @@
                     <button
                       type="button"
                       class="btn btn-primary btn-sm"
-                      style="padding: 6px 12px; font-size: 11.5px; border-radius: 6px; font-weight: 700;"
+                      style="padding: 4px 8px; font-size: 11px; border-radius: 6px; font-weight: 700; flex-shrink: 0;"
                       onclick="updateUserPlan('${u.id}')"
                     >
                       Save
@@ -6016,21 +6099,54 @@
       }
 
       let _selectedInviteTier = "business";
+      let _selectedInviteCycle = "monthly"; // "monthly" | "yearly"
+
+      function setInviteCycle(cycle) {
+        _selectedInviteCycle = cycle === "yearly" ? "yearly" : "monthly";
+        const btnM = $("#invite-cycle-monthly");
+        const btnY = $("#invite-cycle-yearly");
+        if (btnM && btnY) {
+          if (_selectedInviteCycle === "yearly") {
+            btnY.classList.add("active");
+            btnM.classList.remove("active");
+          } else {
+            btnM.classList.add("active");
+            btnY.classList.remove("active");
+          }
+        }
+        updateInviteLabelsAndUrl();
+      }
 
       function setInviteTier(tier) {
         _selectedInviteTier = tier || "business";
-        $$(".invite-tier-pill").forEach((btn) => {
-          if (btn.dataset.tier === _selectedInviteTier) {
-            btn.classList.add("active");
-          } else {
-            btn.classList.remove("active");
+        ["basic", "plus", "business", "enterprise"].forEach((t) => {
+          const pill = $(`#pill-tier-${t}`);
+          if (pill) {
+            if (t === _selectedInviteTier) {
+              pill.classList.add("active");
+            } else {
+              pill.classList.remove("active");
+            }
           }
         });
+        updateInviteLabelsAndUrl();
+      }
 
+      function updateInviteLabelsAndUrl() {
+        const isYearly = _selectedInviteCycle === "yearly";
+        const lBasic = $("#label-tier-basic");
+        const lPlus = $("#label-tier-plus");
+        const lBiz = $("#label-tier-business");
+
+        if (lBasic) lBasic.textContent = isYearly ? "Basic ($25/mo · $300/yr)" : "Basic ($29/mo)";
+        if (lPlus) lPlus.textContent = isYearly ? "Plus ($50/mo · $600/yr)" : "Plus ($59/mo)";
+        if (lBiz) lBiz.textContent = isYearly ? "Business ($83/mo · $996/yr · Max)" : "Business ($99/mo · Max)";
+
+        const fullTierParam = _selectedInviteTier === "enterprise" ? "enterprise" : `${_selectedInviteTier}_${_selectedInviteCycle}`;
         const token = _adminUsersData?.inviteToken || _serverAuth?.inviteToken || "biz_9f88c3a1e94b2207";
         const inviteInput = $("#admin-invite-url-input");
         if (inviteInput) {
-          inviteInput.value = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}&tier=${encodeURIComponent(_selectedInviteTier)}`;
+          inviteInput.value = `${window.location.origin}/business.html#/register?invite=${encodeURIComponent(token)}&tier=${encodeURIComponent(fullTierParam)}`;
         }
 
         const badgeEl = $("#invite-tier-badge");
@@ -6039,14 +6155,20 @@
           if (badgeEl) badgeEl.textContent = "Enterprise · Custom Access";
           if (descEl) descEl.innerHTML = "Registration link for <strong>Enterprise Plan</strong> with unlimited responses, unlimited seats, and custom SLA.";
         } else if (_selectedInviteTier === "plus") {
-          if (badgeEl) badgeEl.textContent = "Plus · $59/mo";
-          if (descEl) descEl.innerHTML = "Registration link for <strong>Plus Tier ($59/mo)</strong> with 1,000 responses/mo, 3 team seats, and removed 9forms branding.";
+          if (badgeEl) badgeEl.textContent = isYearly ? "Plus · $50/mo (Annual $600/yr)" : "Plus · $59/mo (Monthly)";
+          if (descEl) descEl.innerHTML = isYearly
+            ? "Registration link for <strong>Plus Tier (Annual · $600/yr)</strong> with 1,000 responses/mo, 3 team seats, and removed branding."
+            : "Registration link for <strong>Plus Tier (Monthly · $59/mo)</strong> with 1,000 responses/mo and 3 team seats.";
         } else if (_selectedInviteTier === "basic") {
-          if (badgeEl) badgeEl.textContent = "Basic · $29/mo";
-          if (descEl) descEl.innerHTML = "Registration link for <strong>Basic Tier ($29/mo)</strong> with 100 responses/mo and 1 user seat.";
+          if (badgeEl) badgeEl.textContent = isYearly ? "Basic · $25/mo (Annual $300/yr)" : "Basic · $29/mo (Monthly)";
+          if (descEl) descEl.innerHTML = isYearly
+            ? "Registration link for <strong>Basic Tier (Annual · $300/yr)</strong> with 100 responses/mo and 1 user seat."
+            : "Registration link for <strong>Basic Tier (Monthly · $29/mo)</strong> with 100 responses/mo and 1 user seat.";
         } else {
-          if (badgeEl) badgeEl.textContent = "Business · Level Max";
-          if (descEl) descEl.innerHTML = "Registration link for <strong>Business Tier ($99/mo)</strong> with 10,000 responses/mo, 5 team seats, AI Document Scanner, and EMR Plato sync.";
+          if (badgeEl) badgeEl.textContent = isYearly ? "Business · $83/mo (Annual $996/yr · Max)" : "Business · $99/mo (Monthly · Max)";
+          if (descEl) descEl.innerHTML = isYearly
+            ? "Registration link for <strong>Business Tier (Annual · $996/yr · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync."
+            : "Registration link for <strong>Business Tier (Monthly · $99/mo · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync.";
         }
       }
 

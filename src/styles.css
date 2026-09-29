@@ -7885,22 +7885,29 @@ html {
   gap: 7px;
   margin-top: 14px;
   width: 100%;
-  padding: 8px 12px;
-  background: transparent;
-  border: none;
+  padding: 8px 14px;
+  background: #f0f9ff;
+  border: 1.5px solid #bae6fd;
+  border-radius: 10px;
   color: #0284c7;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 750;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
 .sf-research-anchor:hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
   color: #0369a1;
-  text-decoration-thickness: 2px;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+}
+
+.sf-research-anchor:active {
+  transform: translateY(0);
 }
 
 .senior-modal-overlay,

@@ -46,14 +46,37 @@ export const Route = createFileRoute("/api/admin/users")({
           const formsCount = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM forms");
           const subsCount = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM submissions");
 
-          const sanitizedUsers = (users || []).map((u) => ({
-            id: u.id,
-            email: u.email,
-            role: u.email === "admin@gmail.com" || u.email === "admin@springhope.clinic" ? "superadmin" : (u.role || "admin"),
-            planTier: u.email === "admin@gmail.com" ? "enterprise" : (u.plan_tier || "business"),
-            status: "active",
-            createdAt: u.created_at || new Date().toISOString(),
-          }));
+          // Calculate submission counts per user/admin if any
+          const subsRows = await dbQuery<{ form_id: string }>("SELECT form_id FROM submissions");
+          const totalSubsCount = subsRows ? subsRows.length : (subsCount ? Number(subsCount.count) : 0);
+
+          const sanitizedUsers = (users || []).map((u) => {
+            const rawTier = (u.email === "admin@gmail.com" || u.email === "admin@springhope.clinic")
+              ? "enterprise"
+              : (u.plan_tier || "business_monthly");
+            
+            const baseTier = rawTier.replace(/_monthly|_yearly/g, "").toLowerCase();
+            const limit = baseTier === "enterprise"
+              ? "Unlimited"
+              : baseTier === "business"
+                ? 10000
+                : baseTier === "plus"
+                  ? 1000
+                  : 100;
+
+            return {
+              id: u.id,
+              email: u.email,
+              role: (u.email === "admin@gmail.com" || u.email === "admin@springhope.clinic") ? "superadmin" : (u.role || "admin"),
+              planTier: rawTier,
+              usage: {
+                responsesUsed: u.email === "admin@gmail.com" ? totalSubsCount : 0,
+                responsesLimit: limit,
+              },
+              status: "active",
+              createdAt: u.created_at || new Date().toISOString(),
+            };
+          });
 
           return Response.json(
             {
@@ -63,7 +86,7 @@ export const Route = createFileRoute("/api/admin/users")({
               telemetry: {
                 totalUsers: sanitizedUsers.length,
                 totalForms: formsCount ? Number(formsCount.count) : 0,
-                totalSubmissions: subsCount ? Number(subsCount.count) : 0,
+                totalSubmissions: totalSubsCount,
                 databaseStatus: "Connected (D1 Encrypted)",
                 aiEngine: "Active (Multimodal Vision & Audio)",
                 storageDriver: "Cloudflare Serverless SQL",
@@ -155,7 +178,7 @@ export const Route = createFileRoute("/api/admin/users")({
             }
 
             const passwordHash = await hashPassword(password);
-            const tier = planTier || "business";
+            const tier = planTier || "business_monthly";
             const newId = await createAdmin(cleanEmail, passwordHash, "admin", tier);
 
             return Response.json({

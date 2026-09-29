@@ -4435,6 +4435,7 @@
           liveLabel: "Live",
           totalSubmissions: "Total Submissions",
           receivedLabel: "Received",
+          planQuotaLabel: "Plan Quota & Limit",
           avgCompletionRate: "Avg. Completion Rate",
           standardFlowLabel: "Standard flow",
           tableForm: "Form",
@@ -4573,6 +4574,7 @@
           liveLabel: "Online",
           totalSubmissions: "Total Respon",
           receivedLabel: "Terkumpul",
+          planQuotaLabel: "Kuota & Limit Paket",
           avgCompletionRate: "Rata-rata Selesai",
           standardFlowLabel: "Alur standar",
           tableForm: "Formulir",
@@ -4713,6 +4715,7 @@
           liveLabel: "在线",
           totalSubmissions: "总提交数",
           receivedLabel: "已接收",
+          planQuotaLabel: "套餐配额与上限",
           avgCompletionRate: "平均完成率",
           standardFlowLabel: "标准流程",
           tableForm: "表单名称",
@@ -5132,8 +5135,29 @@
           inviteBanner.style.display = isReg && inviteCode ? "flex" : "none";
           const bTitle = $("#invite-banner-title");
           const bSub = $("#invite-banner-sub");
-          if (bTitle) bTitle.textContent = t("bannerTitle");
-          if (bSub) bSub.textContent = t("bannerDesc");
+          const tier = getInviteTier();
+          const isYearly = tier.includes("yearly") || tier.includes("annual");
+          const baseTier = tier.replace(/_monthly|_yearly/g, "");
+
+          let tierName = "Business Plan (Level Max)";
+          let tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & EMR Sync).";
+
+          if (baseTier === "enterprise") {
+            tierName = "Enterprise Plan (Custom SLA)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Enterprise dengan respon & seats tanpa batas.";
+          } else if (baseTier === "plus") {
+            tierName = isYearly ? "Plus Plan (Tahunan · $50/bln)" : "Plus Plan (Bulanan · $59/bln)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Plus Plan (1.000 respon/bln & 3 user seats).";
+          } else if (baseTier === "basic") {
+            tierName = isYearly ? "Basic Plan (Tahunan · $25/bln)" : "Basic Plan (Bulanan · $29/bln)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Basic Plan (100 respon/bln & 1 user seat).";
+          } else {
+            tierName = isYearly ? "Business Plan (Tahunan · $83/bln · Max)" : "Business Plan (Bulanan · $99/bln · Max)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & Level Max).";
+          }
+
+          if (bTitle) bTitle.textContent = tierName;
+          if (bSub) bSub.textContent = tierDesc;
         }
         if (titleEl) {
           titleEl.textContent = isReg ? t("registerPortalTitle") : t("loginPortalTitle");
@@ -5306,11 +5330,32 @@
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
+        const q = _serverAuth?.quota;
+        let quotaCardHtml = `<div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
+        if (q) {
+          if (q.responseLimit !== null) {
+            const remaining = Math.max(0, q.responseLimit - totalSub);
+            const remainingText = currentAdminLang === "id"
+              ? `Sisa ${remaining.toLocaleString()} respons (${q.tier.toUpperCase()})`
+              : currentAdminLang === "zh"
+                ? `剩余 ${remaining.toLocaleString()} 条 (${q.tier.toUpperCase()})`
+                : `${remaining.toLocaleString()} remaining (${q.tier.toUpperCase()})`;
+            quotaCardHtml = `<div class="stat-card" style="border-color: #bae6fd; background: #f0f9ff;"><div class="label" style="color: #0284c7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #0369a1;">${totalSub} / ${q.responseLimit.toLocaleString()}</div><div class="sub" style="color: #0284c7; font-weight: 700;">${remainingText}</div></div>`;
+          } else {
+            const unlimText = currentAdminLang === "id"
+              ? "Tanpa batas (Enterprise SLA)"
+              : currentAdminLang === "zh"
+                ? "无上限配额（企业定制SLA）"
+                : "Unlimited responses (Enterprise SLA)";
+            quotaCardHtml = `<div class="stat-card" style="border-color: #f0abfc; background: #fdf4ff;"><div class="label" style="color: #a855f7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #7e22ce;">${totalSub} · Unlimited</div><div class="sub" style="color: #9333ea; font-weight: 700;">${unlimText}</div></div>`;
+          }
+        }
+
         $("#stats-row").innerHTML = `
         <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${t("allFormsLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("totalSubmissions")}</div><div class="value">${totalSub}</div><div class="sub">${t("receivedLabel")}</div></div>
-        <div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
+        ${quotaCardHtml}`;
         const tbody = $("#forms-tbody");
         tbody.innerHTML = f
           .map((x) => {

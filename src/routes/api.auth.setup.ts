@@ -62,7 +62,19 @@ export const Route = createFileRoute("/api/auth/setup")({
 
           const role = isSuperAdminEmail || isFirstUser ? "superadmin" : "admin";
           const requestedTier = typeof body.plan_tier === "string" ? body.plan_tier.trim().toLowerCase() : "";
-          const planTier = ["basic", "plus", "business", "enterprise"].includes(requestedTier) ? requestedTier : "business";
+          const validTiers = [
+            "basic",
+            "plus",
+            "business",
+            "enterprise",
+            "basic_monthly",
+            "plus_monthly",
+            "business_monthly",
+            "basic_yearly",
+            "plus_yearly",
+            "business_yearly",
+          ];
+          const planTier = validTiers.includes(requestedTier) ? requestedTier : "business_monthly";
 
           const passwordHash = await hashPassword(password);
           const existing = await dbQueryOne<{ id: string; role?: string; plan_tier?: string }>(
