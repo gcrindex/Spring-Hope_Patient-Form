@@ -2638,14 +2638,24 @@
           grid-column: span 2;
         }
         .invite-tiers-wrap {
+          display: grid !important;
           grid-template-columns: 1fr 1fr !important;
           gap: 6px !important;
         }
         .invite-tier-pill {
-          padding: 7px 6px !important;
+          padding: 8px 6px !important;
           font-size: 11px !important;
+          white-space: normal !important;
+          text-align: center !important;
+          line-height: 1.25 !important;
+          min-height: 38px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          word-break: break-word !important;
         }
         .invite-url-wrap {
+          display: flex !important;
           flex-direction: column !important;
           align-items: stretch !important;
           gap: 8px !important;

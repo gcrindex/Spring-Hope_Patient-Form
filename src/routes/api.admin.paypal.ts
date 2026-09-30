@@ -118,36 +118,45 @@ export const Route = createFileRoute("/api/admin/paypal")({
 
           const { action, mode, clientId, secretKey, webhookId, merchantEmail } = body;
 
-          // 1. SAVE PAYPAL CREDENTIALS
-          if (action === "save") {
-            let finalSecret = String(secretKey || "").trim();
+	          // 1. SAVE PAYPAL CREDENTIALS
+	          if (action === "save") {
+	            let finalSecret = String(secretKey || "").trim();
 
-            // If secretKey was sent masked, keep existing secret
-            if (finalSecret.includes("••••") || !finalSecret) {
-              const existingRow = await dbQueryOne<{ value_encrypted: string }>(
-                "SELECT value_encrypted FROM system_settings WHERE key = 'paypal_credentials'",
-              );
-              if (existingRow?.value_encrypted) {
-                const dec = await decryptData(existingRow.value_encrypted);
-                const p = JSON.parse(dec);
-                finalSecret = p.secretKey || "";
-              }
-            }
+	            // If secretKey was sent masked, keep existing secret
+	            if (finalSecret.includes("••••")) {
+	              const existingRow = await dbQueryOne<{ value_encrypted: string }>(
+	                "SELECT value_encrypted FROM system_settings WHERE key = 'paypal_credentials'",
+	              );
+	              if (existingRow?.value_encrypted) {
+	                const dec = await decryptData(existingRow.value_encrypted);
+	                const p = JSON.parse(dec);
+	                finalSecret = p.secretKey || "";
+	              }
+	            }
 
-            const cleanClientId = String(clientId || "").trim();
-            const cleanMode = mode === "live" ? "live" : "sandbox";
-            const cleanWebhook = String(webhookId || "").trim();
-            const cleanMerchant = String(merchantEmail || "").trim();
+	            const cleanClientId = String(clientId || "").trim();
+	            const cleanMode = mode === "live" ? "live" : "sandbox";
+	            const cleanWebhook = String(webhookId || "").trim();
+	            const cleanMerchant = String(merchantEmail || "").trim();
 
-            const payloadToEncrypt = JSON.stringify({
-              mode: cleanMode,
-              clientId: cleanClientId,
-              secretKey: finalSecret,
-              webhookId: cleanWebhook,
-              merchantEmail: cleanMerchant,
-            });
+	            // If user explicitly saves empty clientId and empty secretKey, clear the secret completely
+	            if (!cleanClientId && !finalSecret) {
+	              await dbExecute("DELETE FROM system_settings WHERE key = 'paypal_credentials'");
+	              return Response.json({
+	                success: true,
+	                message: "Kredensial PayPal berhasil dikosongkan.",
+	              });
+	            }
 
-            const encrypted = await encryptData(payloadToEncrypt);
+	            const payloadToEncrypt = JSON.stringify({
+	              mode: cleanMode,
+	              clientId: cleanClientId,
+	              secretKey: finalSecret,
+	              webhookId: cleanWebhook,
+	              merchantEmail: cleanMerchant,
+	            });
+
+	            const encrypted = await encryptData(payloadToEncrypt);
 
             // Upsert into system_settings
             const existing = await dbQueryOne<{ key: string }>(
