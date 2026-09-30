@@ -520,45 +520,48 @@
       @media (max-width: 640px) {
         .page-header {
           display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          gap: 8px !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 10px !important;
           margin-bottom: 16px !important;
-          flex-wrap: nowrap !important;
         }
         .page-header-left {
           display: flex !important;
-          align-items: center !important;
-          gap: 8px !important;
-          min-width: 0 !important;
-          flex: 1 1 auto !important;
+          align-items: flex-start !important;
+          gap: 10px !important;
+          width: 100% !important;
         }
-        .page-header h1 {
-          font-size: 17px !important;
-          white-space: nowrap !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
+        .page-header-left h1 {
+          font-size: 18px !important;
+          line-height: 1.25 !important;
+          white-space: normal !important;
+        }
+        .page-header-left p {
+          font-size: 12px !important;
+          line-height: 1.35 !important;
+          margin-top: 3px !important;
         }
         .page-header-actions {
           display: flex !important;
           align-items: center !important;
-          gap: 6px !important;
-          flex-shrink: 0 !important;
-          margin-left: auto !important;
+          justify-content: space-between !important;
+          gap: 8px !important;
+          width: 100% !important;
+          margin-left: 0 !important;
         }
         .page-header-actions .btn {
-          padding: 7px 10px !important;
+          padding: 7px 12px !important;
           font-size: 12px !important;
           white-space: nowrap !important;
         }
         .admin-lang-picker-light {
           height: 32px !important;
           padding: 2px !important;
+          margin-left: auto !important;
         }
         .admin-lang-picker-light .lang-btn {
-          padding: 0 4px !important;
-          font-size: 10px !important;
+          padding: 0 5px !important;
+          font-size: 10.5px !important;
         }
       }
       .btn {
@@ -872,14 +875,15 @@
       }
       .admin-users-table-wrap {
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         background: #ffffff;
       }
       .admin-users-table {
         width: 100% !important;
-        table-layout: fixed !important;
+        min-width: 640px !important;
         border-collapse: collapse;
       }
       .admin-users-table th {
@@ -900,10 +904,29 @@
         border-bottom: 1px solid var(--border) !important;
         vertical-align: middle !important;
         box-sizing: border-box !important;
-        overflow: hidden !important;
+      }
+      .invite-cycle-wrap {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+        align-items: center;
+      }
+      .invite-cycle-label {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .invite-tiers-wrap {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 14px;
       }
       .invite-tier-pill {
-        padding: 6px 14px;
+        padding: 8px 12px;
         border-radius: 99px;
         border: 1.5px solid var(--border);
         background: #f8fafc;
@@ -914,7 +937,11 @@
         transition: all var(--transition);
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        justify-content: center;
+        gap: 6px;
+        text-align: center;
+        white-space: nowrap;
+        box-sizing: border-box;
       }
       .invite-tier-pill:hover {
         background: #f1f5f9;
@@ -926,6 +953,29 @@
         color: #ffffff;
         border-color: #0284c7;
         box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+      }
+      .invite-url-wrap {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .invite-url-input {
+        flex: 1;
+        min-width: 0;
+        padding: 9px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 12px;
+        background: #f8fafc;
+        color: var(--navy);
+        font-family: monospace;
+        box-sizing: border-box;
+      }
+      .invite-copy-btn {
+        padding: 9px 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .admin-panel-header {
         display: flex;
@@ -2579,6 +2629,44 @@
         .forms-table-wrap {
           margin-bottom: 40px;
         }
+        .invite-cycle-wrap {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 6px !important;
+        }
+        .invite-cycle-label {
+          grid-column: span 2;
+        }
+        .invite-tiers-wrap {
+          grid-template-columns: 1fr 1fr !important;
+          gap: 6px !important;
+        }
+        .invite-tier-pill {
+          padding: 7px 6px !important;
+          font-size: 11px !important;
+        }
+        .invite-url-wrap {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 8px !important;
+        }
+        .invite-url-input {
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .invite-copy-btn {
+          width: 100% !important;
+          justify-content: center !important;
+          box-sizing: border-box !important;
+        }
+        .admin-users-table-wrap {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+        }
+        .admin-users-table {
+          min-width: 620px !important;
+          table-layout: auto !important;
+        }
       }
 
       @media (max-width: 480px) {
@@ -3314,8 +3402,8 @@
               </p>
               
               <!-- Billing Cycle Toggle for Invite Generator -->
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: center;">
-                <span style="font-size: 11.5px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px;">Billing Cycle:</span>
+              <div class="invite-cycle-wrap">
+                <span class="invite-cycle-label">Billing Cycle:</span>
                 <button type="button" class="invite-tier-pill active" id="invite-cycle-monthly" onclick="setInviteCycle('monthly')">
                   <span>📅</span> <span>Monthly Billing</span>
                 </button>
@@ -3325,7 +3413,7 @@
               </div>
 
               <!-- Tier Selector Pills -->
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+              <div class="invite-tiers-wrap">
                 <button type="button" class="invite-tier-pill" id="pill-tier-basic" onclick="setInviteTier('basic')">
                   <span>⚡</span> <span id="label-tier-basic">Basic ($29/mo)</span>
                 </button>
@@ -3340,19 +3428,18 @@
                 </button>
               </div>
 
-              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <div class="invite-url-wrap">
                 <input
                   type="text"
                   id="admin-invite-url-input"
+                  class="invite-url-input"
                   readonly
-                  style="flex: 1; min-width: 260px; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); font-family: monospace;"
                   value="Loading invite link..."
                 />
                 <button
                   type="button"
-                  class="btn btn-primary btn-sm"
+                  class="btn btn-primary btn-sm invite-copy-btn"
                   onclick="copyAdminInviteUrl()"
-                  style="padding: 9px 16px; font-weight: 700;"
                 >
                   📋 Copy Invite Link
                 </button>
@@ -5575,6 +5662,28 @@
       // ===================== LOGIN / REGISTER / LOGOUT =====================
       let _authMode = "login"; // "login" | "register"
 
+      function getInviteTier() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let tier = urlParams.get("tier") || "";
+        if (!tier && location.hash.includes("?")) {
+          const hashQuery = location.hash.split("?")[1];
+          const hashParams = new URLSearchParams(hashQuery);
+          tier = hashParams.get("tier") || "";
+        }
+        if (!tier) {
+          try {
+            tier = sessionStorage.getItem("sh_business_tier") || "";
+          } catch (e) {}
+        }
+        tier = (tier || "").trim().toLowerCase();
+        if (tier) {
+          try {
+            sessionStorage.setItem("sh_business_tier", tier);
+          } catch (e) {}
+        }
+        return tier || "business";
+      }
+
       function setAuthMode(mode) {
         _authMode = mode;
         const isReg = mode === "register";
@@ -5602,18 +5711,46 @@
         }
         if (inviteBanner) {
           inviteBanner.style.display = isReg && inviteCode ? "flex" : "none";
+          const tier = getInviteTier();
+          const isYearly = tier.includes("yearly") || tier.includes("annual");
+          const baseTier = tier.replace(/_monthly|_yearly/g, "");
+
+          let tierName = "Business Plan (Level Max)";
+          let tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & EMR Sync).";
+
+          if (baseTier === "enterprise") {
+            tierName = "Enterprise Plan (Custom SLA)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Enterprise dengan respon & seats tanpa batas.";
+          } else if (baseTier === "plus") {
+            tierName = isYearly ? "Plus Plan (Tahunan · $50/bln)" : "Plus Plan (Bulanan · $59/bln)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Plus Plan (1.000 respon/bln & 3 user seats).";
+          } else if (baseTier === "basic") {
+            tierName = isYearly ? "Basic Plan (Tahunan · $25/bln)" : "Basic Plan (Bulanan · $29/bln)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Basic Plan (100 respon/bln & 1 user seat).";
+          } else {
+            tierName = isYearly ? "Business Plan (Tahunan · $83/bln · Max)" : "Business Plan (Bulanan · $99/bln · Max)";
+            tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & Level Max).";
+          }
+
+          const bannerTextContainer = inviteBanner.querySelector("div");
+          if (bannerTextContainer) {
+            bannerTextContainer.innerHTML = `
+              <div style="font-weight:700;">${tierName}</div>
+              <div style="font-size: 11px; font-weight: 400; color: #047857; margin-top: 2px">${tierDesc}</div>
+            `;
+          }
         }
         if (titleEl) {
           titleEl.textContent = isReg
             ? inviteCode
-              ? "Registrasi Level Max (Business)"
+              ? "Registrasi Akun"
               : "Registrasi Akun Baru"
             : "Admin Portal";
         }
         if (hintEl) {
           hintEl.textContent = isReg
             ? inviteCode
-              ? "Lengkapi pendaftaran untuk mengaktifkan akun Business Plan (Level Max)"
+              ? "Lengkapi pendaftaran untuk mengaktifkan akun sesuai paket pilihan Anda"
               : "Buat akun baru atau atur ulang password Anda"
             : "Masukkan email dan password Anda";
         }
@@ -5708,12 +5845,13 @@
         btn.innerHTML = '<div class="spinner"></div> Memproses...';
         btn.disabled = true;
 
-        try {
-          const endpoint = _authMode === "register" ? "/api/auth/setup" : "/api/admin/login";
-          const payload =
-            _authMode === "register"
-              ? { email, password, invite_code: inviteCode }
-              : { email, password };
+	        try {
+	          const endpoint = _authMode === "register" ? "/api/auth/setup" : "/api/admin/login";
+	          const inviteTier = getInviteTier();
+	          const payload =
+	            _authMode === "register"
+	              ? { email, password, invite_code: inviteCode, plan_tier: inviteTier }
+	              : { email, password };
 
           const res = await fetch(endpoint, {
             method: "POST",
@@ -5722,19 +5860,20 @@
           });
           const data = await res.json().catch(() => ({}));
 
-          if (res.ok && data.success) {
-            setLoggedIn(
-              true,
-              data.user?.email || email,
-              data.user?.role || "admin",
-              data.user?.planTier || "business",
-            );
-            toast(data.message || "Berhasil masuk!", "success");
-            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
-            btn.disabled = false;
-            navigate("#/dashboard");
-            route();
-          } else {
+	          if (res.ok && data.success) {
+	            setLoggedIn(
+	              true,
+	              data.user?.email || email,
+	              data.user?.role || "admin",
+	              data.user?.planTier || "business",
+	            );
+	            await checkServerAuth();
+	            toast(data.message || "Berhasil masuk!", "success");
+	            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+	            btn.disabled = false;
+	            navigate("#/dashboard");
+	            route();
+	          } else {
             btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
             btn.disabled = false;
             toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
@@ -5810,6 +5949,11 @@
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
+        if (!_serverAuth || !_serverAuth.quota) {
+          try {
+            await checkServerAuth();
+          } catch (e) {}
+        }
         const q = _serverAuth?.quota;
         let quotaCardHtml = `<div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
         if (q) {

@@ -5270,15 +5270,16 @@
           });
           const data = await res.json().catch(() => ({}));
 
-          if (res.ok && data.success) {
-            setLoggedIn(
-              true,
-              data.user?.email || email,
-              data.user?.role || "admin",
-              data.user?.planTier || "business",
-            );
-            toast(data.message || "Berhasil masuk!", "success");
-            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+	          if (res.ok && data.success) {
+	            setLoggedIn(
+	              true,
+	              data.user?.email || email,
+	              data.user?.role || "admin",
+	              data.user?.planTier || "business",
+	            );
+	            await checkServerAuth();
+	            toast(data.message || "Berhasil masuk!", "success");
+	            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
             btn.disabled = false;
             navigate("#/dashboard");
             route();
@@ -5330,6 +5331,11 @@
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
+        if (!_serverAuth || !_serverAuth.quota) {
+          try {
+            await checkServerAuth();
+          } catch (e) {}
+        }
         const q = _serverAuth?.quota;
         let quotaCardHtml = `<div class="stat-card"><div class="label">${t("avgCompletionRate")}</div><div class="value">94%</div><div class="sub">${t("standardFlowLabel")}</div></div>`;
         if (q) {
