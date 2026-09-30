@@ -3317,7 +3317,6 @@
               <div class="telemetry-card">
                 <div class="card-top">
                   <span class="card-label">Registered Accounts</span>
-                  <span style="font-size: 16px;">👥</span>
                 </div>
                 <div class="card-val" id="admin-total-users">-</div>
                 <div class="card-note">Superadmin &amp; Business Tier</div>
@@ -3325,7 +3324,6 @@
               <div class="telemetry-card">
                 <div class="card-top">
                   <span class="card-label">Active Form Schemas</span>
-                  <span style="font-size: 16px;">📋</span>
                 </div>
                 <div class="card-val" id="admin-total-forms">-</div>
                 <div class="card-note">Cloudflare D1 SQL Online</div>
@@ -3333,7 +3331,6 @@
               <div class="telemetry-card">
                 <div class="card-top">
                   <span class="card-label">Total Submissions</span>
-                  <span style="font-size: 16px;">📊</span>
                 </div>
                 <div class="card-val" id="admin-total-subs">-</div>
                 <div class="card-note">AES-GCM 256-bit Encrypted</div>
@@ -3341,7 +3338,6 @@
               <div class="telemetry-card">
                 <div class="card-top">
                   <span class="card-label">AI &amp; Edge Uptime</span>
-                  <span style="font-size: 16px;">⚡</span>
                 </div>
                 <div class="card-val" id="admin-system-uptime">99.98%</div>
                 <div class="card-note">Workers &amp; AI Operational</div>
@@ -3352,7 +3348,6 @@
             <div class="admin-panel-card">
               <div class="admin-panel-header">
                 <h3>
-                  <span>👥</span>
                   <span data-i18n="adminUsersTitle">User Accounts &amp; Pricing Tiers</span>
                 </h3>
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -3362,9 +3357,8 @@
                       id="admin-user-search-input"
                       placeholder="Search account email..."
                       oninput="filterAdminUsers(this.value)"
-                      style="width: 100%; padding: 6px 12px 6px 30px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                      style="width: 100%; padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
                     />
-                    <span style="position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--text3); pointer-events: none;">🔍</span>
                   </div>
                   <span class="pill pill-green" id="admin-users-count-badge">Loaded</span>
                 </div>
@@ -3392,8 +3386,7 @@
             <div class="admin-panel-card">
               <div class="admin-panel-header">
                 <h3>
-                  <span>🎟️</span>
-                  <span>Instant Client &amp; Staff Registration Token</span>
+                  <span>Client &amp; Staff Registration Token</span>
                 </h3>
                 <span class="pill pill-blue" id="invite-tier-badge">Business · Level Max</span>
               </div>
@@ -3405,26 +3398,26 @@
               <div class="invite-cycle-wrap">
                 <span class="invite-cycle-label">Billing Cycle:</span>
                 <button type="button" class="invite-tier-pill active" id="invite-cycle-monthly" onclick="setInviteCycle('monthly')">
-                  <span>📅</span> <span>Monthly Billing</span>
+                  <span>Monthly Billing</span>
                 </button>
                 <button type="button" class="invite-tier-pill" id="invite-cycle-yearly" onclick="setInviteCycle('yearly')">
-                  <span>✨</span> <span>Annual (Save 20%)</span>
+                  <span>Annual (Save 20%)</span>
                 </button>
               </div>
 
               <!-- Tier Selector Pills -->
               <div class="invite-tiers-wrap">
                 <button type="button" class="invite-tier-pill" id="pill-tier-basic" onclick="setInviteTier('basic')">
-                  <span>⚡</span> <span id="label-tier-basic">Basic ($29/mo)</span>
+                  <span id="label-tier-basic">Basic ($29/mo)</span>
                 </button>
                 <button type="button" class="invite-tier-pill" id="pill-tier-plus" onclick="setInviteTier('plus')">
-                  <span>🚀</span> <span id="label-tier-plus">Plus ($59/mo)</span>
+                  <span id="label-tier-plus">Plus ($59/mo)</span>
                 </button>
                 <button type="button" class="invite-tier-pill active" id="pill-tier-business" onclick="setInviteTier('business')">
-                  <span>👑</span> <span id="label-tier-business">Business ($99/mo · Max)</span>
+                  <span id="label-tier-business">Business ($99/mo · Max)</span>
                 </button>
                 <button type="button" class="invite-tier-pill" id="pill-tier-enterprise" onclick="setInviteTier('enterprise')">
-                  <span>🏢</span> <span>Enterprise Custom</span>
+                  <span>Enterprise Custom</span>
                 </button>
               </div>
 
@@ -3441,7 +3434,7 @@
                   class="btn btn-primary btn-sm invite-copy-btn"
                   onclick="copyAdminInviteUrl()"
                 >
-                  📋 Copy Invite Link
+                  Copy Link
                 </button>
               </div>
             </div>
@@ -3450,7 +3443,6 @@
             <div class="admin-panel-card" style="border-color: #bfdbfe; background: #ffffff;">
               <div class="admin-panel-header">
                 <h3>
-                  <span style="font-size: 18px;">💳</span>
                   <span>PayPal Payment Gateway Settings</span>
                 </h3>
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -3497,15 +3489,16 @@
                         id="paypal-secret-key"
                         placeholder="Enter PayPal Secret Key"
                         spellcheck="false"
-                        style="width: 100%; padding: 9px 40px 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                        style="width: 100%; padding: 9px 70px 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
                       />
                       <button
                         type="button"
+                        id="paypal-secret-toggle-btn"
                         onclick="togglePaypalSecretVisibility()"
-                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text3);"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #e2e8f0; border: none; border-radius: 4px; padding: 3px 8px; cursor: pointer; font-size: 11px; font-weight: 700; color: var(--navy);"
                         title="Toggle visibility"
                       >
-                        👁️
+                        Show
                       </button>
                     </div>
                   </div>
@@ -3533,7 +3526,7 @@
                     onclick="testPaypalConnection()"
                     style="border: 1.5px solid var(--border); font-weight: 700; padding: 8px 16px; background: #fff;"
                   >
-                    🔌 Test Connection
+                    Test Connection
                   </button>
                   <button
                     type="submit"
@@ -3541,7 +3534,7 @@
                     id="paypal-save-btn"
                     style="font-weight: 700; padding: 8px 20px; background: #0284c7;"
                   >
-                    💾 Save Credentials
+                    Save Credentials
                   </button>
                 </div>
               </form>
@@ -3552,7 +3545,6 @@
               <div class="admin-panel-card">
                 <div class="admin-panel-header">
                   <h3>
-                    <span>🔒</span>
                     <span data-i18n="adminSecurityTitle">Security &amp; Encryption</span>
                   </h3>
                 </div>
@@ -3579,7 +3571,6 @@
               <div class="admin-panel-card">
                 <div class="admin-panel-header">
                   <h3>
-                    <span>🤖</span>
                     <span>AI Engine &amp; Integrations</span>
                   </h3>
                 </div>
@@ -3592,6 +3583,17 @@
                     <span style="color:var(--text3);">Document Extraction</span>
                     <strong style="color:#0284c7;">PDF &amp; Physical Questionnaire OCR</strong>
                   </li>
+                  <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                    <span style="color:var(--text3);">EMR Plato Integration</span>
+                    <strong>Self-Service Bridge Ready</strong>
+                  </li>
+                  <li style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--text3);">Excel / CSV Export</span>
+                    <strong>UTF-8 BOM (Excel Standard)</strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
                   <li style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
                     <span style="color:var(--text3);">EMR Plato Integration</span>
                     <strong>Self-Service Bridge Ready</strong>
@@ -6568,8 +6570,13 @@
 
       function togglePaypalSecretVisibility() {
         const secretInput = $("#paypal-secret-key");
+        const toggleBtn = $("#paypal-secret-toggle-btn");
         if (secretInput) {
-          secretInput.type = secretInput.type === "password" ? "text" : "password";
+          const isPass = secretInput.type === "password";
+          secretInput.type = isPass ? "text" : "password";
+          if (toggleBtn) {
+            toggleBtn.textContent = isPass ? "Hide" : "Show";
+          }
         }
       }
 
