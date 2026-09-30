@@ -3446,6 +3446,107 @@
               </div>
             </div>
 
+            <!-- PayPal Gateway Integration & Secrets Management -->
+            <div class="admin-panel-card" style="border-color: #bfdbfe; background: #ffffff;">
+              <div class="admin-panel-header">
+                <h3>
+                  <span style="font-size: 18px;">💳</span>
+                  <span>PayPal Payment Gateway Settings</span>
+                </h3>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="pill pill-blue" id="paypal-status-badge">Checking...</span>
+                </div>
+              </div>
+              <p style="font-size: 13px; color: var(--text2); margin: 0 0 16px 0;">
+                Connect your official PayPal developer credentials to automate client subscriptions and checkout payments. Secret keys are encrypted with <strong>AES-GCM 256-bit</strong> at rest.
+              </p>
+
+              <form id="paypal-settings-form" onsubmit="event.preventDefault(); savePaypalConfig();" style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                  <div>
+                    <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">
+                      Environment Mode <span style="color:#ef4444;">*</span>
+                    </label>
+                    <select id="paypal-mode-select" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 700; background: #fff; color: var(--navy); box-sizing: border-box;">
+                      <option value="sandbox">Sandbox (Testing / Development)</option>
+                      <option value="live">Live (Production / Real Payments)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">
+                      PayPal Client ID <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="paypal-client-id"
+                      placeholder="e.g. A21AAK... or Client ID from developer.paypal.com"
+                      spellcheck="false"
+                      style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                    />
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                  <div>
+                    <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">
+                      PayPal Secret Key <span style="color:#ef4444;">*</span>
+                    </label>
+                    <div style="position: relative;">
+                      <input
+                        type="password"
+                        id="paypal-secret-key"
+                        placeholder="Enter PayPal Secret Key"
+                        spellcheck="false"
+                        style="width: 100%; padding: 9px 40px 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                      />
+                      <button
+                        type="button"
+                        onclick="togglePaypalSecretVisibility()"
+                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text3);"
+                        title="Toggle visibility"
+                      >
+                        👁️
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">
+                      PayPal Webhook ID <small style="color:var(--text3); font-weight:normal;">(Optional for auto-sync)</small>
+                    </label>
+                    <input
+                      type="text"
+                      id="paypal-webhook-id"
+                      placeholder="e.g. 4JH76843... (Webhook ID)"
+                      spellcheck="false"
+                      style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+                    />
+                  </div>
+                </div>
+
+                <div id="paypal-test-status" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600;"></div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin-top: 4px;">
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-sm"
+                    id="paypal-test-btn"
+                    onclick="testPaypalConnection()"
+                    style="border: 1.5px solid var(--border); font-weight: 700; padding: 8px 16px; background: #fff;"
+                  >
+                    🔌 Test Connection
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-sm"
+                    id="paypal-save-btn"
+                    style="font-weight: 700; padding: 8px 20px; background: #0284c7;"
+                  >
+                    💾 Save Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
+
             <!-- Security & Platform Infrastructure Overview -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
               <div class="admin-panel-card">
@@ -6109,6 +6210,7 @@
         if (uptimeEl) uptimeEl.textContent = telem.uptime || "99.98%";
 
         setInviteTier(_selectedInviteTier);
+        await loadPaypalConfig();
 
         const badgeEl = $("#admin-users-count-badge");
         if (badgeEl) badgeEl.textContent = `${users.length} Active Accounts`;
@@ -6427,7 +6529,180 @@
         }
       }
 
-	      // ===================== BUILDER =====================
+      // ===================== PAYPAL SETTINGS MANAGEMENT =====================
+      let _paypalConfig = null;
+
+      async function loadPaypalConfig() {
+        try {
+          const res = await fetch("/api/admin/paypal", { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.config) {
+              _paypalConfig = data.config;
+              const modeSelect = $("#paypal-mode-select");
+              const clientInput = $("#paypal-client-id");
+              const secretInput = $("#paypal-secret-key");
+              const webhookInput = $("#paypal-webhook-id");
+              const statusBadge = $("#paypal-status-badge");
+
+              if (modeSelect) modeSelect.value = _paypalConfig.mode || "sandbox";
+              if (clientInput) clientInput.value = _paypalConfig.clientId || "";
+              if (secretInput) secretInput.value = _paypalConfig.secretKey || "";
+              if (webhookInput) webhookInput.value = _paypalConfig.webhookId || "";
+
+              if (statusBadge) {
+                if (data.isConfigured) {
+                  statusBadge.className = "pill pill-green";
+                  statusBadge.textContent = `${(_paypalConfig.mode || "sandbox").toUpperCase()} Active`;
+                } else {
+                  statusBadge.className = "pill pill-amber";
+                  statusBadge.textContent = "Not Configured";
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to load paypal config", e);
+        }
+      }
+
+      function togglePaypalSecretVisibility() {
+        const secretInput = $("#paypal-secret-key");
+        if (secretInput) {
+          secretInput.type = secretInput.type === "password" ? "text" : "password";
+        }
+      }
+
+      async function savePaypalConfig() {
+        const mode = $("#paypal-mode-select")?.value || "sandbox";
+        const clientId = $("#paypal-client-id")?.value?.trim() || "";
+        const secretKey = $("#paypal-secret-key")?.value?.trim() || "";
+        const webhookId = $("#paypal-webhook-id")?.value?.trim() || "";
+        const saveBtn = $("#paypal-save-btn");
+        const statusEl = $("#paypal-test-status");
+
+        if (!clientId) {
+          toast("PayPal Client ID wajib diisi.", "error");
+          return;
+        }
+
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+
+        try {
+          const res = await fetch("/api/admin/paypal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              action: "save",
+              mode,
+              clientId,
+              secretKey,
+              webhookId,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "💾 Save Credentials";
+          }
+
+          if (res.ok && data.success) {
+            toast(data.message || "Kredensial PayPal berhasil disimpan!", "success");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#f0fdf4";
+              statusEl.style.color = "#15803d";
+              statusEl.style.border = "1px solid #bbf7d0";
+              statusEl.textContent = "✓ Kredensial PayPal tersimpan aman dan terenkripsi AES-GCM 256-bit.";
+            }
+            await loadPaypalConfig();
+          } else {
+            toast(data.message || "Gagal menyimpan kredensial PayPal.", "error");
+          }
+        } catch (e) {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "💾 Save Credentials";
+          }
+          toast("Terjadi kesalahan jaringan.", "error");
+        }
+      }
+
+      async function testPaypalConnection() {
+        const mode = $("#paypal-mode-select")?.value || "sandbox";
+        const clientId = $("#paypal-client-id")?.value?.trim() || "";
+        const secretKey = $("#paypal-secret-key")?.value?.trim() || "";
+        const testBtn = $("#paypal-test-btn");
+        const statusEl = $("#paypal-test-status");
+
+        if (!clientId) {
+          toast("Isi PayPal Client ID terlebih dahulu untuk menguji koneksi.", "error");
+          return;
+        }
+
+        if (testBtn) {
+          testBtn.disabled = true;
+          testBtn.textContent = "Connecting to PayPal...";
+        }
+        if (statusEl) {
+          statusEl.style.display = "block";
+          statusEl.style.background = "#f8fafc";
+          statusEl.style.color = "var(--navy)";
+          statusEl.style.border = "1px solid var(--border)";
+          statusEl.textContent = "Menguji otentikasi OAuth 2.0 ke server PayPal...";
+        }
+
+        try {
+          const res = await fetch("/api/admin/paypal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              action: "test",
+              mode,
+              clientId,
+              secretKey,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.textContent = "🔌 Test Connection";
+          }
+
+          if (res.ok && data.success) {
+            toast(data.message || "Koneksi PayPal Terverifikasi!", "success");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#f0fdf4";
+              statusEl.style.color = "#15803d";
+              statusEl.style.border = "1px solid #bbf7d0";
+              statusEl.textContent = `✓ ${data.message}`;
+            }
+          } else {
+            toast(data.message || "Koneksi PayPal gagal.", "error");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#fef2f2";
+              statusEl.style.color = "#dc2626";
+              statusEl.style.border = "1px solid #fecaca";
+              statusEl.textContent = `✕ Gagal: ${data.message || "Periksa kembali Client ID dan Secret Key Anda."}`;
+            }
+          }
+        } catch (e) {
+          if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.textContent = "🔌 Test Connection";
+          }
+          toast("Terjadi kesalahan jaringan saat tes koneksi.", "error");
+        }
+      }
+
+		      // ===================== BUILDER =====================
       let builderForm = null,
         editingQ = null,
         phonePreviewIdx = 0;

@@ -125,19 +125,29 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
       )
       .run();
 
-    await d1
-      .prepare(
-        `CREATE TABLE IF NOT EXISTS sessions (
-          id TEXT PRIMARY KEY,
-          admin_id TEXT NOT NULL,
-          expires_at DATETIME NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
-        );`,
-      )
-      .run();
+	    await d1
+	      .prepare(
+	        `CREATE TABLE IF NOT EXISTS sessions (
+	          id TEXT PRIMARY KEY,
+	          admin_id TEXT NOT NULL,
+	          expires_at DATETIME NOT NULL,
+	          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	          FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
+	        );`,
+	      )
+	      .run();
 
-    d1InitDone = true;
+	    await d1
+	      .prepare(
+	        `CREATE TABLE IF NOT EXISTS system_settings (
+	          key TEXT PRIMARY KEY,
+	          value_encrypted TEXT NOT NULL,
+	          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	        );`,
+	      )
+	      .run();
+
+	    d1InitDone = true;
   } catch (e) {
     console.warn("D1 table init notice:", e);
   }
@@ -196,15 +206,21 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY,
-      admin_id TEXT NOT NULL,
-      expires_at DATETIME NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
-    );
+	    CREATE TABLE IF NOT EXISTS sessions (
+	      id TEXT PRIMARY KEY,
+	      admin_id TEXT NOT NULL,
+	      expires_at DATETIME NOT NULL,
+	      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	      FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
+	    );
 
-    CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
+	    CREATE TABLE IF NOT EXISTS system_settings (
+	      key TEXT PRIMARY KEY,
+	      value_encrypted TEXT NOT NULL,
+	      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	    );
+
+	    CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
     CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at);
     CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `);

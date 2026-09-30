@@ -26,6 +26,7 @@ import { Route as AdminFormsBuilderPublishRouteImport } from './routes/admin.for
 import { Route as AdminNewAiRouteImport } from './routes/admin.new.ai'
 import { Route as ApiAdminLoginRouteImport } from './routes/api.admin.login'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api.admin.logout'
+import { Route as ApiAdminPaypalRouteImport } from './routes/api.admin.paypal'
 import { Route as ApiAdminStatusRouteImport } from './routes/api.admin.status'
 import { Route as ApiAdminUsersRouteImport } from './routes/api.admin.users'
 import { Route as ApiAiExtractImageRouteImport } from './routes/api.ai.extract-image'
@@ -122,6 +123,11 @@ const ApiAdminLogoutRoute = ApiAdminLogoutRouteImport.update({
   path: '/api/admin/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPaypalRoute = ApiAdminPaypalRouteImport.update({
+  id: '/api/admin/paypal',
+  path: '/api/admin/paypal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminStatusRoute = ApiAdminStatusRouteImport.update({
   id: '/api/admin/status',
   path: '/api/admin/status',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/admin/new/ai': typeof AdminNewAiRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/paypal': typeof ApiAdminPaypalRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin/new/ai': typeof AdminNewAiRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/paypal': typeof ApiAdminPaypalRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/admin/new/ai': typeof AdminNewAiRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/paypal': typeof ApiAdminPaypalRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
   '/api/admin/users': typeof ApiAdminUsersRoute
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/admin/new/ai'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/paypal'
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/ai/extract-image'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/admin/new/ai'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/paypal'
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/ai/extract-image'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/admin/new/ai'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/paypal'
     | '/api/admin/status'
     | '/api/admin/users'
     | '/api/ai/extract-image'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   AdminFormsBuilderPublishRoute: typeof AdminFormsBuilderPublishRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
+  ApiAdminPaypalRoute: typeof ApiAdminPaypalRoute
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
   ApiAdminUsersRoute: typeof ApiAdminUsersRoute
   ApiAiExtractImageRoute: typeof ApiAiExtractImageRoute
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/paypal': {
+      id: '/api/admin/paypal'
+      path: '/api/admin/paypal'
+      fullPath: '/api/admin/paypal'
+      preLoaderRoute: typeof ApiAdminPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/status': {
       id: '/api/admin/status'
       path: '/api/admin/status'
@@ -583,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFormsBuilderPublishRoute: AdminFormsBuilderPublishRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
+  ApiAdminPaypalRoute: ApiAdminPaypalRoute,
   ApiAdminStatusRoute: ApiAdminStatusRoute,
   ApiAdminUsersRoute: ApiAdminUsersRoute,
   ApiAiExtractImageRoute: ApiAiExtractImageRoute,
