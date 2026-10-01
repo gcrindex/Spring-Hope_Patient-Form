@@ -7,6 +7,7 @@ import {
   FileText,
   Languages,
   LayoutDashboard,
+  Lock,
   Mic,
   PenLine,
   Share2,
@@ -40,12 +41,24 @@ export const Route = createFileRoute("/")({
   component: BuilderLandingPage,
 });
 
+interface CheckoutPlanDetails {
+  key: string;
+  name: string;
+  amount: string;
+  periodText: string;
+  features: string[];
+}
+
 function BuilderLandingPage() {
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
   const [researchOpen, setResearchOpen] = useState(false);
   const [isYearly, setIsYearly] = useState(true);
   const [heroOption, setHeroOption] = useState<number>(0);
   const [heroSubmissions, setHeroSubmissions] = useState<number>(23);
+
+  // Checkout modal state
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<CheckoutPlanDetails | null>(null);
 
   useEffect(() => {
     setLanguage(getStoredLanguage());
@@ -60,6 +73,47 @@ function BuilderLandingPage() {
   const handleHeroSelect = (idx: number) => {
     setHeroOption(idx);
     setHeroSubmissions((prev) => prev + 1);
+  };
+
+  const openCheckout = (planKey: string) => {
+    const isAnnual = isYearly;
+    if (planKey === "basic") {
+      setSelectedPlan({
+        key: isAnnual ? "basic_yearly" : "basic_monthly",
+        name: isAnnual ? "Basic Plan (Annual)" : "Basic Plan (Monthly)",
+        amount: isAnnual ? "$300.00" : "$29.00",
+        periodText: isAnnual ? "billed annually ($25/mo)" : "billed monthly",
+        features: ["100 responses / month", "1 user seat included", "Unlimited forms & questions"],
+      });
+    } else if (planKey === "plus") {
+      setSelectedPlan({
+        key: isAnnual ? "plus_yearly" : "plus_monthly",
+        name: isAnnual ? "Plus Plan (Annual)" : "Plus Plan (Monthly)",
+        amount: isAnnual ? "$600.00" : "$59.00",
+        periodText: isAnnual ? "billed annually ($50/mo · Save 20%)" : "billed monthly",
+        features: [
+          "1,000 responses / month",
+          "3 user seats included",
+          "Remove 9forms branding",
+          "Custom subdomain & redirect",
+        ],
+      });
+    } else if (planKey === "business") {
+      setSelectedPlan({
+        key: isAnnual ? "business_yearly" : "business_monthly",
+        name: isAnnual ? "Business Plan (Annual · Level Max)" : "Business Plan (Monthly · Level Max)",
+        amount: isAnnual ? "$996.00" : "$99.00",
+        periodText: isAnnual ? "billed annually ($83/mo · Save 20%)" : "billed monthly",
+        features: [
+          "10,000 responses / month",
+          "5 user seats included",
+          "AI Document Scanner & OCR",
+          "EMR Plato & webhook integrations",
+          "Remove 9forms branding",
+        ],
+      });
+    }
+    setCheckoutOpen(true);
   };
 
   const t = builderI18n[language] ?? builderI18n.en;
@@ -601,7 +655,7 @@ function BuilderLandingPage() {
           </div>
         </section>
 
-        {/* ── Pricing Section ──────────────────────────── */}
+        {/* ── Pricing Section with Interactive Checkout ── */}
         <section className="section-shell sf-section-pricing" id="pricing">
           <div className="section-kicker">{t.pricingKicker}</div>
           <div className="section-title-row">
@@ -661,9 +715,13 @@ function BuilderLandingPage() {
                 </li>
               </ul>
               <div className="pricing-cta-wrap">
-                <a className="button-secondary pricing-cta-btn" href="#demo">
+                <button
+                  type="button"
+                  className="button-secondary pricing-cta-btn w-full justify-center"
+                  onClick={() => openCheckout("basic")}
+                >
                   {t.tierBasicCta}
-                </a>
+                </button>
               </div>
             </article>
 
@@ -700,9 +758,13 @@ function BuilderLandingPage() {
                 </li>
               </ul>
               <div className="pricing-cta-wrap">
-                <a className="button-primary pricing-cta-btn" href="#demo">
+                <button
+                  type="button"
+                  className="button-primary pricing-cta-btn w-full justify-center"
+                  onClick={() => openCheckout("plus")}
+                >
                   {t.tierPlusCta}
-                </a>
+                </button>
               </div>
             </article>
 
@@ -742,12 +804,13 @@ function BuilderLandingPage() {
                 </li>
               </ul>
               <div className="pricing-cta-wrap">
-                <a
-                  className="button-primary pricing-cta-btn btn-biz-highlight"
-                  href="/business.html"
+                <button
+                  type="button"
+                  className="button-primary pricing-cta-btn btn-biz-highlight w-full justify-center"
+                  onClick={() => openCheckout("business")}
                 >
                   {t.tierBizCta} <ArrowRight size={16} />
-                </a>
+                </button>
               </div>
             </article>
 
@@ -776,7 +839,10 @@ function BuilderLandingPage() {
                 </li>
               </ul>
               <div className="pricing-cta-wrap">
-                <a className="button-secondary pricing-cta-btn" href="#demo">
+                <a
+                  className="button-secondary pricing-cta-btn"
+                  href="mailto:contact@9forms.com?subject=Enterprise%20Plan%20Inquiry%20-%209forms.com"
+                >
                   {t.tierEntCta}
                 </a>
               </div>
@@ -809,8 +875,324 @@ function BuilderLandingPage() {
         </div>
       </footer>
 
+      {/* ── PayPal Checkout Modal ────────────────────────────── */}
+      {checkoutOpen && selectedPlan && (
+        <PaypalCheckoutModal plan={selectedPlan} onClose={() => setCheckoutOpen(false)} />
+      )}
+
       {/* ── Senior Research Study Modal Popup ────────────────── */}
       {researchOpen && <SeniorResearchModal onClose={() => setResearchOpen(false)} />}
+    </div>
+  );
+}
+
+function PaypalCheckoutModal({
+  plan,
+  onClose,
+}: {
+  plan: CheckoutPlanDetails;
+  onClose: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [sdkReady, setSdkReady] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadGateway() {
+      try {
+        setLoading(true);
+        setErrorMsg("");
+        const res = await fetch(`/api/checkout/paypal?plan=${encodeURIComponent(plan.key)}`);
+        const data = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          clientId?: string;
+          message?: string;
+        };
+
+        if (!data.success || !data.clientId) {
+          if (isMounted) {
+            setErrorMsg(data.message || "PayPal checkout is temporarily unavailable. Please try again later.");
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Load PayPal SDK dynamically
+        const scriptId = "paypal-sdk-script";
+        const existingScript = document.getElementById(scriptId);
+        if (existingScript) existingScript.remove();
+
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(data.clientId)}&currency=USD&intent=capture`;
+        script.async = true;
+        script.onload = () => {
+          if (isMounted) {
+            setSdkReady(true);
+            setLoading(false);
+          }
+        };
+        script.onerror = () => {
+          if (isMounted) {
+            setErrorMsg("Failed to load PayPal SDK. Please check your network connection.");
+            setLoading(false);
+          }
+        };
+        document.body.appendChild(script);
+      } catch {
+        if (isMounted) {
+          setErrorMsg("Network error connecting to payment gateway.");
+          setLoading(false);
+        }
+      }
+    }
+    loadGateway();
+    return () => {
+      isMounted = false;
+    };
+  }, [plan.key]);
+
+  // Render PayPal Buttons when SDK and container are ready
+  useEffect(() => {
+    if (!sdkReady) return;
+    const container = document.getElementById("paypal-button-render-box");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const win = window as unknown as {
+      paypal?: {
+        Buttons: (options: Record<string, unknown>) => {
+          render: (el: HTMLElement | string) => Promise<void>;
+        };
+      };
+    };
+
+    if (!win.paypal) return;
+
+    win.paypal
+      .Buttons({
+        style: {
+          layout: "vertical",
+          color: "gold",
+          shape: "rect",
+          label: "pay",
+          height: 44,
+        },
+        onClick: (_data: unknown, actions: { reject: () => Promise<void>; resolve: () => Promise<void> }) => {
+          if (!email || !email.includes("@")) {
+            setErrorMsg("Please enter a valid email address to create your account.");
+            return actions.reject();
+          }
+          if (!password || password.length < 6) {
+            setErrorMsg("Please create a password with at least 6 characters.");
+            return actions.reject();
+          }
+          setErrorMsg("");
+          return actions.resolve();
+        },
+        createOrder: async () => {
+          setErrorMsg("");
+          const res = await fetch("/api/checkout/paypal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "create-order",
+              planKey: plan.key,
+            }),
+          });
+          const d = (await res.json().catch(() => ({}))) as { success?: boolean; orderId?: string; message?: string };
+          if (!d.success || !d.orderId) {
+            setErrorMsg(d.message || "Could not initialize order with PayPal.");
+            throw new Error("Order creation failed");
+          }
+          return d.orderId;
+        },
+        onApprove: async (data: { orderID: string }) => {
+          setLoading(true);
+          try {
+            const res = await fetch("/api/checkout/paypal", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "capture-order",
+                orderId: data.orderID,
+                planKey: plan.key,
+                email,
+                password,
+              }),
+            });
+            const d = (await res.json().catch(() => ({}))) as {
+              success?: boolean;
+              message?: string;
+              user?: { email: string };
+            };
+            if (res.ok && d.success) {
+              setSuccessMsg(`🎉 Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`);
+              setTimeout(() => {
+                window.location.href = "/business.html#/dashboard";
+              }, 1800);
+            } else {
+              setErrorMsg(d.message || "Payment capture failed. Please contact support.");
+              setLoading(false);
+            }
+          } catch {
+            setErrorMsg("Network error verifying your payment.");
+            setLoading(false);
+          }
+        },
+        onError: (err: unknown) => {
+          console.error("PayPal button error", err);
+          setErrorMsg("Payment transaction was cancelled or encountered an error.");
+        },
+      })
+      .render("#paypal-button-render-box");
+  }, [sdkReady, email, password, plan.key]);
+
+  return (
+    <div
+      className="senior-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="checkout-modal-card">
+        {/* Header */}
+        <div className="checkout-modal-header">
+          <div>
+            <div className="senior-modal-kicker">
+              <Lock size={12} />
+              <span>SECURE 256-BIT CHECKOUT</span>
+            </div>
+            <h3>Subscribe to 9forms</h3>
+          </div>
+          <button
+            type="button"
+            className="senior-modal-close"
+            onClick={onClose}
+            aria-label="Close checkout modal"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="checkout-modal-body">
+          {/* Plan Summary Card */}
+          <div className="checkout-plan-summary">
+            <div>
+              <div className="checkout-plan-title">{plan.name}</div>
+              <div className="checkout-plan-meta">{plan.periodText}</div>
+            </div>
+            <div className="text-right">
+              <div className="checkout-plan-price">{plan.amount}</div>
+              <div className="checkout-plan-period">USD / cycle</div>
+            </div>
+          </div>
+
+          {/* Features list */}
+          <ul className="showcase-features" style={{ margin: "0 0 4px 0", gap: "6px" }}>
+            {plan.features.map((f, i) => (
+              <li key={i} style={{ fontSize: "12px" }}>
+                <Check size={14} className="text-teal-600 shrink-0" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Account Details Form */}
+          <div className="checkout-form-group">
+            <label htmlFor="checkout-email-input">
+              Account Email <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              id="checkout-email-input"
+              type="email"
+              placeholder="e.g. clinic@company.com"
+              className="checkout-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="checkout-form-group">
+            <label htmlFor="checkout-pass-input">
+              Create Password <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              id="checkout-pass-input"
+              type="password"
+              placeholder="Min. 6 characters"
+              className="checkout-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Status notices */}
+          {errorMsg && (
+            <div
+              style={{
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                color: "#dc2626",
+                padding: "10px 14px",
+                borderRadius: "10px",
+                fontSize: "12.5px",
+                fontWeight: 600,
+              }}
+            >
+              {errorMsg}
+            </div>
+          )}
+
+          {successMsg && (
+            <div
+              style={{
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                color: "#15803d",
+                padding: "12px 16px",
+                borderRadius: "10px",
+                fontSize: "13px",
+                fontWeight: 700,
+                textAlign: "center",
+              }}
+            >
+              {successMsg}
+            </div>
+          )}
+
+          {/* PayPal Render Target */}
+          {loading && !sdkReady && !errorMsg && (
+            <div style={{ textAlign: "center", padding: "18px", color: "#64748b", fontSize: "13px" }}>
+              Initializing secure PayPal checkout...
+            </div>
+          )}
+
+          <div id="paypal-button-render-box" className="checkout-paypal-container" />
+        </div>
+      </div>
     </div>
   );
 }

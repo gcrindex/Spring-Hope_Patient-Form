@@ -45,6 +45,16 @@ export const Route = createFileRoute("/api/admin/users")({
           // System telemetry counts
           const formsCount = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM forms");
           const subsCount = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM submissions");
+          const transactions = await dbQuery<{
+            id: string;
+            order_id: string;
+            payer_email: string;
+            plan_tier: string;
+            amount: string;
+            currency: string;
+            status: string;
+            created_at: string;
+          }>("SELECT id, order_id, payer_email, plan_tier, amount, currency, status, created_at FROM transactions ORDER BY created_at DESC LIMIT 50");
 
           // Calculate submission counts per user/admin if any
           const subsRows = await dbQuery<{ form_id: string }>("SELECT form_id FROM submissions");
@@ -87,11 +97,13 @@ export const Route = createFileRoute("/api/admin/users")({
                 totalUsers: sanitizedUsers.length,
                 totalForms: formsCount ? Number(formsCount.count) : 0,
                 totalSubmissions: totalSubsCount,
+                totalTransactions: transactions ? transactions.length : 0,
                 databaseStatus: "Connected (D1 Encrypted)",
                 aiEngine: "Active (Multimodal Vision & Audio)",
                 storageDriver: "Cloudflare Serverless SQL",
                 uptime: "99.98%",
               },
+              transactions: transactions || [],
             },
             {
               headers: { "Cache-Control": "no-store" },

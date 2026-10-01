@@ -3550,6 +3550,33 @@
               </form>
             </div>
 
+            <!-- Transactions & Subscriptions Audit Log -->
+            <div class="admin-panel-card">
+              <div class="admin-panel-header">
+                <h3>
+                  <span>Recent Transactions &amp; Orders</span>
+                </h3>
+                <span class="pill pill-green" id="admin-tx-count-badge">0 Transactions</span>
+              </div>
+              <div class="admin-users-table-wrap">
+                <table class="admin-users-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 25%;">Payer Email</th>
+                      <th style="width: 20%;">Plan Tier</th>
+                      <th style="width: 18%;">Order / Tx ID</th>
+                      <th style="width: 12%;">Amount</th>
+                      <th style="width: 10%;">Status</th>
+                      <th style="width: 15%;">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-tx-tbody">
+                    <tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text3);">No transactions recorded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             <!-- Security & Platform Infrastructure Overview -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
               <div class="admin-panel-card">
@@ -6354,6 +6381,40 @@
             `;
           })
           .join("");
+
+        // Render Recent Transactions
+        const txs = _adminUsersData?.transactions || [];
+        const txCountBadge = $("#admin-tx-count-badge");
+        if (txCountBadge) txCountBadge.textContent = `${txs.length} Recorded`;
+
+        const txBody = $("#admin-tx-tbody");
+        if (txBody) {
+          if (!txs.length) {
+            txBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text3);">No transactions recorded yet.</td></tr>`;
+          } else {
+            txBody.innerHTML = txs
+              .map((tx) => {
+                const isPaid = (tx.status || "COMPLETED").toUpperCase() === "COMPLETED";
+                const displayTier = (tx.plan_tier || "").replace(/_/g, " ").toUpperCase();
+                return `
+                  <tr>
+                    <td><strong style="color:var(--navy); font-size:12.5px;">${escHtml(tx.payer_email || "Customer")}</strong></td>
+                    <td><span class="tier-badge tier-business">${escHtml(displayTier)}</span></td>
+                    <td><code style="font-size:11px; color:#0284c7;">${escHtml(tx.order_id || tx.id)}</code></td>
+                    <td><strong style="color:#15803d; font-size:13px;">$${Number(tx.amount || 0).toFixed(2)}</strong></td>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; color:${isPaid ? "#16a34a" : "#ea580c"};">
+                        <span style="width:6px; height:6px; border-radius:99px; background:${isPaid ? "#22c55e" : "#f97316"};"></span>
+                        ${escHtml(tx.status || "COMPLETED")}
+                      </span>
+                    </td>
+                    <td style="font-size:11.5px; color:var(--text3); white-space:nowrap;">${safeDateStr(tx.created_at)}</td>
+                  </tr>
+                `;
+              })
+              .join("");
+          }
+        }
       }
 
       let _selectedInviteTier = "business";
