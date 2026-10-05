@@ -247,11 +247,17 @@ function IntakeStart() {
         <div className="flex items-center justify-center gap-2 flex-wrap mb-3 text-xs font-bold text-slate-500">
           <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-full text-slate-700">
             <Clock size={12} className="text-teal-600" />
-            <span>~{estTime} min</span>
+            <span>
+              ~{estTime}{" "}
+              {language === "id" ? "menit" : language === "zh" ? "分钟" : "min"}
+            </span>
           </span>
           <span className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-full text-slate-700">
             <HelpCircle size={12} className="text-sky-600" />
-            <span>{totalQuestions} questions</span>
+            <span>
+              {totalQuestions}{" "}
+              {language === "id" ? "pertanyaan" : language === "zh" ? "道题目" : "questions"}
+            </span>
           </span>
           <span className="inline-flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full text-emerald-700">
             <Lock size={11} className="text-emerald-600" />

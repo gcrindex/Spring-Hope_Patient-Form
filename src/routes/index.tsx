@@ -186,7 +186,14 @@ function BuilderLandingPage() {
                 <div className="pulse-indicator" />
                 <BarChart3 size={17} />
                 <span>
-                  <strong>{heroSubmissions} new submissions</strong>
+                  <strong>
+                    {heroSubmissions}{" "}
+                    {language === "id"
+                      ? "jawaban baru"
+                      : language === "zh"
+                        ? "份新提交"
+                        : "new submissions"}
+                  </strong>
                   <small>{t.mockResponsesSub}</small>
                 </span>
               </div>
@@ -431,7 +438,14 @@ function BuilderLandingPage() {
                 <div className="wave-bar h-10" />
                 <div className="wave-bar h-5" />
                 <span className="text-xs font-semibold text-emerald-700 ml-2">
-                  “Seven out of ten pain” → <strong>7 pts</strong>
+                  {language === "id"
+                    ? "“Nyeri skala tujuh” → "
+                    : language === "zh"
+                      ? "“七分疼痛” → "
+                      : "“Seven out of ten pain” → "}
+                  <strong>
+                    {language === "id" ? "7 poin" : language === "zh" ? "7 分" : "7 pts"}
+                  </strong>
                 </span>
               </div>
             </article>
@@ -493,17 +507,17 @@ function BuilderLandingPage() {
 	              <div className="bento-table-preview">
 	                <div className="bento-table-row">
 	                  <span>
-	                    <strong>Opa Sutrisno</strong> · Knee
+	                    <strong>Opa Sutrisno</strong> · {language === "id" ? "Lutut" : language === "zh" ? "膝部" : "Knee"}
 	                  </span>
 	                  <span className="pill pill-amber">{t.riskModerate}</span>
-	                  <span className="text-xs text-slate-500">18 pts</span>
+	                  <span className="text-xs text-slate-500">{language === "id" ? "18 poin" : language === "zh" ? "18 分" : "18 pts"}</span>
 	                </div>
 	                <div className="bento-table-row">
 	                  <span>
-	                    <strong>Tan Wei Ling</strong> · Hip
+	                    <strong>Tan Wei Ling</strong> · {language === "id" ? "Panggul" : language === "zh" ? "髋部" : "Hip"}
 	                  </span>
 	                  <span className="pill pill-red">{t.riskHigh}</span>
-	                  <span className="text-xs text-slate-500">32 pts</span>
+	                  <span className="text-xs text-slate-500">{language === "id" ? "32 poin" : language === "zh" ? "32 分" : "32 pts"}</span>
 	                </div>
 	              </div>
 	            </article>
@@ -871,10 +885,23 @@ function BuilderLandingPage() {
               <p>{t.footerNote}</p>
               <div className="footer-status-badge">
                 <span className="footer-status-dot" />
-                <span>System Operational · 99.99% Uptime</span>
+                <span>
+                  {language === "id"
+                    ? "Sistem Beroperasi · 99.99% Uptime"
+                    : language === "zh"
+                      ? "系统正常运行 · 99.99% 在线率"
+                      : "System Operational · 99.99% Uptime"}
+                </span>
               </div>
               <div className="footer-security-pill">
-                <span>🔒 ISO/IEC 27001 · HIPAA Ready · AES-256</span>
+                <span>
+                  🔒{" "}
+                  {language === "id"
+                    ? "ISO/IEC 27001 · Siap HIPAA · Enkripsi AES-256"
+                    : language === "zh"
+                      ? "ISO/IEC 27001 · HIPAA 合规准备 · AES-256 加密"
+                      : "ISO/IEC 27001 · HIPAA Ready · AES-256"}
+                </span>
               </div>
             </div>
 
