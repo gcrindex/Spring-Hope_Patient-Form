@@ -294,6 +294,8 @@ function QuestionPage() {
       onBack={goBack}
       progress={progressPercent}
       theme={activeForm.theme}
+      customLogo={activeForm.coverPage?.bannerLogoUrl}
+      showBrand={!activeForm.coverPage?.bannerLogoUrl}
     >
       <div
         className="patient-card question-card sleek-question-card patient-enter"

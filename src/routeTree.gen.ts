@@ -36,6 +36,7 @@ import { Route as ApiAuthLoginRouteImport } from './routes/api.auth.login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api.auth.logout'
 import { Route as ApiAuthSetupRouteImport } from './routes/api.auth.setup'
 import { Route as ApiAuthStatusRouteImport } from './routes/api.auth.status'
+import { Route as ApiCheckoutPaypalRouteImport } from './routes/api.checkout.paypal'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -173,6 +174,11 @@ const ApiAuthStatusRoute = ApiAuthStatusRouteImport.update({
   path: '/api/auth/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCheckoutPaypalRoute = ApiCheckoutPaypalRouteImport.update({
+  id: '/api/checkout/paypal',
+  path: '/api/checkout/paypal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
   '/api/auth/status': typeof ApiAuthStatusRoute
+  '/api/checkout/paypal': typeof ApiCheckoutPaypalRoute
   '/admin/forms-builder/': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRoutesByTo {
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
   '/api/auth/status': typeof ApiAuthStatusRoute
+  '/api/checkout/paypal': typeof ApiCheckoutPaypalRoute
   '/admin/forms-builder': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRoutesById {
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
   '/api/auth/status': typeof ApiAuthStatusRoute
+  '/api/checkout/paypal': typeof ApiCheckoutPaypalRoute
   '/admin/forms-builder/': typeof AdminFormsBuilderIndexRoute
 }
 export interface FileRouteTypes {
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/setup'
     | '/api/auth/status'
+    | '/api/checkout/paypal'
     | '/admin/forms-builder/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/setup'
     | '/api/auth/status'
+    | '/api/checkout/paypal'
     | '/admin/forms-builder'
   id:
     | '__root__'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/setup'
     | '/api/auth/status'
+    | '/api/checkout/paypal'
     | '/admin/forms-builder/'
   fileRoutesById: FileRoutesById
 }
@@ -378,6 +390,7 @@ export interface RootRouteChildren {
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthSetupRoute: typeof ApiAuthSetupRoute
   ApiAuthStatusRoute: typeof ApiAuthStatusRoute
+  ApiCheckoutPaypalRoute: typeof ApiCheckoutPaypalRoute
   AdminFormsBuilderIndexRoute: typeof AdminFormsBuilderIndexRoute
 }
 
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/checkout/paypal': {
+      id: '/api/checkout/paypal'
+      path: '/api/checkout/paypal'
+      fullPath: '/api/checkout/paypal'
+      preLoaderRoute: typeof ApiCheckoutPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -613,6 +633,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthSetupRoute: ApiAuthSetupRoute,
   ApiAuthStatusRoute: ApiAuthStatusRoute,
+  ApiCheckoutPaypalRoute: ApiCheckoutPaypalRoute,
   AdminFormsBuilderIndexRoute: AdminFormsBuilderIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 240" fill="none">
+  <!-- Document 9 Dark Outline -->
+  <path d="M 30 20 L 105 20 L 140 55 L 140 135 C 140 142 135 148 128 148 L 30 148 L 30 168 L 128 168 C 135 168 140 174 140 181 L 140 205 C 140 216 131 225 120 225 L 30 225 C 19 225 10 216 10 205 L 10 35 C 10 24 19 20 30 20 Z" fill="#0f172a" />
+  <path d="M 30 40 L 95 40 L 95 128 L 30 128 Z" fill="#ffffff" />
+  
+  <!-- Folded Corner (Blue Triangle) -->
+  <path d="M 105 20 L 140 55 L 105 55 Z" fill="#2563eb" />
+  
+  <!-- Blue Lines Inside Document -->
+  <rect x="42" y="62" width="32" height="6" rx="3" fill="#2563eb" />
+  <rect x="42" y="82" width="46" height="6" rx="3" fill="#2563eb" />
+  <rect x="42" y="102" width="46" height="6" rx="3" fill="#2563eb" />
+  
+  <!-- Bottom document highlight line -->
+  <rect x="42" y="190" width="70" height="6" rx="3" fill="#2563eb" />
+</svg>

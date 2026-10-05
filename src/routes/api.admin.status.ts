@@ -13,7 +13,6 @@ export const Route = createFileRoute("/api/admin/status")({
             user &&
             (user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
-              user.email === "admin@springhope.clinic" ||
               user.email === "superadmin@9forms.com");
 
           let quota = null;

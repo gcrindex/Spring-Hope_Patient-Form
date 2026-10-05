@@ -21,12 +21,27 @@ export type Question = {
   optional?: boolean | undefined;
 };
 
+export type CoverPageConfig = {
+  enabled?: boolean;
+  title?: Localized;
+  description?: Localized;
+  buttonText?: Localized;
+  voiceButtonText?: Localized;
+  showNameInput?: boolean;
+  nameRequired?: boolean;
+  showConsent?: boolean;
+  consentText?: Localized;
+  estimatedMinutes?: number;
+  bannerLogoUrl?: string;
+};
+
 export type AssessmentForm = {
   id: string;
   title: Localized;
   description: Localized;
   status: "draft" | "published";
-  theme?: "default" | "elderly-dark";
+  theme?: "default" | "elderly-dark" | "teal-emerald";
+  coverPage?: CoverPageConfig;
   questions: Question[];
 };
 
@@ -903,11 +918,11 @@ export function getFormById(id?: string | null): AssessmentForm {
 }
 
 export async function fetchFormByIdAsync(id: string): Promise<AssessmentForm> {
-  const current = getFormById(id);
-  if (current.id === id) return current;
-
   try {
-    const res = await fetch(`/api/forms?id=${encodeURIComponent(id)}`);
+    const res = await fetch(`/api/forms?id=${encodeURIComponent(id)}`, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.form) {

@@ -22,7 +22,6 @@ export const Route = createFileRoute("/api/admin/paypal")({
             user &&
             (user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
-              user.email === "admin@springhope.clinic" ||
               user.email === "superadmin@9forms.com");
 
           if (!user || !isSuperAdmin) {
@@ -94,7 +93,6 @@ export const Route = createFileRoute("/api/admin/paypal")({
             user &&
             (user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
-              user.email === "admin@springhope.clinic" ||
               user.email === "superadmin@9forms.com");
 
           if (!user || !isSuperAdmin) {

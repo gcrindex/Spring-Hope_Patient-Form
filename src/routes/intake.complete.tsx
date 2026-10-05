@@ -329,7 +329,14 @@ function CompletionPage() {
   };
 
   return (
-    <PatientShell language={language} onLanguage={setLang} progress={100} theme={activeForm.theme}>
+    <PatientShell
+      language={language}
+      onLanguage={setLang}
+      progress={100}
+      theme={activeForm.theme}
+      customLogo={activeForm.coverPage?.bannerLogoUrl}
+      showBrand={!activeForm.coverPage?.bannerLogoUrl}
+    >
       {submissionState === "invalid_session" && (
         <div
           className="patient-card completion-card sleek-completion-card patient-enter text-center py-10"

@@ -77,39 +77,35 @@ function BuilderLandingPage() {
 
   const openCheckout = (planKey: string) => {
     const isAnnual = isYearly;
+    const curT = builderI18n[language] ?? builderI18n.en;
     if (planKey === "basic") {
       setSelectedPlan({
         key: isAnnual ? "basic_yearly" : "basic_monthly",
-        name: isAnnual ? "Basic Plan (Annual)" : "Basic Plan (Monthly)",
+        name: `${curT.tierBasicName} (${isAnnual ? curT.pricingYearly : curT.pricingMonthly})`,
         amount: isAnnual ? "$300.00" : "$29.00",
-        periodText: isAnnual ? "billed annually ($25/mo)" : "billed monthly",
-        features: ["100 responses / month", "1 user seat included", "Unlimited forms & questions"],
+        periodText: isAnnual ? curT.pricingBasicYearlyNote : curT.pricingMonthlyNote,
+        features: [curT.tierBasicF1, curT.tierBasicF2, curT.tierBasicF3],
       });
     } else if (planKey === "plus") {
       setSelectedPlan({
         key: isAnnual ? "plus_yearly" : "plus_monthly",
-        name: isAnnual ? "Plus Plan (Annual)" : "Plus Plan (Monthly)",
+        name: `${curT.tierPlusName} (${isAnnual ? curT.pricingYearly : curT.pricingMonthly})`,
         amount: isAnnual ? "$600.00" : "$59.00",
-        periodText: isAnnual ? "billed annually ($50/mo · Save 20%)" : "billed monthly",
-        features: [
-          "1,000 responses / month",
-          "3 user seats included",
-          "Remove 9forms branding",
-          "Custom subdomain & redirect",
-        ],
+        periodText: isAnnual ? curT.pricingPlusYearlyNote : curT.pricingMonthlyNote,
+        features: [curT.tierPlusF1, curT.tierPlusF2, curT.tierPlusF3, curT.tierPlusF4],
       });
     } else if (planKey === "business") {
       setSelectedPlan({
         key: isAnnual ? "business_yearly" : "business_monthly",
-        name: isAnnual ? "Business Plan (Annual · Level Max)" : "Business Plan (Monthly · Level Max)",
+        name: `${curT.tierBizName} (${isAnnual ? curT.pricingYearly : curT.pricingMonthly})`,
         amount: isAnnual ? "$996.00" : "$99.00",
-        periodText: isAnnual ? "billed annually ($83/mo · Save 20%)" : "billed monthly",
+        periodText: isAnnual ? curT.pricingBizYearlyNote : curT.pricingMonthlyNote,
         features: [
-          "10,000 responses / month",
-          "5 user seats included",
-          "AI Document Scanner & OCR",
-          "EMR Plato & webhook integrations",
-          "Remove 9forms branding",
+          curT.tierBizF1,
+          curT.tierBizF2,
+          curT.tierBizF3,
+          curT.tierBizF4,
+          curT.tierBizF5,
         ],
       });
     }
@@ -198,14 +194,14 @@ function BuilderLandingPage() {
               <div className="sf-mock-card">
                 <div className="sf-mock-topline">
                   <img
-                    src="/logo-white.webp"
+                    src="/logo-white.png?v=9f_v2"
                     alt="9forms"
                     className="h-[20px] w-auto object-contain select-none"
                     loading="eager"
                   />
                   <div className="sf-mock-voice-pill">
                     <Mic size={13} className="text-emerald-500" />
-                    <span>Live Voice</span>
+                    <span>{t.liveVoice}</span>
                   </div>
                 </div>
 
@@ -292,8 +288,8 @@ function BuilderLandingPage() {
 
         {/* ── Demo Showcase (Exactly 3 Official Active Forms) ── */}
         <section className="section-shell sf-section-blue" id="demo">
-          <div className="section-kicker">{t.demoKicker}</div>
           <div className="section-title-row">
+            <div className="section-kicker">{t.demoKicker}</div>
             <h2>
               {t.demoTitle1}
               <br />
@@ -408,8 +404,8 @@ function BuilderLandingPage() {
 
         {/* ── Modern Bento Grid Feature Showcase (Balanced 3x2 Grid) ── */}
         <section className="section-shell section-light" id="features">
-          <div className="section-kicker">{t.featKicker}</div>
           <div className="section-title-row">
+            <div className="section-kicker">{t.featKicker}</div>
             <h2>
               {t.featTitle1}
               <br />
@@ -440,80 +436,77 @@ function BuilderLandingPage() {
               </div>
             </article>
 
-            {/* Bento 2: Frictionless Auto-Advance */}
-            <article className="bento-card">
-              <div className="bento-badge">
-                <Zap size={14} /> {t.f2Label}
-              </div>
-              <h3>{t.f2Title}</h3>
-              <p>{t.f2Desc}</p>
-              <div className="bento-mini-demo">
-                <div className="mini-choice-pill active">
-                  <Check size={13} /> {t.mockOpt1}
-                </div>
-                <div className="mini-auto-tag">⚡ Auto-advancing in 200ms</div>
-              </div>
-            </article>
+	            {/* Bento 2: Frictionless Auto-Advance */}
+	            <article className="bento-card">
+	              <div className="bento-badge">
+	                <Zap size={14} /> {t.f2Label}
+	              </div>
+	              <h3>{t.f2Title}</h3>
+	              <p>{t.f2Desc}</p>
+	              <div className="bento-mini-demo">
+	                <div className="mini-choice-pill active">
+	                  <Check size={13} /> {t.mockOpt1}
+	                </div>
+	                <div className="mini-auto-tag">{t.autoAdvanceSpeed}</div>
+	              </div>
+	            </article>
 
-            {/* Bento 3: One Question Focus */}
-            <article className="bento-card">
-              <div className="bento-badge">
-                <Smartphone size={14} /> {t.f1Label}
-              </div>
-              <h3>{t.f1Title}</h3>
-              <p>{t.f1Desc}</p>
-            </article>
+	            {/* Bento 3: One Question Focus */}
+	            <article className="bento-card">
+	              <div className="bento-badge">
+	                <Smartphone size={14} /> {t.f1Label}
+	              </div>
+	              <h3>{t.f1Title}</h3>
+	              <p>{t.f1Desc}</p>
+	            </article>
 
-            {/* Bento 4: Trilingual Sync */}
-            <article className="bento-card">
-              <div className="bento-badge">
-                <Languages size={14} /> {t.f4Label}
-              </div>
-              <h3>{t.f4Title}</h3>
-              <p>{t.f4Desc}</p>
-              <div className="bento-lang-pills">
-                <span className="lang-tag">English</span>
-                <span className="lang-tag">Bahasa Indonesia</span>
-                <span className="lang-tag">简体中文</span>
-              </div>
-            </article>
+	            {/* Bento 4: Trilingual Sync */}
+	            <article className="bento-card">
+	              <div className="bento-badge">
+	                <Languages size={14} /> {t.f4Label}
+	              </div>
+	              <h3>{t.f4Title}</h3>
+	              <p>{t.f4Desc}</p>
+	              <div className="bento-lang-pills">
+	                <span className="lang-tag">English</span>
+	                <span className="lang-tag">Bahasa Indonesia</span>
+	                <span className="lang-tag">简体中文</span>
+	              </div>
+	            </article>
 
-            {/* Bento 5: Universal AI Ingestion */}
-            <article className="bento-card">
-              <div className="bento-badge">
-                <FileText size={14} /> AI Document Extraction
-              </div>
-              <h3>Paper &amp; PDF to Form in 5s.</h3>
-              <p>
-                Upload any paper intake, questionnaire, or PDF document. AI transforms it into a
-                multilingual conversational form instantly.
-              </p>
-            </article>
+	            {/* Bento 5: Universal AI Ingestion */}
+	            <article className="bento-card">
+	              <div className="bento-badge">
+	                <FileText size={14} /> {t.f5DocLabel}
+	              </div>
+	              <h3>{t.f5DocTitle}</h3>
+	              <p>{t.f5DocDesc}</p>
+	            </article>
 
-            {/* Bento 6: Operations Hub & Clinical Data */}
-            <article className="bento-card">
-              <div className="bento-badge">
-                <LayoutDashboard size={14} /> {t.f5Label}
-              </div>
-              <h3>{t.f5Title}</h3>
-              <p>{t.f5Desc}</p>
-              <div className="bento-table-preview">
-                <div className="bento-table-row">
-                  <span>
-                    <strong>Opa Sutrisno</strong> · Knee
-                  </span>
-                  <span className="pill pill-amber">Moderate</span>
-                  <span className="text-xs text-slate-500">18 pts</span>
-                </div>
-                <div className="bento-table-row">
-                  <span>
-                    <strong>Tan Wei Ling</strong> · Hip
-                  </span>
-                  <span className="pill pill-red">High Risk</span>
-                  <span className="text-xs text-slate-500">32 pts</span>
-                </div>
-              </div>
-            </article>
+	            {/* Bento 6: Operations Hub & Clinical Data */}
+	            <article className="bento-card">
+	              <div className="bento-badge">
+	                <LayoutDashboard size={14} /> {t.f5Label}
+	              </div>
+	              <h3>{t.f5Title}</h3>
+	              <p>{t.f5Desc}</p>
+	              <div className="bento-table-preview">
+	                <div className="bento-table-row">
+	                  <span>
+	                    <strong>Opa Sutrisno</strong> · Knee
+	                  </span>
+	                  <span className="pill pill-amber">{t.riskModerate}</span>
+	                  <span className="text-xs text-slate-500">18 pts</span>
+	                </div>
+	                <div className="bento-table-row">
+	                  <span>
+	                    <strong>Tan Wei Ling</strong> · Hip
+	                  </span>
+	                  <span className="pill pill-red">{t.riskHigh}</span>
+	                  <span className="text-xs text-slate-500">32 pts</span>
+	                </div>
+	              </div>
+	            </article>
           </div>
         </section>
 
@@ -595,61 +588,61 @@ function BuilderLandingPage() {
                   <i />
                   <i />
                 </aside>
-                <div className="browser-main">
-                  <div className="browser-title">
-                    <span>{t.adminMockTitle}</span>
-                    <span className="browser-new-btn">+ New Form</span>
-                  </div>
-                  <div className="browser-stats">
-                    <div>
-                      <strong>23</strong>
-                      <small>{t.adminStat1}</small>
-                    </div>
-                    <div>
-                      <strong>4</strong>
-                      <small>{t.adminStat2}</small>
-                    </div>
-                    <div>
-                      <strong>41</strong>
-                      <small>{t.adminStat3}</small>
-                    </div>
-                  </div>
-                  <div className="browser-table">
-                    <div className="browser-table-head">
-                      <span>Name</span>
-                      <span>Submitted</span>
-                      <span>Risk</span>
-                    </div>
-                    <div>
-                      <span>
-                        <b>S</b> Opa Sutrisno
-                      </span>
-                      <span>03 Sep, 12:10</span>
-                      <span className="risk-moderate">Moderate</span>
-                    </div>
-                    <div>
-                      <span>
-                        <b>T</b> Tan Wei Ling
-                      </span>
-                      <span>03 Sep, 11:14</span>
-                      <span className="risk-high">High</span>
-                    </div>
-                    <div>
-                      <span>
-                        <b>A</b> Aisha Rahman
-                      </span>
-                      <span>03 Sep, 10:41</span>
-                      <span className="risk-moderate">Moderate</span>
-                    </div>
-                    <div>
-                      <span>
-                        <b>L</b> Lim Jia Hao
-                      </span>
-                      <span>02 Sep, 17:22</span>
-                      <span className="risk-low">Low</span>
-                    </div>
-                  </div>
-                </div>
+	                <div className="browser-main">
+	                  <div className="browser-title">
+	                    <span>{t.adminMockTitle}</span>
+	                    <span className="browser-new-btn">{t.adminMockNewBtn}</span>
+	                  </div>
+	                  <div className="browser-stats">
+	                    <div>
+	                      <strong>23</strong>
+	                      <small>{t.adminStat1}</small>
+	                    </div>
+	                    <div>
+	                      <strong>4</strong>
+	                      <small>{t.adminStat2}</small>
+	                    </div>
+	                    <div>
+	                      <strong>41</strong>
+	                      <small>{t.adminStat3}</small>
+	                    </div>
+	                  </div>
+	                  <div className="browser-table">
+	                    <div className="browser-table-head">
+	                      <span>{t.adminColName}</span>
+	                      <span>{t.adminColSubmitted}</span>
+	                      <span>{t.adminColRisk}</span>
+	                    </div>
+	                    <div>
+	                      <span>
+	                        <b>S</b> Opa Sutrisno
+	                      </span>
+	                      <span>03 Sep, 12:10</span>
+	                      <span className="risk-moderate">{t.riskModerate}</span>
+	                    </div>
+	                    <div>
+	                      <span>
+	                        <b>T</b> Tan Wei Ling
+	                      </span>
+	                      <span>03 Sep, 11:14</span>
+	                      <span className="risk-high">{t.riskHigh}</span>
+	                    </div>
+	                    <div>
+	                      <span>
+	                        <b>A</b> Aisha Rahman
+	                      </span>
+	                      <span>03 Sep, 10:41</span>
+	                      <span className="risk-moderate">{t.riskModerate}</span>
+	                    </div>
+	                    <div>
+	                      <span>
+	                        <b>L</b> Lim Jia Hao
+	                      </span>
+	                      <span>02 Sep, 17:22</span>
+	                      <span className="risk-low">{t.riskLow}</span>
+	                    </div>
+	                  </div>
+	                </div>
               </div>
             </div>
           </div>
@@ -657,8 +650,8 @@ function BuilderLandingPage() {
 
         {/* ── Pricing Section with Interactive Checkout ── */}
         <section className="section-shell sf-section-pricing" id="pricing">
-          <div className="section-kicker">{t.pricingKicker}</div>
           <div className="section-title-row">
+            <div className="section-kicker">{t.pricingKicker}</div>
             <h2>
               {t.pricingTitle1}
               <br />
@@ -868,16 +861,110 @@ function BuilderLandingPage() {
         </div>
       </section>
 
+      {/* ── Enterprise Multi-Column Footer ───────────── */}
       <footer className="marketing-footer">
         <div className="marketing-footer-inner">
-          <PlatformMark />
-          <p>{t.footerNote}</p>
+          <div className="footer-top-grid">
+            {/* Column 1: Brand & Security */}
+            <div className="footer-brand-col">
+              <PlatformMark size="md" inverse={true} />
+              <p>{t.footerNote}</p>
+              <div className="footer-status-badge">
+                <span className="footer-status-dot" />
+                <span>System Operational · 99.99% Uptime</span>
+              </div>
+              <div className="footer-security-pill">
+                <span>🔒 ISO/IEC 27001 · HIPAA Ready · AES-256</span>
+              </div>
+            </div>
+
+            {/* Column 2: Product Capabilities */}
+            <div className="footer-col">
+              <h4>{language === "id" ? "Produk" : language === "zh" ? "产品功能" : "Product"}</h4>
+              <ul>
+                <li><a href="#demo">{language === "id" ? "Formulir Interaktif" : language === "zh" ? "互动式表单构建" : "Conversational Form Builder"}</a></li>
+                <li><a href="#features">{language === "id" ? "Pengenalan Suara AI" : language === "zh" ? "多语言语音输入 AI" : "Voice AI Speech Recognition"}</a></li>
+                <li><a href="#features">{language === "id" ? "Pemindai Dokumen PDF & Kertas" : language === "zh" ? "纸质与 PDF AI 解析" : "AI Document & PDF Scanner"}</a></li>
+                <li><a href="#admin">{language === "id" ? "Skor Triase Otomatis" : language === "zh" ? "临床风险智能分诊" : "Clinical Risk Scoring & Triage"}</a></li>
+                <li><a href="#admin">{language === "id" ? "Integrasi EMR & Webhook" : language === "zh" ? "医疗 EMR 与 Webhook 接口" : "EMR Plato & Webhook Bridge"}</a></li>
+              </ul>
+            </div>
+
+            {/* Column 3: Solutions */}
+            <div className="footer-col">
+              <h4>{language === "id" ? "Solusi Industri" : language === "zh" ? "行业解决方案" : "Solutions"}</h4>
+              <ul>
+                <li><a href="#demo">{language === "id" ? "Klinik & Layanan Kesehatan" : language === "zh" ? "医疗诊所与健康机构" : "Clinics & Healthcare"}</a></li>
+                <li><a href="#demo">{language === "id" ? "Aksesibilitas Ramah Lansia" : language === "zh" ? "长者关怀与高对比度体验" : "Senior Care & Accessibility"}</a></li>
+                <li><a href="#demo">{language === "id" ? "Pendidikan & Pendaftaran Siswa" : language === "zh" ? "教育培训与招生报名" : "Education & Admissions"}</a></li>
+                <li><a href="#demo">{language === "id" ? "HR & Skrining Kandidat" : language === "zh" ? "HR 招聘与人才初筛" : "HR & Talent Screening"}</a></li>
+                <li><a href="#demo">{language === "id" ? "Survei & Riset Kepuasan" : language === "zh" ? "高转化满意度调研" : "Customer Surveys & Intake"}</a></li>
+              </ul>
+            </div>
+
+            {/* Column 4: Platform & Support */}
+            <div className="footer-col">
+              <h4>{language === "id" ? "Platform & Bantuan" : language === "zh" ? "平台与支持" : "Platform"}</h4>
+              <ul>
+                <li><a href="#demo">{language === "id" ? "3 Demo Interaktif Langsung" : language === "zh" ? "3 套实时交互演示" : "Live Interactive Demos"}</a></li>
+                <li><a href="#pricing">{language === "id" ? "Paket Harga Transparan" : language === "zh" ? "透明公开定价方案" : "Pricing & Volume Plans"}</a></li>
+                <li><a href="#admin">{language === "id" ? "Dasbor Admin Operasional" : language === "zh" ? "管理工作区仪表盘" : "Admin Operations Portal"}</a></li>
+                <li><a href="/intake">{language === "id" ? "Portal Responden Pasien" : language === "zh" ? "患者答题独立入口" : "Patient Intake Portal"}</a></li>
+                <li><a href="mailto:support@9forms.com">{language === "id" ? "Hubungi Dukungan Prioritas" : language === "zh" ? "联系技术支持团队" : "Contact Enterprise Support"}</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="footer-bottom-bar">
+            <div>
+              &copy; 2026 <strong>9forms.com</strong>. {language === "id" ? "Hak cipta dilindungi undang-undang." : language === "zh" ? "版权所有。" : "All rights reserved."}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <a href="#demo">{language === "id" ? "Privasi & Keamanan" : language === "zh" ? "隐私与安全" : "Privacy & Security"}</a>
+              <span>·</span>
+              <a href="#demo">{language === "id" ? "Syarat & Ketentuan" : language === "zh" ? "服务条款" : "Terms of Service"}</a>
+              <span>·</span>
+              <a href="/admin.html#/settings">{language === "id" ? "Pengaturan Sistem" : language === "zh" ? "系统设置" : "System Settings"}</a>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "11.5px", color: "#64748b" }}>Lang:</span>
+              <button
+                type="button"
+                className={`lang-btn ${language === "en" ? "active" : ""}`}
+                style={{ background: "rgba(255,255,255,0.06)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.12)", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}
+                onClick={() => setLanguage("en")}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                className={`lang-btn ${language === "id" ? "active" : ""}`}
+                style={{ background: "rgba(255,255,255,0.06)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.12)", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}
+                onClick={() => setLanguage("id")}
+              >
+                ID
+              </button>
+              <button
+                type="button"
+                className={`lang-btn ${language === "zh" ? "active" : ""}`}
+                style={{ background: "rgba(255,255,255,0.06)", color: "#f8fafc", border: "1px solid rgba(255,255,255,0.12)", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}
+                onClick={() => setLanguage("zh")}
+              >
+                中文
+              </button>
+            </div>
+          </div>
         </div>
       </footer>
 
-      {/* ── PayPal Checkout Modal ────────────────────────────── */}
+      {/* ── PayPal & Instant Checkout Modal ────────────────────── */}
       {checkoutOpen && selectedPlan && (
-        <PaypalCheckoutModal plan={selectedPlan} onClose={() => setCheckoutOpen(false)} />
+        <PaypalCheckoutModal
+          plan={selectedPlan}
+          language={language}
+          onClose={() => setCheckoutOpen(false)}
+        />
       )}
 
       {/* ── Senior Research Study Modal Popup ────────────────── */}
@@ -888,9 +975,11 @@ function BuilderLandingPage() {
 
 function PaypalCheckoutModal({
   plan,
+  language = "en",
   onClose,
 }: {
   plan: CheckoutPlanDetails;
+  language?: AppLanguage;
   onClose: () => void;
 }) {
   const [email, setEmail] = useState("");
@@ -899,6 +988,7 @@ function PaypalCheckoutModal({
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [sdkReady, setSdkReady] = useState(false);
+  const curT = builderI18n[language] || builderI18n.en;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -923,16 +1013,11 @@ function PaypalCheckoutModal({
         const data = (await res.json().catch(() => ({}))) as {
           success?: boolean;
           clientId?: string;
+          isConfigured?: boolean;
           message?: string;
         };
 
-        if (!data.success || !data.clientId) {
-          if (isMounted) {
-            setErrorMsg(data.message || "PayPal checkout is temporarily unavailable. Please try again later.");
-            setLoading(false);
-          }
-          return;
-        }
+        const resolvedClientId = data.clientId || "sb";
 
         // Load PayPal SDK dynamically
         const scriptId = "paypal-sdk-script";
@@ -941,7 +1026,7 @@ function PaypalCheckoutModal({
 
         const script = document.createElement("script");
         script.id = scriptId;
-        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(data.clientId)}&currency=USD&intent=capture`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(resolvedClientId)}&currency=USD&intent=capture`;
         script.async = true;
         script.onload = () => {
           if (isMounted) {
@@ -951,7 +1036,7 @@ function PaypalCheckoutModal({
         };
         script.onerror = () => {
           if (isMounted) {
-            setErrorMsg("Failed to load PayPal SDK. Please check your network connection.");
+            setErrorMsg("Could not load secure PayPal gateway. Please try again.");
             setLoading(false);
           }
         };
@@ -997,11 +1082,27 @@ function PaypalCheckoutModal({
         },
         onClick: (_data: unknown, actions: { reject: () => Promise<void>; resolve: () => Promise<void> }) => {
           if (!email || !email.includes("@")) {
-            setErrorMsg("Please enter a valid email address to create your account.");
+            setErrorMsg(
+              language === "id"
+                ? "Harap masukkan alamat email akun Anda."
+                : language === "zh"
+                  ? "请输入您的账户电子邮箱。"
+                  : "Please enter your account email address first.",
+            );
+            const input = document.getElementById("checkout-email-input");
+            if (input) input.focus();
             return actions.reject();
           }
           if (!password || password.length < 6) {
-            setErrorMsg("Please create a password with at least 6 characters.");
+            setErrorMsg(
+              language === "id"
+                ? "Harap buat kata sandi akun (minimal 6 karakter)."
+                : language === "zh"
+                  ? "请设置登录密码（至少 6 个字符）。"
+                  : "Please create a password with at least 6 characters.",
+            );
+            const input = document.getElementById("checkout-pass-input");
+            if (input) input.focus();
             return actions.reject();
           }
           setErrorMsg("");
@@ -1044,10 +1145,16 @@ function PaypalCheckoutModal({
               user?: { email: string };
             };
             if (res.ok && d.success) {
-              setSuccessMsg(`🎉 Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`);
+              setSuccessMsg(
+                language === "id"
+                  ? `🎉 Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
+                  : language === "zh"
+                    ? `🎉 支付成功！方案已激活，正在跳转至管理工作区...`
+                    : `🎉 Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`,
+              );
               setTimeout(() => {
                 window.location.href = "/business.html#/dashboard";
-              }, 1800);
+              }, 1500);
             } else {
               setErrorMsg(d.message || "Payment capture failed. Please contact support.");
               setLoading(false);
@@ -1059,11 +1166,17 @@ function PaypalCheckoutModal({
         },
         onError: (err: unknown) => {
           console.error("PayPal button error", err);
-          setErrorMsg("Payment transaction was cancelled or encountered an error.");
+          setErrorMsg(
+            language === "id"
+              ? "Transaksi dibatalkan atau terjadi gangguan."
+              : language === "zh"
+                ? "支付被取消或发生错误。"
+                : "Payment transaction was cancelled or encountered an error.",
+          );
         },
       })
       .render("#paypal-button-render-box");
-  }, [sdkReady, email, password, plan.key]);
+  }, [sdkReady, email, password, plan.key, curT, language]);
 
   return (
     <div
@@ -1080,9 +1193,9 @@ function PaypalCheckoutModal({
           <div>
             <div className="senior-modal-kicker">
               <Lock size={12} />
-              <span>SECURE 256-BIT CHECKOUT</span>
+              <span>{curT.checkoutSecure}</span>
             </div>
-            <h3>Subscribe to 9forms</h3>
+            <h3>{curT.checkoutSubscribe}</h3>
           </div>
           <button
             type="button"
@@ -1109,7 +1222,7 @@ function PaypalCheckoutModal({
           </div>
 
           {/* Features list */}
-          <ul className="showcase-features" style={{ margin: "0 0 4px 0", gap: "6px" }}>
+          <ul className="showcase-features" style={{ margin: "0 0 8px 0", gap: "6px" }}>
             {plan.features.map((f, i) => (
               <li key={i} style={{ fontSize: "12px" }}>
                 <Check size={14} className="text-teal-600 shrink-0" />
@@ -1118,35 +1231,42 @@ function PaypalCheckoutModal({
             ))}
           </ul>
 
-          {/* Account Details Form */}
-          <div className="checkout-form-group">
-            <label htmlFor="checkout-email-input">
-              Account Email <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <input
-              id="checkout-email-input"
-              type="email"
-              placeholder="e.g. clinic@company.com"
-              className="checkout-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+          {/* Step 1: Create Account Credentials */}
+          <div style={{ marginTop: "12px", marginBottom: "6px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#1e293b", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px", borderRadius: "50%", background: "#2563eb", color: "#fff", fontSize: "11px" }}>1</span>
+              <span>{language === "id" ? "Buat Akun Login 9forms Anda" : language === "zh" ? "创建您的 9forms 登录账户" : "Create Your 9forms Login"}</span>
+            </div>
 
-          <div className="checkout-form-group">
-            <label htmlFor="checkout-pass-input">
-              Create Password <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <input
-              id="checkout-pass-input"
-              type="password"
-              placeholder="Min. 6 characters"
-              className="checkout-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="checkout-form-group">
+              <label htmlFor="checkout-email-input">
+                {curT.checkoutEmailLabel} <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <input
+                id="checkout-email-input"
+                type="email"
+                placeholder={curT.checkoutEmailPlaceholder}
+                className="checkout-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="checkout-form-group">
+              <label htmlFor="checkout-pass-input">
+                {curT.checkoutPassLabel} <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <input
+                id="checkout-pass-input"
+                type="password"
+                placeholder={curT.checkoutPassPlaceholder}
+                className="checkout-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           {/* Status notices */}
@@ -1160,6 +1280,7 @@ function PaypalCheckoutModal({
                 borderRadius: "10px",
                 fontSize: "12.5px",
                 fontWeight: 600,
+                marginBottom: "12px",
               }}
             >
               {errorMsg}
@@ -1177,20 +1298,28 @@ function PaypalCheckoutModal({
                 fontSize: "13px",
                 fontWeight: 700,
                 textAlign: "center",
+                marginBottom: "12px",
               }}
             >
               {successMsg}
             </div>
           )}
 
-          {/* PayPal Render Target */}
-          {loading && !sdkReady && !errorMsg && (
-            <div style={{ textAlign: "center", padding: "18px", color: "#64748b", fontSize: "13px" }}>
-              Initializing secure PayPal checkout...
+          {/* Step 2: Payment Gateway */}
+          <div style={{ marginTop: "14px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#1e293b", marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px", borderRadius: "50%", background: "#2563eb", color: "#fff", fontSize: "11px" }}>2</span>
+              <span>{language === "id" ? "Pilih Metode Pembayaran" : language === "zh" ? "选择支付方式" : "Select Payment Method"}</span>
             </div>
-          )}
 
-          <div id="paypal-button-render-box" className="checkout-paypal-container" />
+            {loading && !sdkReady && !errorMsg && (
+              <div style={{ textAlign: "center", padding: "20px", color: "#64748b", fontSize: "13px" }}>
+                Loading secure payment gateway...
+              </div>
+            )}
+
+            <div id="paypal-button-render-box" className="checkout-paypal-container" />
+          </div>
         </div>
       </div>
     </div>

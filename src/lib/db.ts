@@ -137,17 +137,34 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
 	      )
 	      .run();
 
-	    await d1
-	      .prepare(
-	        `CREATE TABLE IF NOT EXISTS system_settings (
-	          key TEXT PRIMARY KEY,
-	          value_encrypted TEXT NOT NULL,
-	          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	        );`,
-	      )
-	      .run();
+		    await d1
+		      .prepare(
+		        `CREATE TABLE IF NOT EXISTS system_settings (
+		          key TEXT PRIMARY KEY,
+		          value_encrypted TEXT NOT NULL,
+		          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		        );`,
+		      )
+		      .run();
 
-	    d1InitDone = true;
+		    await d1
+		      .prepare(
+		        `CREATE TABLE IF NOT EXISTS transactions (
+		          id TEXT PRIMARY KEY,
+		          order_id TEXT UNIQUE NOT NULL,
+		          payer_email TEXT,
+		          user_id TEXT,
+		          plan_tier TEXT NOT NULL,
+		          amount TEXT NOT NULL,
+		          currency TEXT DEFAULT 'USD',
+		          status TEXT DEFAULT 'COMPLETED',
+		          paypal_capture_id TEXT,
+		          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		        );`,
+		      )
+		      .run();
+
+		    d1InitDone = true;
   } catch (e) {
     console.warn("D1 table init notice:", e);
   }

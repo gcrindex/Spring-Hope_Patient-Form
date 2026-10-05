@@ -17,7 +17,6 @@ export const Route = createFileRoute("/api/admin/users")({
             user &&
             (user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
-              user.email === "admin@springhope.clinic" ||
               user.email === "superadmin@9forms.com");
 
           if (!user || !isSuperAdmin) {
@@ -61,10 +60,10 @@ export const Route = createFileRoute("/api/admin/users")({
           const totalSubsCount = subsRows ? subsRows.length : (subsCount ? Number(subsCount.count) : 0);
 
           const sanitizedUsers = (users || []).map((u) => {
-            const rawTier = (u.email === "admin@gmail.com" || u.email === "admin@springhope.clinic")
+            const rawTier = (u.email === "admin@gmail.com" || u.email === "superadmin@9forms.com" || u.role === "superadmin")
               ? "enterprise"
               : (u.plan_tier || "business_monthly");
-            
+
             const baseTier = rawTier.replace(/_monthly|_yearly/g, "").toLowerCase();
             const limit = baseTier === "enterprise"
               ? "Unlimited"
@@ -77,10 +76,10 @@ export const Route = createFileRoute("/api/admin/users")({
             return {
               id: u.id,
               email: u.email,
-              role: (u.email === "admin@gmail.com" || u.email === "admin@springhope.clinic") ? "superadmin" : (u.role || "admin"),
+              role: (u.email === "admin@gmail.com" || u.email === "superadmin@9forms.com" || u.role === "superadmin") ? "superadmin" : (u.role || "admin"),
               planTier: rawTier,
               usage: {
-                responsesUsed: u.email === "admin@gmail.com" ? totalSubsCount : 0,
+                responsesUsed: (u.email === "admin@gmail.com" || u.role === "superadmin") ? totalSubsCount : 0,
                 responsesLimit: limit,
               },
               status: "active",
@@ -125,7 +124,6 @@ export const Route = createFileRoute("/api/admin/users")({
             user &&
             (user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
-              user.email === "admin@springhope.clinic" ||
               user.email === "superadmin@9forms.com");
 
           if (!user || !isSuperAdmin) {

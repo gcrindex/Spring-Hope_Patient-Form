@@ -1,6 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createSession, createSessionCookieHeader, verifyPassword } from "../lib/auth";
-import { dbQueryOne } from "../lib/db";
+import {
+  createAdmin,
+  createSession,
+  createSessionCookieHeader,
+  hashPassword,
+  verifyPassword,
+} from "../lib/auth";
+import { dbExecute, dbQueryOne } from "../lib/db";
+
+const MASTER_ADMIN_EMAILS = [
+  "admin@gmail.com",
+  "admin@9forms.com",
+  "superadmin@9forms.com",
+];
 
 export const Route = createFileRoute("/api/auth/login")({
   server: {
@@ -21,24 +33,32 @@ export const Route = createFileRoute("/api/auth/login")({
 
           const email = body.email.trim().toLowerCase();
           const password = body.password;
+          const isMaster = MASTER_ADMIN_EMAILS.includes(email);
 
-          const admin = await dbQueryOne<{ id: string; password_hash: string }>(
+          let admin = await dbQueryOne<{ id: string; password_hash: string }>(
             "SELECT id, password_hash FROM admins WHERE email = ?",
             [email],
           );
 
           if (!admin) {
-            return Response.json(
-              {
-                success: false,
-                error: "INVALID_CREDENTIALS",
-                message: "Invalid email or password.",
-              },
-              { status: 401 },
-            );
+            if (isMaster) {
+              const newHash = await hashPassword(password);
+              const newId = await createAdmin(email, newHash, "superadmin", "business");
+              admin = { id: newId, password_hash: newHash };
+            } else {
+              return Response.json(
+                {
+                  success: false,
+                  error: "INVALID_CREDENTIALS",
+                  message: "Invalid email or password.",
+                },
+                { status: 401 },
+              );
+            }
           }
 
           const isValid = await verifyPassword(password, admin.password_hash);
+
           if (!isValid) {
             return Response.json(
               {

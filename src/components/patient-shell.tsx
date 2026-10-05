@@ -14,6 +14,7 @@ export function PatientShell({
   docTitle,
   theme = "default",
   showBrand = true,
+  customLogo,
 }: {
   children: ReactNode;
   language: Language;
@@ -24,6 +25,7 @@ export function PatientShell({
   docTitle?: string | undefined;
   theme?: "default" | "elderly-dark" | undefined;
   showBrand?: boolean | undefined;
+  customLogo?: string | undefined;
 }) {
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -41,11 +43,17 @@ export function PatientShell({
                 <ArrowLeft size={22} strokeWidth={2.5} />
               </button>
             )}
-            {showBrand ? (
+            {customLogo ? (
+              <img
+                src={customLogo}
+                alt="Logo"
+                className="h-[28px] max-w-[140px] object-contain rounded select-none bg-white/10 px-1 py-0.5"
+              />
+            ) : showBrand ? (
               <BrandMark inverse />
             ) : (
               <div className="inline-flex items-center gap-1.5 text-white/90 font-bold text-sm tracking-tight select-none">
-                <span>Direct Intake Form</span>
+                <span>9forms Intake</span>
               </div>
             )}
           </div>
@@ -79,12 +87,28 @@ export function PatientShell({
           </span>
         </div>
 
+        <div className="flex items-center gap-3 text-[11px] text-white/50 mt-0.5">
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            <span>256-bit Encrypted</span>
+          </span>
+          <span>•</span>
+          <a
+            href="/#privacy"
+            target="_blank"
+            rel="noreferrer"
+            className="text-white/60 hover:text-white underline transition-colors"
+          >
+            {language === "id" ? "Kebijakan Privasi" : language === "zh" ? "隐私条款" : "Privacy & Terms"}
+          </a>
+        </div>
+
         {showBrand && (
           <a
             href="/"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-white/60 hover:text-white transition-colors duration-150 no-underline mt-1"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-white/60 hover:text-white transition-colors duration-150 no-underline mt-0.5"
           >
             <Zap size={11} className="text-amber-400" />
             <span>Powered by 9forms.com</span>

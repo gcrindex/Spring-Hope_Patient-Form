@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/webp" href="/logo-mark.webp" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=9f_v2" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=9f_v2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=9f_v2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=9f_v2" />
+    <link rel="icon" href="/favicon.ico?v=9f_v2" />
     <title>9forms.com — Business Portal</title>
     <script>
       (function () {
@@ -790,32 +794,38 @@
         flex: 1;
         display: flex;
         overflow: hidden;
+        background: #f8fafc;
       }
 
-      /* Builder left panel */
+      /* Builder left panel: Questions Sidebar */
       .builder-left {
-        width: 460px;
+        width: 320px;
+        min-width: 280px;
+        max-width: 360px;
         border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
         overflow: hidden;
         flex-shrink: 0;
-        background: #fcfdfe;
+        background: #ffffff;
+        height: 100%;
       }
       .builder-questions-pane {
         display: flex;
         flex-direction: column;
-        background: #f1f5f9;
-        border-bottom: 3px solid #cbd5e1;
-        flex-shrink: 0;
+        background: #ffffff;
+        height: 100%;
+        overflow: hidden;
+        flex: 1;
       }
       .builder-left .panel-header {
-        padding: 12px 18px;
+        padding: 14px 18px;
         border-bottom: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: space-between;
         background: #f8fafc;
+        flex-shrink: 0;
       }
       .builder-left .panel-header h3 {
         font-size: 12px;
@@ -832,20 +842,91 @@
         padding: 2px 8px;
         border-radius: 99px;
       }
-      .question-list {
-        max-height: 200px;
-        overflow-y: auto;
-        padding: 12px 14px 4px 14px;
-        background: transparent;
+      .cover-page-card {
+        margin: 12px 14px 6px 14px;
+        padding: 12px 14px;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        transition: all var(--transition);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
         flex-shrink: 0;
       }
-      .add-question-wrap {
-        padding: 6px 14px 12px 14px;
+      .cover-page-card:hover {
+        border-color: var(--teal);
+        background: #f0f9ff;
+      }
+      .cover-page-card.selected {
+        border-color: var(--teal);
+        background: #f0fdf4;
+        box-shadow: 0 0 0 1.5px var(--teal);
+      }
+      .cover-card-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: #e0f2fe;
+        color: #0284c7;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .cover-page-card.selected .cover-card-icon {
+        background: var(--teal);
+        color: #fff;
+      }
+      .cover-card-info {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .cover-card-title {
+        font-size: 13px;
+        font-weight: 750;
+        color: var(--navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .cover-card-sub {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 1px;
+      }
+      .cover-card-badge {
+        font-size: 10px;
+        font-weight: 800;
+        color: #0d9488;
+        background: #ccfbf1;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        flex-shrink: 0;
+      }
+      .question-list {
+        flex: 1 1 auto;
+        max-height: none;
+        overflow-y: auto;
+        padding: 6px 14px 8px 14px;
         background: transparent;
+      }
+      .add-question-wrap {
+        padding: 10px 14px 14px 14px;
+        background: #ffffff;
+        border-top: 1px solid #f1f5f9;
+        flex-shrink: 0;
       }
       .add-question-btn {
         width: 100%;
-        padding: 9px;
+        padding: 10px;
         border: 2px dashed #94a3b8;
         border-radius: 8px;
         color: #1e293b;
@@ -864,17 +945,45 @@
         color: var(--teal);
         background: #f0f9ff;
       }
+
+      /* Builder center panel: Question & Cover Editor */
+      .builder-center {
+        flex: 1 1 500px;
+        min-width: 380px;
+        max-width: 620px;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #ffffff;
+        height: 100%;
+      }
       .builder-editor-divider {
         background: #0f172a;
         color: #ffffff;
-        border-top: 1px solid #1e293b;
         border-bottom: 1px solid #1e293b;
-        padding: 10px 18px;
+        padding: 12px 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
         box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+      }
+      .builder-editor-divider .divider-left {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .builder-editor-divider .divider-icon {
+        font-size: 13px;
+      }
+      .builder-editor-divider .divider-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: #f8fafc;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
       }
       .builder-editor-divider .divider-left {
         display: flex;
@@ -891,16 +1000,90 @@
         text-transform: uppercase;
         letter-spacing: 0.6px;
       }
-      .builder-editor-divider .divider-badge {
-        font-size: 11px;
-        font-weight: 800;
-        color: #38bdf8;
-        background: rgba(56, 189, 248, 0.15);
-        padding: 2px 8px;
-        border-radius: 6px;
-        border: 1px solid rgba(56, 189, 248, 0.35);
-      }
-      .btn-test-form {
+	      .builder-editor-divider .divider-badge {
+	        font-size: 11px;
+	        font-weight: 800;
+	        color: #38bdf8;
+	        background: rgba(56, 189, 248, 0.15);
+	        padding: 2px 8px;
+	        border-radius: 6px;
+	        border: 1px solid rgba(56, 189, 248, 0.35);
+	      }
+	      .builder-mobile-tabs {
+	        display: none;
+	        background: #0f172a;
+	        padding: 8px 10px;
+	        gap: 6px;
+	        border-bottom: 1px solid #1e293b;
+	        flex-shrink: 0;
+	      }
+	      .builder-mob-tab {
+	        flex: 1;
+	        display: inline-flex;
+	        align-items: center;
+	        justify-content: center;
+	        gap: 5px;
+	        padding: 8px 6px;
+	        border-radius: 8px;
+	        font-size: 12px;
+	        font-weight: 750;
+	        border: 1px solid rgba(255, 255, 255, 0.12);
+	        background: rgba(255, 255, 255, 0.06);
+	        color: #94a3b8;
+	        cursor: pointer;
+	        transition: all 0.15s ease;
+	        white-space: nowrap;
+	      }
+	      .builder-mob-tab.active {
+	        background: #2563eb;
+	        border-color: #3b82f6;
+	        color: #ffffff;
+	        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+	      }
+	      .mob-edit-badge {
+	        font-size: 10px;
+	        background: rgba(255, 255, 255, 0.22);
+	        padding: 1px 5px;
+	        border-radius: 4px;
+	      }
+	      .mobile-editor-topbar {
+	        display: none;
+	        align-items: center;
+	        justify-content: space-between;
+	        gap: 8px;
+	        background: #f1f5f9;
+	        border: 1.5px solid #cbd5e1;
+	        border-radius: 10px;
+	        padding: 8px 12px;
+	        margin-bottom: 14px;
+	      }
+	      .btn-mob-back-outline {
+	        display: inline-flex;
+	        align-items: center;
+	        gap: 4px;
+	        background: #ffffff;
+	        border: 1px solid #cbd5e1;
+	        color: #1e293b;
+	        font-size: 11.5px;
+	        font-weight: 750;
+	        padding: 6px 10px;
+	        border-radius: 6px;
+	        cursor: pointer;
+	      }
+	      .btn-mob-done-editing {
+	        display: inline-flex;
+	        align-items: center;
+	        gap: 4px;
+	        background: #2563eb;
+	        border: none;
+	        color: #ffffff;
+	        font-size: 11.5px;
+	        font-weight: 750;
+	        padding: 6px 12px;
+	        border-radius: 6px;
+	        cursor: pointer;
+	      }
+	      .btn-test-form {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -1109,60 +1292,72 @@
         resize: vertical;
         min-height: 72px;
       }
-      .type-selector {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-      }
-      .type-btn {
-        padding: 9px 6px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        text-align: center;
-        transition: all var(--transition);
-        color: #475569;
-        background: #f8fafc;
-      }
-      .type-btn:hover {
-        border-color: var(--teal);
-        color: var(--teal);
-        background: #f0f9ff;
-      }
-      .type-btn.active {
-        background: var(--teal);
-        color: #fff;
-        border-color: var(--teal);
-        box-shadow: 0 2px 6px rgba(46, 134, 171, 0.25);
-      }
-      .option-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .option-row input {
-        flex: 1;
-      }
-      .option-row .score-input {
-        width: 64px;
-        flex: none;
-        text-align: center;
-        font-weight: 600;
-      }
-      .option-row .remove-opt {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text3);
-        font-size: 18px;
-        cursor: pointer;
-        border-radius: 6px;
-        transition: all 0.15s;
-      }
+	      .type-selector {
+	        display: grid;
+	        grid-template-columns: repeat(2, 1fr);
+	        gap: 8px;
+	      }
+	      @media (min-width: 680px) {
+	        .type-selector {
+	          grid-template-columns: repeat(4, 1fr);
+	        }
+	      }
+	      .type-btn {
+	        padding: 10px 8px;
+	        min-height: 42px;
+	        display: inline-flex;
+	        align-items: center;
+	        justify-content: center;
+	        border: 1.5px solid #e2e8f0;
+	        border-radius: 8px;
+	        font-size: 12.5px;
+	        font-weight: 700;
+	        text-align: center;
+	        transition: all var(--transition);
+	        color: #334155;
+	        background: #f8fafc;
+	      }
+	      .type-btn:hover {
+	        border-color: var(--teal);
+	        color: var(--teal);
+	        background: #f0f9ff;
+	      }
+	      .type-btn.active {
+	        background: var(--teal);
+	        color: #fff;
+	        border-color: var(--teal);
+	        box-shadow: 0 2px 6px rgba(46, 134, 171, 0.25);
+	      }
+	      .option-row {
+	        display: flex;
+	        align-items: center;
+	        gap: 8px;
+	        margin-bottom: 8px;
+	      }
+	      .option-row input[type="text"],
+	      .option-row input:not([type]) {
+	        flex: 1;
+	        min-width: 0;
+	      }
+	      .option-row .score-input {
+	        width: 54px;
+	        flex-shrink: 0;
+	        text-align: center;
+	        font-weight: 700;
+	      }
+	      .option-row .remove-opt {
+	        width: 32px;
+	        height: 32px;
+	        flex-shrink: 0;
+	        display: flex;
+	        align-items: center;
+	        justify-content: center;
+	        color: var(--text3);
+	        font-size: 18px;
+	        cursor: pointer;
+	        border-radius: 6px;
+	        transition: all 0.15s;
+	      }
       .option-row .remove-opt:hover {
         background: #fee2e2;
         color: #dc2626;
@@ -2331,12 +2526,90 @@
           border-radius: 8px !important;
           box-sizing: border-box !important;
         }
-        .builder-left {
-          width: 100%;
-        }
-        .builder-right {
-          display: none;
-        }
+		        .builder-left,
+		        .builder-center {
+		          width: 100% !important;
+		          max-width: 100% !important;
+		          min-width: 0 !important;
+		          border-right: none !important;
+		          overflow-y: auto !important;
+		          height: auto !important;
+		          flex: 1 1 auto !important;
+		        }
+		        .builder-mobile-tabs {
+		          display: flex !important;
+		        }
+		        .builder-body {
+		          flex-direction: column !important;
+		          overflow-y: auto !important;
+		          height: calc(100dvh - 120px) !important;
+		        }
+		        /* Mobile Tab: Outline Mode */
+		        .builder-body[data-mob-tab="outline"] .builder-left {
+		          display: flex !important;
+		          border-bottom: none !important;
+		        }
+		        .builder-body[data-mob-tab="outline"] .builder-center,
+		        .builder-body[data-mob-tab="outline"] .builder-right {
+		          display: none !important;
+		        }
+		        .builder-body[data-mob-tab="outline"] .question-list {
+		          max-height: none !important;
+		          overflow-y: visible !important;
+		        }
+
+		        /* Mobile Tab: Edit Mode */
+		        .builder-body[data-mob-tab="edit"] .builder-left,
+		        .builder-body[data-mob-tab="edit"] .builder-right {
+		          display: none !important;
+		        }
+		        .builder-body[data-mob-tab="edit"] .builder-center {
+		          display: flex !important;
+		        }
+		        .builder-body[data-mob-tab="edit"] .builder-editor-divider {
+		          display: flex !important;
+		          position: sticky !important;
+		          top: 0 !important;
+		          z-index: 10 !important;
+		        }
+		        .builder-body[data-mob-tab="edit"] #question-editor {
+		          display: block !important;
+		          padding: 16px 14px 120px 14px !important;
+		          overflow-y: auto !important;
+		        }
+
+		        /* Mobile Tab: Preview Mode */
+		        .builder-body[data-mob-tab="preview"] .builder-left,
+		        .builder-body[data-mob-tab="preview"] .builder-center {
+		          display: none !important;
+		        }
+		        .builder-body[data-mob-tab="preview"] .builder-right {
+		          display: flex !important;
+		          padding: 14px 10px 80px 10px !important;
+		          justify-content: center !important;
+		          align-items: flex-start !important;
+		          overflow-y: auto !important;
+		          height: 100% !important;
+		        }
+		        .phone-notch {
+		          display: none !important;
+		        }
+		        .phone-frame {
+		          width: 100% !important;
+		          max-width: 480px !important;
+		          min-height: auto !important;
+		          border-radius: 16px !important;
+		          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+		          border: 1.5px solid var(--border) !important;
+		          margin: 0 auto !important;
+		        }
+		        .phone-screen {
+		          padding: 16px 12px !important;
+		          min-height: auto !important;
+		        }
+		        .builder-right {
+		          display: none;
+		        }
         .builder-right.mobile-show {
           display: flex;
           position: fixed;
@@ -2721,7 +2994,7 @@
       <div class="login-card">
         <div class="login-logo">
           <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px">
-            <img src="/logo-full.webp" alt="9forms" style="height: 42px; width: auto; object-fit: contain;" />
+            <img src="/logo-full.png?v=9f_v4" alt="9forms" style="height: 38px; width: auto; object-fit: contain;" />
           </div>
           <h2 id="login-title">Business Portal</h2>
         </div>
@@ -2850,7 +3123,7 @@
           "
         >
           <div style="min-width: 0; display: flex; align-items: center">
-            <img src="/logo-white.webp" alt="9forms" style="height: 28px; width: auto; object-fit: contain;" />
+            <img src="/logo-white.png?v=9f_v4" alt="9forms" style="height: 28px; width: auto; object-fit: contain;" />
           </div>
           <button
             type="button"
@@ -3000,18 +3273,45 @@
           <button class="publish-btn" id="builder-publish-btn"></button>
         </div>
       </div>
-      <div class="builder-body">
+      <div class="builder-mobile-tabs" id="builder-mobile-tabs">
+        <button type="button" class="builder-mob-tab active" id="mob-tab-outline" onclick="setMobileBuilderTab('outline')">
+          📋 <span data-i18n="builderTabOutline">Questions</span> (<span id="mob-qcount-badge">0</span>)
+        </button>
+        <button type="button" class="builder-mob-tab" id="mob-tab-edit" onclick="setMobileBuilderTab('edit')">
+          ✏️ <span data-i18n="builderTabEdit">Editor</span> <span class="mob-edit-badge" id="mob-edit-target"></span>
+        </button>
+        <button type="button" class="builder-mob-tab" id="mob-tab-preview" onclick="setMobileBuilderTab('preview')">
+          📱 <span data-i18n="builderTabPreview">Preview</span>
+        </button>
+      </div>
+      <div class="builder-body" data-mob-tab="outline">
+        <!-- 1. LEFT: Questions Outline List -->
         <div class="builder-left">
-          <div class="builder-questions-pane">
-            <div class="panel-header">
-              <h3 data-i18n="builderQuestionsHeader">Questions</h3>
-              <span id="builder-qcount"></span>
-            </div>
-            <div class="question-list" id="question-list"></div>
-            <div class="add-question-wrap">
-              <button class="add-question-btn" id="add-q-btn" data-i18n="builderAddQBtn">+ Add Question</button>
-            </div>
+          <div class="panel-header">
+            <h3 data-i18n="builderQuestionsHeader">Questions</h3>
+            <span id="builder-qcount"></span>
           </div>
+          <!-- Cover Page / Welcome Screen Selector Slot -->
+          <div
+            class="cover-page-card"
+            id="builder-cover-slot"
+            onclick="selectCoverPage()"
+          >
+            <div class="cover-card-icon">📄</div>
+            <div class="cover-card-info">
+              <div class="cover-card-title" data-i18n="builderCoverPageTab">Cover Page / Welcome Screen</div>
+              <div class="cover-card-sub" id="builder-cover-status-text">Enabled · Greeting &amp; Start Button</div>
+            </div>
+            <span class="cover-card-badge" id="builder-cover-badge">ACTIVE</span>
+          </div>
+          <div class="question-list" id="question-list"></div>
+          <div class="add-question-wrap">
+            <button class="add-question-btn" id="add-q-btn" data-i18n="builderAddQBtn">+ Add Question</button>
+          </div>
+        </div>
+
+        <!-- 2. CENTER: Active Question / Cover Editor -->
+        <div class="builder-center" id="builder-center-pane">
           <div class="builder-editor-divider" id="builder-editor-divider" style="display: none">
             <div class="divider-left">
               <span class="divider-icon">✏️</span>
@@ -3021,6 +3321,8 @@
           </div>
           <div class="question-editor" id="question-editor" style="display: none"></div>
         </div>
+
+        <!-- 3. RIGHT: Live Simulator Preview -->
         <div class="builder-right">
           <div class="phone-frame">
             <div class="phone-notch"></div>
@@ -3030,6 +3332,7 @@
             Scoring: choice = options' score, scale = x3, yes/no = 12/0
           </div>
         </div>
+      </div>
       </div>
     </div>
 
@@ -4518,8 +4821,22 @@
           builderOptPlaceholder: "Option label",
           builderAddOptionBtn: "+ Add Option",
           builderMaxValueLabel: "Max Value",
-          builderDoneBtn: "Done",
-          builderScoringChip: "Scoring: choice = options' score, scale = x3, yes/no = 12/0",
+	          builderDoneBtn: "Done",
+	          builderCoverPageTab: "Cover Page / Welcome Screen",
+	          builderCoverPageDesc: "Configure the greeting screen, welcome text, organization logo, and start button.",
+	          builderEnableCoverLabel: "Enable Cover Page (Welcome Screen)",
+	          builderCoverTitleLabel: "Welcome Title",
+	          builderCoverDescLabel: "Welcome Description & Instructions",
+	          builderCoverBtnTextLabel: "Start Button Text",
+	          builderCoverVoiceBtnTextLabel: "Voice Start Button Text",
+	          builderCoverShowNameLabel: "Show Patient / Respondent Name Input",
+	          builderCoverNameReqLabel: "Require Full Name before starting",
+	          builderCoverShowConsentLabel: "Show Consent / Disclaimer Checkbox",
+	          builderCoverConsentTextLabel: "Consent & Disclaimer Agreement Text",
+	          builderCoverEstTimeLabel: "Estimated Completion Minutes",
+	          builderCoverLogoUrlLabel: "Custom Organization Logo / Banner URL",
+	          builderCoverThemeLabel: "Color Theme Style",
+	          builderScoringChip: "Scoring: choice = options' score, scale = x3, yes/no = 12/0",
           typeChoice: "Choice",
           typeYesNo: "Yes / No",
           typeScale: "Scale",
@@ -4533,6 +4850,10 @@
           builderTestBtn: "Test Form",
           builderTestBtnShort: "Test",
           builderEditSectionTitle: "Question Settings",
+          builderTabOutline: "Questions",
+          builderTabEdit: "Editor",
+          builderTabPreview: "Preview",
+          builderBackToQuestions: "Questions",
           testBadge: "LIVE TEST SIMULATION",
           testNoDataNotice: "Test mode: responses are not saved to DB",
           testResetBtn: "↺ Restart Test",
@@ -4659,8 +4980,22 @@
           builderOptPlaceholder: "Label opsi jawaban",
           builderAddOptionBtn: "+ Tambah Opsi",
           builderMaxValueLabel: "Nilai Maksimal",
-          builderDoneBtn: "Selesai",
-          builderScoringChip: "Penilaian: pilihan = skor opsi, skala = x3, ya/tidak = 12/0",
+	          builderDoneBtn: "Selesai",
+	          builderCoverPageTab: "Cover Page / Halaman Pembuka",
+	          builderCoverPageDesc: "Atur halaman greeting, teks pembuka, logo organisasi, dan tombol mulai.",
+	          builderEnableCoverLabel: "Aktifkan Cover Page (Halaman Pembuka)",
+	          builderCoverTitleLabel: "Judul Pembuka (Welcome Title)",
+	          builderCoverDescLabel: "Deskripsi & Petunjuk Pengisian",
+	          builderCoverBtnTextLabel: "Teks Tombol Mulai",
+	          builderCoverVoiceBtnTextLabel: "Teks Tombol Mulai dengan Suara",
+	          builderCoverShowNameLabel: "Tampilkan Kolom Input Nama Pasien",
+	          builderCoverNameReqLabel: "Wajibkan Mengisi Nama Sebelum Mulai",
+	          builderCoverShowConsentLabel: "Tampilkan Checkbox Persetujuan Medis",
+	          builderCoverConsentTextLabel: "Teks Persetujuan & Disclaimer Data",
+	          builderCoverEstTimeLabel: "Estimasi Waktu Pengerjaan (Menit)",
+	          builderCoverLogoUrlLabel: "URL Logo / Banner Kustom Organisasi",
+	          builderCoverThemeLabel: "Tema Warna Formulir",
+	          builderScoringChip: "Penilaian: pilihan = skor opsi, skala = x3, ya/tidak = 12/0",
           typeChoice: "Pilihan Ganda",
           typeYesNo: "Ya / Tidak",
           typeScale: "Skala Nilai",
@@ -4674,6 +5009,10 @@
           builderTestBtn: "Tes Form",
           builderTestBtnShort: "Tes",
           builderEditSectionTitle: "Pengaturan Pertanyaan",
+          builderTabOutline: "Daftar Soal",
+          builderTabEdit: "Edit Soal",
+          builderTabPreview: "Pratinjau",
+          builderBackToQuestions: "Daftar Soal",
           testBadge: "SIMULASI UJI COBA LANGSUNG",
           testNoDataNotice: "Mode tes: respon tidak disimpan ke database",
           testResetBtn: "↺ Ulangi Tes",
@@ -4798,8 +5137,22 @@
           builderOptPlaceholder: "输入选项文字",
           builderAddOptionBtn: "+ 添加选项",
           builderMaxValueLabel: "最大分值",
-          builderDoneBtn: "完成编辑",
-          builderScoringChip: "计分说明: 选项 = 选项分值, 量表 = x3, 是/否 = 12/0",
+	          builderDoneBtn: "完成编辑",
+	          builderCoverPageTab: "表单封面 / 欢迎页",
+	          builderCoverPageDesc: "配置表单欢迎语、机构品牌 Logo、姓名收集与开始按钮设置。",
+	          builderEnableCoverLabel: "启用封面欢迎页 (Welcome Screen)",
+	          builderCoverTitleLabel: "欢迎标题",
+	          builderCoverDescLabel: "表单说明与填写须知",
+	          builderCoverBtnTextLabel: "开始按钮文字",
+	          builderCoverVoiceBtnTextLabel: "语音开始按钮文字",
+	          builderCoverShowNameLabel: "显示姓名输入框",
+	          builderCoverNameReqLabel: "开始前必须填写姓名",
+	          builderCoverShowConsentLabel: "显示知情同意 / 隐私条款勾选框",
+	          builderCoverConsentTextLabel: "知情同意条款文本",
+	          builderCoverEstTimeLabel: "预计答题用时 (分钟)",
+	          builderCoverLogoUrlLabel: "机构自定义 Logo / 横幅 URL",
+	          builderCoverThemeLabel: "表单色彩主题风格",
+	          builderScoringChip: "计分说明: 选项 = 选项分值, 量表 = x3, 是/否 = 12/0",
           typeChoice: "单项选择",
           typeYesNo: "是 / 否",
           typeScale: "量表打分",
@@ -4813,6 +5166,10 @@
           builderTestBtn: "测试表单",
           builderTestBtnShort: "测试",
           builderEditSectionTitle: "题目设置",
+          builderTabOutline: "题目列表",
+          builderTabEdit: "编辑内容",
+          builderTabPreview: "实时预览",
+          builderBackToQuestions: "题目列表",
           testBadge: "实时交互测试模拟",
           testNoDataNotice: "测试模式：答题记录不会保存到数据库",
           testResetBtn: "↺ 重新测试",
@@ -5342,23 +5699,23 @@
           if (q.responseLimit !== null) {
             const remaining = Math.max(0, q.responseLimit - totalSub);
             const remainingText = currentAdminLang === "id"
-              ? `Sisa ${remaining.toLocaleString()} respons (${q.tier.toUpperCase()})`
+              ? `Sisa ${remaining.toLocaleString()} respons · Paket ${q.tier.toUpperCase()}`
               : currentAdminLang === "zh"
-                ? `剩余 ${remaining.toLocaleString()} 条 (${q.tier.toUpperCase()})`
-                : `${remaining.toLocaleString()} remaining (${q.tier.toUpperCase()})`;
-            quotaCardHtml = `<div class="stat-card" style="border-color: #bae6fd; background: #f0f9ff;"><div class="label" style="color: #0284c7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #0369a1;">${totalSub} / ${q.responseLimit.toLocaleString()}</div><div class="sub" style="color: #0284c7; font-weight: 700;">${remainingText}</div></div>`;
+                ? `剩余 ${remaining.toLocaleString()} 条 · ${q.tier.toUpperCase()} 方案`
+                : `${remaining.toLocaleString()} remaining · ${q.tier.toUpperCase()} Plan`;
+            quotaCardHtml = `<div class="stat-card" style="border-color: #bae6fd; background: #f0f9ff;"><div class="label" style="color: #0284c7;">${currentAdminLang === "id" ? "KUOTA RESPON BULANAN" : currentAdminLang === "zh" ? "每月答卷配额" : "MONTHLY RESPONSES"}</div><div class="value" style="color: #0369a1;">${totalSub} / ${q.responseLimit.toLocaleString()}</div><div class="sub" style="color: #0284c7; font-weight: 700;">${remainingText}</div></div>`;
           } else {
             const unlimText = currentAdminLang === "id"
               ? "Tanpa batas (Enterprise SLA)"
               : currentAdminLang === "zh"
                 ? "无上限配额（企业定制SLA）"
                 : "Unlimited responses (Enterprise SLA)";
-            quotaCardHtml = `<div class="stat-card" style="border-color: #f0abfc; background: #fdf4ff;"><div class="label" style="color: #a855f7;">${t("planQuotaLabel") || "Plan Quota"}</div><div class="value" style="color: #7e22ce;">${totalSub} · Unlimited</div><div class="sub" style="color: #9333ea; font-weight: 700;">${unlimText}</div></div>`;
+            quotaCardHtml = `<div class="stat-card" style="border-color: #f0abfc; background: #fdf4ff;"><div class="label" style="color: #a855f7;">${currentAdminLang === "id" ? "KUOTA RESPON BULANAN" : currentAdminLang === "zh" ? "每月答卷配额" : "MONTHLY RESPONSES"}</div><div class="value" style="color: #7e22ce;">${totalSub} · Unlimited</div><div class="sub" style="color: #9333ea; font-weight: 700;">${unlimText}</div></div>`;
           }
         }
 
         $("#stats-row").innerHTML = `
-        <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${t("allFormsLabel")}</div></div>
+        <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${currentAdminLang === "id" ? "Form & Soal Unlimited" : t("allFormsLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("totalSubmissions")}</div><div class="value">${totalSub}</div><div class="sub">${t("receivedLabel")}</div></div>
         ${quotaCardHtml}`;
@@ -5366,7 +5723,7 @@
         tbody.innerHTML = f
           .map((x) => {
             const isPublished = x.status === "published";
-            const count = allSubs.filter((s) => s.formId === x.id).length;
+            const count = allSubs.filter((s) => s.formId === x.id || s.form_id === x.id).length;
             const titleDisplay =
               typeof x.title === "object"
                 ? x.title[currentAdminLang] || x.title.en || Object.values(x.title)[0]
@@ -5405,12 +5762,19 @@
         navigate("#/new");
       });
 
-      // FIX 1: copyLink uses slug id
-      function copyLink(id) {
-        const appUrl = (window.location.origin || "") + "/intake?form=" + id;
-        navigator.clipboard?.writeText(appUrl);
-        toast("Link copied to clipboard");
-      }
+	      // FIX 1: copyLink uses slug id
+	      function copyLink(id) {
+	        const appUrl = (window.location.origin || "https://9forms.com") + "/intake?form=" + id;
+	        if (navigator.clipboard && navigator.clipboard.writeText) {
+	          navigator.clipboard.writeText(appUrl).then(() => {
+	            toast("📋 Tautan form berhasil disalin ke clipboard!", "success");
+	          }).catch(() => {
+	            prompt("Salin tautan formulir di bawah ini:", appUrl);
+	          });
+	        } else {
+	          prompt("Salin tautan formulir di bawah ini:", appUrl);
+	        }
+	      }
       function publishForm(id) {
         const f = forms();
         const x = f.find((y) => y.id === id);
@@ -5449,41 +5813,352 @@
         }
       }
 
-      // ===================== BUILDER =====================
-      let builderForm = null,
-        editingQ = null,
-        phonePreviewIdx = 0;
+		      // ===================== BUILDER =====================
+		      let builderForm = null,
+		        editingQ = null,
+		        isEditingCover = false,
+		        phonePreviewIdx = 0,
+		        currentMobTab = "outline";
 
-      function renderBuilder(formId) {
-        const f = forms().find((x) => x.id === formId);
-        if (!f) {
-          navigate("#/dashboard");
-          return;
-        }
-        builderForm = f;
-        editingQ = null;
-        phonePreviewIdx = 0;
-        const lang = currentAdminLang || "id";
-        $("#builder-title").value = getLocalized(f.title, lang);
-        updateStatusPill(f.status);
-        updatePublishBtn(f.status);
-        renderQuestionList();
-        renderPhonePreview();
-        if (f.questions && f.questions.length > 0) {
-          editingQ = f.questions[0].id;
-          renderQuestionEditor();
-        } else {
-          $("#question-editor").style.display = "none";
-          const divider = $("#builder-editor-divider");
-          if (divider) divider.style.display = "none";
-        }
-      }
+		      function setMobileBuilderTab(tab) {
+		        currentMobTab = tab;
+		        const body = document.querySelector(".builder-body");
+		        if (body) {
+		          body.setAttribute("data-mob-tab", tab);
+		        }
+		        document.querySelectorAll(".builder-mob-tab").forEach((btn) => {
+		          btn.classList.remove("active");
+		        });
+		        const activeBtn = document.getElementById(`mob-tab-${tab}`);
+		        if (activeBtn) activeBtn.classList.add("active");
 
-      function updateStatusPill(status) {
-        $("#builder-status-pill").className =
-          "pill " + (status === "published" ? "pill-green" : "pill-amber");
-        $("#builder-status-pill").textContent = status === "published" ? "Published" : "Draft";
-      }
+		        const countBadge = document.getElementById("mob-qcount-badge");
+		        if (countBadge && builderForm) {
+		          countBadge.textContent = builderForm.questions ? builderForm.questions.length : 0;
+		        }
+		        const editTargetBadge = document.getElementById("mob-edit-target");
+		        if (editTargetBadge) {
+		          if (isEditingCover) {
+			            editTargetBadge.textContent = "COVER";
+		          } else if (editingQ && builderForm) {
+			            const qIdx = builderForm.questions.findIndex((x) => x.id === editingQ);
+			            editTargetBadge.textContent = qIdx >= 0 ? `Q${qIdx + 1}` : "";
+		          } else {
+			            editTargetBadge.textContent = "";
+		          }
+		        }
+
+		        if (tab === "preview") {
+		          renderPhonePreview();
+		        }
+		      }
+
+		      function renderBuilder(formId) {
+		        const f = forms().find((x) => x.id === formId);
+		        if (!f) {
+		          navigate("#/dashboard");
+		          return;
+		        }
+		        builderForm = f;
+		        editingQ = null;
+		        isEditingCover = false;
+		        phonePreviewIdx = -1; // -1 represents cover page in phone preview
+		        const lang = currentAdminLang || "id";
+		        $("#builder-title").value = getLocalized(f.title, lang);
+		        updateStatusPill(f.status);
+		        updatePublishBtn(f.status);
+		        renderCoverSlot();
+		        renderQuestionList();
+		        renderPhonePreview();
+
+		        if (window.innerWidth <= 900) {
+		          setMobileBuilderTab("outline");
+		        } else {
+		          selectCoverPage();
+		        }
+		      }
+
+	      function updateStatusPill(status) {
+	        $("#builder-status-pill").className =
+	          "pill " + (status === "published" ? "pill-green" : "pill-amber");
+	        $("#builder-status-pill").textContent = status === "published" ? "Published" : "Draft";
+	      }
+
+	      function renderCoverSlot() {
+	        if (!builderForm) return;
+	        const cover = builderForm.coverPage || {};
+	        const isEnabled = cover.enabled !== false;
+	        const coverSlot = $("#builder-cover-slot");
+	        const statusText = $("#builder-cover-status-text");
+	        const badge = $("#builder-cover-badge");
+
+	        if (coverSlot) {
+	          if (isEditingCover) {
+	            coverSlot.classList.add("selected");
+	          } else {
+	            coverSlot.classList.remove("selected");
+	          }
+	        }
+	        if (statusText) {
+	          statusText.textContent = isEnabled
+	            ? (currentAdminLang === "id" ? "Aktif · Halaman Sambutan & Tombol Mulai" : currentAdminLang === "zh" ? "已启用 · 欢迎语与开始按钮" : "Enabled · Greeting & Start Button")
+	            : (currentAdminLang === "id" ? "Nonaktif · Langsung ke Pertanyaan 1" : currentAdminLang === "zh" ? "已跳过 · 直接进入第 1 题" : "Disabled · Direct to Question 1");
+	        }
+	        if (badge) {
+	          badge.textContent = isEnabled ? "ACTIVE" : "SKIPPED";
+	          badge.style.background = isEnabled ? "#ccfbf1" : "#f1f5f9";
+	          badge.style.color = isEnabled ? "#0d9488" : "#64748b";
+	        }
+	      }
+
+		      function selectCoverPage() {
+		        isEditingCover = true;
+		        editingQ = null;
+		        phonePreviewIdx = -1;
+		        renderCoverSlot();
+		        renderQuestionList();
+		        renderCoverEditor();
+		        renderPhonePreview();
+		        if (window.innerWidth <= 900) {
+		          setMobileBuilderTab("edit");
+		        }
+		      }
+
+		      function renderCoverEditor() {
+		        if (!builderForm) return;
+		        const lang = currentAdminLang || "id";
+		        const cover = builderForm.coverPage || {};
+		        const isEnabled = cover.enabled !== false;
+		        const showName = cover.showNameInput ?? true;
+		        const nameReq = cover.nameRequired ?? false;
+		        const showConsent = cover.showConsent ?? true;
+		        const theme = builderForm.theme || "default";
+
+		        const divider = $("#builder-editor-divider");
+		        const activeBadge = $("#builder-editor-active-q");
+		        if (divider) divider.style.display = "flex";
+		        if (activeBadge) activeBadge.textContent = "COVER PAGE";
+
+		        const titleVal = getLocalized(cover.title || builderForm.title, lang);
+		        const descVal = getLocalized(cover.description || builderForm.description, lang);
+		        const btnVal = getLocalized(cover.buttonText, lang) || (lang === "id" ? "Mulai Pengisian" : lang === "zh" ? "开始填写" : "Start Form");
+		        const voiceBtnVal = getLocalized(cover.voiceButtonText, lang) || (lang === "id" ? "Mulai dengan Suara" : lang === "zh" ? "语音模式开始" : "Start with Voice");
+		        const consentVal = getLocalized(cover.consentText, lang) || (lang === "id" ? "Saya menyetujui pengisian data ini untuk keperluan evaluasi & pelayanan." : lang === "zh" ? "我同意提交本表单数据用于后续评估与服务支持。" : "I agree to submit this information for evaluation & service delivery.");
+		        const estTime = cover.estimatedMinutes || (builderForm.questions.length <= 3 ? 1 : builderForm.questions.length <= 6 ? 2 : 3);
+		        const logoUrl = cover.bannerLogoUrl || "";
+
+		        const ed = $("#question-editor");
+		        ed.style.display = "block";
+		        ed.innerHTML = `
+		          <div class="mobile-editor-topbar">
+		            <button type="button" class="btn-mob-back-outline" onclick="setMobileBuilderTab('outline')">
+		              ← ${t("builderBackToQuestions") || "Questions"}
+		            </button>
+		            <span class="mob-edit-badge">COVER PAGE</span>
+		            <button type="button" class="btn-mob-done-editing" onclick="setMobileBuilderTab('outline')">
+		              ${t("builderDoneBtn") || "Done"} ✓
+		            </button>
+		          </div>
+		          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+		            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+		              <strong style="color:var(--navy); font-size:13.5px;">${t("builderEnableCoverLabel") || "Enable Cover Page"}</strong>
+		              <input type="checkbox" id="cover-toggle-enabled" ${isEnabled ? "checked" : ""} onchange="updateCoverField('enabled', this.checked)" style="width:18px; height:18px; cursor:pointer;" />
+		            </div>
+		            <small style="color:var(--text3); font-size:11.5px; display:block; line-height:1.4;">${t("builderCoverPageDesc") || "Configure the greeting screen, welcome text, organization logo, and start button."}</small>
+		          </div>
+
+	          <div class="editor-field">
+	            <label>${t("builderCoverTitleLabel") || "Welcome Title"}</label>
+	            <input type="text" class="title-input" style="width:100%; box-sizing:border-box; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13.5px; font-weight:700;" value="${escHtml(titleVal)}" oninput="updateCoverLocalized('title', this.value)" placeholder="e.g. New Patient Intake Assessment" />
+	          </div>
+
+	          <div class="editor-field">
+	            <label>${t("builderCoverDescLabel") || "Welcome Description & Instructions"}</label>
+	            <textarea style="width:100%; box-sizing:border-box; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; min-height:75px;" oninput="updateCoverLocalized('description', this.value)" placeholder="Brief instructions for patients...">${escHtml(descVal)}</textarea>
+	          </div>
+
+	          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+	            <div class="editor-field">
+	              <label>${t("builderCoverBtnTextLabel") || "Start Button Text"}</label>
+	              <input type="text" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; font-weight:600;" value="${escHtml(btnVal)}" oninput="updateCoverLocalized('buttonText', this.value)" />
+	            </div>
+	            <div class="editor-field">
+	              <label>${t("builderCoverVoiceBtnTextLabel") || "Voice Start Button Text"}</label>
+	              <input type="text" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; font-weight:600;" value="${escHtml(voiceBtnVal)}" oninput="updateCoverLocalized('voiceButtonText', this.value)" />
+	            </div>
+	          </div>
+
+	          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+	            <div class="editor-field">
+	              <label>${t("builderCoverEstTimeLabel") || "Est. Minutes"}</label>
+	              <input type="number" min="1" max="60" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:13px;" value="${estTime}" onchange="updateCoverField('estimatedMinutes', +this.value)" />
+	            </div>
+	            <div class="editor-field">
+	              <label>${t("builderCoverThemeLabel") || "Color Theme Style"}</label>
+	              <select style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px; font-weight:700; background:#fff;" onchange="updateFormTheme(this.value)">
+                <option value="default" ${theme === "default" ? "selected" : ""}>Clean Blue (Default)</option>
+                <option value="elderly-dark" ${theme === "elderly-dark" ? "selected" : ""}>Warm Charcoal &amp; Gold</option>
+                <option value="teal-emerald" ${theme === "teal-emerald" ? "selected" : ""}>Teal Emerald (Wellness)</option>
+              </select>
+	            </div>
+	          </div>
+
+	          <div class="editor-field">
+	            <div style="display:flex; justify-content:space-between; align-items:center;">
+	              <label style="margin:0;">${t("builderCoverLogoUrlLabel") || "Organization Logo / Banner"}</label>
+	              ${
+	                (getEffectiveTier() === "basic")
+	                  ? `<span style="font-size:10.5px; font-weight:800; color:#b45309; background:#fef3c7; padding:2px 8px; border-radius:99px; border:1px solid #fde68a;">⭐ Plus / Business Tier</span>`
+	                  : `<span style="font-size:10.5px; font-weight:800; color:#059669; background:#ecfdf5; padding:2px 8px; border-radius:99px; border:1px solid #a7f3d0;">✓ Unlocked</span>`
+	              }
+	            </div>
+	            ${
+	              (getEffectiveTier() === "basic")
+	                ? `
+	              <div style="background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:10px; padding:16px; margin-top:6px; text-align:center;">
+	                <div style="font-size:24px; margin-bottom:6px;">🔒</div>
+	                <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:4px;">Custom Logo &amp; White-label Terkunci</strong>
+	                <p style="font-size:11.5px; color:var(--text3); margin:0 0 10px 0; line-height:1.45;">Upload logo klinik/perusahaan sendiri tersedia untuk pelanggan paket <strong>Plus</strong> dan <strong>Business</strong>.</p>
+	                <a href="/#pricing" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:#0284c7; background:#e0f2fe; padding:6px 14px; border-radius:6px; text-decoration:none;">
+	                  Upgrade Paket &rarr;
+	                </a>
+	              </div>
+	            `
+	                : `
+	            <div style="background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:12px; margin-top:4px;">
+	              ${
+	                logoUrl
+	                  ? `
+	                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:8px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+	                  <img src="${escHtml(logoUrl)}" style="max-height:44px; max-width:120px; object-fit:contain; border-radius:4px; background:#fff; padding:2px; border:1px solid #cbd5e1;" />
+	                  <div style="flex:1; min-width:0;">
+	                    <div style="font-size:12px; font-weight:750; color:var(--navy); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Logo Aktif</div>
+	                    <div style="font-size:10.5px; color:var(--text3);">Tampil di atas Cover Page</div>
+	                  </div>
+	                  <button type="button" onclick="removeCoverLogo()" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:750; cursor:pointer;">
+	                    🗑️ Hapus
+	                  </button>
+	                </div>
+	              `
+	                  : ""
+	              }
+	              <div style="display:flex; flex-direction:column; gap:8px;">
+	                <input type="file" id="cover-logo-file-input" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;" onchange="uploadCoverLogoFile(event)" />
+	                <button type="button" onclick="document.getElementById('cover-logo-file-input').click()" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px 12px; background:#f0fdf4; border:1.5px dashed #22c55e; border-radius:8px; font-size:12.5px; font-weight:750; color:#15803d; cursor:pointer;">
+	                  📁 Upload Logo dari Perangkat (Galeri / Komputer)
+	                </button>
+	                <div style="display:flex; align-items:center; gap:6px; margin:2px 0;">
+	                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
+	                  <span style="font-size:10.5px; color:var(--text3); font-weight:700;">ATAU MASUKKAN URL GAMBAR</span>
+	                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
+	                </div>
+	                <input type="text" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-family:monospace;" value="${escHtml(logoUrl.startsWith("data:") ? "" : logoUrl)}" oninput="updateCoverField('bannerLogoUrl', this.value.trim())" placeholder="https://domain.com/logo.png" />
+	              </div>
+	            </div>
+	            `
+	            }
+	          </div>
+
+	          <div style="background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:12px; margin-bottom:12px;">
+	            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; font-weight:700; color:var(--navy); margin-bottom:6px;">
+	              <input type="checkbox" ${showName ? "checked" : ""} onchange="updateCoverField('showNameInput', this.checked)" />
+	              <span>${t("builderCoverShowNameLabel") || "Show Name Input"}</span>
+	            </label>
+	            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:var(--text2); margin-left:24px;">
+	              <input type="checkbox" ${nameReq ? "checked" : ""} onchange="updateCoverField('nameRequired', this.checked)" />
+	              <span>${t("builderCoverNameReqLabel") || "Require name before starting"}</span>
+	            </label>
+	          </div>
+
+	          <div style="background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:12px; margin-bottom:16px;">
+	            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; font-weight:700; color:var(--navy); margin-bottom:8px;">
+	              <input type="checkbox" ${showConsent ? "checked" : ""} onchange="updateCoverField('showConsent', this.checked)" />
+	              <span>${t("builderCoverShowConsentLabel") || "Show Consent Checkbox"}</span>
+	            </label>
+	            <textarea style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:11.5px; min-height:50px;" oninput="updateCoverLocalized('consentText', this.value)" placeholder="Consent statement...">${escHtml(consentVal)}</textarea>
+	          </div>
+
+	          <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>
+	        `;
+	      }
+
+	      function updateCoverField(key, val) {
+	        if (!builderForm) return;
+	        builderForm.coverPage = builderForm.coverPage || {};
+	        builderForm.coverPage[key] = val;
+	        saveForm();
+	        renderCoverSlot();
+	        renderPhonePreview();
+	      }
+
+		      function updateCoverLocalized(key, val) {
+		        if (!builderForm) return;
+		        const lang = currentAdminLang || "id";
+		        builderForm.coverPage = builderForm.coverPage || {};
+		        if (typeof builderForm.coverPage[key] !== "object" || builderForm.coverPage[key] === null) {
+		          builderForm.coverPage[key] = { en: "", id: "", zh: "" };
+		        }
+		        builderForm.coverPage[key][lang] = val;
+		        saveForm();
+		        renderCoverSlot();
+		        renderPhonePreview();
+		      }
+
+		      function uploadCoverLogoFile(event) {
+		        const file = event.target.files?.[0];
+		        if (!file) return;
+		        if (!file.type.startsWith("image/")) {
+		          toast("Harap pilih file gambar (PNG, JPG, WEBP, SVG).", "error");
+		          return;
+		        }
+		        if (file.size > 5 * 1024 * 1024) {
+		          toast("Ukuran gambar maksimal 5MB.", "error");
+		          return;
+		        }
+		        const reader = new FileReader();
+		        reader.onload = (e) => {
+		          const dataUrl = e.target.result;
+		          const img = new Image();
+		          img.onload = () => {
+		            const maxDim = 600;
+		            let w = img.width;
+		            let h = img.height;
+		            if (w > maxDim || h > maxDim) {
+		              if (w > h) {
+		                h = Math.round((h * maxDim) / w);
+		                w = maxDim;
+		              } else {
+		                w = Math.round((w * maxDim) / h);
+		                h = maxDim;
+		              }
+		            }
+		            const canvas = document.createElement("canvas");
+		            canvas.width = w;
+		            canvas.height = h;
+		            const ctx = canvas.getContext("2d");
+		            ctx.drawImage(img, 0, 0, w, h);
+		            const optimizedDataUrl = canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.88);
+		            updateCoverField("bannerLogoUrl", optimizedDataUrl);
+		            renderCoverEditor();
+		            toast("Logo berhasil diunggah!", "success");
+		          };
+		          img.src = dataUrl;
+		        };
+		        reader.readAsDataURL(file);
+		      }
+
+		      function removeCoverLogo() {
+		        updateCoverField("bannerLogoUrl", "");
+		        renderCoverEditor();
+		        toast("Logo dihapus.", "info");
+		      }
+
+	      function updateFormTheme(themeVal) {
+	        if (!builderForm) return;
+	        builderForm.theme = themeVal;
+	        saveForm();
+	        renderPhonePreview();
+	      }
       function updatePublishBtn(status) {
         const btn = $("#builder-publish-btn");
         const draftBtn = $("#builder-draft-btn");
@@ -5653,72 +6328,79 @@
         return tName;
       }
 
-      function selectQuestion(id) {
-        editingQ = id;
-        const qIdx = builderForm?.questions?.findIndex((x) => x.id === id);
-        if (qIdx !== undefined && qIdx >= 0) {
-          phonePreviewIdx = qIdx;
-        }
-        renderQuestionList();
-        renderQuestionEditor();
-        renderPhonePreview();
-      }
-      function editQuestion(id) {
-        editingQ = id;
-        const qIdx = builderForm?.questions?.findIndex((x) => x.id === id);
-        if (qIdx !== undefined && qIdx >= 0) {
-          phonePreviewIdx = qIdx;
-        }
-        renderQuestionList();
-        renderQuestionEditor();
-        renderPhonePreview();
-      }
+	      function selectQuestion(id) {
+	        editingQ = id;
+	        isEditingCover = false;
+	        const qIdx = builderForm?.questions?.findIndex((x) => x.id === id);
+	        if (qIdx !== undefined && qIdx >= 0) {
+	          phonePreviewIdx = qIdx;
+	        }
+	        renderCoverSlot();
+	        renderQuestionList();
+	        renderQuestionEditor();
+	        renderPhonePreview();
+	        if (window.innerWidth <= 900) {
+	          setMobileBuilderTab("edit");
+	        }
+	      }
+	      function editQuestion(id) {
+	        selectQuestion(id);
+	      }
 
-      function renderQuestionEditor() {
-        const q = builderForm.questions.find((x) => x.id === editingQ);
-        const divider = $("#builder-editor-divider");
-        const activeBadge = $("#builder-editor-active-q");
-        if (!q) {
-          $("#question-editor").style.display = "none";
-          if (divider) divider.style.display = "none";
-          return;
-        }
-        if (divider) divider.style.display = "flex";
-        const qIdx = builderForm.questions.findIndex((x) => x.id === editingQ);
-        if (activeBadge) {
-          const rawLabel = typeLabel(q.type) || q.type;
-          const cleanLabel = rawLabel.replace(/&[#a-zA-Z0-9]+;/g, "").trim();
-          activeBadge.textContent = `Q${qIdx + 1} · ${cleanLabel}`;
-        }
-        const lang = currentAdminLang || "id";
-        const ed = $("#question-editor");
-        ed.style.display = "block";
-        let optionsHtml = "";
-        if (q.type === "choice") {
-          optionsHtml = `<div class="editor-field"><label>${t("builderOptionsLabel") || "Options"}</label><div id="option-rows">${(q.options || [])
-            .map(
-              (o, i) => `
-          <div class="option-row"><input value="${escHtml(getLocalized(o.label, lang))}" placeholder="${t("builderOptPlaceholder") || "Option label"}" oninput="updateOption('${q.id}',${i},'label',this.value)">
-          <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
-          <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
-            )
-            .join("")}</div>
-          <button class="add-option-btn" onclick="addOption('${q.id}')">${t("builderAddOptionBtn") || "+ Add Option"}</button></div>`;
-        } else if (q.type === "scale") {
-          optionsHtml = `<div class="editor-field"><label>${t("builderMaxValueLabel") || "Max Value"}</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
-        }
-        ed.innerHTML = `
-        <div class="editor-field"><label>${t("builderQTextLabel") || "Question Text"}</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(getLocalized(q.prompt || q.text, lang))}</textarea></div>
-        <div class="editor-field"><label>${t("builderTypeLabel") || "Type"}</label>
-          <div class="type-selector">${["choice", "yesno", "scale", "text"]
-            .map(
-              (typeKey) =>
-                `<button class="type-btn ${q.type === typeKey ? "active" : ""}" onclick="changeType('${q.id}','${typeKey}')">${typeLabel(typeKey)}</button>`,
-            )
-            .join("")}</div></div>
-        ${optionsHtml}
-        <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>`;
-      }
+	      function renderQuestionEditor() {
+	        const q = builderForm.questions.find((x) => x.id === editingQ);
+	        const divider = $("#builder-editor-divider");
+	        const activeBadge = $("#builder-editor-active-q");
+	        if (!q) {
+	          $("#question-editor").style.display = "none";
+	          if (divider) divider.style.display = "none";
+	          return;
+	        }
+	        if (divider) divider.style.display = "flex";
+	        const qIdx = builderForm.questions.findIndex((x) => x.id === editingQ);
+	        if (activeBadge) {
+	          const rawLabel = typeLabel(q.type) || q.type;
+	          const cleanLabel = rawLabel.replace(/&[#a-zA-Z0-9]+;/g, "").trim();
+	          activeBadge.textContent = `Q${qIdx + 1} · ${cleanLabel}`;
+	        }
+	        const lang = currentAdminLang || "id";
+	        const ed = $("#question-editor");
+	        ed.style.display = "block";
+	        let optionsHtml = "";
+	        if (q.type === "choice") {
+	          optionsHtml = `<div class="editor-field"><label>${t("builderOptionsLabel") || "Options"}</label><div id="option-rows">${(q.options || [])
+	            .map(
+	              (o, i) => `
+	          <div class="option-row"><input value="${escHtml(getLocalized(o.label, lang))}" placeholder="${t("builderOptPlaceholder") || "Option label"}" oninput="updateOption('${q.id}',${i},'label',this.value)">
+	          <input class="score-input" type="number" value="${o.score}" min="0" max="10" oninput="updateOption('${q.id}',${i},'score',+this.value)">
+	          <span class="remove-opt" onclick="removeOption('${q.id}',${i})">&times;</span></div>`,
+	            )
+	            .join("")}</div>
+	          <button class="add-option-btn" onclick="addOption('${q.id}')">${t("builderAddOptionBtn") || "+ Add Option"}</button></div>`;
+	        } else if (q.type === "scale") {
+	          optionsHtml = `<div class="editor-field"><label>${t("builderMaxValueLabel") || "Max Value"}</label><input type="number" value="${q.max || 10}" min="2" max="20" onchange="updateScaleMax('${q.id}',+this.value)"></div>`;
+	        }
+	        ed.innerHTML = `
+	        <div class="mobile-editor-topbar">
+	          <button type="button" class="btn-mob-back-outline" onclick="setMobileBuilderTab('outline')">
+	            ← ${t("builderBackToQuestions") || "Questions"}
+	          </button>
+	          <span class="mob-edit-badge">Q${qIdx + 1}</span>
+	          <button type="button" class="btn-mob-done-editing" onclick="doneEditing()">
+	            ${t("builderDoneBtn") || "Done"} ✓
+	          </button>
+	        </div>
+	        <div class="editor-field"><label>${t("builderQTextLabel") || "Question Text"}</label><textarea oninput="updateQText('${q.id}',this.value)">${escHtml(getLocalized(q.prompt || q.text, lang))}</textarea></div>
+	        <div class="editor-field"><label>${t("builderTypeLabel") || "Type"}</label>
+	          <div class="type-selector">${["choice", "yesno", "scale", "text"]
+	            .map(
+	              (typeKey) =>
+	                `<button class="type-btn ${q.type === typeKey ? "active" : ""}" onclick="changeType('${q.id}','${typeKey}')">${typeLabel(typeKey)}</button>`,
+	            )
+	            .join("")}</div></div>
+	        ${optionsHtml}
+	        <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>`;
+	      }
 
       function updateQText(id, v) {
         const q = builderForm.questions.find((x) => x.id === id);
@@ -5803,53 +6485,67 @@
           renderPhonePreview();
         }
       }
-      function doneEditing() {
-        editingQ = null;
-        $("#question-editor").style.display = "none";
-        const divider = $("#builder-editor-divider");
-        if (divider) divider.style.display = "none";
-        renderQuestionList();
-      }
+		      function doneEditing() {
+		        if (window.innerWidth <= 900) {
+		          editingQ = null;
+		          isEditingCover = false;
+		          renderCoverSlot();
+		          $("#question-editor").style.display = "none";
+		          const divider = $("#builder-editor-divider");
+		          if (divider) divider.style.display = "none";
+		          renderQuestionList();
+		          setMobileBuilderTab("outline");
+		        } else {
+		          selectCoverPage();
+		        }
+		      }
 
-      $("#add-q-btn").addEventListener("click", () => {
-        const id = "q_" + uid();
-        const qNum = builderForm.questions.length + 1;
-        builderForm.questions.push({
-          id,
-          prompt: {
-            en: `Question ${qNum}`,
-            id: `Pertanyaan ${qNum}`,
-            zh: `题目 ${qNum}`
-          },
-          text: `Question ${qNum}`,
-          type: "choice",
-          options: [
-            { label: { en: "Option 1", id: "Pilihan 1", zh: "选项 1" }, score: 1 },
-            { label: { en: "Option 2", id: "Pilihan 2", zh: "选项 2" }, score: 2 },
-          ],
-        });
-        saveForm();
-        editingQ = id;
-        renderQuestionList();
-        renderQuestionEditor();
-        renderPhonePreview();
-      });
+		      $("#add-q-btn").addEventListener("click", () => {
+		        const id = "q_" + uid();
+		        const qNum = builderForm.questions.length + 1;
+		        builderForm.questions.push({
+		          id,
+		          prompt: {
+			            en: `Question ${qNum}`,
+			            id: `Pertanyaan ${qNum}`,
+			            zh: `题目 ${qNum}`
+		          },
+		          text: `Question ${qNum}`,
+		          type: "choice",
+		          options: [
+			            { label: { en: "Option 1", id: "Pilihan 1", zh: "选项 1" }, score: 1 },
+			            { label: { en: "Option 2", id: "Pilihan 2", zh: "选项 2" }, score: 2 },
+		          ],
+		        });
+		        saveForm();
+		        isEditingCover = false;
+		        editingQ = id;
+		        phonePreviewIdx = builderForm.questions.length - 1;
+		        renderCoverSlot();
+		        renderQuestionList();
+		        renderQuestionEditor();
+		        renderPhonePreview();
+		        if (window.innerWidth <= 900) {
+		          setMobileBuilderTab("edit");
+		        }
+		      });
 
-      function deleteQuestion(id) {
-        builderForm.questions = builderForm.questions.filter((x) => x.id !== id);
-        if (editingQ === id) {
-          editingQ = builderForm.questions[0]?.id || null;
-          if (!editingQ) {
-            $("#question-editor").style.display = "none";
-            const divider = $("#builder-editor-divider");
-            if (divider) divider.style.display = "none";
-          }
-        }
-        saveForm();
-        renderQuestionList();
-        if (editingQ) renderQuestionEditor();
-        renderPhonePreview();
-      }
+	      function deleteQuestion(id) {
+	        builderForm.questions = builderForm.questions.filter((x) => x.id !== id);
+	        if (editingQ === id) {
+	          editingQ = builderForm.questions[0]?.id || null;
+	          if (!editingQ) {
+	            $("#question-editor").style.display = "none";
+	            const divider = $("#builder-editor-divider");
+	            if (divider) divider.style.display = "none";
+	          }
+	        }
+	        saveForm();
+	        renderCoverSlot();
+	        renderQuestionList();
+	        if (editingQ) renderQuestionEditor();
+	        renderPhonePreview();
+	      }
 
       // ===================== TEST SIMULATION MODAL =====================
       let testAnswers = {};
@@ -5877,7 +6573,9 @@
       function openTestModal() {
         if (!builderForm) return;
         testAnswers = {};
-        testCurrentIdx = 0;
+        const cover = builderForm.coverPage || {};
+        const isCoverEnabled = cover.enabled !== false;
+        testCurrentIdx = isCoverEnabled ? -1 : 0;
         const lang = currentAdminLang || "id";
         const formTitle = getLocalized(builderForm.title, lang) || "Untitled Form";
         const titleEl = $("#test-modal-form-title");
@@ -5895,7 +6593,9 @@
 
       function resetTestModal() {
         testAnswers = {};
-        testCurrentIdx = 0;
+        const cover = builderForm.coverPage || {};
+        const isCoverEnabled = cover.enabled !== false;
+        testCurrentIdx = isCoverEnabled ? -1 : 0;
         renderTestQuestion();
       }
 
@@ -5921,8 +6621,13 @@
       }
 
       function testPrevQuestion() {
+        const cover = builderForm.coverPage || {};
+        const isCoverEnabled = cover.enabled !== false;
         if (testCurrentIdx > 0) {
           testCurrentIdx--;
+          renderTestQuestion();
+        } else if (testCurrentIdx === 0 && isCoverEnabled) {
+          testCurrentIdx = -1;
           renderTestQuestion();
         }
       }
@@ -5942,6 +6647,57 @@
         if (!body) return;
         const lang = currentAdminLang || "id";
         updateTestScoreDisplay();
+
+        // Cover Page Screen in Test Modal
+        if (testCurrentIdx === -1) {
+          const cover = builderForm.coverPage || {};
+          const coverTitle = getLocalized(cover.title || builderForm.title, lang) || "Untitled Assessment Form";
+          const coverDesc = getLocalized(cover.description || builderForm.description, lang) || "";
+          const startBtnText = getLocalized(cover.buttonText, lang) || (lang === "id" ? "Mulai Pengisian" : lang === "zh" ? "开始填写" : "Start Form");
+          const voiceBtnText = getLocalized(cover.voiceButtonText, lang) || (lang === "id" ? "Mulai dengan Suara" : lang === "zh" ? "语音模式开始" : "Start with Voice");
+          const consentText = getLocalized(cover.consentText, lang) || (lang === "id" ? "Saya menyetujui pengisian data ini untuk keperluan evaluasi & pelayanan." : "I agree to submit this information for evaluation & service delivery.");
+          const showName = cover.showNameInput ?? true;
+          const showConsent = cover.showConsent ?? true;
+          const estTime = cover.estimatedMinutes || (qs.length <= 3 ? 1 : qs.length <= 6 ? 2 : 3);
+          const logoUrl = cover.bannerLogoUrl || "";
+
+          body.innerHTML = `
+            <div style="max-width: 520px; margin: 0 auto; text-align: center; padding: 10px 0;">
+              ${logoUrl ? `<div style="margin-bottom: 16px;"><img src="${escHtml(logoUrl)}" style="max-height: 52px; max-width: 220px; object-fit: contain; margin: 0 auto;" /></div>` : ""}
+              <div style="display:inline-flex; align-items:center; gap:8px; margin-bottom:14px; font-size:11.5px; font-weight:750; color:var(--text3); background:#f1f5f9; padding:4px 12px; border-radius:99px;">
+                <span>⏱️ ~${estTime} min</span>
+                <span>•</span>
+                <span>📋 ${qs.length} Pertanyaan</span>
+                <span>•</span>
+                <span style="color:#059669;">🔒 Terenkripsi</span>
+              </div>
+              <h3 style="font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 10px; line-height: 1.35;">${escHtml(coverTitle)}</h3>
+              <p style="font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; text-align: center;">${escHtml(coverDesc)}</p>
+
+              ${showName ? `
+                <div style="text-align: left; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                  <label style="font-size: 11.5px; font-weight: 800; color: #475569; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${lang === "id" ? "Nama Lengkap Pasien" : "Full Name"}</label>
+                  <input type="text" placeholder="${lang === "id" ? "Contoh: Budi Santoso" : "e.g. Jane Doe"}" style="width: 100%; padding: 10px 14px; font-size: 13.5px; border: 1.5px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; background: #ffffff;" />
+                </div>` : ""}
+
+              ${showConsent ? `
+                <div style="font-size: 12px; color: #64748b; display: flex; align-items: flex-start; gap: 8px; text-align: left; margin-bottom: 24px; padding: 0 4px;">
+                  <input type="checkbox" checked style="width: 16px; height: 16px; margin-top: 2px; cursor: pointer;" />
+                  <span>${escHtml(consentText)}</span>
+                </div>` : ""}
+
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+                <button type="button" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14.5px; font-weight: 800; border-radius: 10px; box-shadow: 0 4px 12px rgba(46, 134, 171, 0.25);" onclick="testCurrentIdx=0; renderTestQuestion();">
+                  ${escHtml(startBtnText)} &rarr;
+                </button>
+                <button type="button" class="btn" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 750; border-radius: 10px; background: #ecfdf5; color: #065f46; border: 1.5px solid #a7f3d0;" onclick="testCurrentIdx=0; renderTestQuestion();">
+                  🎙️ ${escHtml(voiceBtnText)}
+                </button>
+              </div>
+            </div>
+          `;
+          return;
+        }
 
         if (!qs.length) {
           body.innerHTML = `
@@ -6164,78 +6920,147 @@
         });
       }
 
-      // Phone preview (FIX 3: always re-renders on any change)
-      function renderPhonePreview() {
-        if (!builderForm) return;
-        const qs = builderForm.questions;
-        const screen = $("#phone-screen");
-        if (!qs.length) {
-          screen.innerHTML =
-            '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:14px">Add questions to see preview</div>';
-          return;
-        }
-        const lang = currentAdminLang || "id";
-        const qi = Math.min(phonePreviewIdx, qs.length - 1);
-        phonePreviewIdx = qi; // clamp index
-        const q = qs[qi];
-        const pct = (((qi + 1) / qs.length) * 100).toFixed(0);
-        let content = "";
-        if (q.type === "choice") {
-          content = `<div class="phone-options">${(q.options || []).map((o) => `<button class="phone-opt" onclick="advancePhone()">${escHtml(getLocalized(o.label, lang))}</button>`).join("")}</div>`;
-        } else if (q.type === "yesno") {
-          const yesTxt = lang === "id" ? "Ya" : lang === "zh" ? "是" : "Yes";
-          const noTxt = lang === "id" ? "Tidak" : lang === "zh" ? "否" : "No";
-          content = `<div class="phone-yesno"><button class="yes" onclick="advancePhone()">${yesTxt}</button><button class="no" onclick="advancePhone()">${noTxt}</button></div>`;
-        } else if (q.type === "scale") {
-          const max = q.max || 10;
-          let dots = "";
-          for (let i = 0; i <= max; i++)
-            dots += `<button class="scale-dot ${i === Math.floor(max / 2) ? "active" : ""}" onclick="advancePhone()">${i}</button>`;
-          content = `<div class="phone-scale"><div class="scale-value">${Math.floor(max / 2)}</div><div class="scale-track">${dots}</div></div>`;
-        } else {
-          const placeh = lang === "id" ? "Ketik jawaban Anda..." : lang === "zh" ? "请输入您的回答..." : "Type your answer...";
-          content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="${placeh}"></textarea>`;
-        }
-        const qOfText = lang === "id" ? `Pertanyaan ${qi + 1} dari ${qs.length}` : lang === "zh" ? `第 ${qi + 1} 题 / 共 ${qs.length} 题` : `Question ${qi + 1} of ${qs.length}`;
-        const prevText = lang === "id" ? "← Seb" : lang === "zh" ? "← 上一题" : "← Prev";
-        const nextText = lang === "id" ? "Lanjut →" : lang === "zh" ? "下一题 →" : "Next →";
+		      // Phone preview (FIX 3: always re-renders on any change)
+		      function renderPhonePreview() {
+		        if (!builderForm) return;
+		        const qs = builderForm.questions || [];
+		        const screen = $("#phone-screen");
+		        const lang = currentAdminLang || "id";
+		        const cover = builderForm.coverPage || {};
+		        const isCoverEnabled = cover.enabled !== false;
 
-        screen.innerHTML = `
-        <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
-        <div class="phone-qnum">
-          <span>${qOfText}</span>
-          <div class="phone-nav-pills">
-            <button class="phone-nav-btn" onclick="prevPhone()" ${qi === 0 ? "disabled" : ""}>${prevText}</button>
-            <button class="phone-nav-btn" onclick="nextPhone()" ${qi >= qs.length - 1 ? "disabled" : ""}>${nextText}</button>
-          </div>
-        </div>
-        <div class="phone-question">${escHtml(getLocalized(q.prompt || q.text, lang))}</div>
-        ${content}`;
-      }
-      function prevPhone() {
-        if (!builderForm || !builderForm.questions.length) return;
-        if (phonePreviewIdx > 0) {
-          phonePreviewIdx--;
-          renderPhonePreview();
-        }
-      }
-      function nextPhone() {
-        if (!builderForm || !builderForm.questions.length) return;
-        if (phonePreviewIdx < builderForm.questions.length - 1) {
-          phonePreviewIdx++;
-          renderPhonePreview();
-        }
-      }
-      function advancePhone() {
-        if (!builderForm || !builderForm.questions.length) return;
-        if (phonePreviewIdx < builderForm.questions.length - 1) {
-          phonePreviewIdx++;
-          renderPhonePreview();
-        } else {
-          phonePreviewIdx = 0;
-          renderPhonePreview();
-        }
-      }
+		        // Preview Cover Page if phonePreviewIdx === -1
+		        if (phonePreviewIdx === -1) {
+		          if (!isCoverEnabled) {
+		            screen.innerHTML = `
+		              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:24px 16px; color:var(--text3);">
+		                <div style="font-size:32px; margin-bottom:10px;">⏭️</div>
+		                <h4 style="font-size:14.5px; font-weight:800; color:var(--navy); margin-bottom:6px;">Cover Page Dinonaktifkan</h4>
+		                <p style="font-size:12px; line-height:1.5; color:var(--text2); margin-bottom:16px;">Pengguna akan langsung masuk ke Pertanyaan 1 tanpa melewati halaman pembuka.</p>
+		                <button type="button" class="btn btn-primary btn-sm" style="border-radius:8px;" onclick="phonePreviewIdx=0; renderPhonePreview();">
+		                  Lihat Pertanyaan 1 &rarr;
+		                </button>
+		              </div>
+		            `;
+		            return;
+		          }
+		          const coverTitle = getLocalized(cover.title || builderForm.title, lang);
+		          const coverDesc = getLocalized(cover.description || builderForm.description, lang);
+		          const startBtnText = getLocalized(cover.buttonText, lang) || (lang === "id" ? "Mulai Pengisian" : lang === "zh" ? "开始填写" : "Start Form");
+		          const voiceBtnText = getLocalized(cover.voiceButtonText, lang) || (lang === "id" ? "Mulai dengan Suara" : lang === "zh" ? "语音模式开始" : "Start with Voice");
+		          const consentText = getLocalized(cover.consentText, lang) || (lang === "id" ? "Saya menyetujui pengisian data ini." : "I agree to submit this information.");
+		          const showName = cover.showNameInput ?? true;
+		          const showConsent = cover.showConsent ?? true;
+		          const estTime = cover.estimatedMinutes || (qs.length <= 3 ? 1 : qs.length <= 6 ? 2 : 3);
+		          const logoUrl = cover.bannerLogoUrl || "";
+
+		          screen.innerHTML = `
+		            <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; padding:16px 12px; box-sizing:border-box;">
+		              <div>
+		                ${logoUrl ? `<div style="text-align:center; margin-bottom:12px;"><img src="${escHtml(logoUrl)}" style="max-height:36px; max-width:100%; object-fit:contain;" /></div>` : ""}
+		                <div style="display:flex; justify-content:center; gap:6px; margin-bottom:10px; font-size:10px; font-weight:750; color:var(--text3);">
+		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">⏱️ ~${estTime} min</span>
+		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">📋 ${qs.length} Qs</span>
+		                  <span style="background:#ecfdf5; color:#059669; padding:2px 6px; border-radius:99px;">🔒 AES-256</span>
+		                </div>
+		                <h3 style="font-size:16px; font-weight:800; color:var(--navy); line-height:1.3; text-align:center; margin-bottom:6px;">${escHtml(coverTitle)}</h3>
+		                <p style="font-size:12px; color:var(--text2); line-height:1.45; text-align:center; margin-bottom:14px;">${escHtml(coverDesc)}</p>
+
+		                ${showName ? `
+		                  <div style="margin-bottom:10px;">
+		                    <label style="font-size:10.5px; font-weight:750; color:var(--text3); display:block; margin-bottom:3px; text-transform:uppercase;">${lang === "id" ? "Nama Lengkap" : "Full Name"}</label>
+		                    <input type="text" placeholder="${lang === "id" ? "e.g. Budi Santoso" : "e.g. Jane Doe"}" style="width:100%; padding:7px 10px; font-size:12px; border:1px solid var(--border); border-radius:8px; box-sizing:border-box; background:#fff;" />
+		                  </div>` : ""}
+
+		                ${showConsent ? `
+		                  <div style="font-size:10.5px; color:var(--text3); display:flex; align-items:flex-start; gap:5px; margin-bottom:12px;">
+		                    <input type="checkbox" checked style="margin-top:2px;" />
+		                    <span>${escHtml(consentText)}</span>
+		                  </div>` : ""}
+		              </div>
+
+		              <div style="display:flex; flex-direction:column; gap:6px; width:100%;">
+		                <button type="button" class="btn btn-primary" style="width:100%; padding:9px; font-size:12.5px; font-weight:750; border-radius:10px;" onclick="phonePreviewIdx=0; renderPhonePreview();">
+		                  ${escHtml(startBtnText)} &rarr;
+		                </button>
+		                <button type="button" class="btn" style="width:100%; padding:7px; font-size:11.5px; font-weight:700; border-radius:10px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;" onclick="phonePreviewIdx=0; renderPhonePreview();">
+		                  🎙️ ${escHtml(voiceBtnText)}
+		                </button>
+		              </div>
+		            </div>
+		          `;
+		          return;
+		        }
+
+	        if (!qs.length) {
+	          screen.innerHTML =
+	            '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:14px">Add questions to see preview</div>';
+	          return;
+	        }
+	        const qi = Math.min(Math.max(0, phonePreviewIdx), qs.length - 1);
+	        phonePreviewIdx = qi; // clamp index
+	        const q = qs[qi];
+	        const pct = (((qi + 1) / qs.length) * 100).toFixed(0);
+	        let content = "";
+	        if (q.type === "choice") {
+	          content = `<div class="phone-options">${(q.options || []).map((o) => `<button class="phone-opt" onclick="advancePhone()">${escHtml(getLocalized(o.label, lang))}</button>`).join("")}</div>`;
+	        } else if (q.type === "yesno") {
+	          const yesTxt = lang === "id" ? "Ya" : lang === "zh" ? "是" : "Yes";
+	          const noTxt = lang === "id" ? "Tidak" : lang === "zh" ? "否" : "No";
+	          content = `<div class="phone-yesno"><button class="yes" onclick="advancePhone()">${yesTxt}</button><button class="no" onclick="advancePhone()">${noTxt}</button></div>`;
+	        } else if (q.type === "scale") {
+	          const max = q.max || 10;
+	          let dots = "";
+	          for (let i = 0; i <= max; i++)
+	            dots += `<button class="scale-dot ${i === Math.floor(max / 2) ? "active" : ""}" onclick="advancePhone()">${i}</button>`;
+	          content = `<div class="phone-scale"><div class="scale-value">${Math.floor(max / 2)}</div><div class="scale-track">${dots}</div></div>`;
+	        } else {
+	          const placeh = lang === "id" ? "Ketik jawaban Anda..." : lang === "zh" ? "请输入您的回答..." : "Type your answer...";
+	          content = `<textarea style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;min-height:80px;resize:none;font-family:inherit" placeholder="${placeh}"></textarea>`;
+	        }
+	        const qOfText = lang === "id" ? `Pertanyaan ${qi + 1} dari ${qs.length}` : lang === "zh" ? `第 ${qi + 1} 题 / 共 ${qs.length} 题` : `Question ${qi + 1} of ${qs.length}`;
+	        const prevText = lang === "id" ? "← Seb" : lang === "zh" ? "← 上一题" : "← Prev";
+	        const nextText = lang === "id" ? "Lanjut →" : lang === "zh" ? "下一题 →" : "Next →";
+
+	        screen.innerHTML = `
+	        <div class="phone-progress"><div class="bar" style="width:${pct}%"></div></div>
+	        <div class="phone-qnum">
+	          <span>${qOfText}</span>
+	          <div class="phone-nav-pills">
+	            <button class="phone-nav-btn" onclick="prevPhone()">${prevText}</button>
+	            <button class="phone-nav-btn" onclick="nextPhone()" ${qi >= qs.length - 1 ? "disabled" : ""}>${nextText}</button>
+	          </div>
+	        </div>
+	        <div class="phone-question">${escHtml(getLocalized(q.prompt || q.text, lang))}</div>
+	        ${content}`;
+	      }
+	      function prevPhone() {
+	        if (!builderForm || !builderForm.questions.length) return;
+	        if (phonePreviewIdx > 0) {
+	          phonePreviewIdx--;
+	          renderPhonePreview();
+	        } else if (phonePreviewIdx === 0) {
+	          phonePreviewIdx = -1;
+	          renderPhonePreview();
+	        }
+	      }
+	      function nextPhone() {
+	        if (!builderForm || !builderForm.questions.length) return;
+	        if (phonePreviewIdx < builderForm.questions.length - 1) {
+	          phonePreviewIdx++;
+	          renderPhonePreview();
+	        }
+	      }
+	      function advancePhone() {
+	        if (!builderForm || !builderForm.questions.length) return;
+	        if (phonePreviewIdx < builderForm.questions.length - 1) {
+	          phonePreviewIdx++;
+	          renderPhonePreview();
+	        } else {
+	          phonePreviewIdx = -1;
+	          renderPhonePreview();
+	        }
+	      }
 
       // ===================== SUBMISSIONS (Server-side search, filter & pagination) =====================
       let _subQuery = {

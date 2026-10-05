@@ -24,7 +24,7 @@ export function BrandMark({
         aria-label="9forms home"
       >
         <img
-          src={inverse ? "/logo-white.webp" : "/logo-full.webp"}
+          src={inverse ? "/logo-white.png?v=9f_v4" : "/logo-full.png?v=9f_v4"}
           alt="9forms"
           className={`${heightClass} w-auto object-contain select-none`}
           loading="eager"
@@ -60,12 +60,31 @@ export function PlatformMark({
         aria-label="9forms home"
       >
         <img
-          src={inverse ? "/logo-white.webp" : "/logo-full.webp"}
+          src={inverse ? "/logo-white.png?v=9f_v4" : "/logo-full.png?v=9f_v4"}
           alt="9forms"
           className={`${heightClass} w-auto object-contain select-none`}
           loading="eager"
         />
       </Link>
     </div>
+  );
+}
+
+export function PlatformFavicon({
+  size = 28,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <img
+      src="/logo-mark.png?v=9f_v4"
+      alt="9forms"
+      width={size}
+      height={size}
+      className={`object-contain select-none ${className}`}
+      loading="eager"
+    />
   );
 }

@@ -45,7 +45,6 @@ export const Route = createFileRoute("/api/auth/setup")({
 
           const isSuperAdminEmail =
             email === "admin@gmail.com" ||
-            email === "admin@springhope.clinic" ||
             email === "superadmin@9forms.com";
           const isBusinessInvite = isValidBusinessInvite(rawInvite);
 
@@ -76,24 +75,24 @@ export const Route = createFileRoute("/api/auth/setup")({
           ];
           const planTier = validTiers.includes(requestedTier) ? requestedTier : "business_monthly";
 
-          const passwordHash = await hashPassword(password);
           const existing = await dbQueryOne<{ id: string; role?: string; plan_tier?: string }>(
             "SELECT id, role, plan_tier FROM admins WHERE email = ?",
             [email],
           );
 
-          let adminId = "";
           if (existing) {
-            adminId = existing.id;
-            const updatedTier = planTier;
-            const updatedRole = isSuperAdminEmail ? "superadmin" : existing.role || role;
-            await dbExecute(
-              "UPDATE admins SET password_hash = ?, role = ?, plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
-              [passwordHash, updatedRole, updatedTier, adminId],
+            return Response.json(
+              {
+                success: false,
+                error: "ALREADY_EXISTS",
+                message: "Akun dengan email ini sudah terdaftar. Silakan login ke dashboard.",
+              },
+              { status: 409 },
             );
-          } else {
-            adminId = await createAdmin(email, passwordHash, role, planTier);
           }
+
+          const passwordHash = await hashPassword(password);
+          const adminId = await createAdmin(email, passwordHash, role, planTier);
 
           const token = await createSession(adminId);
           const isHttps = request.url.startsWith("https://");
