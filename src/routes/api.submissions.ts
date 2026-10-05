@@ -56,9 +56,19 @@ export const Route = createFileRoute("/api/submissions")({
           );
           const offset = (page - 1) * limit;
 
+          const isSuperAdmin =
+            user.role === "superadmin" ||
+            user.email === "admin@gmail.com" ||
+            user.email === "superadmin@9forms.com";
+
           // Build dynamic SQL query with parameters
           const conditions: string[] = [];
           const params: unknown[] = [];
+
+          if (!isSuperAdmin) {
+            conditions.push("(user_id = ? OR user_id = ?)");
+            params.push(user.adminId, user.email);
+          }
 
           if (formId) {
             conditions.push("form_id = ?");
@@ -98,27 +108,21 @@ export const Route = createFileRoute("/api/submissions")({
             created_at: string;
           }>(querySql, [...params, limit, offset]);
 
-          // Compute global stats for the selected form / filter
-          const statsSql = formId
-            ? `SELECT count(*) as total,
-                      COALESCE(SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END), 0) as high,
-                      COALESCE(SUM(CASE WHEN risk_level = 'mod' THEN 1 ELSE 0 END), 0) as mod,
-                      COALESCE(SUM(CASE WHEN risk_level = 'low' THEN 1 ELSE 0 END), 0) as low,
-                      COALESCE(AVG(score), 0) as avgScore
-               FROM submissions WHERE form_id = ?`
-            : `SELECT count(*) as total,
-                      COALESCE(SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END), 0) as high,
-                      COALESCE(SUM(CASE WHEN risk_level = 'mod' THEN 1 ELSE 0 END), 0) as mod,
-                      COALESCE(SUM(CASE WHEN risk_level = 'low' THEN 1 ELSE 0 END), 0) as low,
-                      COALESCE(AVG(score), 0) as avgScore
-               FROM submissions`;
+          // Compute stats scoped to user/tenant
+          const statsWhere = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+          const statsSql = `SELECT count(*) as total,
+                    COALESCE(SUM(CASE WHEN risk_level = 'high' THEN 1 ELSE 0 END), 0) as high,
+                    COALESCE(SUM(CASE WHEN risk_level = 'mod' THEN 1 ELSE 0 END), 0) as mod,
+                    COALESCE(SUM(CASE WHEN risk_level = 'low' THEN 1 ELSE 0 END), 0) as low,
+                    COALESCE(AVG(score), 0) as avgScore
+             FROM submissions ${statsWhere}`;
           const statsRow = await dbQueryOne<{
             total: number;
             high: number;
             mod: number;
             low: number;
             avgScore: number;
-          }>(statsSql, formId ? [formId] : []).catch(() => null);
+          }>(statsSql, params).catch(() => null);
 
           const stats = {
             total: statsRow ? Number(statsRow.total) || 0 : total,
@@ -386,7 +390,19 @@ export const Route = createFileRoute("/api/submissions")({
             );
           }
 
-          await dbExecute("DELETE FROM submissions WHERE id = ?", [id]);
+          const isSuperAdmin =
+            user.role === "superadmin" ||
+            user.email === "admin@gmail.com" ||
+            user.email === "superadmin@9forms.com";
+
+          if (isSuperAdmin) {
+            await dbExecute("DELETE FROM submissions WHERE id = ?", [id]);
+          } else {
+            await dbExecute(
+              "DELETE FROM submissions WHERE id = ? AND (user_id = ? OR user_id = ?)",
+              [id, user.adminId, user.email],
+            );
+          }
 
           return Response.json({
             success: true,

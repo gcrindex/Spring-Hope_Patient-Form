@@ -40,16 +40,44 @@ export const Route = createFileRoute("/api/forms")({
             }
           }
 
-          // List all forms
-          const rows = await dbQuery<{
+          // List all forms with tenant filtering
+          const user = await authenticateRequest(request);
+          const isSuperAdmin =
+            user &&
+            (user.role === "superadmin" ||
+              user.email === "admin@gmail.com" ||
+              user.email === "superadmin@9forms.com");
+
+          let rows: Array<{
             id: string;
             title: string;
             schema_json: string;
             created_at: string;
             updated_at: string;
-          }>(
-            "SELECT id, title, schema_json, created_at, updated_at FROM forms ORDER BY updated_at DESC",
-          );
+          }> = [];
+
+          if (isSuperAdmin || !user) {
+            rows = await dbQuery<{
+              id: string;
+              title: string;
+              schema_json: string;
+              created_at: string;
+              updated_at: string;
+            }>(
+              "SELECT id, title, schema_json, created_at, updated_at FROM forms ORDER BY updated_at DESC",
+            );
+          } else {
+            rows = await dbQuery<{
+              id: string;
+              title: string;
+              schema_json: string;
+              created_at: string;
+              updated_at: string;
+            }>(
+              "SELECT id, title, schema_json, created_at, updated_at FROM forms WHERE user_id = ? OR user_id = ? ORDER BY updated_at DESC",
+              [user.adminId, user.email],
+            );
+          }
 
           let forms = rows.map((r) => {
             try {
@@ -103,16 +131,30 @@ export const Route = createFileRoute("/api/forms")({
               : body.title?.en || body.title?.id || "Custom Form";
           const schemaJson = JSON.stringify(body);
 
-          const existing = await dbQueryOne("SELECT id FROM forms WHERE id = ?", [formId]);
+          const isSuperAdmin =
+            user.role === "superadmin" ||
+            user.email === "admin@gmail.com" ||
+            user.email === "superadmin@9forms.com";
+
+          const existing = await dbQueryOne<{ id: string; user_id?: string }>(
+            "SELECT id, user_id FROM forms WHERE id = ?",
+            [formId],
+          );
           if (existing) {
+            if (!isSuperAdmin && existing.user_id && existing.user_id !== user.adminId && existing.user_id !== user.email) {
+              return Response.json(
+                { success: false, error: "FORBIDDEN", message: "Anda tidak memiliki izin mengedit form ini." },
+                { status: 403 },
+              );
+            }
             await dbExecute(
               "UPDATE forms SET title = ?, schema_json = ?, updated_at = datetime('now') WHERE id = ?",
               [title, schemaJson, formId],
             );
           } else {
             await dbExecute(
-              "INSERT INTO forms (id, title, schema_json, created_at, updated_at) VALUES (?, ?, ?, datetime('now'), datetime('now'))",
-              [formId, title, schemaJson],
+              "INSERT INTO forms (id, title, schema_json, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))",
+              [formId, title, schemaJson, user.adminId],
             );
           }
 
@@ -136,6 +178,11 @@ export const Route = createFileRoute("/api/forms")({
             );
           }
 
+          const isSuperAdmin =
+            user.role === "superadmin" ||
+            user.email === "admin@gmail.com" ||
+            user.email === "superadmin@9forms.com";
+
           const url = new URL(request.url);
           let formId = url.searchParams.get("id") || "";
           if (!formId) {
@@ -150,8 +197,19 @@ export const Route = createFileRoute("/api/forms")({
             );
           }
 
-          await dbExecute("DELETE FROM forms WHERE id = ?", [formId]);
-          await dbExecute("DELETE FROM submissions WHERE form_id = ?", [formId]);
+          if (isSuperAdmin) {
+            await dbExecute("DELETE FROM forms WHERE id = ?", [formId]);
+            await dbExecute("DELETE FROM submissions WHERE form_id = ?", [formId]);
+          } else {
+            await dbExecute(
+              "DELETE FROM forms WHERE id = ? AND (user_id = ? OR user_id = ?)",
+              [formId, user.adminId, user.email],
+            );
+            await dbExecute(
+              "DELETE FROM submissions WHERE form_id = ? AND (user_id = ? OR user_id = ?)",
+              [formId, user.adminId, user.email],
+            );
+          }
 
           return Response.json({
             success: true,
