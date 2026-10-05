@@ -3839,13 +3839,13 @@
               class="admin-panel-card danger-zone-card"
               style="border: 1.5px solid #fecaca; background: #fffbfb; border-radius: 16px; padding: 24px; margin-top: 24px; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.04);"
             >
-              <div style="font-size: 11px; font-weight: 800; color: #dc2626; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px;">
+              <div style="font-size: 11px; font-weight: 800; color: #dc2626; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px;" data-i18n="dangerZoneKicker">
                 DANGER ZONE
               </div>
-              <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.3px;">
+              <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.3px;" data-i18n="dangerZoneTitle">
                 Delete account
               </h2>
-              <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0 0 20px 0; max-width: 820px;">
+              <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0 0 20px 0; max-width: 820px;" data-i18n="dangerZoneDesc">
                 This permanently removes your profile, forms, responses, API keys, and workspace history. Active subscriptions must be cancelled first. Payment providers may retain invoice and transaction records where legally required.
               </p>
 
@@ -3869,6 +3869,7 @@
                   style="background: #d97777; color: #ffffff; border: none; border-radius: 10px; padding: 10px 22px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;"
                   onmouseover="this.style.background='#dc2626'"
                   onmouseout="this.style.background='#d97777'"
+                  data-i18n="dangerZoneBtn"
                 >
                   DELETE PERMANENTLY
                 </button>
@@ -5817,6 +5818,12 @@
           testNextBtn: "Next Question →",
           testSubmitBtn: "Complete Test →",
           testSummaryLabel: "Test Response Summary",
+          dangerZoneKicker: "DANGER ZONE",
+          dangerZoneTitle: "Delete account",
+          dangerZoneDesc:
+            "This permanently removes your profile, forms, responses, API keys, and workspace history. Active subscriptions must be cancelled first. Payment providers may retain invoice and transaction records where legally required.",
+          dangerZonePlaceholder: "Confirm your password",
+          dangerZoneBtn: "DELETE PERMANENTLY",
           toastDraftSaved: "Form saved as Draft",
           toastSaved: "Changes saved",
         },
@@ -5968,6 +5975,12 @@
           testNextBtn: "Lanjut →",
           testSubmitBtn: "Selesaikan Tes →",
           testSummaryLabel: "Ringkasan Jawaban Uji Coba",
+          dangerZoneKicker: "ZONA BERBAHAYA",
+          dangerZoneTitle: "Hapus akun permanen",
+          dangerZoneDesc:
+            "Tindakan ini menghapus permanen profil akun, formulir, respon jawaban, kunci API, dan riwayat workspace Anda. Langganan aktif wajib dibatalkan terlebih dahulu. Penyedia pembayaran dapat menyimpan catatan invoice sesuai hukum yang berlaku.",
+          dangerZonePlaceholder: "Konfirmasi kata sandi Anda",
+          dangerZoneBtn: "HAPUS AKUN SELAMANYA",
           toastDraftSaved: "Formulir tersimpan sebagai Draf",
           toastSaved: "Perubahan berhasil disimpan",
         },
@@ -6117,6 +6130,12 @@
           testNextBtn: "下一题 →",
           testSubmitBtn: "完成测试 →",
           testSummaryLabel: "测试答题记录摘要",
+          dangerZoneKicker: "危险区域",
+          dangerZoneTitle: "注销并删除账户",
+          dangerZoneDesc:
+            "此操作将永久销毁您的个人资料、表单数据、所有用户提交记录、API 密钥与工作区历史。当前有效的付费订阅必须先取消。支付服务商可能会依法保留交易与账单凭证。",
+          dangerZonePlaceholder: "请输入您的登录密码以确认",
+          dangerZoneBtn: "永久删除此账户",
           toastDraftSaved: "表单已成功保存为草稿",
           toastSaved: "已保存修改",
         },
@@ -6180,6 +6199,11 @@
         const chatInput = $("#ai-chat-input");
         if (chatInput) {
           chatInput.placeholder = t("aiPlaceholder");
+        }
+
+        const dangerPassInput = $("#danger-zone-password-input");
+        if (dangerPassInput) {
+          dangerPassInput.placeholder = t("dangerZonePlaceholder");
         }
 
         if (typeof aiMessages !== "undefined" && aiMessages.length === 0) {
