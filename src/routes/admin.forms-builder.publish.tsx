@@ -25,7 +25,10 @@ export const Route = createFileRoute("/admin/forms-builder/publish")({
 
 function PublishPage() {
   const [copied, setCopied] = useState(false);
-  const publicUrl = "https://pesat.app/audit/patient-form/form.html?id=knee-pain-assessment";
+  const publicUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/intake?form=knee-pain-assessment`
+      : "https://9forms.com/intake?form=knee-pain-assessment";
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(publicUrl);

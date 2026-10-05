@@ -361,9 +361,9 @@ export const kneePainForm: AssessmentForm = {
     zh: "膝关节疼痛评估",
   },
   description: {
-    en: "A short guided assessment to help Spring Hope prepare for your visit.",
-    id: "Penilaian singkat untuk membantu Spring Hope mempersiapkan kunjungan Anda.",
-    zh: "一份简短的引导式评估，帮助 Spring Hope 为您的就诊做好准备。",
+    en: "A short guided assessment to help prepare for your visit.",
+    id: "Penilaian singkat untuk membantu mempersiapkan kunjungan Anda.",
+    zh: "一份简短的引导式评估，帮助为您的就诊做好准备。",
   },
   status: "published",
   questions: [
