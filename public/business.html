@@ -4019,10 +4019,182 @@
         },
       };
       let liveSubmissions = null;
+      function isCurrentSuperAdmin() {
+        const role = (localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
+        const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        return (
+          role === "superadmin" ||
+          email === "admin@gmail.com" ||
+          email === "admin@9forms.com" ||
+          email === "superadmin@9forms.com"
+        );
+      }
+
+      function getMasterForms() {
+        const d = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+        return [
+          {
+            id: "new-patient-intake",
+            title: "New Patient Registration",
+            status: "published",
+            submissions: 18,
+            createdAt: d(18),
+            updatedAt: d(1),
+            questions: [
+              {
+                id: "q_np_who",
+                text: "Who is this visit for?",
+                type: "choice",
+                options: [
+                  { label: "Myself", value: "myself", score: 1 },
+                  { label: "Family member / Parent", value: "family", score: 2 },
+                ],
+              },
+              {
+                id: "q_np_complaint",
+                text: "What hurts or bothers you most?",
+                type: "choice",
+                options: [
+                  { label: "Knee or Leg Pain", value: "knee-joint", score: 10 },
+                  { label: "Back or Waist Pain", value: "back-spine", score: 10 },
+                  { label: "Shoulder or Arm Pain", value: "shoulder-arm", score: 8 },
+                  { label: "Recent Fall or Injury", value: "fall-injury", score: 15 },
+                ],
+              },
+              {
+                id: "q_np_mobility",
+                text: "How are you walking today?",
+                type: "choice",
+                options: [
+                  { label: "Walk on my own", value: "independent", score: 0 },
+                  { label: "Need a cane or someone helping", value: "cane-assisted", score: 10 },
+                  { label: "Need wheelchair", value: "wheelchair", score: 18 },
+                ],
+              },
+              {
+                id: "q_np_pain_level",
+                text: "How strong is the pain today? (0-10)",
+                type: "scale",
+                max: 10,
+              },
+              {
+                id: "q_np_first_time",
+                text: "Is this your first time at this clinic?",
+                type: "yesno",
+                options: [
+                  { label: "Yes, First Time", value: "yes", score: 5 },
+                  { label: "No, Have Visited Before", value: "no", score: 0 },
+                ],
+              },
+              {
+                id: "q_np_name",
+                text: "What is your name or nickname?",
+                type: "text",
+              },
+            ],
+          },
+          {
+            id: "knee-pain-assessment",
+            title: "Knee Pain Assessment",
+            status: "published",
+            submissions: 34,
+            createdAt: d(20),
+            updatedAt: d(2),
+            questions: [
+              {
+                id: "q1",
+                text: "How old are you?",
+                type: "choice",
+                options: [
+                  { label: "Under 30", score: 1 },
+                  { label: "30-44", score: 2 },
+                  { label: "45-64", score: 3 },
+                  { label: "65 or older", score: 4 },
+                ],
+              },
+              {
+                id: "q2",
+                text: "How long have you had knee pain?",
+                type: "choice",
+                options: [
+                  { label: "Less than 1 month", score: 1 },
+                  { label: "1-6 months", score: 2 },
+                  { label: "6-12 months", score: 3 },
+                  { label: "Over 1 year", score: 4 },
+                ],
+              },
+              { id: "q3", text: "Rate your pain level", type: "scale", max: 10 },
+              { id: "q4", text: "Do you experience swelling in your knee?", type: "yesno" },
+              { id: "q5", text: "Does your knee lock or get stuck?", type: "yesno" },
+              { id: "q6", text: "Does your knee feel unstable or give way?", type: "yesno" },
+              {
+                id: "q7",
+                text: "How does pain affect your daily activities?",
+                type: "choice",
+                options: [
+                  { label: "No limitation", score: 1 },
+                  { label: "Mild limitation", score: 2 },
+                  { label: "Moderate limitation", score: 3 },
+                  { label: "Severe limitation", score: 4 },
+                ],
+              },
+              { id: "q8", text: "Have you had a previous knee injury?", type: "yesno" },
+            ],
+          },
+          {
+            id: "elderly-friendly-intake",
+            title: "Senior-Friendly Registration",
+            status: "published",
+            submissions: 22,
+            createdAt: d(10),
+            updatedAt: d(1),
+            questions: [
+              {
+                id: "q_ef_who",
+                text: "Who is answering these questions today?",
+                type: "choice",
+                options: [
+                  { label: "The Patient (Myself)", value: "myself", score: 0 },
+                  { label: "Family Member / Caregiver", value: "caregiver", score: 0 },
+                ],
+              },
+              {
+                id: "q_ef_body_part",
+                text: "Where is the main discomfort located?",
+                type: "choice",
+                options: [
+                  { label: "Knee or Leg", value: "knee", score: 10 },
+                  { label: "Hip or Pelvis", value: "hip", score: 10 },
+                  { label: "Back or Spine", value: "back", score: 10 },
+                  { label: "Shoulder or Arm", value: "shoulder", score: 8 },
+                ],
+              },
+              {
+                id: "q_ef_walk",
+                text: "How do you usually get around at home?",
+                type: "choice",
+                options: [
+                  { label: "Walk on my own", value: "walk-solo", score: 0 },
+                  { label: "With a walking stick / cane", value: "stick-cane", score: 5 },
+                  { label: "With a walker frame", value: "walker-frame", score: 12 },
+                  { label: "Using a wheelchair", value: "wheelchair", score: 18 },
+                ],
+              },
+              {
+                id: "q_ef_pain",
+                text: "How noticeable is the discomfort right now? (0–10)",
+                type: "scale",
+                max: 10,
+              },
+              { id: "q_ef_name", text: "What is your name or nickname?", type: "text" },
+            ],
+          },
+        ];
+      }
+
       function forms() {
         const stored = LS.get("pf_forms");
-        if (Array.isArray(stored)) {
-          // Permanently strip legacy mock forms
+        if (Array.isArray(stored) && stored.length > 0) {
           const filtered = stored.filter(
             (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up"
           );
@@ -4031,7 +4203,12 @@
           }
           return filtered;
         }
-        return [];
+        if (isCurrentSuperAdmin()) {
+          const master = getMasterForms();
+          LS.set("pf_forms", master);
+          return master;
+        }
+        return Array.isArray(stored) ? stored : [];
       }
       function submissions() {
         return liveSubmissions || LS.get("pf_submissions") || [];
