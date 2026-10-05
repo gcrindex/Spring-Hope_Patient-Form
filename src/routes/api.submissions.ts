@@ -202,7 +202,7 @@ export const Route = createFileRoute("/api/submissions")({
           const rawId =
             body.id && typeof body.id === "string"
               ? body.id.trim()
-              : `sub_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+              : `sub_${crypto.randomUUID()}`;
           const id = sanitizeString(rawId).slice(0, 64);
           const formId = sanitizeString(
             typeof body.formId === "string" ? body.formId : "new-patient-intake",

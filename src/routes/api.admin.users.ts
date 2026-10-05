@@ -145,23 +145,37 @@ export const Route = createFileRoute("/api/admin/users")({
             );
           }
 
+          const validTiers = [
+            "basic",
+            "plus",
+            "business",
+            "enterprise",
+            "basic_monthly",
+            "plus_monthly",
+            "business_monthly",
+            "basic_yearly",
+            "plus_yearly",
+            "business_yearly",
+          ];
+
           if (body.action === "update-plan") {
             const { userId, planTier } = body;
-            if (!userId || !planTier) {
+            const cleanTier = typeof planTier === "string" ? planTier.trim().toLowerCase() : "";
+            if (!userId || !validTiers.includes(cleanTier)) {
               return Response.json(
-                { success: false, error: "INVALID_INPUT", message: "userId and planTier are required." },
+                { success: false, error: "INVALID_INPUT", message: "ID pengguna dan paket valid wajib diisi." },
                 { status: 400 },
               );
             }
 
             await dbExecute(
               "UPDATE admins SET plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
-              [planTier, userId],
+              [cleanTier, userId],
             );
 
             return Response.json({
               success: true,
-              message: `Paket pengguna berhasil diperbarui menjadi ${planTier.toUpperCase()}!`,
+              message: `Paket pengguna berhasil diperbarui menjadi ${cleanTier.toUpperCase()}!`,
             });
           }
 
@@ -187,13 +201,16 @@ export const Route = createFileRoute("/api/admin/users")({
               );
             }
 
+            const cleanTier = typeof planTier === "string" && validTiers.includes(planTier.trim().toLowerCase())
+              ? planTier.trim().toLowerCase()
+              : "business_monthly";
+
             const passwordHash = await hashPassword(password);
-            const tier = planTier || "business_monthly";
-            const newId = await createAdmin(cleanEmail, passwordHash, "admin", tier);
+            const newId = await createAdmin(cleanEmail, passwordHash, "admin", cleanTier);
 
             return Response.json({
               success: true,
-              message: `Akun baru ${cleanEmail} dengan paket ${tier.toUpperCase()} berhasil dibuat!`,
+              message: `Akun baru ${cleanEmail} dengan paket ${cleanTier.toUpperCase()} berhasil dibuat!`,
               userId: newId,
             });
           }

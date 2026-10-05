@@ -61,9 +61,7 @@ export const Route = createFileRoute("/api/ai/extract-image")({
           );
         }
 
-        const apiKey =
-          getEnv("PESATROUTER_API_KEY") ||
-          "sk-pesat-08aae12ce105067518485a3742c70926fe4d8571f1f6ceec";
+        const apiKey = getEnv("PESATROUTER_API_KEY");
         const baseUrl = (getEnv("PESATROUTER_BASE_URL") || DEFAULT_BASE_URL).replace(
           /\/$/,
           "",
