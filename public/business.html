@@ -3180,7 +3180,20 @@
               <span style="display: inline-flex; align-items: center; gap: 4px; color: #38bdf8; font-weight: 700; font-size: 11px;">✦ Business Plan</span>
             </div>
           </div>
-          <button class="logout-btn" id="logout-btn" data-i18n="signOut">Sign Out</button>
+          <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+            <button class="logout-btn" id="logout-btn" data-i18n="signOut">Sign Out</button>
+            <button
+              type="button"
+              id="delete-my-account-btn"
+              onclick="openDeleteAccountModal()"
+              title="Hapus Akun Permanen"
+              style="background: none; border: none; font-size: 10px; color: #f87171; cursor: pointer; padding: 2px 4px; border-radius: 4px; text-decoration: underline; opacity: 0.85; transition: opacity 0.2s;"
+              onmouseover="this.style.opacity='1'"
+              onmouseout="this.style.opacity='0.85'"
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
       </aside>
       <div class="main-content">
@@ -4273,6 +4286,170 @@
       }
       function hideModal() {
         $("#modal-overlay").classList.remove("show");
+      }
+
+      function openDeleteAccountModal() {
+        const lang = currentAdminLang || "id";
+        const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const isMasterSuperAdmin = email === "admin@gmail.com" || email === "admin@9forms.com";
+
+        if (isMasterSuperAdmin) {
+          toast(
+            lang === "id"
+              ? "Akun Super Administrator master dilindungi dan tidak dapat dihapus."
+              : lang === "zh"
+                ? "超级管理主账户受保护，无法被删除。"
+                : "Primary Super Administrator account is protected and cannot be deleted.",
+            "error",
+          );
+          return;
+        }
+
+        const title =
+          lang === "id"
+            ? "Hapus Akun Permanen"
+            : lang === "zh"
+              ? "永久注销并删除账户"
+              : "Delete Account Permanently";
+
+        const warning =
+          lang === "id"
+            ? "Peringatan: Seluruh data formulir yang Anda buat, riwayat respon responden, dan status langganan akun Anda akan dihapus permanen dari server database dan tidak dapat dipulihkan."
+            : lang === "zh"
+              ? "警告：您创建的所有表单、收到的用户答卷记录以及套餐权限将被永久销毁，此操作无法撤销。"
+              : "Warning: All forms you created, collected response submissions, and your subscription access will be permanently deleted from the database. This action cannot be undone.";
+
+        const passLabel =
+          lang === "id"
+            ? "Masukkan Kata Sandi Anda untuk Konfirmasi:"
+            : lang === "zh"
+              ? "请输入您的登录密码以确认注销："
+              : "Enter your password to confirm deletion:";
+
+        const confirmBtn =
+          lang === "id"
+            ? "Hapus Akun Saya Selamanya"
+            : lang === "zh"
+              ? "确认删除我的账户"
+              : "Permanently Delete My Account";
+
+        const cancelBtn = lang === "id" ? "Batal" : lang === "zh" ? "取消" : "Cancel";
+
+        showModal(`
+          <div style="max-width: 440px; padding: 12px 6px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:36px; height:36px; border-radius:10px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; font-size:18px;">
+                ⚠️
+              </div>
+              <h3 style="margin:0; font-size:17px; font-weight:800; color:#991b1b;">${title}</h3>
+            </div>
+            <p style="font-size:12.5px; color:#64748b; line-height:1.5; margin:0 0 16px 0; background:#fff1f2; padding:10px 12px; border-radius:8px; border:1px solid #fecdd3;">
+              ${warning}
+            </p>
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:12px; font-weight:700; color:#334155; margin-bottom:6px;">
+                ${passLabel} <span style="color:#ef4444;">*</span>
+              </label>
+              <input
+                type="password"
+                id="delete-account-password-input"
+                placeholder="••••••••"
+                style="width:100%; padding:9px 12px; border:1.5px solid #cbd5e1; border-radius:8px; font-size:13px; box-sizing:border-box; outline:none;"
+                onkeydown="if(event.key==='Enter') executeSelfAccountDeletion()"
+              />
+              <div id="delete-account-err" style="color:#dc2626; font-size:11.5px; font-weight:600; margin-top:5px; display:none;"></div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                onclick="hideModal()"
+                style="padding:8px 14px; font-size:12px;"
+              >
+                ${cancelBtn}
+              </button>
+              <button
+                type="button"
+                id="delete-account-submit-btn"
+                class="btn btn-sm"
+                onclick="executeSelfAccountDeletion()"
+                style="padding:8px 14px; font-size:12px; font-weight:700; background:#dc2626; color:#fff; border:none; border-radius:8px; cursor:pointer;"
+              >
+                ${confirmBtn}
+              </button>
+            </div>
+          </div>
+        `);
+        setTimeout(() => {
+          const inp = $("#delete-account-password-input");
+          if (inp) inp.focus();
+        }, 100);
+      }
+
+      async function executeSelfAccountDeletion() {
+        const input = $("#delete-account-password-input");
+        const errEl = $("#delete-account-err");
+        const submitBtn = $("#delete-account-submit-btn");
+        if (!input) return;
+
+        const password = input.value;
+        if (!password) {
+          if (errEl) {
+            errEl.textContent = "Harap masukkan kata sandi Anda.";
+            errEl.style.display = "block";
+          }
+          input.focus();
+          return;
+        }
+
+        if (errEl) errEl.style.display = "none";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Memproses...";
+        }
+
+        try {
+          const res = await fetch("/api/auth/delete-account", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ password }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success) {
+            hideModal();
+            toast(data.message || "Akun berhasil dihapus permanen.", "success");
+            const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+            const safeKey = email.replace(/[^a-z0-9]/g, "_");
+            localStorage.removeItem(`pf_forms_${safeKey}`);
+            localStorage.removeItem(`pf_submissions_${safeKey}`);
+            localStorage.removeItem("pf_loggedin");
+            localStorage.removeItem("pf_admin_email");
+            localStorage.removeItem("pf_admin_role");
+            localStorage.removeItem("pf_admin_tier");
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 1200);
+          } else {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Hapus Akun Saya Selamanya";
+            }
+            if (errEl) {
+              errEl.textContent = data.message || "Gagal menghapus akun. Periksa kata sandi Anda.";
+              errEl.style.display = "block";
+            }
+          }
+        } catch (e) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Hapus Akun Saya Selamanya";
+          }
+          if (errEl) {
+            errEl.textContent = "Terjadi gangguan jaringan.";
+            errEl.style.display = "block";
+          }
+        }
       }
       $("#modal-overlay").addEventListener("click", (e) => {
         if (e.target === e.currentTarget) hideModal();
