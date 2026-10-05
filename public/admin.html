@@ -6908,6 +6908,16 @@
                     >
                       Save
                     </button>
+                    ${u.role !== "superadmin" && u.email !== "admin@gmail.com" ? `
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      style="padding: 4px 8px; font-size: 11px; border-radius: 6px; font-weight: 700; flex-shrink: 0; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;"
+                      onclick="deleteUserAccount('${u.id}', '${escHtml(u.email)}')"
+                      title="Hapus Akun Pengguna"
+                    >
+                      Delete
+                    </button>` : ""}
                   </div>
                 </td>
               </tr>
@@ -7044,6 +7054,37 @@
           }
         } catch (err) {
           console.error("Update plan failed", err);
+          toast("Terjadi kesalahan jaringan.", "error");
+        }
+      }
+
+      async function deleteUserAccount(userId, email) {
+        if (
+          !confirm(
+            `Apakah Anda yakin ingin menghapus akun ${email} beserta seluruh data formulirnya? Tindakan ini permanen.`,
+          )
+        ) {
+          return;
+        }
+        try {
+          const res = await fetch("/api/admin/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "delete-user", userId }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success) {
+            toast(data.message || `Akun ${email} berhasil dihapus!`, "success");
+            const safeKey = email.toLowerCase().replace(/[^a-z0-9]/g, "_");
+            localStorage.removeItem(`pf_forms_${safeKey}`);
+            localStorage.removeItem(`pf_submissions_${safeKey}`);
+            renderAdminArea();
+          } else {
+            toast(data.message || "Gagal menghapus akun pengguna.", "error");
+          }
+        } catch (err) {
+          console.error("Delete user failed", err);
           toast("Terjadi kesalahan jaringan.", "error");
         }
       }

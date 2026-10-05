@@ -215,6 +215,45 @@ export const Route = createFileRoute("/api/admin/users")({
             });
           }
 
+          if (body.action === "delete-user") {
+            const { userId } = body;
+            if (!userId) {
+              return Response.json(
+                { success: false, error: "INVALID_INPUT", message: "ID pengguna wajib disertakan." },
+                { status: 400 },
+              );
+            }
+
+            const targetUser = await dbQueryOne<{ id: string; email: string; role: string }>(
+              "SELECT id, email, role FROM admins WHERE id = ?",
+              [userId],
+            );
+            if (!targetUser) {
+              return Response.json(
+                { success: false, error: "NOT_FOUND", message: "Pengguna tidak ditemukan." },
+                { status: 404 },
+              );
+            }
+
+            // Prevent deleting the superadmin or own logged in account
+            if (targetUser.id === user.adminId || targetUser.email === "admin@gmail.com" || targetUser.email === "superadmin@9forms.com") {
+              return Response.json(
+                { success: false, error: "FORBIDDEN", message: "Tidak dapat menghapus akun Super Administrator utama." },
+                { status: 403 },
+              );
+            }
+
+            await dbExecute("DELETE FROM admins WHERE id = ?", [userId]);
+            await dbExecute("DELETE FROM sessions WHERE admin_id = ?", [userId]);
+            await dbExecute("DELETE FROM forms WHERE user_id = ? OR user_id = ?", [userId, targetUser.email]);
+            await dbExecute("DELETE FROM submissions WHERE user_id = ? OR user_id = ?", [userId, targetUser.email]);
+
+            return Response.json({
+              success: true,
+              message: `Akun ${targetUser.email} dan seluruh datanya berhasil dihapus!`,
+            });
+          }
+
           return Response.json(
             { success: false, error: "UNKNOWN_ACTION", message: "Aksi tidak dikenali." },
             { status: 400 },
