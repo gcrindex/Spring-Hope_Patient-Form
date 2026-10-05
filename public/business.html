@@ -3999,16 +3999,23 @@
       // ===================== UTILITY =====================
       const $ = (s) => document.querySelector(s);
       const $$ = (s) => document.querySelectorAll(s);
+      function getUserScopedKey(k) {
+        if (k === "pf_forms" || k === "pf_submissions") {
+          const email = (localStorage.getItem("pf_admin_email") || "default").toLowerCase().trim();
+          return `${k}_${email.replace(/[^a-z0-9]/g, "_")}`;
+        }
+        return k;
+      }
       const LS = {
         get(k) {
           try {
-            return JSON.parse(localStorage.getItem(k));
+            return JSON.parse(localStorage.getItem(getUserScopedKey(k)));
           } catch {
             return null;
           }
         },
         set(k, v) {
-          localStorage.setItem(k, JSON.stringify(v));
+          localStorage.setItem(getUserScopedKey(k), JSON.stringify(v));
         },
       };
       let liveSubmissions = null;
@@ -4581,15 +4588,23 @@
             updated = true;
           }
 
-          if (!storedForms.some((f) => f.id === "new-patient-intake")) {
-            storedForms.unshift(defaultNewPatientForm);
-            updated = true;
+          const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+          const isMasterSuperAdmin =
+            currentAdminEmail === "admin@gmail.com" ||
+            currentAdminEmail === "admin@9forms.com" ||
+            currentAdminEmail === "superadmin@9forms.com";
+
+          if (isMasterSuperAdmin) {
+            if (!storedForms.some((f) => f.id === "new-patient-intake")) {
+              storedForms.unshift(defaultNewPatientForm);
+              updated = true;
+            }
           }
           if (updated) {
             LS.set("pf_forms", storedForms);
             LS.set("pf_submissions", storedSubs);
           }
-          if (!storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
+          if (isMasterSuperAdmin && !storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
             LS.set("pf_submissions", [...storedSubs, ...efSubs]);
           }
         }

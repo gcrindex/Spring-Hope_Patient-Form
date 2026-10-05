@@ -164,7 +164,18 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
 		      )
 		      .run();
 
-		    d1InitDone = true;
+		    try {
+      await d1.prepare("ALTER TABLE forms ADD COLUMN user_id TEXT DEFAULT 'admin';").run();
+    } catch {
+      // column already exists
+    }
+    try {
+      await d1.prepare("ALTER TABLE submissions ADD COLUMN user_id TEXT DEFAULT 'admin';").run();
+    } catch {
+      // column already exists
+    }
+
+    d1InitDone = true;
   } catch (e) {
     console.warn("D1 table init notice:", e);
   }
@@ -209,6 +220,7 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
       schema_json TEXT NOT NULL,
+      user_id TEXT DEFAULT 'admin',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -220,6 +232,7 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
       score INTEGER DEFAULT 0,
       risk_level TEXT DEFAULT 'Normal',
       data_json TEXT NOT NULL,
+      user_id TEXT DEFAULT 'admin',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
