@@ -20,7 +20,7 @@ import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import type { AIDraftForm } from "../lib/ai-draft";
 
 export const Route = createFileRoute("/admin/new")({
-  head: () => ({ meta: [{ title: "Create New Form — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "Create New Form — 9forms.com" }] }),
   component: () => (
     <AdminAuthGuard>
       <CreateNewForm />

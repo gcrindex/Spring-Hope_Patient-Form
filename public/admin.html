@@ -7571,20 +7571,48 @@
       }
 
       function showPublishModal() {
+        const lang = currentAdminLang || "en";
+        const isId = lang === "id";
+        const isZh = lang === "zh";
+
+        const titleText = isId
+          ? "Formulir Anda telah tayang!"
+          : isZh
+            ? "您的表单已成功发布！"
+            : "Your form is live!";
+        const subText = isId
+          ? "Bagikan tautan ini kepada responden Anda:"
+          : isZh
+            ? "请将此链接分享给您的填表用户："
+            : "Share this link with your respondents:";
+        const copyText = isId ? "Salin" : isZh ? "复制" : "Copy";
+        const openText = isId
+          ? "Buka formulir &rarr;"
+          : isZh
+            ? "打开表单 &rarr;"
+            : "Open form &rarr;";
+        const qrText = isId
+          ? "Pindai kode QR untuk membuka formulir"
+          : isZh
+            ? "扫描二维码打开表单"
+            : "Scan QR code to open form";
+        const copiedToast = isId ? "Tautan berhasil disalin!" : isZh ? "已复制到剪贴板！" : "Link copied!";
+
         const localUrl =
           (window.location.host || "9forms.com") + "/intake?form=" + builderForm.id;
         const fullUrl =
           (window.location.origin || "https://9forms.com") + "/intake?form=" + builderForm.id;
+
         showModal(`<div class="publish-modal">
-        <h2>Your form is live!</h2>
-        <p style="color:var(--text2);font-size:14px;margin-bottom:4px">Share this link with your patients:</p>
-        <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('Copied!')">Copy</button></div>
-        <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">Open form &rarr;</a></div>
+        <h2>${titleText}</h2>
+        <p style="color:var(--text2);font-size:14px;margin-bottom:4px">${subText}</p>
+        <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('${copiedToast}')">${copyText}</button></div>
+        <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">${openText}</a></div>
         <div class="qr-box-container">
           <div class="qr-canvas-wrapper">
             <canvas id="publish-qr-canvas"></canvas>
           </div>
-          <p style="text-align:center;font-size:12px;font-weight:600;color:var(--navy);margin-top:10px">Scan QR code to open form</p>
+          <p style="text-align:center;font-size:12px;font-weight:600;color:var(--navy);margin-top:10px">${qrText}</p>
         </div>
       </div>`);
         const canvas = $("#publish-qr-canvas");

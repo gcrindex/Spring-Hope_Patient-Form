@@ -15,7 +15,7 @@ import { AdminShell } from "../components/admin-shell";
 import { AdminAuthGuard } from "../components/admin-auth-guard";
 
 export const Route = createFileRoute("/admin/forms-builder/publish")({
-  head: () => ({ meta: [{ title: "Publish Form — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "Publish Form — 9forms.com" }] }),
   component: () => (
     <AdminAuthGuard>
       <PublishPage />

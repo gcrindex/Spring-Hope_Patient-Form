@@ -18,7 +18,7 @@ import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import type { AIDraftForm } from "../lib/ai-draft";
 
 export const Route = createFileRoute("/admin/new/ai")({
-  head: () => ({ meta: [{ title: "AI Form Assistant — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "AI Form Assistant — 9forms.com" }] }),
   component: () => (
     <AdminAuthGuard>
       <AIAssistant />

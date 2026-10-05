@@ -26,7 +26,7 @@ import type { AIDraftForm } from "../lib/ai-draft";
 import { AdminAuthGuard } from "../components/admin-auth-guard";
 
 export const Route = createFileRoute("/admin/forms-builder/")({
-  head: () => ({ meta: [{ title: "Form Builder — Spring Hope" }] }),
+  head: () => ({ meta: [{ title: "Form Builder — 9forms.com" }] }),
   component: () => (
     <AdminAuthGuard>
       <FormsBuilder />
@@ -277,7 +277,7 @@ function FormsBuilder() {
             <div className="builder-phone-island" />
             <div className="builder-phone-content">
               <div className="preview-logo">
-                <span /> Spring Hope <small>EN</small>
+	                <span /> 9forms <small>EN</small>
               </div>
               <div className="preview-progress">
                 <i
