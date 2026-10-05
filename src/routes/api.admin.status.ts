@@ -23,9 +23,18 @@ export const Route = createFileRoute("/api/admin/status")({
             const isYearly = rawTier.includes("yearly") || rawTier.includes("annual");
             const baseTier = rawTier.replace(/_monthly|_yearly/g, "");
 
-            // Total responses / submissions count
-            const subRow = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM submissions");
-            const responsesUsed = subRow ? Number(subRow.count) : 0;
+            // Total responses / submissions count scoped to tenant
+            let responsesUsed = 0;
+            if (isSuperAdmin) {
+              const subRow = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM submissions");
+              responsesUsed = subRow ? Number(subRow.count) : 0;
+            } else {
+              const subRow = await dbQueryOne<{ count: number }>(
+                "SELECT count(*) as count FROM submissions WHERE user_id = ? OR user_id = ?",
+                [user.adminId, user.email],
+              );
+              responsesUsed = subRow ? Number(subRow.count) : 0;
+            }
 
             let responseLimit: number | null = 10000;
             let seatsLimit: number | null = 5;
