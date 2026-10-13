@@ -4193,6 +4193,11 @@
       }
 
       function forms() {
+        if (!isCurrentSuperAdmin()) {
+          const stored = LS.get("pf_forms");
+          // If stored is null/undefined for non-superadmin, return [] without seeding master forms
+          return Array.isArray(stored) ? stored : [];
+        }
         const stored = LS.get("pf_forms");
         if (Array.isArray(stored) && stored.length > 0) {
           const filtered = stored.filter(
