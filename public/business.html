@@ -4935,18 +4935,24 @@
             currentAdminEmail === "admin@9forms.com" ||
             currentAdminEmail === "superadmin@9forms.com";
 
-          if (isMasterSuperAdmin) {
-            if (!storedForms.some((f) => f.id === "new-patient-intake")) {
-              storedForms.unshift(defaultNewPatientForm);
-              updated = true;
+          if (!isMasterSuperAdmin) {
+            // New / non-superadmin accounts start completely empty
+            LS.set("pf_forms", []);
+            LS.set("pf_submissions", []);
+          } else {
+            if (isMasterSuperAdmin) {
+              if (!storedForms.some((f) => f.id === "new-patient-intake")) {
+                storedForms.unshift(defaultNewPatientForm);
+                updated = true;
+              }
             }
-          }
-          if (updated) {
-            LS.set("pf_forms", storedForms);
-            LS.set("pf_submissions", storedSubs);
-          }
-          if (isMasterSuperAdmin && !storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
-            LS.set("pf_submissions", [...storedSubs, ...efSubs]);
+            if (updated) {
+              LS.set("pf_forms", storedForms);
+              LS.set("pf_submissions", storedSubs);
+            }
+            if (isMasterSuperAdmin && !storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
+              LS.set("pf_submissions", [...storedSubs, ...efSubs]);
+            }
           }
         }
       }

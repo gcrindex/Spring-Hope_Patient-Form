@@ -32,6 +32,7 @@ import { Route as ApiAdminUsersRouteImport } from './routes/api.admin.users'
 import { Route as ApiAiExtractImageRouteImport } from './routes/api.ai.extract-image'
 import { Route as ApiAiExtractPdfRouteImport } from './routes/api.ai.extract-pdf'
 import { Route as ApiAiFormDraftRouteImport } from './routes/api.ai.form-draft'
+import { Route as ApiAuthDeleteAccountRouteImport } from './routes/api.auth.delete-account'
 import { Route as ApiAuthLoginRouteImport } from './routes/api.auth.login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api.auth.logout'
 import { Route as ApiAuthSetupRouteImport } from './routes/api.auth.setup'
@@ -154,6 +155,11 @@ const ApiAiFormDraftRoute = ApiAiFormDraftRouteImport.update({
   path: '/api/ai/form-draft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthDeleteAccountRoute = ApiAuthDeleteAccountRouteImport.update({
+  id: '/api/auth/delete-account',
+  path: '/api/auth/delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   id: '/api/auth/login',
   path: '/api/auth/login',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/delete-account': typeof ApiAuthDeleteAccountRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/delete-account': typeof ApiAuthDeleteAccountRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
@@ -264,6 +272,7 @@ export interface FileRoutesById {
   '/api/ai/extract-image': typeof ApiAiExtractImageRoute
   '/api/ai/extract-pdf': typeof ApiAiExtractPdfRoute
   '/api/ai/form-draft': typeof ApiAiFormDraftRoute
+  '/api/auth/delete-account': typeof ApiAuthDeleteAccountRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/setup': typeof ApiAuthSetupRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/delete-account'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/setup'
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/delete-account'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/setup'
@@ -356,6 +367,7 @@ export interface FileRouteTypes {
     | '/api/ai/extract-image'
     | '/api/ai/extract-pdf'
     | '/api/ai/form-draft'
+    | '/api/auth/delete-account'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/setup'
@@ -386,6 +398,7 @@ export interface RootRouteChildren {
   ApiAiExtractImageRoute: typeof ApiAiExtractImageRoute
   ApiAiExtractPdfRoute: typeof ApiAiExtractPdfRoute
   ApiAiFormDraftRoute: typeof ApiAiFormDraftRoute
+  ApiAuthDeleteAccountRoute: typeof ApiAuthDeleteAccountRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthSetupRoute: typeof ApiAuthSetupRoute
@@ -557,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiFormDraftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/delete-account': {
+      id: '/api/auth/delete-account'
+      path: '/api/auth/delete-account'
+      fullPath: '/api/auth/delete-account'
+      preLoaderRoute: typeof ApiAuthDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/login': {
       id: '/api/auth/login'
       path: '/api/auth/login'
@@ -629,6 +649,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiExtractImageRoute: ApiAiExtractImageRoute,
   ApiAiExtractPdfRoute: ApiAiExtractPdfRoute,
   ApiAiFormDraftRoute: ApiAiFormDraftRoute,
+  ApiAuthDeleteAccountRoute: ApiAuthDeleteAccountRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthSetupRoute: ApiAuthSetupRoute,
