@@ -87,8 +87,8 @@ export const Route = createFileRoute("/api/forms")({
             }
           });
 
-          // Seed default template if database is completely empty
-          if (forms.length === 0) {
+          // Seed default template if database is completely empty (ONLY for superadmin)
+          if (forms.length === 0 && isSuperAdmin) {
             const { newPatientForm } = await import("../lib/patientform");
             forms = [newPatientForm];
           }
