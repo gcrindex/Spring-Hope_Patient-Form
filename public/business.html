@@ -4717,6 +4717,19 @@
         let storedForms = LS.get("pf_forms");
         let storedSubs = LS.get("pf_submissions") || [];
 
+        const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const isMasterSuperAdmin =
+          currentAdminEmail === "admin@gmail.com" ||
+          currentAdminEmail === "admin@9forms.com" ||
+          currentAdminEmail === "superadmin@9forms.com";
+
+        if (!isMasterSuperAdmin) {
+          // Non-superadmin accounts always start with empty forms and submissions
+          LS.set("pf_forms", []);
+          LS.set("pf_submissions", []);
+          return;
+        }
+
         if (!storedForms) {
           const forms = [
             defaultNewPatientForm,
