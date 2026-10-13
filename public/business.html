@@ -581,6 +581,9 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 16px;
         margin-bottom: 28px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
       }
       .stat-card {
         background: var(--white);
@@ -588,6 +591,8 @@
         border-radius: var(--radius);
         padding: 20px;
         box-shadow: var(--shadow);
+        min-width: 200px;
+        box-sizing: border-box;
       }
       .stat-card .label {
         font-size: 12px;
