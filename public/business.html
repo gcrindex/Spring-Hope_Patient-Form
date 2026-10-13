@@ -5859,7 +5859,7 @@
         const inviteCode = getInviteCode();
         const isRegisterHash = location.hash.startsWith("#/register");
 
-        if (isRegisterHash || (Boolean(inviteCode) && _authMode === "register")) {
+        if (isRegisterHash || _authMode === "register") {
           setAuthMode("register");
           return;
         }
