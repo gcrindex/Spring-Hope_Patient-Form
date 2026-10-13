@@ -6017,13 +6017,23 @@
           });
           const data = await res.json().catch(() => ({}));
 
-	          if (res.ok && data.success) {
-	            setLoggedIn(
-	              true,
-	              data.user?.email || email,
-	              data.user?.role || "admin",
-	              data.user?.planTier || "business",
-	            );
+		          if (res.ok && data.success) {
+		            // Clear previous user's localStorage forms/submissions cache upon new login/register
+		            const targetEmail = (data.user?.email || email || "").toLowerCase().trim();
+		            if (targetEmail) {
+		              const safeKey = targetEmail.replace(/[^a-z0-9]/g, "_");
+		              const existingForms = localStorage.getItem(`pf_forms_${safeKey}`);
+		              if (!existingForms) {
+		                localStorage.setItem(`pf_forms_${safeKey}`, JSON.stringify([]));
+		                localStorage.setItem(`pf_submissions_${safeKey}`, JSON.stringify([]));
+		              }
+		            }
+		            setLoggedIn(
+		              true,
+		              data.user?.email || email,
+		              data.user?.role || "admin",
+		              data.user?.planTier || "business",
+		            );
 	            await checkServerAuth();
 	            toast(data.message || "Berhasil masuk!", "success");
 	            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
