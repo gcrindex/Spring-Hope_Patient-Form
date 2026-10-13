@@ -4532,118 +4532,23 @@
 
       // ===================== SEED DATA (FIX 1: slug IDs) =====================
       function seedData() {
+        const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const isMasterSuperAdmin =
+          currentAdminEmail === "admin@gmail.com" ||
+          currentAdminEmail === "admin@9forms.com" ||
+          currentAdminEmail === "superadmin@9forms.com";
+
+        if (!isMasterSuperAdmin) {
+          // Force non-superadmin accounts to have 0 forms and 0 submissions immediately
+          LS.set("pf_forms", []);
+          LS.set("pf_submissions", []);
+          return;
+        }
+
         const now = new Date();
         const d = (n) => new Date(now - n * 86400000).toISOString().slice(0, 10);
         const dt = (n, time) =>
           new Date(now - n * 86400000).toISOString().slice(0, 10) + "T" + time + "Z";
-
-        const defaultNewPatientForm = {
-          id: "new-patient-intake",
-          title: "New Patient Registration",
-          status: "published",
-          submissions: 18,
-          createdAt: d(18),
-          updatedAt: d(1),
-          questions: [
-            {
-              id: "q_np_who",
-              text: "Who is this visit for?",
-              type: "choice",
-              options: [
-                { label: "Myself", value: "myself", score: 1 },
-                { label: "Family member / Parent", value: "family", score: 2 },
-              ],
-            },
-            {
-              id: "q_np_complaint",
-              text: "What hurts or bothers you most?",
-              type: "choice",
-              options: [
-                { label: "Knee or Leg Pain", value: "knee-joint", score: 10 },
-                { label: "Back or Waist Pain", value: "back-spine", score: 10 },
-                { label: "Shoulder or Arm Pain", value: "shoulder-arm", score: 8 },
-                { label: "Recent Fall or Injury", value: "fall-injury", score: 15 },
-              ],
-            },
-            {
-              id: "q_np_mobility",
-              text: "How are you walking today?",
-              type: "choice",
-              options: [
-                { label: "Walk on my own", value: "independent", score: 0 },
-                { label: "Need a cane or someone helping", value: "cane-assisted", score: 10 },
-                { label: "Need wheelchair", value: "wheelchair", score: 18 },
-              ],
-            },
-            {
-              id: "q_np_pain_level",
-              text: "How strong is the pain today? (0-10)",
-              type: "scale",
-              max: 10,
-            },
-            {
-              id: "q_np_first_time",
-              text: "Is this your first time at this clinic?",
-              type: "yesno",
-              options: [
-                { label: "Yes, First Time", value: "yes", score: 5 },
-                { label: "No, Have Visited Before", value: "no", score: 0 },
-              ],
-            },
-            {
-              id: "q_np_name",
-              text: "Patient Name",
-              type: "text",
-            },
-          ],
-        };
-
-        const defaultElderlyFriendlyForm = {
-          id: "elderly-friendly-intake",
-          title: "Senior-Friendly Registration",
-          status: "published",
-          submissions: 5,
-          createdAt: d(10),
-          updatedAt: d(1),
-          questions: [
-            {
-              id: "q_ef_who",
-              text: "Who is this visit for?",
-              type: "choice",
-              options: [
-                { label: "Myself", score: 1 },
-                { label: "Family member / Parent", score: 2 },
-              ],
-            },
-            {
-              id: "q_ef_complaint",
-              text: "What hurts or bothers you most?",
-              type: "choice",
-              options: [
-                { label: "Knee or Leg Pain", score: 10 },
-                { label: "Back or Waist Pain", score: 10 },
-                { label: "Shoulder or Arm Pain", score: 8 },
-              ],
-            },
-            {
-              id: "q_ef_mobility",
-              text: "How do you walk or get around?",
-              type: "choice",
-              options: [
-                { label: "Independent (No help needed)", score: 0 },
-                { label: "Using Cane or Walker", score: 15 },
-                { label: "Wheelchair / Need assistance", score: 25 },
-              ],
-            },
-            {
-              id: "q_ef_pain_level",
-              text: "How severe is the pain right now?",
-              type: "scale",
-              max: 10,
-            },
-            { id: "q_ef_name", text: "What is your name or nickname?", type: "text" },
-          ],
-        };
 
         const npSubs = [
           {
