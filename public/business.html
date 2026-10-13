@@ -5661,6 +5661,7 @@
 
       function parseRoute() {
         const h = getRoute();
+        const rawHash = location.hash;
         if (h.startsWith("#/builder/")) {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           return { screen: "builder", id: h.split("/")[2], targetHash: location.hash };
@@ -5680,11 +5681,14 @@
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           return { screen: "choice", targetHash: "#/new" };
         }
-        if (h === "#/register") {
-          return { screen: "login", targetHash: location.hash, authMode: "register" };
+        if (h === "#/register" || rawHash.includes("register")) {
+          return { screen: "login", targetHash: rawHash.includes("?") ? rawHash : "#/register", authMode: "register" };
         }
         if (h === "#/login") {
           return { screen: "login", targetHash: location.hash, authMode: "login" };
+        }
+        if (rawHash.includes("invite=")) {
+          return { screen: "login", targetHash: rawHash, authMode: "register" };
         }
         return {
           screen: isLoggedIn() ? "dashboard" : "login",
