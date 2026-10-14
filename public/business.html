@@ -5856,8 +5856,16 @@
         }
       };
 
-      $("#tab-login-btn")?.addEventListener("click", () => window.switchAuthTab("login"));
-      $("#tab-register-btn")?.addEventListener("click", () => window.switchAuthTab("register"));
+      $("#tab-login-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.switchAuthTab("login");
+      });
+      $("#tab-register-btn")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.switchAuthTab("register");
+      });
 
       async function updateLoginScreenState() {
         const inviteCode = getInviteCode();
