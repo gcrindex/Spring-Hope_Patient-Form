@@ -3997,13 +3997,19 @@
             class="cover-page-card"
             id="builder-cover-slot"
             onclick="selectCoverPage()"
+            style="cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border); background: #ffffff; margin-bottom: 12px; transition: all 0.2s ease;"
           >
-            <div class="cover-card-icon">📄</div>
-            <div class="cover-card-info">
-              <div class="cover-card-title" data-i18n="builderCoverPageTab">Cover Page / Welcome Screen</div>
-              <div class="cover-card-sub" id="builder-cover-status-text">Enabled · Greeting &amp; Start Button</div>
+            <div class="cover-card-icon" style="font-size: 20px;">📄</div>
+            <div class="cover-card-info" style="flex: 1; min-width: 0;">
+              <div class="cover-card-title" style="font-weight: 750; font-size: 13px; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+                <span data-i18n="builderCoverPageTab">Cover Page / Welcome Screen</span>
+              </div>
+              <div class="cover-card-sub" id="builder-cover-status-text" style="font-size: 11px; color: var(--text3); margin-top: 2px;">Enabled · Greeting &amp; Start Button</div>
             </div>
-            <span class="cover-card-badge" id="builder-cover-badge">ACTIVE</span>
+            <label style="display: inline-flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; padding: 4px 8px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0;" onclick="event.stopPropagation()">
+              <input type="checkbox" id="cover-quick-checkbox" onchange="toggleCoverDirect(this.checked)" style="width: 15px; height: 15px; cursor: pointer; accent-color: #0284c7;" />
+              <span class="cover-card-badge" id="builder-cover-badge" style="font-size: 10px; font-weight: 800; letter-spacing: 0.5px;">ACTIVE</span>
+            </label>
           </div>
           <div class="question-list" id="question-list"></div>
           <div class="add-question-wrap">
@@ -5596,10 +5602,10 @@
 	          inviteBtn.style.display = isSuperAdmin ? "inline-flex" : "none";
 	        }
 
-	        const navAdminArea = $("#nav-admin-area");
-	        if (navAdminArea) {
-	          navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
-	        }
+        const navAdminArea = $("#nav-admin-area");
+        if (navAdminArea) {
+          navAdminArea.style.display = "flex";
+        }
 	      }
 
       async function checkServerAuth() {
@@ -5809,7 +5815,7 @@
           typeText: "Text",
           builderSaveDraft: "Save Draft & Exit",
           builderSaveDraftShort: "Draft",
-          builderBackToDashboard: "← Back to Dashboard",
+          builderBackToDashboard: "Back to Dashboard",
           builderBackShort: "Back",
           builderPublish: "Publish",
           builderPublishShort: "Publish",
@@ -5966,7 +5972,7 @@
           typeText: "Teks Bebas",
           builderSaveDraft: "Simpan Draf & Keluar",
           builderSaveDraftShort: "Draf",
-          builderBackToDashboard: "← Kembali ke Dashboard",
+          builderBackToDashboard: "Kembali ke Dashboard",
           builderBackShort: "Kembali",
           builderPublish: "Publikasikan",
           builderPublishShort: "Publikasi",
@@ -6121,7 +6127,7 @@
           typeText: "开放文本",
           builderSaveDraft: "保存草稿并返回",
           builderSaveDraftShort: "草稿",
-          builderBackToDashboard: "← 返回表单列表",
+          builderBackToDashboard: "返回表单列表",
           builderBackShort: "返回",
           builderPublish: "发布表单",
           builderPublishShort: "发布",
@@ -7750,12 +7756,17 @@
         const coverSlot = $("#builder-cover-slot");
         const statusText = $("#builder-cover-status-text");
         const badge = $("#builder-cover-badge");
+        const quickCheck = $("#cover-quick-checkbox");
 
         if (coverSlot) {
           if (isEditingCover) {
             coverSlot.classList.add("selected");
+            coverSlot.style.borderColor = "#0284c7";
+            coverSlot.style.boxShadow = "0 0 0 2px rgba(2, 132, 199, 0.15)";
           } else {
             coverSlot.classList.remove("selected");
+            coverSlot.style.borderColor = "var(--border)";
+            coverSlot.style.boxShadow = "none";
           }
         }
         if (statusText) {
@@ -7768,6 +7779,20 @@
           badge.style.background = isEnabled ? "#ccfbf1" : "#f1f5f9";
           badge.style.color = isEnabled ? "#0d9488" : "#64748b";
         }
+        if (quickCheck) {
+          quickCheck.checked = isEnabled;
+        }
+      }
+
+      function toggleCoverDirect(checked) {
+        if (!builderForm) return;
+        builderForm.coverPage = builderForm.coverPage || {};
+        builderForm.coverPage.enabled = checked;
+        saveForm();
+        renderCoverSlot();
+        if (isEditingCover) renderCoverEditor();
+        renderPhonePreview();
+        toast(checked ? "Cover Page diaktifkan" : "Cover Page dinonaktifkan (responden langsung ke Pertanyaan 1)", "info");
       }
 
 	      function selectCoverPage() {

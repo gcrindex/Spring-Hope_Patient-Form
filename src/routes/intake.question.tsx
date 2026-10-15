@@ -40,6 +40,33 @@ export const Route = createFileRoute("/intake/question")({
       },
     ],
   }),
+  errorComponent: ({ reset }) => (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 text-center font-sans">
+      <div className="max-w-md bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <p className="text-3xl mb-2">📋</p>
+        <h2 className="text-base font-bold text-slate-800 mb-1">Gagal Memuat Pertanyaan</h2>
+        <p className="text-xs text-slate-500 mb-4">Terjadi kendala saat menyinkronkan data form. Silakan coba muat ulang.</p>
+        <div className="flex gap-2 justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== "undefined") window.location.reload();
+              else reset();
+            }}
+            className="px-4 py-2 bg-sky-600 text-white rounded-lg text-xs font-semibold hover:bg-sky-700 transition"
+          >
+            Muat Ulang
+          </button>
+          <a
+            href="/"
+            className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200 transition"
+          >
+            Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+    </div>
+  ),
   component: QuestionPage,
 });
 
@@ -73,9 +100,11 @@ function QuestionPage() {
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const voiceAutoStartTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const question = activeForm.questions[index] ?? activeForm.questions[0];
+  const questionsList = Array.isArray(activeForm?.questions) ? activeForm.questions : [];
+  const safeIndex = questionsList.length > 0 ? Math.min(Math.max(0, index), questionsList.length - 1) : 0;
+  const question = questionsList[safeIndex] ?? questionsList[0] ?? null;
   const t = copy[language];
-  const isLastQuestion = index >= activeForm.questions.length - 1;
+  const isLastQuestion = questionsList.length > 0 && safeIndex >= questionsList.length - 1;
 
   useEffect(() => {
     const fId = formParam || getActiveFormId();
@@ -289,30 +318,30 @@ function QuestionPage() {
     }
   };
 
-  const progressPercent = ((index + 1) / activeForm.questions.length) * 100;
-  const stepNumber = String(index + 1).padStart(2, "0");
-  const totalNumber = String(activeForm.questions.length).padStart(2, "0");
+	  const progressPercent = questionsList.length > 0
+	    ? Math.min(100, Math.max(0, ((safeIndex + 1) / questionsList.length) * 100))
+	    : 0;
+	  const stepNumber = String(safeIndex + 1).padStart(2, "0");
+	  const totalNumber = String(questionsList.length || 1).padStart(2, "0");
 
-  if (loadingRemote) {
-    return (
-      <PatientShell
-        language={language}
-        onLanguage={setLang}
-        onBack={goBack}
-      >
-        <div className="patient-card sleek-form-card" style={{ textAlign: "center", padding: "48px 24px" }}>
-          <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid #e2e8f0", borderTopColor: "#059669", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-          <p style={{ marginTop: "16px", color: "#64748b", fontWeight: 600, fontSize: "14px" }}>
-            {language === "id" ? "Memuat pertanyaan..." : language === "zh" ? "加载题目中..." : "Loading question..."}
-          </p>
-        </div>
-      </PatientShell>
-    );
-  }
+	  if (loadingRemote || !question || questionsList.length === 0) {
+	    return (
+	      <PatientShell
+	        language={language}
+	        onLanguage={setLang}
+	        onBack={goBack}
+	      >
+	        <div className="patient-card sleek-form-card" style={{ textAlign: "center", padding: "48px 24px" }}>
+	          <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid #e2e8f0", borderTopColor: "#059669", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+	          <p style={{ marginTop: "16px", color: "#64748b", fontWeight: 600, fontSize: "14px" }}>
+	            {language === "id" ? "Memuat pertanyaan..." : language === "zh" ? "加载题目中..." : "Loading question..."}
+	          </p>
+	        </div>
+	      </PatientShell>
+	    );
+	  }
 
-  if (!question) return null;
-
-  return (
+	  return (
     <PatientShell
       language={language}
       onLanguage={setLang}

@@ -842,22 +842,23 @@ export function registerCustomForm(rawForm: Record<string, unknown>): Assessment
       : undefined;
 
     let options: QuestionOption[] | undefined = undefined;
-    if (qType === "choice" && Array.isArray(q["options"])) {
-      options = (q["options"] as Record<string, unknown>[]).map(
-        (opt: Record<string, unknown>, optIdx: number) => {
-          const val = String(
-            opt["value"] ||
-              opt["id"] ||
-              (typeof opt["label"] === "string" ? opt["label"] : `opt_${optIdx + 1}`),
-          );
-          const label = parseLocalized(opt["label"] || val, val);
-          return {
-            value: val,
-            label,
-            score: typeof opt["score"] === "number" ? opt["score"] : 0,
-          };
-        },
-      );
+    const rawOptions = Array.isArray(q["options"]) ? (q["options"] as Record<string, unknown>[]) : [];
+    if (rawOptions.length > 0) {
+      options = rawOptions.map((opt: Record<string, unknown>, optIdx: number) => {
+        const val = String(
+          opt["value"] ||
+            opt["id"] ||
+            (typeof opt["label"] === "string" ? opt["label"] : `opt_${optIdx + 1}`),
+        );
+        const label = parseLocalized(opt["label"] || val, val);
+        return {
+          value: val,
+          label,
+          score: typeof opt["score"] === "number" ? opt["score"] : 0,
+        };
+      });
+    } else if (qType === "choice") {
+      options = [];
     } else if (qType === "yesno") {
       options = [
         { value: "yes", label: { en: "Yes", id: "Ya", zh: "是" }, score: 5 },
@@ -883,6 +884,7 @@ export function registerCustomForm(rawForm: Record<string, unknown>): Assessment
     status: rawForm["status"] === "draft" ? "draft" : "published",
     theme: (rawForm["theme"] as "default" | "elderly-dark") || "default",
     questions,
+    coverPage: (rawForm["coverPage"] as CoverPageConfig) || undefined,
   };
 
   dynamicFormsCache.set(id, normalizedForm);
