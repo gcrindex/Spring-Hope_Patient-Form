@@ -5568,10 +5568,11 @@
 	          _serverAuth.user?.email ||
 	          localStorage.getItem("pf_admin_email") ||
 	          "";
-	        const tier =
-	          _serverAuth.user?.planTier ||
-	          localStorage.getItem("pf_admin_tier") ||
-	          "basic";
+		        const tier =
+		          _serverAuth.quota?.tier ||
+		          _serverAuth.user?.planTier ||
+		          localStorage.getItem("pf_admin_tier") ||
+		          "business";
 	        const role =
 	          _serverAuth.user?.role ||
 	          localStorage.getItem("pf_admin_role") ||

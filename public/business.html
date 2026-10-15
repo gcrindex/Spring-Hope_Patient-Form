@@ -4933,6 +4933,7 @@
           localStorage.getItem("pf_admin_email") ||
           "admin@springhope.clinic";
         const tier =
+          _serverAuth.quota?.tier ||
           _serverAuth.user?.planTier ||
           localStorage.getItem("pf_admin_tier") ||
           "business";
