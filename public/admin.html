@@ -5560,7 +5560,17 @@
       // ===================== SESSION / AUTH =====================
       let _serverAuth = { isSetup: true, isAuthenticated: false, checked: false };
 
-	      function updateUserSidebar() {
+      function getEffectiveTier() {
+        const raw = (
+          _serverAuth?.quota?.tier ||
+          _serverAuth?.user?.planTier ||
+          localStorage.getItem("pf_admin_tier") ||
+          "business"
+        ).toLowerCase().trim();
+        return raw.replace(/_monthly|_yearly/g, "");
+      }
+
+      function updateUserSidebar() {
 	        const avEl = $("#sidebar-avatar");
 	        const userEl = $("#sidebar-username");
 	        const roleEl = $(".sidebar-user .role");

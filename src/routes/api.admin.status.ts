@@ -25,15 +25,11 @@ export const Route = createFileRoute("/api/admin/status")({
 
             // Total responses / submissions count scoped to tenant
             let responsesUsed = 0;
-            if (isSuperAdmin) {
+            try {
               const subRow = await dbQueryOne<{ count: number }>("SELECT count(*) as count FROM submissions");
               responsesUsed = subRow ? Number(subRow.count) : 0;
-            } else {
-              const subRow = await dbQueryOne<{ count: number }>(
-                "SELECT count(*) as count FROM submissions WHERE user_id = ? OR user_id = ?",
-                [user.adminId, user.email],
-              );
-              responsesUsed = subRow ? Number(subRow.count) : 0;
+            } catch {
+              responsesUsed = 0;
             }
 
             let responseLimit: number | null = 10000;
@@ -94,7 +90,7 @@ export const Route = createFileRoute("/api/admin/status")({
                     adminId: user.adminId,
                     email: user.email,
                     role: isSuperAdmin ? "superadmin" : user.role,
-                    planTier: user.planTier,
+                    planTier: isSuperAdmin ? "enterprise" : user.planTier,
                   }
                 : null,
               quota,
