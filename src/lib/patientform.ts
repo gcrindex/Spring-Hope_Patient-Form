@@ -909,6 +909,21 @@ export function getFormById(id?: string | null): AssessmentForm {
       if (found) {
         return registerCustomForm(found);
       }
+
+      // Check user-scoped keys (e.g. pf_forms_default, pf_forms_admin_9forms_com)
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key && key.startsWith("pf_forms_")) {
+          try {
+            const raw = window.localStorage.getItem(key);
+            if (raw) {
+              const list = JSON.parse(raw) as Record<string, unknown>[];
+              const f = list.find((item) => item && item["id"] === id);
+              if (f) return registerCustomForm(f);
+            }
+          } catch {}
+        }
+      }
     } catch (e) {
       void e;
     }

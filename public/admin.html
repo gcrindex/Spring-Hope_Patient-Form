@@ -8076,34 +8076,29 @@
         }, 400);
       });
 
-	      // FIX 4: Publish modal — clickable link, slug URL
-	      $("#builder-publish-btn").addEventListener("click", () => {
-	        if (!builderForm) return;
+		      // FIX 4: Publish modal — clickable link, slug URL
+		      $("#builder-publish-btn").addEventListener("click", async () => {
+		        if (!builderForm) return;
 
-	        // Validation: check empty choice options
-	        if (Array.isArray(builderForm.questions)) {
-	          for (let i = 0; i < builderForm.questions.length; i++) {
-	            const q = builderForm.questions[i];
-	            if (q.type === "choice" && (!q.options || q.options.length === 0)) {
-	              toast(`Pertanyaan #${i + 1} wajib memiliki minimal 1 pilihan jawaban.`, "error");
-	              selectQuestion(q.id);
-	              return;
-	            }
-	          }
-	        }
+		        // Validation: check empty choice options
+		        if (Array.isArray(builderForm.questions)) {
+		          for (let i = 0; i < builderForm.questions.length; i++) {
+		            const q = builderForm.questions[i];
+		            if (q.type === "choice" && (!q.options || q.options.length === 0)) {
+		              toast(`Pertanyaan #${i + 1} wajib memiliki minimal 1 pilihan jawaban.`, "error");
+		              selectQuestion(q.id);
+		              return;
+		            }
+		          }
+		        }
 
-	        if (builderForm.status === "published") {
-	          // Already published — just show the publish modal with link
-	          showPublishModal();
-	          return;
-	        }
-	        builderForm.status = "published";
-	        builderForm.updatedAt = new Date().toISOString();
-	        saveForm();
-	        updateStatusPill("published");
-	        updatePublishBtn("published");
-	        showPublishModal();
-	      });
+		        builderForm.status = "published";
+		        builderForm.updatedAt = new Date().toISOString();
+		        updateStatusPill("published");
+		        updatePublishBtn("published");
+		        await saveForm();
+		        showPublishModal();
+		      });
 
       function saveDraftAndExit() {
         if (!builderForm) {
@@ -8750,25 +8745,25 @@
         `;
       }
 
-      function syncFormToServer(formData) {
+      async function syncFormToServer(formData) {
         if (!formData || !formData.id) return;
         try {
-          fetch("/api/forms", {
+          await fetch("/api/forms", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
-          }).catch(() => {});
+          });
         } catch (e) {}
       }
 
-      function saveForm() {
+      async function saveForm() {
         const f = forms();
         const idx = f.findIndex((x) => x.id === builderForm.id);
         builderForm.updatedAt = new Date().toISOString();
         if (idx >= 0) f[idx] = builderForm;
         else f.push(builderForm);
         LS.set("pf_forms", f);
-        syncFormToServer(builderForm);
+        await syncFormToServer(builderForm);
       }
 
       // FIX 3: Drag-and-drop with reorder toast + preview update
@@ -9982,6 +9977,7 @@
         };
         f.push(nf);
         LS.set("pf_forms", f);
+        syncFormToServer(nf);
         closeAiModal();
         navigate("#/builder/" + nf.id);
         toast(t("aiCreatedToast") || "AI form created! Review and edit in the builder.");
@@ -10252,6 +10248,7 @@
         };
         f.push(nf);
         LS.set("pf_forms", f);
+        syncFormToServer(nf);
         closeUploadModal();
         navigate("#/builder/" + nf.id);
         toast(t("aiCreatedToast") || "Form imported! Review and edit in the builder.");

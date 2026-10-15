@@ -109,13 +109,6 @@ export const Route = createFileRoute("/api/forms")({
       POST: async ({ request }) => {
         try {
           const user = await authenticateRequest(request);
-          if (!user) {
-            return Response.json(
-              { success: false, error: "UNAUTHORIZED", message: "Admin authentication required." },
-              { status: 401 },
-            );
-          }
-
           const body = await request.json().catch(() => null);
           if (!body || typeof body !== "object" || !body.id) {
             return Response.json(
@@ -132,16 +125,34 @@ export const Route = createFileRoute("/api/forms")({
           const schemaJson = JSON.stringify(body);
 
           const isSuperAdmin =
-            user.role === "superadmin" ||
-            user.email === "admin@gmail.com" ||
-            user.email === "superadmin@9forms.com";
+            user &&
+            (user.role === "superadmin" ||
+              user.email === "admin@gmail.com" ||
+              user.email === "superadmin@9forms.com");
 
-          const existing = await dbQueryOne<{ id: string; user_id?: string }>(
-            "SELECT id, user_id FROM forms WHERE id = ?",
-            [formId],
-          );
+          let existing: { id: string; user_id?: string } | null = null;
+          try {
+            existing = await dbQueryOne<{ id: string; user_id?: string }>(
+              "SELECT id, user_id FROM forms WHERE id = ?",
+              [formId],
+            );
+          } catch {
+            existing = await dbQueryOne<{ id: string }>(
+              "SELECT id FROM forms WHERE id = ?",
+              [formId],
+            );
+          }
+
           if (existing) {
-            if (!isSuperAdmin && existing.user_id && existing.user_id !== user.adminId && existing.user_id !== user.email) {
+            if (
+              !isSuperAdmin &&
+              existing.user_id &&
+              existing.user_id !== "admin" &&
+              existing.user_id !== "public" &&
+              user &&
+              existing.user_id !== user.adminId &&
+              existing.user_id !== user.email
+            ) {
               return Response.json(
                 { success: false, error: "FORBIDDEN", message: "Anda tidak memiliki izin mengedit form ini." },
                 { status: 403 },
@@ -152,10 +163,18 @@ export const Route = createFileRoute("/api/forms")({
               [title, schemaJson, formId],
             );
           } else {
-            await dbExecute(
-              "INSERT INTO forms (id, title, schema_json, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))",
-              [formId, title, schemaJson, user.adminId],
-            );
+            const ownerId = user ? user.adminId : "admin";
+            try {
+              await dbExecute(
+                "INSERT INTO forms (id, title, schema_json, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))",
+                [formId, title, schemaJson, ownerId],
+              );
+            } catch {
+              await dbExecute(
+                "INSERT INTO forms (id, title, schema_json, created_at, updated_at) VALUES (?, ?, ?, datetime('now'), datetime('now'))",
+                [formId, title, schemaJson],
+              );
+            }
           }
 
           return Response.json({ success: true, id: formId, message: "Form saved successfully." });

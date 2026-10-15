@@ -6578,18 +6578,13 @@
       });
 
       // FIX 4: Publish modal — clickable link, slug URL
-      $("#builder-publish-btn").addEventListener("click", () => {
+      $("#builder-publish-btn").addEventListener("click", async () => {
         if (!builderForm) return;
-        if (builderForm.status === "published") {
-          // Already published — just show the publish modal with link
-          showPublishModal();
-          return;
-        }
         builderForm.status = "published";
         builderForm.updatedAt = new Date().toISOString();
-        saveForm();
         updateStatusPill("published");
         updatePublishBtn("published");
+        await saveForm();
         showPublishModal();
       });
 
@@ -7224,25 +7219,25 @@
         `;
       }
 
-      function syncFormToServer(formData) {
+      async function syncFormToServer(formData) {
         if (!formData || !formData.id) return;
         try {
-          fetch("/api/forms", {
+          await fetch("/api/forms", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
-          }).catch(() => {});
+          });
         } catch (e) {}
       }
 
-      function saveForm() {
+      async function saveForm() {
         const f = forms();
         const idx = f.findIndex((x) => x.id === builderForm.id);
         builderForm.updatedAt = new Date().toISOString();
         if (idx >= 0) f[idx] = builderForm;
         else f.push(builderForm);
         LS.set("pf_forms", f);
-        syncFormToServer(builderForm);
+        await syncFormToServer(builderForm);
       }
 
       // FIX 3: Drag-and-drop with reorder toast + preview update
@@ -8456,6 +8451,7 @@
         };
         f.push(nf);
         LS.set("pf_forms", f);
+        syncFormToServer(nf);
         closeAiModal();
         navigate("#/builder/" + nf.id);
         toast(t("aiCreatedToast") || "AI form created! Review and edit in the builder.");
@@ -8726,6 +8722,7 @@
         };
         f.push(nf);
         LS.set("pf_forms", f);
+        syncFormToServer(nf);
         closeUploadModal();
         navigate("#/builder/" + nf.id);
         toast(t("aiCreatedToast") || "Form imported! Review and edit in the builder.");

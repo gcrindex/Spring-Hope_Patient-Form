@@ -58,6 +58,11 @@ function IntakeStart() {
   const [useVoiceFirst] = useState(() => isVoiceAutoMode());
   const [consentAgreed, setConsentAgreed] = useState(true);
   const [nameError, setNameError] = useState("");
+  const [loadingRemote, setLoadingRemote] = useState(() => {
+    const fId = formParam || getActiveFormId();
+    const isPreset = fId === newPatientForm.id || fId === kneePainForm.id || fId === elderlyFriendlyForm.id;
+    return Boolean(formParam && !isPreset && getFormById(fId).id !== fId);
+  });
 
   useEffect(() => {
     const fId = formParam || getActiveFormId();
@@ -66,7 +71,7 @@ function IntakeStart() {
     setName(getPatientName());
 
     const initialForm = getFormById(fId);
-    if (initialForm && initialForm.coverPage?.enabled === false) {
+    if (initialForm && initialForm.id === fId && initialForm.coverPage?.enabled === false) {
       resetAssessment();
       setStoredQuestionIndex(0);
       navigate({ to: "/intake/question", search: { form: initialForm.id }, replace: true });
@@ -75,12 +80,15 @@ function IntakeStart() {
 
     fetchFormByIdAsync(fId).then((resolved) => {
       setActiveForm(resolved);
+      setLoadingRemote(false);
       // If cover is disabled, immediately redirect to Question 1
       if (resolved.coverPage?.enabled === false) {
         resetAssessment();
         setStoredQuestionIndex(0);
         navigate({ to: "/intake/question", search: { form: resolved.id }, replace: true });
       }
+    }).catch(() => {
+      setLoadingRemote(false);
     });
   }, [formParam, navigate]);
 
@@ -130,7 +138,8 @@ function IntakeStart() {
       activeForm.id === elderlyFriendlyForm.id);
 
   const isSeniorNewPatient =
-    activeForm.id === newPatientForm.id || activeForm.id === elderlyFriendlyForm.id;
+    !formParam &&
+    (activeForm.id === newPatientForm.id || activeForm.id === elderlyFriendlyForm.id);
 
   // Localized texts
   const coverTitle =
@@ -173,6 +182,23 @@ function IntakeStart() {
 
   const totalQuestions = activeForm.questions?.length || 5;
   const estTime = cover.estimatedMinutes || (totalQuestions <= 3 ? 1 : totalQuestions <= 6 ? 2 : 3);
+
+  if (loadingRemote) {
+    return (
+      <PatientShell
+        language={language}
+        onLanguage={setLang}
+        onBack={() => navigate({ to: "/" })}
+      >
+        <div className="patient-card patient-card-start sleek-form-card" style={{ textAlign: "center", padding: "48px 24px" }}>
+          <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid #e2e8f0", borderTopColor: "#059669", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <p style={{ marginTop: "16px", color: "#64748b", fontWeight: 600, fontSize: "14px" }}>
+            {language === "id" ? "Memuat formulir..." : language === "zh" ? "加载表单中..." : "Loading form..."}
+          </p>
+        </div>
+      </PatientShell>
+    );
+  }
 
   return (
     <PatientShell

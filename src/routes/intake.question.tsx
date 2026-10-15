@@ -64,6 +64,11 @@ function QuestionPage() {
   const [justSelected, setJustSelected] = useState<string | number | null>(null);
   const [privacyConsent, setPrivacyConsent] = useState(true);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [loadingRemote, setLoadingRemote] = useState(() => {
+    const fId = formParam || getActiveFormId();
+    const isPreset = fId === newPatientForm.id || fId === kneePainForm.id || fId === elderlyFriendlyForm.id;
+    return Boolean(formParam && !isPreset && getFormById(fId).id !== fId);
+  });
 
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const voiceAutoStartTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,7 +85,10 @@ function QuestionPage() {
 
     fetchFormByIdAsync(fId).then((resolved) => {
       setActiveForm(resolved);
+      setLoadingRemote(false);
       setIndex((prev) => Math.min(prev, Math.max(0, resolved.questions.length - 1)));
+    }).catch(() => {
+      setLoadingRemote(false);
     });
   }, [formParam]);
 
@@ -284,6 +292,23 @@ function QuestionPage() {
   const progressPercent = ((index + 1) / activeForm.questions.length) * 100;
   const stepNumber = String(index + 1).padStart(2, "0");
   const totalNumber = String(activeForm.questions.length).padStart(2, "0");
+
+  if (loadingRemote) {
+    return (
+      <PatientShell
+        language={language}
+        onLanguage={setLang}
+        onBack={goBack}
+      >
+        <div className="patient-card sleek-form-card" style={{ textAlign: "center", padding: "48px 24px" }}>
+          <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid #e2e8f0", borderTopColor: "#059669", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <p style={{ marginTop: "16px", color: "#64748b", fontWeight: 600, fontSize: "14px" }}>
+            {language === "id" ? "Memuat pertanyaan..." : language === "zh" ? "加载题目中..." : "Loading question..."}
+          </p>
+        </div>
+      </PatientShell>
+    );
+  }
 
   if (!question) return null;
 

@@ -261,6 +261,12 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
   try {
     db.exec("ALTER TABLE admins ADD COLUMN plan_tier TEXT DEFAULT 'business';");
   } catch {}
+  try {
+    db.exec("ALTER TABLE forms ADD COLUMN user_id TEXT DEFAULT 'admin';");
+  } catch {}
+  try {
+    db.exec("ALTER TABLE submissions ADD COLUMN user_id TEXT DEFAULT 'admin';");
+  } catch {}
 
   localDbInstance = db as unknown as LocalSqliteLike;
   return localDbInstance;
