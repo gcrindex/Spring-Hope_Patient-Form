@@ -3448,7 +3448,7 @@
             </svg>
             <span data-i18n="submissions">Submissions</span>
           </div>
-          <div class="nav-item" data-route="#/admin-area" id="nav-admin-area">
+          <div class="nav-item" data-route="#/admin-area" id="nav-admin-area" style="display: none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               <circle cx="12" cy="11" r="3" />
@@ -4770,8 +4770,8 @@
       };
       let liveSubmissions = null;
       function isCurrentSuperAdmin() {
-        const role = (localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
-        const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const role = (_serverAuth?.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
+        const email = (_serverAuth?.user?.email || localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
         return (
           role === "superadmin" ||
           email === "admin@gmail.com" ||
@@ -5588,35 +5588,35 @@
 	          localStorage.getItem("pf_admin_role") ||
 	          "user";
 
-	        const isSuperAdmin = (role === "superadmin" || email === "admin@gmail.com");
+		        const isSuperAdmin = isCurrentSuperAdmin();
 
-	        if (avEl) {
-	          const initials = isSuperAdmin ? "SA" : (email.split("@")[0] || "US").substring(0, 2).toUpperCase();
-	          avEl.textContent = initials;
-	        }
-	        if (userEl) {
-	          userEl.textContent = isSuperAdmin ? "Super Administrator" : (email.split("@")[0] || "Member");
-	          userEl.title = email;
-	        }
-	        if (roleEl) {
-	          if (isSuperAdmin) {
-	            roleEl.innerHTML = '<span style="color:#f59e0b; font-size:11.5px; font-weight:700;">★ Super Admin</span>';
-	          } else {
-	            const tierNames = { basic: "Basic Plan", plus: "Plus Plan", business: "Business Plan", enterprise: "Enterprise" };
-	            const displayTier = tierNames[tier] || "Basic Plan";
-	            roleEl.innerHTML = `<span style="color:#38bdf8; font-weight:700; font-size:11px;">✦ ${displayTier}</span>`;
-	          }
-	        }
+		        if (avEl) {
+		          const initials = isSuperAdmin ? "SA" : (email.split("@")[0] || "US").substring(0, 2).toUpperCase();
+		          avEl.textContent = initials;
+		        }
+		        if (userEl) {
+		          userEl.textContent = isSuperAdmin ? "Super Administrator" : (email.split("@")[0] || "Member");
+		          userEl.title = email;
+		        }
+		        if (roleEl) {
+		          if (isSuperAdmin) {
+		            roleEl.innerHTML = '<span style="color:#f59e0b; font-size:11.5px; font-weight:700;">★ Super Admin</span>';
+		          } else {
+		            const tierNames = { basic: "Basic Plan", plus: "Plus Plan", business: "Business Plan", enterprise: "Enterprise" };
+		            const displayTier = tierNames[tier] || "Basic Plan";
+		            roleEl.innerHTML = `<span style="color:#38bdf8; font-weight:700; font-size:11px;">✦ ${displayTier}</span>`;
+		          }
+		        }
 
-	        const inviteBtn = $("#invite-max-btn");
-	        if (inviteBtn) {
-	          inviteBtn.style.display = isSuperAdmin ? "inline-flex" : "none";
-	        }
+		        const inviteBtn = $("#invite-max-btn");
+		        if (inviteBtn) {
+		          inviteBtn.style.display = isSuperAdmin ? "inline-flex" : "none";
+		        }
 
-        const navAdminArea = $("#nav-admin-area");
-        if (navAdminArea) {
-          navAdminArea.style.display = "flex";
-        }
+	        const navAdminArea = $("#nav-admin-area");
+	        if (navAdminArea) {
+	          navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
+	        }
 	      }
 
       async function checkServerAuth() {
@@ -6329,6 +6329,9 @@
         }
         if (h === "#/admin-area") {
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
+          if (!isCurrentSuperAdmin()) {
+            return { screen: "dashboard", subView: "forms", targetHash: "#/dashboard" };
+          }
           return { screen: "dashboard", subView: "admin-area", targetHash: "#/admin-area" };
         }
         if (h === "#/dashboard") {
@@ -6859,6 +6862,11 @@
       }
 
       async function renderAdminArea() {
+        if (!isCurrentSuperAdmin()) {
+          toast("Akses khusus Super Administrator.", "error");
+          navigate("#/dashboard");
+          return;
+        }
         if ($("#forms-view")) $("#forms-view").style.display = "none";
         if ($("#admin-area-view")) $("#admin-area-view").style.display = "block";
 

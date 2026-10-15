@@ -3204,7 +3204,7 @@
             href="/admin#/admin-area"
             class="nav-item"
             id="nav-admin-area"
-            style="text-decoration: none; color: #38bdf8;"
+            style="display: none; text-decoration: none; color: #38bdf8;"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -4084,8 +4084,8 @@
       };
       let liveSubmissions = null;
       function isCurrentSuperAdmin() {
-        const role = (localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
-        const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const role = (_serverAuth?.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
+        const email = (_serverAuth?.user?.email || localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
         return (
           role === "superadmin" ||
           email === "admin@gmail.com" ||
@@ -4953,11 +4953,7 @@
 
         const isBusiness = baseTier === "business" || baseTier === "enterprise" || baseTier === "plus";
 
-        const isSuperAdmin =
-          _serverAuth.user?.role === "superadmin" ||
-          email === "admin@gmail.com" ||
-          email === "admin@springhope.clinic" ||
-          Boolean(_serverAuth?.inviteToken);
+        const isSuperAdmin = isCurrentSuperAdmin();
 
         if (avEl) {
           const initials = isSuperAdmin ? "AD" : (email.split("@")[0] || "US").substring(0, 2).toUpperCase();
@@ -4989,7 +4985,7 @@
         }
         const navAdminArea = $("#nav-admin-area");
         if (navAdminArea) {
-          navAdminArea.style.display = "flex";
+          navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
         }
       }
 
