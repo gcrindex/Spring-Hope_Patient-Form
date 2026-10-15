@@ -5113,6 +5113,19 @@
 
       // ===================== SEED DATA (FIX 1: slug IDs) =====================
       function seedData() {
+        const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
+        const isMasterSuperAdmin =
+          currentAdminEmail === "admin@gmail.com" ||
+          currentAdminEmail === "admin@9forms.com" ||
+          currentAdminEmail === "superadmin@9forms.com";
+
+        if (!isMasterSuperAdmin) {
+          // Force non-superadmin client accounts to start completely clean (0 forms, 0 submissions)
+          LS.set("pf_forms", []);
+          LS.set("pf_submissions", []);
+          return;
+        }
+
         const now = new Date();
         const d = (n) => new Date(now - n * 86400000).toISOString().slice(0, 10);
         const dt = (n, time) =>

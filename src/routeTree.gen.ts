@@ -17,6 +17,7 @@ import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as ApiFormsRouteImport } from './routes/api.forms'
 import { Route as ApiHealthRouteImport } from './routes/api.health'
 import { Route as ApiSubmissionsRouteImport } from './routes/api.submissions'
+import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as IntakeIndexRouteImport } from './routes/intake.index'
 import { Route as IntakeCompleteRouteImport } from './routes/intake.complete'
 import { Route as IntakeMicrophoneRouteImport } from './routes/intake.microphone'
@@ -77,6 +78,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
 const ApiSubmissionsRoute = ApiSubmissionsRouteImport.update({
   id: '/api/submissions',
   path: '/api/submissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessIndexRoute = BusinessIndexRouteImport.update({
+  id: '/business/',
+  path: '/business/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntakeIndexRoute = IntakeIndexRouteImport.update({
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
   '/admin/': typeof AdminIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
   '/admin': typeof AdminIndexRoute
+  '/business': typeof BusinessIndexRoute
   '/intake': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/intake/microphone': typeof IntakeMicrophoneRoute
   '/intake/question': typeof IntakeQuestionRoute
   '/admin/': typeof AdminIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/intake/microphone'
     | '/intake/question'
     | '/admin/'
+    | '/business/'
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/intake/microphone'
     | '/intake/question'
     | '/admin'
+    | '/business'
     | '/intake'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
@@ -356,6 +367,7 @@ export interface FileRouteTypes {
     | '/intake/microphone'
     | '/intake/question'
     | '/admin/'
+    | '/business/'
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
@@ -388,6 +400,7 @@ export interface RootRouteChildren {
   IntakeMicrophoneRoute: typeof IntakeMicrophoneRoute
   IntakeQuestionRoute: typeof IntakeQuestionRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  BusinessIndexRoute: typeof BusinessIndexRoute
   IntakeIndexRoute: typeof IntakeIndexRoute
   AdminFormsBuilderPublishRoute: typeof AdminFormsBuilderPublishRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/api/submissions'
       fullPath: '/api/submissions'
       preLoaderRoute: typeof ApiSubmissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/': {
+      id: '/business/'
+      path: '/business'
+      fullPath: '/business/'
+      preLoaderRoute: typeof BusinessIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/intake/': {
@@ -639,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   IntakeMicrophoneRoute: IntakeMicrophoneRoute,
   IntakeQuestionRoute: IntakeQuestionRoute,
   AdminIndexRoute: AdminIndexRoute,
+  BusinessIndexRoute: BusinessIndexRoute,
   IntakeIndexRoute: IntakeIndexRoute,
   AdminFormsBuilderPublishRoute: AdminFormsBuilderPublishRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,

@@ -29,6 +29,47 @@
           }
         } catch (e) {}
       })();
+
+      window.switchAuthTab = function (mode) {
+        if (typeof setAuthMode === "function") {
+          setAuthMode(mode);
+        }
+        var rawHash = location.hash || "";
+        var code = "";
+        var tier = "";
+        try {
+          var p = new URLSearchParams(location.search);
+          code = p.get("invite") || "";
+          tier = p.get("tier") || "";
+          if (!code && rawHash.indexOf("?") !== -1) {
+            var hp = new URLSearchParams(rawHash.split("?")[1]);
+            code = hp.get("invite") || "";
+            tier = hp.get("tier") || "";
+          }
+          if (!code) code = sessionStorage.getItem("sh_business_invite") || "";
+          if (!tier) tier = sessionStorage.getItem("sh_business_tier") || "";
+        } catch (e) {}
+        if (mode === "register") {
+          var t = code
+            ? "#/register?invite=" + encodeURIComponent(code) + (tier ? "&tier=" + encodeURIComponent(tier) : "")
+            : "#/register";
+          if (location.hash !== t) {
+            if (history.replaceState) {
+              history.replaceState(null, "", t);
+            } else {
+              location.hash = t;
+            }
+          }
+        } else {
+          if (location.hash !== "#/login") {
+            if (history.replaceState) {
+              history.replaceState(null, "", "#/login");
+            } else {
+              location.hash = "#/login";
+            }
+          }
+        }
+      };
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -4636,19 +4677,6 @@
         let storedForms = LS.get("pf_forms");
         let storedSubs = LS.get("pf_submissions") || [];
 
-        const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
-        const isMasterSuperAdmin =
-          currentAdminEmail === "admin@gmail.com" ||
-          currentAdminEmail === "admin@9forms.com" ||
-          currentAdminEmail === "superadmin@9forms.com";
-
-        if (!isMasterSuperAdmin) {
-          // Non-superadmin accounts always start with empty forms and submissions
-          LS.set("pf_forms", []);
-          LS.set("pf_submissions", []);
-          return;
-        }
-
         if (!storedForms) {
           const forms = [
             defaultNewPatientForm,
@@ -4861,30 +4889,16 @@
             updated = true;
           }
 
-          const currentAdminEmail = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
-          const isMasterSuperAdmin =
-            currentAdminEmail === "admin@gmail.com" ||
-            currentAdminEmail === "admin@9forms.com" ||
-            currentAdminEmail === "superadmin@9forms.com";
-
-          if (!isMasterSuperAdmin) {
-            // New / non-superadmin accounts start completely empty
-            LS.set("pf_forms", []);
-            LS.set("pf_submissions", []);
-          } else {
-            if (isMasterSuperAdmin) {
-              if (!storedForms.some((f) => f.id === "new-patient-intake")) {
-                storedForms.unshift(defaultNewPatientForm);
-                updated = true;
-              }
-            }
-            if (updated) {
-              LS.set("pf_forms", storedForms);
-              LS.set("pf_submissions", storedSubs);
-            }
-            if (isMasterSuperAdmin && !storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
-              LS.set("pf_submissions", [...storedSubs, ...efSubs]);
-            }
+          if (!storedForms.some((f) => f.id === "new-patient-intake")) {
+            storedForms.unshift(defaultNewPatientForm);
+            updated = true;
+          }
+          if (updated) {
+            LS.set("pf_forms", storedForms);
+            LS.set("pf_submissions", storedSubs);
+          }
+          if (!storedSubs.some((s) => s.formId === "elderly-friendly-intake")) {
+            LS.set("pf_submissions", [...storedSubs, ...efSubs]);
           }
         }
       }
@@ -5681,14 +5695,22 @@
           if (!isLoggedIn()) return { screen: "login", targetHash: "#/login" };
           return { screen: "choice", targetHash: "#/new" };
         }
-        if (h === "#/register" || rawHash.includes("register")) {
-          return { screen: "login", targetHash: rawHash.includes("?") ? rawHash : "#/register", authMode: "register" };
+        const urlParams = new URLSearchParams(window.location.search);
+        if (
+          h === "#/register" ||
+          rawHash.includes("register") ||
+          rawHash.includes("invite=") ||
+          urlParams.has("invite") ||
+          urlParams.has("register")
+        ) {
+          return {
+            screen: "login",
+            targetHash: rawHash.includes("?") ? rawHash : (rawHash.includes("register") ? rawHash : "#/register"),
+            authMode: "register",
+          };
         }
         if (h === "#/login") {
           return { screen: "login", targetHash: location.hash, authMode: "login" };
-        }
-        if (rawHash.includes("invite=")) {
-          return { screen: "login", targetHash: rawHash, authMode: "register" };
         }
         return {
           screen: isLoggedIn() ? "dashboard" : "login",
@@ -5845,13 +5867,16 @@
         setAuthMode(mode);
         if (mode === "register") {
           const invite = getInviteCode();
-          const target = invite ? `#/register?invite=${encodeURIComponent(invite)}` : "#/register";
+          const tier = getInviteTier();
+          const target = invite
+            ? `#/register?invite=${encodeURIComponent(invite)}${tier ? `&tier=${encodeURIComponent(tier)}` : ""}`
+            : "#/register";
           if (location.hash !== target) {
-            location.hash = target;
+            history.replaceState(null, "", target);
           }
         } else {
           if (location.hash !== "#/login") {
-            location.hash = "#/login";
+            history.replaceState(null, "", "#/login");
           }
         }
       };
@@ -5869,27 +5894,36 @@
 
       async function updateLoginScreenState() {
         const inviteCode = getInviteCode();
-        const isRegisterHash = location.hash.startsWith("#/register");
+        const urlParams = new URLSearchParams(window.location.search);
+        const isRegisterSearch = urlParams.get("register") === "1" || urlParams.has("register") || urlParams.has("invite");
+        const isRegisterHash =
+          location.hash.startsWith("#/register") ||
+          location.hash.includes("register") ||
+          location.hash.includes("invite=");
 
-        if (isRegisterHash || _authMode === "register") {
+        if (isRegisterSearch || isRegisterHash || _authMode === "register") {
           setAuthMode("register");
           return;
         }
 
-        const auth = await checkServerAuth();
-        if (auth.isAuthenticated) {
-          navigate("#/dashboard");
-          return;
+        try {
+          const auth = await checkServerAuth();
+          if (auth && auth.isAuthenticated) {
+            navigate("#/dashboard");
+            return;
+          }
+          if (auth && !auth.isSetup) {
+            setAuthMode("register");
+            const hintEl = $("#login-hint");
+            if (hintEl)
+              hintEl.textContent =
+                "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
+            return;
+          }
+        } catch (e) {
+          // ignore network check failures
         }
-        if (!auth.isSetup) {
-          setAuthMode("register");
-          const hintEl = $("#login-hint");
-          if (hintEl)
-            hintEl.textContent =
-              "First-Run Setup: Belum ada admin terdaftar. Silakan buat akun admin pertama.";
-        } else {
-          setAuthMode(_authMode === "register" ? "register" : "login");
-        }
+        setAuthMode(_authMode === "register" ? "register" : "login");
       }
 
       $("#login-email")?.addEventListener("keydown", (e) => {
