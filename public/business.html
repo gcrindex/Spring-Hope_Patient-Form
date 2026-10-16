@@ -1128,43 +1128,124 @@
 	        border-radius: 6px;
 	        border: 1px solid rgba(56, 189, 248, 0.35);
 	      }
-	      .builder-mobile-tabs {
-	        display: none;
-	        background: #0f172a;
-	        padding: 8px 10px;
-	        gap: 6px;
-	        border-bottom: 1px solid #1e293b;
-	        flex-shrink: 0;
-	      }
-	      .builder-mob-tab {
-	        flex: 1;
-	        display: inline-flex;
-	        align-items: center;
-	        justify-content: center;
-	        gap: 5px;
-	        padding: 8px 6px;
-	        border-radius: 8px;
-	        font-size: 12px;
-	        font-weight: 750;
-	        border: 1px solid rgba(255, 255, 255, 0.12);
-	        background: rgba(255, 255, 255, 0.06);
-	        color: #94a3b8;
-	        cursor: pointer;
-	        transition: all 0.15s ease;
-	        white-space: nowrap;
-	      }
-	      .builder-mob-tab.active {
-	        background: #2563eb;
-	        border-color: #3b82f6;
-	        color: #ffffff;
-	        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
-	      }
-	      .mob-edit-badge {
-	        font-size: 10px;
-	        background: rgba(255, 255, 255, 0.22);
-	        padding: 1px 5px;
-	        border-radius: 4px;
-	      }
+		      .builder-mobile-tabs {
+		        display: none;
+		        background: #f1f5f9;
+		        padding: 6px 10px;
+		        gap: 6px;
+		        border-bottom: 1px solid #e2e8f0;
+		        flex-shrink: 0;
+		      }
+		      .builder-mob-tab {
+		        flex: 1;
+		        display: inline-flex;
+		        align-items: center;
+		        justify-content: center;
+		        gap: 6px;
+		        padding: 8px 6px;
+		        border-radius: 8px;
+		        font-size: 12.5px;
+		        font-weight: 600;
+		        border: none;
+		        background: transparent;
+		        color: #64748b;
+		        cursor: pointer;
+		        transition: all 0.18s ease;
+		        white-space: nowrap;
+		      }
+		      .builder-mob-tab.active {
+		        background: #ffffff;
+		        color: #0284c7;
+		        font-weight: 700;
+		        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+		      }
+		      .mob-edit-badge {
+		        font-size: 10px;
+		        background: #e0f2fe;
+		        color: #0284c7;
+		        padding: 1px 5px;
+		        border-radius: 4px;
+		        font-weight: 750;
+		      }
+		      .builder-more-wrap {
+		        display: none;
+		      }
+		      .builder-more-btn {
+		        width: 34px;
+		        height: 34px;
+		        border-radius: 8px;
+		        border: 1.5px solid var(--border);
+		        background: #ffffff;
+		        color: var(--navy);
+		        display: flex;
+		        align-items: center;
+		        justify-content: center;
+		        cursor: pointer;
+		        padding: 0;
+		        transition: all 0.2s ease;
+		      }
+		      .builder-more-btn:hover {
+		        background: #f1f5f9;
+		        border-color: #cbd5e1;
+		      }
+		      .builder-more-menu {
+		        position: absolute;
+		        top: calc(100% + 6px);
+		        right: 0;
+		        background: #ffffff;
+		        border: 1px solid #e2e8f0;
+		        border-radius: 12px;
+		        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+		        padding: 6px;
+		        min-width: 195px;
+		        z-index: 1000;
+		        display: flex;
+		        flex-direction: column;
+		        animation: popoverFadeIn 0.15s ease;
+		      }
+		      .builder-more-item {
+		        display: flex;
+		        align-items: center;
+		        gap: 8px;
+		        width: 100%;
+		        padding: 9px 10px;
+		        border: none;
+		        background: transparent;
+		        border-radius: 8px;
+		        color: var(--navy);
+		        font-size: 13px;
+		        font-weight: 600;
+		        cursor: pointer;
+		        text-align: left;
+		        transition: background 0.15s;
+		        box-sizing: border-box;
+		      }
+		      .builder-more-item:hover {
+		        background: #f1f5f9;
+		        color: #0284c7;
+		      }
+		      .builder-more-divider {
+		        height: 1px;
+		        background: #e2e8f0;
+		        margin: 4px 0;
+		      }
+		      .more-lang-btn {
+		        flex: 1;
+		        padding: 5px 0;
+		        border: 1px solid #cbd5e1;
+		        background: #f8fafc;
+		        color: var(--navy);
+		        font-size: 11px;
+		        font-weight: 700;
+		        border-radius: 6px;
+		        cursor: pointer;
+		        transition: all 0.15s;
+		      }
+		      .more-lang-btn:hover {
+		        background: #0284c7;
+		        color: #fff;
+		        border-color: #0284c7;
+		      }
 	      .mobile-editor-topbar {
 	        display: none;
 	        align-items: center;
@@ -2560,90 +2641,60 @@
           transform: translateX(0);
         }
         .builder-topbar {
-          height: auto !important;
-          padding: 8px 10px !important;
-          flex-direction: column !important;
-          align-items: stretch !important;
+          height: 54px !important;
+          padding: 8px 12px !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: space-between !important;
           gap: 8px !important;
         }
         .builder-topbar-left {
-          width: 100% !important;
+          flex: 1 !important;
+          min-width: 0 !important;
           display: flex !important;
           align-items: center !important;
           gap: 6px !important;
           margin-bottom: 0 !important;
         }
-        .builder-topbar-actions {
-          width: 100% !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          gap: 4px !important;
-          box-sizing: border-box !important;
-        }
         .builder-topbar .title-input {
           font-size: 14.5px !important;
           font-weight: 700 !important;
-          padding: 3px 6px !important;
+          padding: 4px 6px !important;
           flex: 1 !important;
+          min-width: 0 !important;
         }
         .builder-topbar .back-btn {
-          width: 28px !important;
-          height: 28px !important;
+          width: 30px !important;
+          height: 30px !important;
           flex-shrink: 0;
         }
-        .admin-lang-picker-light {
+        .builder-topbar-actions {
           display: flex !important;
-          height: 32px !important;
-          padding: 2px !important;
+          align-items: center !important;
+          gap: 6px !important;
           flex-shrink: 0 !important;
+          width: auto !important;
         }
-        .admin-lang-picker-light .lang-btn {
-          padding: 0 4px !important;
-          font-size: 10px !important;
-          font-weight: 750 !important;
+        .admin-lang-picker-light {
+          display: none !important;
         }
         .btn-test-form {
-          flex: 1 1 0 !important;
-          min-width: 0 !important;
-          height: 32px !important;
-          padding: 0 4px !important;
-          font-size: 11px !important;
-          font-weight: 750 !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          white-space: nowrap !important;
-          border-radius: 8px !important;
-          box-sizing: border-box !important;
+          display: none !important;
         }
         #builder-draft-btn {
-          flex: 1 1 0 !important;
-          min-width: 0 !important;
-          height: 32px !important;
-          padding: 0 4px !important;
-          font-size: 11px !important;
-          font-weight: 750 !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          white-space: nowrap !important;
-          border-radius: 8px !important;
-          box-sizing: border-box !important;
+          display: none !important;
+        }
+        .builder-more-wrap {
+          display: block !important;
         }
         .builder-topbar .publish-btn {
-          flex: 1 1 0 !important;
-          min-width: 0 !important;
-          height: 32px !important;
-          padding: 0 4px !important;
-          font-size: 11px !important;
-          font-weight: 750 !important;
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          white-space: nowrap !important;
+          flex: none !important;
+          height: 34px !important;
+          padding: 0 12px !important;
+          font-size: 12px !important;
+          font-weight: 700 !important;
           border-radius: 8px !important;
-          box-sizing: border-box !important;
+          white-space: nowrap !important;
         }
 		        .builder-left,
 		        .builder-center {
@@ -2672,10 +2723,17 @@
 		        .builder-body[data-mob-tab="outline"] .builder-right {
 		          display: none !important;
 		        }
-		        .builder-body[data-mob-tab="outline"] .question-list {
-		          max-height: none !important;
-		          overflow-y: visible !important;
-		        }
+			        .builder-body[data-mob-tab="outline"] .question-list {
+			          max-height: none !important;
+			          overflow-y: visible !important;
+			        }
+			        .panel-header h3 {
+			          text-transform: none !important;
+			          font-size: 13.5px !important;
+			          font-weight: 700 !important;
+			          letter-spacing: normal !important;
+			          color: var(--navy) !important;
+			        }
 
 		        /* Mobile Tab: Edit Mode */
 		        .builder-body[data-mob-tab="edit"] .builder-left,
@@ -3413,7 +3471,7 @@
           <input class="title-input" id="builder-title" value="" spellcheck="false" />
           <span class="pill" id="builder-status-pill"></span>
         </div>
-        <div class="builder-topbar-actions" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+        <div class="builder-topbar-actions" style="display: flex; align-items: center; gap: 8px;">
           <div class="admin-lang-picker-light">
             <button type="button" class="lang-btn" data-lang="en">EN</button>
             <button type="button" class="lang-btn" data-lang="id">ID</button>
@@ -3438,6 +3496,43 @@
             💾 <span class="btn-text-full" data-i18n="builderSaveDraft">Save Draft & Exit</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">Draft</span>
           </button>
           <button class="publish-btn" id="builder-publish-btn"></button>
+
+          <!-- MOBILE MORE BUTTON & MENU -->
+          <div class="builder-more-wrap" style="position: relative;">
+            <button
+              type="button"
+              class="builder-more-btn"
+              id="builder-more-btn"
+              onclick="toggleBuilderMoreMenu(event)"
+              title="More Options"
+              aria-label="More Options"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <circle cx="12" cy="5" r="2"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <circle cx="12" cy="19" r="2"></circle>
+              </svg>
+            </button>
+            <div class="builder-more-menu" id="builder-more-menu" style="display: none;" onclick="event.stopPropagation()">
+              <button type="button" class="builder-more-item" onclick="closeBuilderMoreMenu(); openTestModal();">
+                <span style="font-size: 15px;">🧪</span>
+                <span data-i18n="builderTestBtn">Test Form</span>
+              </button>
+              <button type="button" class="builder-more-item" onclick="closeBuilderMoreMenu(); saveDraftAndExit();">
+                <span style="font-size: 15px;">💾</span>
+                <span data-i18n="builderSaveDraft">Save Draft &amp; Exit</span>
+              </button>
+              <div class="builder-more-divider"></div>
+              <div style="font-size: 11px; font-weight: 700; color: #64748b; padding: 4px 10px 2px;">
+                <span data-i18n="builderFormLangLabel">Form Language:</span>
+              </div>
+              <div style="display: flex; gap: 4px; padding: 4px 10px 6px;">
+                <button type="button" class="more-lang-btn" onclick="setAdminLang('en'); closeBuilderMoreMenu();">EN</button>
+                <button type="button" class="more-lang-btn" onclick="setAdminLang('id'); closeBuilderMoreMenu();">ID</button>
+                <button type="button" class="more-lang-btn" onclick="setAdminLang('zh'); closeBuilderMoreMenu();">中文</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="builder-mobile-tabs" id="builder-mobile-tabs">
@@ -5324,7 +5419,7 @@
           builderAddOptionBtn: "+ Add Option",
           builderMaxValueLabel: "Max Value",
 	          builderDoneBtn: "Done",
-	          builderCoverPageTab: "Cover Page / Welcome Screen",
+	          builderCoverPageTab: "Welcome Screen (Cover)",
 	          builderCoverPageDesc: "Configure the greeting screen, welcome text, organization logo, and start button.",
 	          builderEnableCoverLabel: "Enable Cover Page (Welcome Screen)",
 	          builderCoverTitleLabel: "Welcome Title",
@@ -5352,11 +5447,12 @@
           builderTestBtn: "Test Form",
           builderTestBtnShort: "Test",
           builderEditSectionTitle: "Question Settings",
-          builderTabOutline: "Questions",
-          builderTabEdit: "Editor",
-          builderTabPreview: "Preview",
-          builderBackToQuestions: "Questions",
-          testBadge: "LIVE TEST SIMULATION",
+	          builderTabOutline: "Questions",
+	          builderTabEdit: "Editor",
+	          builderTabPreview: "Preview",
+	          builderBackToQuestions: "Questions",
+	          builderFormLangLabel: "Form Language:",
+	          testBadge: "LIVE TEST SIMULATION",
           testNoDataNotice: "Test mode: responses are not saved to DB",
           testResetBtn: "↺ Restart Test",
           testCloseBtn: "✓ Back to Builder",
@@ -5483,9 +5579,9 @@
           builderOptPlaceholder: "Label opsi jawaban",
           builderAddOptionBtn: "+ Tambah Opsi",
           builderMaxValueLabel: "Nilai Maksimal",
-	          builderDoneBtn: "Selesai",
-	          builderCoverPageTab: "Cover Page / Halaman Pembuka",
-	          builderCoverPageDesc: "Atur halaman greeting, teks pembuka, logo organisasi, dan tombol mulai.",
+		          builderDoneBtn: "Selesai",
+		          builderCoverPageTab: "Halaman Pembuka (Cover)",
+		          builderCoverPageDesc: "Atur halaman greeting, teks pembuka, logo organisasi, dan tombol mulai.",
 	          builderEnableCoverLabel: "Aktifkan Cover Page (Halaman Pembuka)",
 	          builderCoverTitleLabel: "Judul Pembuka (Welcome Title)",
 	          builderCoverDescLabel: "Deskripsi & Petunjuk Pengisian",
@@ -5511,12 +5607,13 @@
           builderPublishShort: "Publikasi",
           builderTestBtn: "Tes Form",
           builderTestBtnShort: "Tes",
-          builderEditSectionTitle: "Pengaturan Pertanyaan",
-          builderTabOutline: "Daftar Soal",
-          builderTabEdit: "Edit Soal",
-          builderTabPreview: "Pratinjau",
-          builderBackToQuestions: "Daftar Soal",
-          testBadge: "SIMULASI UJI COBA LANGSUNG",
+	          builderEditSectionTitle: "Pengaturan Pertanyaan",
+	          builderTabOutline: "Soal",
+	          builderTabEdit: "Editor",
+	          builderTabPreview: "Pratinjau",
+	          builderBackToQuestions: "Soal",
+	          builderFormLangLabel: "Bahasa Form:",
+	          testBadge: "SIMULASI UJI COBA LANGSUNG",
           testNoDataNotice: "Mode tes: respon tidak disimpan ke database",
           testResetBtn: "↺ Ulangi Tes",
           testCloseBtn: "✓ Kembali ke Builder",
@@ -5641,9 +5738,9 @@
           builderOptPlaceholder: "输入选项文字",
           builderAddOptionBtn: "+ 添加选项",
           builderMaxValueLabel: "最大分值",
-	          builderDoneBtn: "完成编辑",
-	          builderCoverPageTab: "表单封面 / 欢迎页",
-	          builderCoverPageDesc: "配置表单欢迎语、机构品牌 Logo、姓名收集与开始按钮设置。",
+		          builderDoneBtn: "完成编辑",
+		          builderCoverPageTab: "封面欢迎页",
+		          builderCoverPageDesc: "配置表单欢迎语、机构品牌 Logo、姓名收集与开始按钮设置。",
 	          builderEnableCoverLabel: "启用封面欢迎页 (Welcome Screen)",
 	          builderCoverTitleLabel: "欢迎标题",
 	          builderCoverDescLabel: "表单说明与填写须知",
@@ -5669,12 +5766,13 @@
           builderPublishShort: "发布",
           builderTestBtn: "测试表单",
           builderTestBtnShort: "测试",
-          builderEditSectionTitle: "题目设置",
-          builderTabOutline: "题目列表",
-          builderTabEdit: "编辑内容",
-          builderTabPreview: "实时预览",
-          builderBackToQuestions: "题目列表",
-          testBadge: "实时交互测试模拟",
+	          builderEditSectionTitle: "题目设置",
+	          builderTabOutline: "题目",
+	          builderTabEdit: "编辑",
+	          builderTabPreview: "预览",
+	          builderBackToQuestions: "题目",
+	          builderFormLangLabel: "表单语言：",
+	          testBadge: "实时交互测试模拟",
           testNoDataNotice: "测试模式：答题记录不会保存到数据库",
           testResetBtn: "↺ 重新测试",
           testCloseBtn: "✓ 返回编辑器",
@@ -6361,14 +6459,33 @@
         }
       }
 
-		      // ===================== BUILDER =====================
-		      let builderForm = null,
-		        editingQ = null,
-		        isEditingCover = false,
-		        phonePreviewIdx = 0,
-		        currentMobTab = "outline";
+			      // ===================== BUILDER =====================
+			      let builderForm = null,
+			        editingQ = null,
+			        isEditingCover = false,
+			        phonePreviewIdx = 0,
+			        currentMobTab = "outline";
 
-		      function setMobileBuilderTab(tab) {
+			      function toggleBuilderMoreMenu(e) {
+			        if (e) e.stopPropagation();
+			        const m = $("#builder-more-menu");
+			        if (m) m.style.display = m.style.display === "none" ? "flex" : "none";
+			      }
+			      function closeBuilderMoreMenu() {
+			        const m = $("#builder-more-menu");
+			        if (m) m.style.display = "none";
+			      }
+			      document.addEventListener("click", (e) => {
+			        const m = $("#builder-more-menu");
+			        const btn = $("#builder-more-btn");
+			        if (m && m.style.display !== "none") {
+			          if (!btn || !btn.contains(e.target)) {
+			            closeBuilderMoreMenu();
+			          }
+			        }
+			      });
+
+			      function setMobileBuilderTab(tab) {
 		        currentMobTab = tab;
 		        const body = document.querySelector(".builder-body");
 		        if (body) {
@@ -6452,16 +6569,16 @@
 		            coverSlot.style.boxShadow = "none";
 		          }
 		        }
-		        if (statusText) {
-		          statusText.textContent = isEnabled
-		            ? (currentAdminLang === "id" ? "Aktif · Halaman Sambutan & Tombol Mulai" : currentAdminLang === "zh" ? "已启用 · 欢迎语与开始按钮" : "Enabled · Greeting & Start Button")
-		            : (currentAdminLang === "id" ? "Nonaktif · Langsung ke Pertanyaan 1" : currentAdminLang === "zh" ? "已跳过 · 直接进入第 1 题" : "Disabled · Direct to Question 1");
-		        }
-		        if (badge) {
-		          badge.textContent = isEnabled ? "ACTIVE" : "SKIPPED";
-		          badge.style.background = isEnabled ? "#ccfbf1" : "#f1f5f9";
-		          badge.style.color = isEnabled ? "#0d9488" : "#64748b";
-		        }
+			        if (statusText) {
+			          statusText.textContent = isEnabled
+			            ? (currentAdminLang === "id" ? "Aktif · Layar awal sambutan & nama" : currentAdminLang === "zh" ? "已启用 · 欢迎页与姓名" : "Enabled · Welcome screen & name")
+			            : (currentAdminLang === "id" ? "Nonaktif · Langsung ke soal 1" : currentAdminLang === "zh" ? "已跳过 · 直接进入第 1 题" : "Disabled · Direct to Q1");
+			        }
+			        if (badge) {
+			          badge.textContent = isEnabled ? (currentAdminLang === "id" ? "Aktif" : currentAdminLang === "zh" ? "启用" : "Active") : (currentAdminLang === "id" ? "Nonaktif" : currentAdminLang === "zh" ? "关闭" : "Off");
+			          badge.style.background = isEnabled ? "#ecfdf5" : "#f1f5f9";
+			          badge.style.color = isEnabled ? "#059669" : "#64748b";
+			        }
 		        if (quickCheck) {
 		          quickCheck.checked = isEnabled;
 		        }
