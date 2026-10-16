@@ -3229,23 +3229,6 @@
             </svg>
             <span data-i18n="backToWebsite">Back to Website</span>
           </a>
-          <div
-            class="nav-item"
-            id="nav-delete-account"
-            onclick="openDeleteAccountModal()"
-            style="
-              margin-top: 6px;
-              color: rgba(248, 113, 113, 0.85);
-              cursor: pointer;
-            "
-            onmouseover="this.style.color='#ef4444'; this.style.background='rgba(239, 68, 68, 0.1)';"
-            onmouseout="this.style.color='rgba(248, 113, 113, 0.85)'; this.style.background='none';"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; flex-shrink: 0;">
-              <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
-            </svg>
-            <span data-i18n="deleteAccount">Hapus Akun</span>
-          </div>
         </nav>
         <div class="sidebar-user">
           <div class="avatar" id="sidebar-avatar">AD</div>
@@ -5029,12 +5012,6 @@
         const navAdminArea = $("#nav-admin-area");
         if (navAdminArea) {
           navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
-        }
-        const navDelAcc = $("#nav-delete-account");
-        if (navDelAcc) {
-          navDelAcc.style.display = isSuperAdmin ? "none" : "flex";
-          const span = navDelAcc.querySelector("span");
-          if (span) span.textContent = currentAdminLang === "id" ? "Hapus Akun" : currentAdminLang === "zh" ? "注销账户" : "Delete Account";
         }
         const delAccBtn = $("#sidebar-del-acc-btn");
         if (delAccBtn) {
