@@ -4968,12 +4968,13 @@
             return null;
           }
         },
-        set(k, v) {
-          localStorage.setItem(getUserScopedKey(k), JSON.stringify(v));
-        },
-      };
-      let liveSubmissions = null;
-      function isCurrentSuperAdmin() {
+	        set(k, v) {
+	          localStorage.setItem(getUserScopedKey(k), JSON.stringify(v));
+	        },
+	      };
+	      let liveForms = null;
+	      let liveSubmissions = null;
+	      function isCurrentSuperAdmin() {
         const role = (_serverAuth?.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim();
         const email = (_serverAuth?.user?.email || localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
         return (
@@ -5146,8 +5147,11 @@
         ];
       }
 
-      function forms() {
-        const stored = LS.get("pf_forms");
+	      function forms() {
+	        if (liveForms && Array.isArray(liveForms)) {
+	          return liveForms;
+	        }
+	        const stored = LS.get("pf_forms");
         if (Array.isArray(stored) && stored.length > 0) {
           const filtered = stored.filter(
             (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up"
@@ -6938,29 +6942,47 @@
         }
       });
 
-      // ===================== DASHBOARD & SUBMISSIONS =====================
-      async function syncServerSubmissions() {
-        try {
-          const res = await fetch("/api/submissions");
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && Array.isArray(data.submissions)) {
-              liveSubmissions = data.submissions;
-              return liveSubmissions;
-            }
-          }
-        } catch (e) {
-          console.warn("Could not sync server submissions", e);
-        }
-        return submissions();
-      }
+	      // ===================== DASHBOARD & SUBMISSIONS =====================
+	      async function syncServerForms() {
+	        try {
+	          const res = await fetch("/api/forms", { cache: "no-store", credentials: "include" });
+	          if (res.ok) {
+	            const data = await res.json();
+	            if (data.success && Array.isArray(data.forms)) {
+	              liveForms = data.forms;
+	              LS.set("pf_forms", data.forms);
+	              return liveForms;
+	            }
+	          }
+	        } catch (e) {
+	          console.warn("Could not sync server forms", e);
+	        }
+	        return forms();
+	      }
 
-      async function renderDashboard() {
-        if ($("#forms-view")) $("#forms-view").style.display = "block";
-        if ($("#admin-area-view")) $("#admin-area-view").style.display = "none";
-        await syncServerSubmissions();
-        const f = forms();
-        const allSubs = submissions();
+	      async function syncServerSubmissions() {
+	        try {
+	          const res = await fetch("/api/submissions", { cache: "no-store", credentials: "include" });
+	          if (res.ok) {
+	            const data = await res.json();
+	            if (data.success && Array.isArray(data.submissions)) {
+	              liveSubmissions = data.submissions;
+	              LS.set("pf_submissions", data.submissions);
+	              return liveSubmissions;
+	            }
+	          }
+	        } catch (e) {
+	          console.warn("Could not sync server submissions", e);
+	        }
+	        return submissions();
+	      }
+
+	      async function renderDashboard() {
+	        if ($("#forms-view")) $("#forms-view").style.display = "block";
+	        if ($("#admin-area-view")) $("#admin-area-view").style.display = "none";
+	        await Promise.all([syncServerForms(), syncServerSubmissions()]);
+	        const f = forms();
+	        const allSubs = submissions();
         const total = f.length;
         const published = f.filter((x) => x.status === "published").length;
         const totalSub = allSubs.length;
@@ -7063,19 +7085,21 @@
 	          renderDashboard();
 	        }
 	      }
-      let deleteConfirm = {};
-      async function confirmDelete(id, btn) {
-        if (deleteConfirm[id]) {
-          const f = forms().filter((x) => x.id !== id);
-          LS.set("pf_forms", f);
-          const s = submissions().filter((x) => x.formId !== id);
-          LS.set("pf_submissions", s);
-          deleteConfirm[id] = false;
-          try {
-            await fetch(`/api/forms?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-          } catch (e) {
-            console.warn("Failed to delete form from server", e);
-          }
+	      let deleteConfirm = {};
+	      async function confirmDelete(id, btn) {
+	        if (deleteConfirm[id]) {
+	          const f = forms().filter((x) => x.id !== id);
+	          liveForms = f;
+	          LS.set("pf_forms", f);
+	          const s = submissions().filter((x) => x.formId !== id);
+	          liveSubmissions = s;
+	          LS.set("pf_submissions", s);
+	          deleteConfirm[id] = false;
+	          try {
+	            await fetch(`/api/forms?id=${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
+	          } catch (e) {
+	            console.warn("Failed to delete form from server", e);
+	          }
           toast("Form deleted", "error");
           renderDashboard();
         } else {
@@ -8013,13 +8037,17 @@
 	        }
 	      }
 
-	      function renderBuilder(formId) {
-	        const f = forms().find((x) => x.id === formId);
-	        if (!f) {
-	          navigate("#/dashboard");
-	          return;
-	        }
-	        builderForm = f;
+		      async function renderBuilder(formId) {
+		        let f = forms().find((x) => x.id === formId);
+		        if (!f) {
+		          await syncServerForms();
+		          f = forms().find((x) => x.id === formId);
+		        }
+		        if (!f) {
+		          navigate("#/dashboard");
+		          return;
+		        }
+		        builderForm = f;
 	        editingQ = null;
 	        isEditingCover = false;
 	        phonePreviewIdx = -1; // -1 represents cover page in phone preview
@@ -9065,26 +9093,28 @@
         `;
       }
 
-      async function syncFormToServer(formData) {
-        if (!formData || !formData.id) return;
-        try {
-          await fetch("/api/forms", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
-        } catch (e) {}
-      }
+	      async function syncFormToServer(formData) {
+	        if (!formData || !formData.id) return;
+	        try {
+	          await fetch("/api/forms", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            credentials: "include",
+	            body: JSON.stringify(formData),
+	          });
+	        } catch (e) {}
+	      }
 
-      async function saveForm() {
-        const f = forms();
-        const idx = f.findIndex((x) => x.id === builderForm.id);
-        builderForm.updatedAt = new Date().toISOString();
-        if (idx >= 0) f[idx] = builderForm;
-        else f.push(builderForm);
-        LS.set("pf_forms", f);
-        await syncFormToServer(builderForm);
-      }
+	      async function saveForm() {
+	        const f = forms();
+	        const idx = f.findIndex((x) => x.id === builderForm.id);
+	        builderForm.updatedAt = new Date().toISOString();
+	        if (idx >= 0) f[idx] = builderForm;
+	        else f.push(builderForm);
+	        liveForms = f;
+	        LS.set("pf_forms", f);
+	        await syncFormToServer(builderForm);
+	      }
 
       // FIX 3: Drag-and-drop with reorder toast + preview update
       function setupDragDrop() {
@@ -9368,9 +9398,10 @@
         }
       }
 
-      async function renderSubmissions(formId) {
-        const allForms = forms();
-        let f = allForms.find((x) => x.id === formId) || allForms[0];
+	      async function renderSubmissions(formId) {
+	        await syncServerForms();
+	        const allForms = forms();
+	        let f = allForms.find((x) => x.id === formId) || allForms[0];
         if (!f) {
           navigate("#/dashboard");
           return;
