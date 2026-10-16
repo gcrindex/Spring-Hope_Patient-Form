@@ -375,7 +375,7 @@
         flex-direction: row;
       }
       .sidebar {
-        width: 240px;
+        width: 255px;
         background: var(--navy);
         color: #fff;
         display: flex;
@@ -432,11 +432,18 @@
         flex-shrink: 0;
       }
       .sidebar-user {
-        padding: 16px 20px;
+        padding: 14px 16px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .sidebar-user-top {
         display: flex;
         align-items: center;
         gap: 10px;
+        min-width: 0;
+        width: 100%;
       }
       .sidebar-user .avatar {
         width: 36px;
@@ -467,29 +474,52 @@
       }
       .sidebar-user .role {
         font-size: 11px;
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.75);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin-top: 2px;
+        margin-top: 3px;
+      }
+      .sidebar-user-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
       }
       .sidebar-user .logout-btn {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.7);
         font-size: 11px;
         font-weight: 600;
-        padding: 5px 9px;
+        padding: 5px 12px;
         border-radius: 6px;
         background: rgba(255, 255, 255, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.12);
         white-space: nowrap;
-        flex-shrink: 0;
         transition: all var(--transition);
-        margin-left: auto;
+        cursor: pointer;
       }
       .sidebar-user .logout-btn:hover {
         background: rgba(239, 68, 68, 0.2);
         border-color: rgba(239, 68, 68, 0.4);
         color: #fca5a5;
+      }
+      .sidebar-user .del-acc-btn {
+        background: none;
+        border: none;
+        color: #f87171;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 6px;
+        text-decoration: underline;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+      }
+      .sidebar-user .del-acc-btn:hover {
+        opacity: 1;
+        color: #ef4444;
       }
 
       /* ========== MAIN CONTENT ========== */
@@ -3474,22 +3504,22 @@
           </a>
         </nav>
         <div class="sidebar-user">
-          <div class="avatar" id="sidebar-avatar">AD</div>
-          <div class="info">
-            <div class="name" id="sidebar-username">Administrator</div>
-            <div class="role" id="sidebar-role">
-              <span style="display: inline-flex; align-items: center; gap: 4px; color: #38bdf8; font-weight: 700; font-size: 11px;">✦ Business Plan</span>
+          <div class="sidebar-user-top">
+            <div class="avatar" id="sidebar-avatar">AD</div>
+            <div class="info">
+              <div class="name" id="sidebar-username">Administrator</div>
+              <div class="role" id="sidebar-role">
+                <span style="display: inline-flex; align-items: center; gap: 4px; color: #38bdf8; font-weight: 700; font-size: 11px;">✦ Business Plan</span>
+              </div>
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex-shrink: 0;">
-            <button class="logout-btn" id="logout-btn" data-i18n="signOut" style="margin-left: 0;">Sign Out</button>
+          <div class="sidebar-user-actions">
+            <button class="logout-btn" id="logout-btn" data-i18n="signOut">Sign Out</button>
             <button
               type="button"
               id="sidebar-del-acc-btn"
+              class="del-acc-btn"
               onclick="openDeleteAccountModal()"
-              style="display: inline-block; background: none; border: none; color: #f87171; font-size: 10.5px; font-weight: 600; cursor: pointer; padding: 2px 4px; text-decoration: underline; opacity: 0.85; transition: opacity 0.2s;"
-              onmouseover="this.style.opacity='1'"
-              onmouseout="this.style.opacity='0.85'"
               data-i18n="deleteAccount"
             >
               Hapus Akun
@@ -5631,16 +5661,21 @@
 		          inviteBtn.style.display = isSuperAdmin ? "inline-flex" : "none";
 		        }
 
-				        const navAdminArea = $("#nav-admin-area");
-				        if (navAdminArea) {
-				          navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
-				        }
-				        const delAccBtn = $("#sidebar-del-acc-btn");
-				        if (delAccBtn) {
-				          delAccBtn.style.display = isSuperAdmin ? "none" : "inline-block";
-				          delAccBtn.textContent = currentAdminLang === "id" ? "Hapus Akun" : currentAdminLang === "zh" ? "注销账户" : "Delete Account";
-				        }
-				      }
+					        const navAdminArea = $("#nav-admin-area");
+					        if (navAdminArea) {
+					          navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
+					        }
+					        const delAccBtn = $("#sidebar-del-acc-btn");
+					        const logoutBtn = $("#logout-btn");
+					        if (delAccBtn) {
+					          delAccBtn.style.display = isSuperAdmin ? "none" : "inline-block";
+					          delAccBtn.textContent = currentAdminLang === "id" ? "Hapus Akun" : currentAdminLang === "zh" ? "注销账户" : "Delete Account";
+					        }
+					        if (logoutBtn) {
+					          logoutBtn.style.width = isSuperAdmin ? "100%" : "auto";
+					          logoutBtn.style.textAlign = isSuperAdmin ? "center" : "left";
+					        }
+					      }
 
       async function checkServerAuth() {
         try {
