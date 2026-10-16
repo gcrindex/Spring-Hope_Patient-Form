@@ -5177,14 +5177,16 @@
 
         const isSuperAdmin = isCurrentSuperAdmin();
 
-        if (avEl) {
-          const initials = isSuperAdmin ? "AD" : (email.split("@")[0] || "US").substring(0, 2).toUpperCase();
-          avEl.textContent = initials;
-        }
-        if (userEl) {
-          userEl.textContent = isSuperAdmin ? "Administrator" : (email.split("@")[0] || "User");
-          userEl.title = email;
-        }
+	        if (avEl) {
+	          const initials = isSuperAdmin
+	            ? "AD"
+	            : (email ? email.replace(/[^a-zA-Z0-9]/g, "").substring(0, 2).toUpperCase() : "US") || "US";
+	          avEl.textContent = initials;
+	        }
+	        if (userEl) {
+	          userEl.textContent = isSuperAdmin ? "Administrator" : (email || "Akun Bisnis");
+	          userEl.title = email;
+	        }
         if (roleEl) {
           if (isSuperAdmin) {
             roleEl.innerHTML = '<span style="color:#94a3b8; font-size:12px; font-weight:500;">Administrator</span>';
@@ -9087,6 +9089,9 @@
       seedData();
       migrateSubmissionDates();
       applyAdminI18n();
+      checkServerAuth().finally(() => {
+        updateUserSidebar();
+      });
       route();
     </script>
   </body>

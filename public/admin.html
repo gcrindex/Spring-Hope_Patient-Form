@@ -5803,14 +5803,16 @@
 
 		        const isSuperAdmin = isCurrentSuperAdmin();
 
-		        if (avEl) {
-		          const initials = isSuperAdmin ? "SA" : (email.split("@")[0] || "US").substring(0, 2).toUpperCase();
-		          avEl.textContent = initials;
-		        }
-		        if (userEl) {
-		          userEl.textContent = isSuperAdmin ? "Super Administrator" : (email.split("@")[0] || "Member");
-		          userEl.title = email;
-		        }
+			        if (avEl) {
+			          const initials = isSuperAdmin
+			            ? "SA"
+			            : (email ? email.replace(/[^a-zA-Z0-9]/g, "").substring(0, 2).toUpperCase() : "US") || "US";
+			          avEl.textContent = initials;
+			        }
+			        if (userEl) {
+			          userEl.textContent = isSuperAdmin ? "Super Admin" : (email || "Akun Member");
+			          userEl.title = email;
+			        }
 		        if (roleEl) {
 		          if (isSuperAdmin) {
 		            roleEl.innerHTML = '<span style="color:#f59e0b; font-size:11.5px; font-weight:700;">★ Super Admin</span>';
@@ -6642,9 +6644,10 @@
         }
         if (r.screen === "builder") renderBuilder(r.id);
         if (r.screen === "submissions") renderSubmissions(r.formId);
-        if (r.screen === "choice") renderChoiceScreen();
-      }
-      window.addEventListener("hashchange", route);
+	        if (r.screen === "choice") renderChoiceScreen();
+	        updateUserSidebar();
+	      }
+	      window.addEventListener("hashchange", route);
 
       // Mobile Drawer Toggle
       function openSidebar() {
@@ -10609,6 +10612,9 @@
       seedData();
       migrateSubmissionDates();
       applyAdminI18n();
+      checkServerAuth().finally(() => {
+        updateUserSidebar();
+      });
       route();
     </script>
   </body>
