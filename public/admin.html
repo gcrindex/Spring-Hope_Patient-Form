@@ -404,6 +404,8 @@
       .sidebar nav {
         flex: 1;
         padding: 8px 12px;
+        overflow-y: auto;
+        min-height: 0;
       }
       .nav-item {
         display: flex;
@@ -537,14 +539,14 @@
       .popover-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         width: 100%;
-        padding: 8px 10px;
+        padding: 10px 12px;
         border-radius: 8px;
         border: none;
         background: transparent;
         color: #cbd5e1;
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 500;
         text-align: left;
         cursor: pointer;
@@ -6548,6 +6550,7 @@
         $("#sidebar-backdrop")?.classList.add("active");
       }
       function closeSidebar() {
+        if (typeof closeProfilePopover === "function") closeProfilePopover();
         $(".sidebar")?.classList.remove("open");
         $("#sidebar-backdrop")?.classList.remove("active");
       }
@@ -7344,6 +7347,7 @@
       }
 
       function openDeleteAccountModal() {
+        if (typeof closeSidebar === "function") closeSidebar();
         const lang = currentAdminLang || "id";
         const email = (localStorage.getItem("pf_admin_email") || "").toLowerCase().trim();
         const isMasterSuperAdmin = email === "admin@gmail.com" || email === "admin@9forms.com";
