@@ -6221,17 +6221,18 @@
 	          prompt("Salin tautan formulir di bawah ini:", appUrl);
 	        }
 	      }
-      function publishForm(id) {
-        const f = forms();
-        const x = f.find((y) => y.id === id);
-        if (x) {
-          x.status = "published";
-          x.updatedAt = new Date().toISOString();
-          LS.set("pf_forms", f);
-          toast("Form published!");
-          renderDashboard();
-        }
-      }
+	      function publishForm(id) {
+	        const f = forms();
+	        const x = f.find((y) => y.id === id);
+	        if (x) {
+	          x.status = "published";
+	          x.updatedAt = new Date().toISOString();
+	          LS.set("pf_forms", f);
+	          syncFormToServer(x);
+	          toast("Form published!");
+	          renderDashboard();
+	        }
+	      }
       let deleteConfirm = {};
       async function confirmDelete(id, btn) {
         if (deleteConfirm[id]) {

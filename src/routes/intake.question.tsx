@@ -5,6 +5,7 @@ import { PatientShell } from "../components/patient-shell";
 import { useSpeechRecognition } from "../hooks/use-speech-recognition";
 import {
   copy,
+  elderlyFriendlyForm,
   fetchFormByIdAsync,
   getActiveFormId,
   getFormById,
@@ -12,6 +13,7 @@ import {
   getStoredLanguage,
   getStoredQuestionIndex,
   isVoiceAutoMode,
+  kneePainForm,
   localeFor,
   matchOptionTranscript,
   newPatientForm,
@@ -134,7 +136,8 @@ function QuestionPage() {
 
       autoAdvanceTimerRef.current = setTimeout(() => {
         setJustSelected(null);
-        if (index >= activeForm.questions.length - 1) {
+        const total = activeForm?.questions?.length || 1;
+        if (index >= total - 1) {
           navigate({ to: "/intake/complete", search: { form: activeForm.id } });
         } else {
           const next = index + 1;
@@ -145,7 +148,7 @@ function QuestionPage() {
         }
       }, delayMs);
     },
-    [index, activeForm.questions.length, navigate, activeForm.id],
+    [index, activeForm?.questions?.length, navigate, activeForm?.id],
   );
 
   const updateAnswer = useCallback(
@@ -309,7 +312,8 @@ function QuestionPage() {
     if (!isAnswered) return;
     if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     voice.stop();
-    if (index >= activeForm.questions.length - 1) {
+    const total = activeForm?.questions?.length || 1;
+    if (index >= total - 1) {
       navigate({ to: "/intake/complete", search: { form: activeForm.id } });
     } else {
       const next = index + 1;
