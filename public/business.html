@@ -3439,6 +3439,16 @@
               <button type="button" class="lang-btn" data-lang="id">ID</button>
               <button type="button" class="lang-btn" data-lang="zh">中文</button>
             </div>
+            <button
+              type="button"
+              class="btn btn-ghost"
+              id="reset-canonical-forms-btn"
+              onclick="resetToLandingForms()"
+              style="display: none; border: 1.5px solid var(--border); font-size: 13px; font-weight: 700; background: #fff;"
+              title="Sinkronkan hanya 3 form standar landing page"
+            >
+              ↺ <span data-i18n="resetLandingForms">3 Form Landing</span>
+            </button>
             <button class="btn btn-primary" id="new-form-btn" data-i18n="newForm">
               + New Form
             </button>
@@ -5211,6 +5221,10 @@
         if (navAdminArea) {
           navAdminArea.style.display = isSuperAdmin ? "flex" : "none";
         }
+        const resetFormsBtn = $("#reset-canonical-forms-btn");
+        if (resetFormsBtn) {
+          resetFormsBtn.style.display = isSuperAdmin ? "inline-flex" : "none";
+        }
         const delAccBtn = $("#sidebar-del-acc-btn");
         if (delAccBtn) {
           delAccBtn.style.display = isSuperAdmin ? "none" : "flex";
@@ -5469,8 +5483,9 @@
           testNextBtn: "Next Question →",
           testSubmitBtn: "Complete Test →",
           testSummaryLabel: "Test Response Summary",
-          toastDraftSaved: "Form saved as Draft",
-          toastSaved: "Changes saved",
+	          toastDraftSaved: "Form saved as Draft",
+	          toastSaved: "Changes saved",
+	          resetLandingForms: "3 Landing Forms",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Enter your business account credentials",
           registerPortalTitle: "Business Registration",
@@ -5632,6 +5647,7 @@
           testSummaryLabel: "Ringkasan Jawaban Uji Coba",
           toastDraftSaved: "Formulir tersimpan sebagai Draf",
           toastSaved: "Perubahan berhasil disimpan",
+          resetLandingForms: "3 Form Landing",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Masukkan kredensial akun bisnis Anda",
           registerPortalTitle: "Registrasi Akun Bisnis",
@@ -5791,6 +5807,7 @@
           testSummaryLabel: "测试答题记录摘要",
           toastDraftSaved: "表单已成功保存为草稿",
           toastSaved: "已保存修改",
+          resetLandingForms: "官网3个表单",
           loginPortalTitle: "企业商业门户",
           loginPortalDesc: "输入您的企业商业账户凭据",
           registerPortalTitle: "企业账户注册",
@@ -6477,15 +6494,67 @@
           deleteConfirm[id] = true;
           btn.textContent = "Confirm?";
           btn.classList.add("confirm-delete");
-          setTimeout(() => {
-            deleteConfirm[id] = false;
-            btn.textContent = "Delete";
-            btn.classList.remove("confirm-delete");
-          }, 3000);
+	          setTimeout(() => {
+	            deleteConfirm[id] = false;
+	            btn.textContent = "Delete";
+	            btn.classList.remove("confirm-delete");
+	          }, 3000);
+	        }
+	      }
+
+      async function resetToLandingForms() {
+        const confirmMsg =
+          currentAdminLang === "id"
+            ? "Kembalikan daftar formulir hanya ke 3 form asli landing page (New Patient, Knee Pain, Senior Friendly)? Formulir uji coba lain akan dibersihkan."
+            : currentAdminLang === "zh"
+              ? "是否将表单列表重置为官网的3个基础表单（新患者登记、膝痛评估、长者关怀登记）？测试表单将被清理。"
+              : "Reset form list to the 3 canonical landing page forms (New Patient, Knee Pain, Senior Friendly)? Other test forms will be cleared.";
+
+        if (!confirm(confirmMsg)) {
+          return;
         }
+
+        try {
+          const res = await fetch("/api/forms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "reset-landing-forms" }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success && Array.isArray(data.forms)) {
+            liveForms = data.forms;
+            LS.set("pf_forms", data.forms);
+            toast(
+              currentAdminLang === "id"
+                ? "Berhasil disinkronkan ke 3 form landing page!"
+                : currentAdminLang === "zh"
+                  ? "已重置为官网3个表单！"
+                  : "Synced to 3 landing page forms!",
+              "success",
+            );
+            renderDashboard();
+            return;
+          }
+        } catch (e) {
+          console.warn("Server reset fallback", e);
+        }
+
+        const master = getMasterForms();
+        liveForms = master;
+        LS.set("pf_forms", master);
+        toast(
+          currentAdminLang === "id"
+            ? "Berhasil disinkronkan ke 3 form landing page!"
+            : currentAdminLang === "zh"
+              ? "已重置为官网3个表单！"
+              : "Synced to 3 landing page forms!",
+          "success",
+        );
+        renderDashboard();
       }
 
-			      // ===================== BUILDER =====================
+				      // ===================== BUILDER =====================
 			      let builderForm = null,
 			        editingQ = null,
 			        isEditingCover = false,

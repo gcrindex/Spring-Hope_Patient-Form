@@ -89,8 +89,8 @@ export const Route = createFileRoute("/api/forms")({
 
           // Seed default template if database is completely empty (ONLY for superadmin)
           if (forms.length === 0 && isSuperAdmin) {
-            const { newPatientForm } = await import("../lib/patientform");
-            forms = [newPatientForm];
+            const { newPatientForm, kneePainForm, elderlyFriendlyForm } = await import("../lib/patientform");
+            forms = [newPatientForm, kneePainForm, elderlyFriendlyForm];
           }
 
           return Response.json(
@@ -106,29 +106,64 @@ export const Route = createFileRoute("/api/forms")({
         }
       },
 
-      POST: async ({ request }) => {
-        try {
-          const user = await authenticateRequest(request);
-          const body = await request.json().catch(() => null);
-          if (!body || typeof body !== "object" || !body.id) {
-            return Response.json(
-              { success: false, error: "INVALID_BODY", message: "Invalid form data." },
-              { status: 400 },
-            );
-          }
+	      POST: async ({ request }) => {
+	        try {
+	          const user = await authenticateRequest(request);
+	          const body = await request.json().catch(() => null);
+	          if (!body || typeof body !== "object") {
+	            return Response.json(
+	              { success: false, error: "INVALID_BODY", message: "Invalid form data." },
+	              { status: 400 },
+	            );
+	          }
 
-          const formId = String(body.id).trim();
-          const title =
-            typeof body.title === "string"
-              ? body.title
-              : body.title?.en || body.title?.id || "Custom Form";
-          const schemaJson = JSON.stringify(body);
+	          const isSuperAdmin =
+	            user &&
+	            (user.role === "superadmin" ||
+	              user.email === "admin@gmail.com" ||
+	              user.email === "superadmin@9forms.com");
 
-          const isSuperAdmin =
-            user &&
-            (user.role === "superadmin" ||
-              user.email === "admin@gmail.com" ||
-              user.email === "superadmin@9forms.com");
+	          if (body.action === "reset-landing-forms") {
+	            if (!isSuperAdmin) {
+	              return Response.json(
+	                { success: false, error: "FORBIDDEN", message: "Akses khusus Super Administrator." },
+	                { status: 403 },
+	              );
+	            }
+	            const { newPatientForm, kneePainForm, elderlyFriendlyForm } = await import("../lib/patientform");
+	            const canonicalForms = [newPatientForm, kneePainForm, elderlyFriendlyForm];
+	            try {
+	              await dbExecute("DELETE FROM forms");
+	              for (const f of canonicalForms) {
+	                const fTitle = typeof f.title === "string" ? f.title : f.title.en;
+	                await dbExecute(
+	                  "INSERT INTO forms (id, title, schema_json, user_id, created_at, updated_at) VALUES (?, ?, ?, 'admin', datetime('now'), datetime('now'))",
+	                  [f.id, fTitle, JSON.stringify(f)],
+	                );
+	              }
+	            } catch (dbErr) {
+	              console.error("Failed to reset forms in DB", dbErr);
+	            }
+	            return Response.json({
+	              success: true,
+	              message: "Berhasil disinkronkan ke 3 formulir landing page.",
+	              forms: canonicalForms,
+	            });
+	          }
+
+	          if (!body.id) {
+	            return Response.json(
+	              { success: false, error: "INVALID_BODY", message: "Invalid form ID." },
+	              { status: 400 },
+	            );
+	          }
+
+	          const formId = String(body.id).trim();
+	          const title =
+	            typeof body.title === "string"
+	              ? body.title
+	              : body.title?.en || body.title?.id || "Custom Form";
+	          const schemaJson = JSON.stringify(body);
 
           let existing: { id: string; user_id?: string } | null = null;
           try {
