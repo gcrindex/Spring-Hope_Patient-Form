@@ -9401,16 +9401,19 @@
 	        } catch (e) {}
 	      }
 
-	      async function saveForm() {
-	        const f = forms();
-	        const idx = f.findIndex((x) => x.id === builderForm.id);
-	        builderForm.updatedAt = new Date().toISOString();
-	        if (idx >= 0) f[idx] = builderForm;
-	        else f.push(builderForm);
-	        liveForms = f;
-	        LS.set("pf_forms", f);
-	        await syncFormToServer(builderForm);
-	      }
+		      async function saveForm() {
+		        const f = forms();
+		        const idx = f.findIndex((x) => x.id === builderForm.id);
+		        builderForm.updatedAt = new Date().toISOString();
+		        if (idx >= 0) f[idx] = builderForm;
+		        else f.push(builderForm);
+		        liveForms = f;
+		        LS.set("pf_forms", f);
+		        try {
+		          localStorage.setItem("pf_forms", JSON.stringify(f));
+		        } catch (e) {}
+		        await syncFormToServer(builderForm);
+		      }
 
       // FIX 3: Drag-and-drop with reorder toast + preview update
       function setupDragDrop() {

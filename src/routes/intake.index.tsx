@@ -85,34 +85,38 @@ function IntakeStart() {
   const [useVoiceFirst] = useState(() => isVoiceAutoMode());
   const [consentAgreed, setConsentAgreed] = useState(true);
   const [nameError, setNameError] = useState("");
+
+  const fId = formParam || getActiveFormId();
+  const isPreset = fId === newPatientForm.id || fId === kneePainForm.id || fId === elderlyFriendlyForm.id;
+  const isCoverDisabled = activeForm?.coverPage?.enabled === false;
+
   const [loadingRemote, setLoadingRemote] = useState(() => {
-    const fId = formParam || getActiveFormId();
-    const isPreset = fId === newPatientForm.id || fId === kneePainForm.id || fId === elderlyFriendlyForm.id;
+    if (isCoverDisabled) return true;
     return Boolean(formParam && !isPreset && getFormById(fId).id !== fId);
   });
 
   useEffect(() => {
-    const fId = formParam || getActiveFormId();
-    setActiveFormId(fId);
+    const currentFId = formParam || getActiveFormId();
+    setActiveFormId(currentFId);
     setLanguage(getStoredLanguage());
     setName(getPatientName());
 
-    const initialForm = getFormById(fId);
-    if (initialForm && initialForm.id === fId && initialForm.coverPage?.enabled === false) {
+    const initialForm = getFormById(currentFId);
+    if (initialForm && initialForm.id === currentFId && initialForm.coverPage?.enabled === false) {
       resetAssessment();
       setStoredQuestionIndex(0);
       navigate({ to: "/intake/question", search: { form: initialForm.id }, replace: true });
       return;
     }
 
-    fetchFormByIdAsync(fId).then((resolved) => {
+    fetchFormByIdAsync(currentFId).then((resolved) => {
       setActiveForm(resolved);
-      setLoadingRemote(false);
-      // If cover is disabled, immediately redirect to Question 1
       if (resolved.coverPage?.enabled === false) {
         resetAssessment();
         setStoredQuestionIndex(0);
         navigate({ to: "/intake/question", search: { form: resolved.id }, replace: true });
+      } else {
+        setLoadingRemote(false);
       }
     }).catch(() => {
       setLoadingRemote(false);
@@ -210,17 +214,43 @@ function IntakeStart() {
   const totalQuestions = activeForm.questions?.length || 5;
   const estTime = cover.estimatedMinutes || (totalQuestions <= 3 ? 1 : totalQuestions <= 6 ? 2 : 3);
 
-  if (loadingRemote) {
+  if (isCoverDisabled || loadingRemote) {
     return (
       <PatientShell
         language={language}
         onLanguage={setLang}
         onBack={() => navigate({ to: "/" })}
+        theme={activeForm?.theme}
       >
-        <div className="patient-card patient-card-start sleek-form-card" style={{ textAlign: "center", padding: "48px 24px" }}>
-          <div style={{ display: "inline-block", width: "32px", height: "32px", border: "3px solid #e2e8f0", borderTopColor: "#059669", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <div
+          className="patient-card patient-card-start sleek-form-card"
+          style={{
+            textAlign: "center",
+            padding: "48px 24px",
+            minHeight: "240px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "inline-block",
+              width: "32px",
+              height: "32px",
+              border: "3px solid #e2e8f0",
+              borderTopColor: "#0284c7",
+              borderRadius: "50%",
+              animation: "spin 0.8s linear infinite",
+            }}
+          />
           <p style={{ marginTop: "16px", color: "#64748b", fontWeight: 600, fontSize: "14px" }}>
-            {language === "id" ? "Memuat formulir..." : language === "zh" ? "加载表单中..." : "Loading form..."}
+            {language === "id"
+              ? "Memuat formulir..."
+              : language === "zh"
+                ? "加载表单中..."
+                : "Loading form..."}
           </p>
         </div>
       </PatientShell>

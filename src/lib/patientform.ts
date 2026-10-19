@@ -897,38 +897,48 @@ export function getFormById(id?: string | null): AssessmentForm {
   const preset = allForms.find((f) => f.id === id);
   if (preset) return preset;
 
-  if (dynamicFormsCache.has(id)) {
-    return dynamicFormsCache.get(id)!;
-  }
-
   if (typeof window !== "undefined") {
     try {
-      const stored = JSON.parse(window.localStorage.getItem("pf_forms") ?? "[]") as Record<
-        string,
-        unknown
-      >[];
-      const found = stored.find((f) => f && f["id"] === id);
-      if (found) {
-        return registerCustomForm(found);
-      }
+      let latestCandidate: Record<string, unknown> | null = null;
+      let latestTime = 0;
 
-      // Check user-scoped keys (e.g. pf_forms_default, pf_forms_admin_9forms_com)
+      const checkCandidate = (item: unknown) => {
+        if (!item || typeof item !== "object") return;
+        const rec = item as Record<string, unknown>;
+        if (rec["id"] === id) {
+          const t = new Date((rec["updatedAt"] || rec["updated_at"] || 0) as string).getTime();
+          if (t >= latestTime) {
+            latestTime = t;
+            latestCandidate = rec;
+          }
+        }
+      };
+
       for (let i = 0; i < window.localStorage.length; i++) {
         const key = window.localStorage.key(i);
-        if (key && key.startsWith("pf_forms_")) {
+        if (key && (key === "pf_forms" || key.startsWith("pf_forms_"))) {
           try {
             const raw = window.localStorage.getItem(key);
             if (raw) {
-              const list = JSON.parse(raw) as Record<string, unknown>[];
-              const f = list.find((item) => item && item["id"] === id);
-              if (f) return registerCustomForm(f);
+              const list = JSON.parse(raw);
+              if (Array.isArray(list)) {
+                for (const item of list) checkCandidate(item);
+              }
             }
           } catch {}
         }
       }
+
+      if (latestCandidate) {
+        return registerCustomForm(latestCandidate);
+      }
     } catch (e) {
       void e;
     }
+  }
+
+  if (dynamicFormsCache.has(id)) {
+    return dynamicFormsCache.get(id)!;
   }
 
   return newPatientForm;
@@ -943,7 +953,17 @@ export async function fetchFormByIdAsync(id: string): Promise<AssessmentForm> {
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.form) {
-        return registerCustomForm(data.form);
+        const registered = registerCustomForm(data.form);
+        try {
+          if (typeof window !== "undefined") {
+            const stored = JSON.parse(window.localStorage.getItem("pf_forms") ?? "[]");
+            const idx = Array.isArray(stored) ? stored.findIndex((x: any) => x && x.id === id) : -1;
+            if (idx >= 0) stored[idx] = data.form;
+            else if (Array.isArray(stored)) stored.push(data.form);
+            window.localStorage.setItem("pf_forms", JSON.stringify(stored));
+          }
+        } catch {}
+        return registered;
       }
     }
   } catch (err) {

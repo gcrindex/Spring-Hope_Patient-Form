@@ -7675,6 +7675,9 @@
 	        else f.push(builderForm);
 	        liveForms = f;
 	        LS.set("pf_forms", f);
+	        try {
+	          localStorage.setItem("pf_forms", JSON.stringify(f));
+	        } catch (e) {}
 	        await syncFormToServer(builderForm);
 	      }
 

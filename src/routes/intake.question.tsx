@@ -300,7 +300,11 @@ function QuestionPage() {
     if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     voice.stop();
     if (index <= 0) {
-      navigate({ to: "/intake", search: { form: activeForm.id } });
+      if (activeForm.coverPage?.enabled === false) {
+        navigate({ to: "/" });
+      } else {
+        navigate({ to: "/intake", search: { form: activeForm.id } });
+      }
     } else {
       const prev = index - 1;
       setIndex(prev);
