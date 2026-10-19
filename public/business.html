@@ -1978,6 +1978,85 @@
         transition: transform 0.25s ease;
         box-sizing: border-box;
       }
+      .ai-modal-mobile-tabs {
+        display: none;
+      }
+      .ai-jump-preview-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, #0284c7, #0d9488);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 750;
+        padding: 7px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 8px;
+        border: none;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+        transition: transform 0.15s ease;
+      }
+      .ai-jump-preview-btn:active {
+        transform: scale(0.97);
+      }
+      @media (max-width: 768px) {
+        .ai-modal-mobile-tabs {
+          display: flex !important;
+          padding: 8px 14px;
+          background: #f8fafc;
+          border-bottom: 1px solid var(--border);
+          gap: 8px;
+          flex-shrink: 0;
+        }
+        .ai-mob-tab-btn {
+          flex: 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 8px 12px;
+          border-radius: 9px;
+          font-size: 12px;
+          font-weight: 750;
+          border: 1.5px solid var(--border);
+          background: #ffffff;
+          color: var(--text2);
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .ai-mob-tab-btn.active {
+          background: #e0f2fe;
+          border-color: #38bdf8;
+          color: #0369a1;
+          box-shadow: 0 1px 3px rgba(3, 105, 161, 0.1);
+        }
+        .ai-mob-badge {
+          font-size: 10px;
+          font-weight: 800;
+          padding: 2px 7px;
+          border-radius: 99px;
+          background: #10b981;
+          color: #ffffff;
+        }
+        #ai-modal-content[data-mob-ai-tab="chat"] #ai-chat-area,
+        #ai-modal-content[data-mob-ai-tab="chat"] #ai-input-bar {
+          display: flex !important;
+        }
+        #ai-modal-content[data-mob-ai-tab="chat"] #ai-preview-area {
+          display: none !important;
+        }
+        #ai-modal-content[data-mob-ai-tab="preview"] #ai-chat-area,
+        #ai-modal-content[data-mob-ai-tab="preview"] #ai-input-bar {
+          display: none !important;
+        }
+        #ai-modal-content[data-mob-ai-tab="preview"] #ai-preview-area {
+          display: block !important;
+          flex: 1 !important;
+          max-height: calc(92dvh - 120px) !important;
+          overflow-y: auto !important;
+        }
+      }
       @media (max-width: 640px) {
         .modal-overlay {
           padding: 6px !important;
@@ -2009,8 +2088,9 @@
         }
         #ai-chat-area {
           padding: 12px 10px !important;
-          min-height: 140px !important;
-          max-height: 30vh !important;
+          min-height: 200px !important;
+          max-height: 52vh !important;
+          flex: 1 !important;
         }
         #ai-input-bar {
           padding: 10px 10px !important;
@@ -3941,17 +4021,27 @@
           >
             💼 Candidate Recruitment (HR)
           </button>
-          <button
-            type="button"
-            class="ai-chip-pill"
-            id="ai-preset-lead-btn"
-            data-i18n="aiPresetLead"
-            onclick="applyAiPreset('lead')"
-          >
-            🚀 B2B Sales Lead Qualification
-          </button>
-        </div>
-        <!-- Chat area -->
+	          <button
+	            type="button"
+	            class="ai-chip-pill"
+	            id="ai-preset-lead-btn"
+	            data-i18n="aiPresetLead"
+	            onclick="applyAiPreset('lead')"
+	          >
+	            🚀 B2B Sales Lead Qualification
+	          </button>
+	        </div>
+	        <!-- Mobile Segmented Tabs (Visible on mobile screens <= 768px) -->
+	        <div class="ai-modal-mobile-tabs" id="ai-modal-mobile-tabs">
+	          <button type="button" class="ai-mob-tab-btn active" id="ai-mob-tab-chat" onclick="switchAiMobileTab('chat')">
+	            💬 <span data-i18n="aiMobTabChat">Diskusi &amp; Chat</span>
+	          </button>
+	          <button type="button" class="ai-mob-tab-btn" id="ai-mob-tab-preview" onclick="switchAiMobileTab('preview')">
+	            👁️ <span data-i18n="aiMobTabPreview">Pratinjau Form</span>
+	            <span id="ai-mob-preview-badge" class="ai-mob-badge" style="display:none">0 Soal</span>
+	          </button>
+	        </div>
+	        <!-- Chat area -->
         <div
           id="ai-chat-area"
           style="
@@ -5420,8 +5510,10 @@
           aiPresetCsat: "⭐ Customer Satisfaction (CSAT)",
           aiPresetEvent: "🎟️ Event & Workshop RSVP",
           aiPresetHr: "💼 Candidate Recruitment (HR)",
-          aiPresetLead: "🚀 B2B Sales Lead Qualification",
-          aiPreviewTitle: "✨ Ready-to-Use Form Draft",
+	          aiPresetLead: "🚀 B2B Sales Lead Qualification",
+	          aiMobTabChat: "Chat & Brainstorm",
+	          aiMobTabPreview: "Form Preview",
+	          aiPreviewTitle: "✨ Ready-to-Use Form Draft",
           aiPreviewSub: "Review questions below, refine via chat, or click Edit to customize in builder.",
           aiRedraftBtn: "↻ Re-draft",
           aiUseFormBtn: "✏️ Edit in Builder &rarr;",
@@ -5582,8 +5674,10 @@
           aiPresetCsat: "⭐ Kepuasan Pelanggan (CSAT)",
           aiPresetEvent: "🎟️ Registrasi Event & Seminar",
           aiPresetHr: "💼 Rekrutmen Karyawan (HR)",
-          aiPresetLead: "🚀 Kualifikasi Lead Bisnis",
-          aiPreviewTitle: "✨ Draf Formulir Siap Pakai",
+	          aiPresetLead: "🚀 Kualifikasi Lead Bisnis",
+	          aiMobTabChat: "Diskusi & Chat",
+	          aiMobTabPreview: "Pratinjau Form",
+	          aiPreviewTitle: "✨ Draf Formulir Siap Pakai",
           aiPreviewSub: "Tinjau pertanyaan di bawah, revisi via chat, atau klik Edit untuk menyesuaikan di builder.",
           aiRedraftBtn: "↻ Buat Ulang",
           aiUseFormBtn: "✏️ Buka & Edit di Builder &rarr;",
@@ -5742,8 +5836,10 @@
           aiPresetCsat: "⭐ 客户满意度调查 (CSAT)",
           aiPresetEvent: "🎟️ 活动与研讨会报名表",
           aiPresetHr: "💼 候选人求职招聘筛选 (HR)",
-          aiPresetLead: "🚀 B2B 销售线索资格评估",
-          aiPreviewTitle: "✨ 智能生成的表单草稿",
+	          aiPresetLead: "🚀 B2B 销售线索资格评估",
+	          aiMobTabChat: "沟通与构思",
+	          aiMobTabPreview: "表单预览",
+	          aiPreviewTitle: "✨ 智能生成的表单草稿",
           aiPreviewSub: "在下方预览题目，通过对话微调，或点击进入编辑器自定义修改。",
           aiRedraftBtn: "↻ 重新生成",
           aiUseFormBtn: "✏️ 进入编辑器微调修改 &rarr;",
@@ -8440,9 +8536,21 @@
 
       const AI_API_BASE = "";
 
+      function switchAiMobileTab(tab) {
+        const modal = $("#ai-modal-content");
+        if (modal) modal.setAttribute("data-mob-ai-tab", tab);
+        const btnChat = $("#ai-mob-tab-chat");
+        const btnPrev = $("#ai-mob-tab-preview");
+        if (btnChat) btnChat.classList.toggle("active", tab === "chat");
+        if (btnPrev) btnPrev.classList.toggle("active", tab === "preview");
+      }
+
       function openAiBuilder() {
         aiMessages = [];
         aiGeneratedForm = null;
+        switchAiMobileTab("chat");
+        const mobBadge = $("#ai-mob-preview-badge");
+        if (mobBadge) mobBadge.style.display = "none";
         // Reset UI
         const chatArea = $("#ai-chat-area");
         if (chatArea) {
@@ -8524,16 +8632,65 @@
           console.warn("AI endpoint notice:", e);
         }
 
-        // 2. Intelligent Multi-Industry AI Form Generator fallback (offline-proof)
-        if (!generated && !replyText) {
-          await new Promise((r) => setTimeout(r, 450));
-          const lower = text.toLowerCase();
+	        // 2. Intelligent Multi-Industry AI Form Generator fallback (offline-proof)
+	        if (!generated && !replyText) {
+	          await new Promise((r) => setTimeout(r, 450));
+	          const lower = text.toLowerCase();
 
-          if (/^(halo|hai|hi|hello|pagi|siang|sore|malam|tes|test|menu)\b/i.test(lower)) {
-            replyText = t("aiGreeting");
-          } else if (
-            /kepuasan|feedback|pelanggan|customer|nps|csat|restoran|toko|layanan/i.test(lower)
-          ) {
+	          if (/^(halo|hai|hi|hello|pagi|siang|sore|malam|tes|test|menu)\b/i.test(lower)) {
+	            replyText = t("aiGreeting");
+	          } else if (
+	            aiGeneratedForm &&
+	            /(tambah|masuk|sisip).*(whatsapp|wa|telepon|hp|nomor|kontak)/i.test(lower)
+	          ) {
+	            aiGeneratedForm.questions.push({
+	              id: "q_contact",
+	              text: "Berapa nomor WhatsApp atau nomor telepon aktif Anda?",
+	              type: "text",
+	              prompt: {
+	                en: "What is your active WhatsApp or phone number?",
+	                id: "Berapa nomor WhatsApp atau telepon aktif Anda?",
+	                zh: "请问您的常用电话/WhatsApp是？",
+	              },
+	              optional: false,
+	            });
+	            generated = aiGeneratedForm;
+	            replyText =
+	              currentAdminLang === "id"
+	                ? "Pertanyaan nomor kontak WhatsApp telah berhasil ditambahkan ke draf formulir!"
+	                : currentAdminLang === "zh"
+	                  ? "已成功为表单草稿添加联系电话/WhatsApp问题！"
+	                  : "WhatsApp contact number question has been added to the draft!";
+	          } else if (
+	            aiGeneratedForm &&
+	            /(hapus|buang|delete|remove).*(soal|nomor|pertanyaan|q)\s*(\d+)/i.test(lower)
+	          ) {
+	            const match = lower.match(/(?:hapus|buang|delete|remove).*(?:soal|nomor|pertanyaan|q)\s*(\d+)/i);
+	            const num = match ? parseInt(match[1], 10) : -1;
+	            if (num >= 1 && num <= aiGeneratedForm.questions.length) {
+	              aiGeneratedForm.questions.splice(num - 1, 1);
+	              generated = aiGeneratedForm;
+	              replyText =
+	                currentAdminLang === "id"
+	                  ? `Pertanyaan nomor ${num} telah dihapus dari draf formulir.`
+	                  : currentAdminLang === "zh"
+	                    ? `已成功删除第 ${num} 道题目。`
+	                    : `Question ${num} has been removed from the draft.`;
+	            }
+	          } else if (
+	            /^(apa|bagaimana|gimana|apakah|saran|ide|rekomendasi|enaknya|bisa|help|tanya|konsul)\b/i.test(lower) ||
+	            /\?$/.test(text.trim()) ||
+	            /enaknya|bagusnya|cocoknya/i.test(lower)
+	          ) {
+	            replyText =
+	              currentAdminLang === "id"
+	                ? "Untuk formulir tersebut, rekomendasi pertanyaan krusial yang efektif mencakup:\n• Identitas & Kontak utama (Nama, WhatsApp/Email)\n• Keluhan utama, kebutuhan spesifik, atau minat responden\n• Rating kepuasan atau skala evaluasi (0-10)\n• Opsi pilihan layanan / waktu yang diinginkan\n• Catatan atau feedback terbuka\n\nMau saya langsung buatkan draf form lengkapnya berdasarkan poin-poin ini?"
+	                : currentAdminLang === "zh"
+	                  ? "针对此类表单，核心关键问题通常包括：\n• 基本联系方式（姓名、电话/微信）\n• 核心诉求或具体需求分类\n• 满意度或自评量表（0-10分）\n• 选项偏好或时间安排\n• 开放式补充建议\n\n是否需要我立即为您生成完整的交互式表单草稿？"
+	                  : "For that type of form, recommended high-impact questions include:\n• Primary Contact Info (Name, Phone/WhatsApp)\n• Core objective or specific needs\n• Rating scale or satisfaction metric (0-10)\n• Preference or scheduling options\n• Open feedback or comments\n\nWould you like me to generate a complete interactive draft based on this structure?";
+	          } else if (
+	            /kepuasan|feedback|pelanggan|customer|nps|csat|restoran|toko|layanan/i.test(lower)
+	          ) {
             const formTitle = "Survei Kepuasan Pelanggan & Layanan";
             generated = {
               title: formTitle,
@@ -8701,9 +8858,33 @@
         if (generated) {
           aiGeneratedForm = generated;
           addAiMsg("ai", replyText);
+
+          // Save to aiMessages with full draft context so next turn retains knowledge
+          const lang = currentAdminLang || "id";
+          const qSummary = (generated.questions || [])
+            .map((q, i) => {
+              const p =
+                typeof q.prompt === "object"
+                  ? q.prompt[lang] || q.prompt.en || q.prompt.id
+                  : q.prompt || q.text;
+              return `${i + 1}. [${q.id}] ${p} (${q.type})`;
+            })
+            .join("; ");
+          const assistantMemory = `${replyText}\n[Current Draft: "${typeof generated.title === "object" ? generated.title[lang] || generated.title.en || generated.title.id : generated.title}" with questions: ${qSummary}]`;
+
+          aiMessages.push({
+            role: "assistant",
+            content: assistantMemory,
+          });
+          if (aiMessages.length > 20) aiMessages = aiMessages.slice(-20);
           showAiPreview(generated);
         } else {
           addAiMsg("ai", replyText);
+          aiMessages.push({
+            role: "assistant",
+            content: replyText,
+          });
+          if (aiMessages.length > 20) aiMessages = aiMessages.slice(-20);
         }
       }
 
@@ -8823,8 +9004,28 @@
           }
           html += "</div>";
         });
-        content.innerHTML = html;
-      }
+	        content.innerHTML = html;
+
+	        const mobBadge = $("#ai-mob-preview-badge");
+	        if (mobBadge) {
+	          mobBadge.style.display = "inline-block";
+	          mobBadge.textContent = totalQ + " " + qUnit;
+	        }
+
+	        const chatArea = $("#ai-chat-area");
+	        if (chatArea) {
+	          const lastAiMsg = chatArea.querySelector(".ai-msg-ai:last-child .ai-msg-bubble");
+	          if (lastAiMsg && !lastAiMsg.querySelector(".ai-jump-preview-btn")) {
+	            const jumpBtn = document.createElement("button");
+	            jumpBtn.type = "button";
+	            jumpBtn.className = "ai-jump-preview-btn";
+	            jumpBtn.innerHTML = `👁️ ${currentAdminLang === "id" ? "Buka Pratinjau Form" : currentAdminLang === "zh" ? "打开表单预览" : "View Form Preview"} (${totalQ} ${qUnit}) &rarr;`;
+	            jumpBtn.onclick = () => switchAiMobileTab("preview");
+	            lastAiMsg.appendChild(document.createElement("br"));
+	            lastAiMsg.appendChild(jumpBtn);
+	          }
+	        }
+	      }
 
       function regenerateAiForm() {
         const lastUser = aiMessages.filter((m) => m.role === "user").pop();

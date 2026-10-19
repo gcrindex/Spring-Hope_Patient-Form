@@ -89,13 +89,17 @@ function AIAssistant() {
       if (result.type === "draft" && result.form) {
         const draftForm = result.form;
         setDraft(draftForm);
+        const qSummary = draftForm.questions
+          .map((q, i) => `${i + 1}. [${q.id}] ${q.prompt.en || q.prompt.id} (${q.type})`)
+          .join("; ");
+        const baseMsg =
+          result.message ??
+          `Draft ready: ${draftForm.title.en}. Review the questions before using it.`;
         setMessages((current) => [
           ...current,
           {
             role: "assistant",
-            content:
-              result.message ??
-              `Draft ready: ${draftForm.title.en}. Review the questions before using it.`,
+            content: `${baseMsg}\n[Current Questions: ${qSummary}]`,
           },
         ]);
       } else {
@@ -173,7 +177,7 @@ function AIAssistant() {
                 className={`ai-message ai-message-${message.role}`}
               >
                 <span>{message.role === "assistant" ? <Sparkles size={15} /> : "You"}</span>
-                <p>{message.content}</p>
+                <p>{message.content.split("\n[Current Questions:")[0]}</p>
               </div>
             ))}
             {loading && (

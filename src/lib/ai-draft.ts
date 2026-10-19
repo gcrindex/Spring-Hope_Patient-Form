@@ -36,11 +36,11 @@ export const aiConversationSchema = z.object({
     .array(
       z.object({
         role: z.enum(["user", "assistant"]),
-        content: z.string().min(1).max(4000),
+        content: z.string().min(1).max(5000),
       }),
     )
     .min(1)
-    .max(12),
+    .max(30),
 });
 
 export function extractJsonObject(input: string) {
