@@ -5316,27 +5316,40 @@
         ];
       }
 
-	      function forms() {
-	        if (liveForms && Array.isArray(liveForms)) {
-	          return liveForms;
-	        }
-	        const stored = LS.get("pf_forms");
-        if (Array.isArray(stored) && stored.length > 0) {
-          const filtered = stored.filter(
-            (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up"
-          );
-          if (filtered.length !== stored.length) {
-            LS.set("pf_forms", filtered);
-          }
-          return filtered;
-        }
-        if (isCurrentSuperAdmin()) {
-          const master = getMasterForms();
-          LS.set("pf_forms", master);
-          return master;
-        }
-        return Array.isArray(stored) ? stored : [];
-      }
+		      function forms() {
+		        if (liveForms && Array.isArray(liveForms)) {
+		          return liveForms;
+		        }
+		        const stored = LS.get("pf_forms");
+		        if (Array.isArray(stored) && stored.length > 0) {
+		          if (isCurrentSuperAdmin()) {
+		            const hasCanonical = stored.some(
+		              (f) =>
+		                f.id === "new-patient-intake" ||
+		                f.id === "knee-pain-assessment" ||
+		                f.id === "elderly-friendly-intake",
+		            );
+		            if (!hasCanonical) {
+		              const master = getMasterForms();
+		              LS.set("pf_forms", master);
+		              return master;
+		            }
+		          }
+		          const filtered = stored.filter(
+		            (f) => f.id !== "hip-function-score" && f.id !== "post-surgery-follow-up",
+		          );
+		          if (filtered.length !== stored.length) {
+		            LS.set("pf_forms", filtered);
+		          }
+		          return filtered;
+		        }
+		        if (isCurrentSuperAdmin()) {
+		          const master = getMasterForms();
+		          LS.set("pf_forms", master);
+		          return master;
+		        }
+		        return Array.isArray(stored) ? stored : [];
+		      }
       function submissions() {
         return liveSubmissions || LS.get("pf_submissions") || [];
       }

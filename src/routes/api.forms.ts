@@ -87,10 +87,28 @@ export const Route = createFileRoute("/api/forms")({
             }
           });
 
-          // Seed default template if database is completely empty (ONLY for superadmin)
-          if (forms.length === 0 && isSuperAdmin) {
+          // Ensure superadmin has the 3 canonical landing page forms and legacy test forms are cleaned
+          const canonicalIds = ["new-patient-intake", "knee-pain-assessment", "elderly-friendly-intake"];
+          const hasCanonical = forms.some((f) => canonicalIds.includes(f.id));
+
+          if (isSuperAdmin && (!hasCanonical || forms.length === 0)) {
             const { newPatientForm, kneePainForm, elderlyFriendlyForm } = await import("../lib/patientform");
-            forms = [newPatientForm, kneePainForm, elderlyFriendlyForm];
+            const canonicalForms = [newPatientForm, kneePainForm, elderlyFriendlyForm];
+            try {
+              await dbExecute(
+                "DELETE FROM forms WHERE id NOT IN ('new-patient-intake', 'knee-pain-assessment', 'elderly-friendly-intake')",
+              );
+              for (const f of canonicalForms) {
+                const fTitle = typeof f.title === "string" ? f.title : f.title.en;
+                await dbExecute(
+                  "INSERT OR REPLACE INTO forms (id, title, schema_json, user_id, created_at, updated_at) VALUES (?, ?, ?, 'admin', datetime('now'), datetime('now'))",
+                  [f.id, fTitle, JSON.stringify(f)],
+                );
+              }
+            } catch (dbErr) {
+              console.error("Failed to seed canonical forms in DB", dbErr);
+            }
+            forms = canonicalForms;
           }
 
           return Response.json(
