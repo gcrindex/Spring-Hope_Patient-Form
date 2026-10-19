@@ -4305,10 +4305,7 @@
               </div>
               <div class="cover-card-sub" id="builder-cover-status-text" style="font-size: 11px; color: var(--text3); margin-top: 2px;">Enabled · Greeting &amp; Start Button</div>
             </div>
-            <label style="display: inline-flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; padding: 4px 8px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0;" onclick="event.stopPropagation()">
-              <input type="checkbox" id="cover-quick-checkbox" onchange="toggleCoverDirect(this.checked)" style="width: 15px; height: 15px; cursor: pointer; accent-color: #0284c7;" />
-              <span class="cover-card-badge" id="builder-cover-badge" style="font-size: 10px; font-weight: 800; letter-spacing: 0.5px;">ACTIVE</span>
-            </label>
+            <span class="cover-card-badge" id="builder-cover-badge" style="font-size: 11px; font-weight: 750; padding: 3px 8px; border-radius: 6px; background: #ecfdf5; color: #059669; flex-shrink: 0;">● Aktif</span>
           </div>
           <div class="question-list" id="question-list"></div>
           <div class="add-question-wrap">
@@ -8368,40 +8365,38 @@
         $("#builder-status-pill").textContent = status === "published" ? "Published" : "Draft";
       }
 
-      function renderCoverSlot() {
-        if (!builderForm) return;
-        const cover = builderForm.coverPage || {};
-        const isEnabled = cover.enabled !== false;
-        const coverSlot = $("#builder-cover-slot");
-        const statusText = $("#builder-cover-status-text");
-        const badge = $("#builder-cover-badge");
-        const quickCheck = $("#cover-quick-checkbox");
+	      function renderCoverSlot() {
+	        if (!builderForm) return;
+	        const cover = builderForm.coverPage || {};
+	        const isEnabled = cover.enabled !== false;
+	        const coverSlot = $("#builder-cover-slot");
+	        const statusText = $("#builder-cover-status-text");
+	        const badge = $("#builder-cover-badge");
 
-        if (coverSlot) {
-          if (isEditingCover) {
-            coverSlot.classList.add("selected");
-            coverSlot.style.borderColor = "#0284c7";
-            coverSlot.style.boxShadow = "0 0 0 2px rgba(2, 132, 199, 0.15)";
-          } else {
-            coverSlot.classList.remove("selected");
-            coverSlot.style.borderColor = "var(--border)";
-            coverSlot.style.boxShadow = "none";
-          }
-        }
-        if (statusText) {
-          statusText.textContent = isEnabled
-            ? (currentAdminLang === "id" ? "Aktif · Layar awal sambutan & nama" : currentAdminLang === "zh" ? "已启用 · 欢迎页与姓名" : "Enabled · Welcome screen & name")
-            : (currentAdminLang === "id" ? "Nonaktif · Langsung ke soal 1" : currentAdminLang === "zh" ? "已跳过 · 直接进入第 1 题" : "Disabled · Direct to Q1");
-        }
-        if (badge) {
-          badge.textContent = isEnabled ? (currentAdminLang === "id" ? "Aktif" : currentAdminLang === "zh" ? "启用" : "Active") : (currentAdminLang === "id" ? "Nonaktif" : currentAdminLang === "zh" ? "关闭" : "Off");
-          badge.style.background = isEnabled ? "#ecfdf5" : "#f1f5f9";
-          badge.style.color = isEnabled ? "#059669" : "#64748b";
-        }
-        if (quickCheck) {
-          quickCheck.checked = isEnabled;
-        }
-      }
+	        if (coverSlot) {
+	          if (isEditingCover) {
+	            coverSlot.classList.add("selected");
+	            coverSlot.style.borderColor = "#0284c7";
+	            coverSlot.style.boxShadow = "0 0 0 2px rgba(2, 132, 199, 0.15)";
+	          } else {
+	            coverSlot.classList.remove("selected");
+	            coverSlot.style.borderColor = "var(--border)";
+	            coverSlot.style.boxShadow = "none";
+	          }
+	        }
+	        if (statusText) {
+	          statusText.textContent = isEnabled
+	            ? (currentAdminLang === "id" ? "Aktif · Layar awal sambutan & nama" : currentAdminLang === "zh" ? "已启用 · 欢迎页与姓名" : "Enabled · Welcome screen & name")
+	            : (currentAdminLang === "id" ? "Dilewati · Langsung ke pertanyaan 1" : currentAdminLang === "zh" ? "已跳过 · 直接进入第 1 题" : "Skipped · Direct to Q1");
+	        }
+	        if (badge) {
+	          badge.textContent = isEnabled
+	            ? (currentAdminLang === "id" ? "● Aktif" : currentAdminLang === "zh" ? "● 启用" : "● Active")
+	            : (currentAdminLang === "id" ? "○ Dilewati" : currentAdminLang === "zh" ? "○ 跳过" : "○ Skipped");
+	          badge.style.background = isEnabled ? "#ecfdf5" : "#f1f5f9";
+	          badge.style.color = isEnabled ? "#059669" : "#64748b";
+	        }
+	      }
 
       function toggleCoverDirect(checked) {
         if (!builderForm) return;
@@ -8462,13 +8457,31 @@
 	              ${t("builderDoneBtn") || "Done"} ✓
 	            </button>
 	          </div>
-	          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-	            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-	              <strong style="color:var(--navy); font-size:13.5px;">${t("builderEnableCoverLabel") || "Enable Cover Page"}</strong>
-	              <input type="checkbox" id="cover-toggle-enabled" ${isEnabled ? "checked" : ""} onchange="updateCoverField('enabled', this.checked)" style="width:18px; height:18px; cursor:pointer;" />
-	            </div>
-	            <small style="color:var(--text3); font-size:11.5px; display:block; line-height:1.4;">${t("builderCoverPageDesc") || "Configure the greeting screen, welcome text, organization logo, and start button."}</small>
-	          </div>
+		          <div style="background: ${isEnabled ? '#f0fdf4' : '#f8fafc'}; border: 1.5px solid ${isEnabled ? '#86efac' : 'var(--border)'}; border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; transition: all 0.25s ease;">
+		            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+		              <div>
+		                <div style="display:flex; align-items:center; gap:8px;">
+		                  <strong style="color:var(--navy); font-size:14px; font-weight:800;">${t("builderEnableCoverLabel") || "Enable Cover Page"}</strong>
+		                  <span style="font-size:11px; font-weight:750; padding:2px 8px; border-radius:99px; background:${isEnabled ? '#dcfce7' : '#e2e8f0'}; color:${isEnabled ? '#15803d' : '#64748b'};">
+		                    ${isEnabled ? (currentAdminLang === "id" ? "● Aktif" : currentAdminLang === "zh" ? "● 已开启" : "● ON") : (currentAdminLang === "id" ? "○ Dilewati" : currentAdminLang === "zh" ? "○ 已关闭" : "○ OFF")}
+		                  </span>
+		                </div>
+		                <small style="color:var(--text3); font-size:11.5px; display:block; line-height:1.4; margin-top:4px;">
+		                  ${isEnabled
+		                    ? (currentAdminLang === "id" ? "Tampilkan layar pembuka, sambutan, logo, dan tombol mulai sebelum pertanyaan." : currentAdminLang === "zh" ? "在答题前展示欢迎页、问候语、品牌标志和开始按钮。" : "Show welcome screen, greeting, logo, and start button before questions.")
+		                    : (currentAdminLang === "id" ? "Cover dilewati: Responden akan langsung membuka Pertanyaan 1." : currentAdminLang === "zh" ? "欢迎页已跳过：受访者将直接进入第 1 题。" : "Cover skipped: Respondents will directly start at Question 1.")}
+		                </small>
+		              </div>
+		              <label style="position:relative; display:inline-block; width:50px; height:28px; flex-shrink:0; cursor:pointer; margin:0;" onclick="event.stopPropagation()">
+		                <input type="checkbox" id="cover-toggle-enabled" ${isEnabled ? "checked" : ""} onchange="updateCoverField('enabled', this.checked)" style="opacity:0; width:0; height:0;" />
+		                <span style="position:absolute; inset:0; background-color:${isEnabled ? '#10b981' : '#cbd5e1'}; border-radius:34px; transition:0.25s ease;">
+		                  <span style="position:absolute; height:22px; width:22px; left:${isEnabled ? '25px' : '3px'}; bottom:3px; background-color:#ffffff; border-radius:50%; transition:0.25s ease; box-shadow:0 2px 4px rgba(0,0,0,0.25);"></span>
+		                </span>
+		              </label>
+		            </div>
+		          </div>
+
+		          <div id="cover-fields-container" style="opacity: ${isEnabled ? '1' : '0.4'}; pointer-events: ${isEnabled ? 'auto' : 'none'}; transition: opacity 0.25s ease;">
 
           <div class="editor-field">
             <label>${t("builderCoverTitleLabel") || "Welcome Title"}</label>
@@ -8578,21 +8591,26 @@
               <input type="checkbox" ${showConsent ? "checked" : ""} onchange="updateCoverField('showConsent', this.checked)" />
               <span>${t("builderCoverShowConsentLabel") || "Show Consent Checkbox"}</span>
             </label>
-            <textarea style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:11.5px; min-height:50px;" oninput="updateCoverLocalized('consentText', this.value)" placeholder="Consent statement...">${escHtml(consentVal)}</textarea>
-          </div>
+	            <textarea style="width:100%; box-sizing:border-box; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:11.5px; min-height:50px;" oninput="updateCoverLocalized('consentText', this.value)" placeholder="Consent statement...">${escHtml(consentVal)}</textarea>
+	          </div>
+	          </div>
 
-          <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>
-        `;
-      }
+	          <button class="editor-done" onclick="doneEditing()">${t("builderDoneBtn") || "Done"}</button>
+	        `;
+	      }
 
-      function updateCoverField(key, val) {
-        if (!builderForm) return;
-        builderForm.coverPage = builderForm.coverPage || {};
-        builderForm.coverPage[key] = val;
-        saveForm();
-        renderCoverSlot();
-        renderPhonePreview();
-      }
+	      function updateCoverField(key, val) {
+	        if (!builderForm) return;
+	        builderForm.coverPage = builderForm.coverPage || {};
+	        builderForm.coverPage[key] = val;
+	        saveForm();
+	        renderCoverSlot();
+	        if (key === "enabled" && isEditingCover) {
+	          renderCoverEditor();
+	          toast(val ? "Cover Page diaktifkan" : "Cover Page dinonaktifkan (responden langsung ke Pertanyaan 1)", "info");
+	        }
+	        renderPhonePreview();
+	      }
 
 	      function updateCoverLocalized(key, val) {
 	        if (!builderForm) return;
