@@ -1359,6 +1359,7 @@ function touchIntakeSession() {
   try {
     const now = String(Date.now());
     sessionStorage.setItem(STORAGE.sessionTs, now);
+    window.localStorage.setItem(STORAGE.sessionTs, now);
   } catch (e) {
     void e;
   }
@@ -1376,6 +1377,7 @@ export function getActiveFormId(): string {
 export function setActiveFormId(formId: string) {
   if (typeof window !== "undefined") {
     sessionStorage.setItem(STORAGE.formId, formId);
+    window.localStorage.setItem(STORAGE.formId, formId);
   }
 }
 
@@ -1434,61 +1436,102 @@ export function setPatientName(name: string) {
       window.localStorage.removeItem(STORAGE.name);
     } else {
       sessionStorage.setItem(STORAGE.name, name);
+      window.localStorage.setItem(STORAGE.name, name);
     }
   }
 }
 
-export function getStoredAnswers(): Answers {
+export function getStoredAnswers(formId?: string): Answers {
   if (typeof window === "undefined") return {};
   if (checkAndExpireIntakeSession()) return {};
   try {
+    const fId = formId || getActiveFormId();
+    const formKey = `${STORAGE.answers}_${fId}`;
     const raw =
-      sessionStorage.getItem(STORAGE.answers) ?? window.localStorage.getItem(STORAGE.answers);
+      sessionStorage.getItem(formKey) ??
+      window.localStorage.getItem(formKey) ??
+      sessionStorage.getItem(STORAGE.answers) ??
+      window.localStorage.getItem(STORAGE.answers);
     return raw ? (JSON.parse(raw) as Answers) : {};
   } catch {
     return {};
   }
 }
 
-export function setStoredAnswers(answers: Answers) {
+export function setStoredAnswers(answers: Answers, formId?: string) {
   if (typeof window !== "undefined") {
     touchIntakeSession();
-    sessionStorage.setItem(STORAGE.answers, JSON.stringify(answers));
+    const jsonStr = JSON.stringify(answers);
+    const fId = formId || getActiveFormId();
+    const formKey = `${STORAGE.answers}_${fId}`;
+    try {
+      sessionStorage.setItem(STORAGE.answers, jsonStr);
+      window.localStorage.setItem(STORAGE.answers, jsonStr);
+      sessionStorage.setItem(formKey, jsonStr);
+      window.localStorage.setItem(formKey, jsonStr);
+    } catch {}
   }
 }
 
-export function getStoredQuestionIndex() {
+export function getStoredQuestionIndex(formId?: string) {
   if (typeof window === "undefined") return 0;
   if (checkAndExpireIntakeSession()) return 0;
+  const fId = formId || getActiveFormId();
+  const formKey = `${STORAGE.questionIndex}_${fId}`;
   return (
     Number(
-      sessionStorage.getItem(STORAGE.questionIndex) ??
+      sessionStorage.getItem(formKey) ??
+        window.localStorage.getItem(formKey) ??
+        sessionStorage.getItem(STORAGE.questionIndex) ??
         window.localStorage.getItem(STORAGE.questionIndex) ??
         0,
     ) || 0
   );
 }
 
-export function setStoredQuestionIndex(index: number) {
+export function setStoredQuestionIndex(index: number, formId?: string) {
   if (typeof window !== "undefined") {
     touchIntakeSession();
-    sessionStorage.setItem(STORAGE.questionIndex, String(index));
+    const str = String(index);
+    const fId = formId || getActiveFormId();
+    const formKey = `${STORAGE.questionIndex}_${fId}`;
+    try {
+      sessionStorage.setItem(STORAGE.questionIndex, str);
+      window.localStorage.setItem(STORAGE.questionIndex, str);
+      sessionStorage.setItem(formKey, str);
+      window.localStorage.setItem(formKey, str);
+    } catch {}
   }
 }
 
-export function resetAssessment() {
+export function hasExistingProgress(formId?: string): boolean {
+  if (typeof window === "undefined") return false;
+  if (checkAndExpireIntakeSession()) return false;
+  const answers = getStoredAnswers(formId);
+  return Object.keys(answers).length > 0;
+}
+
+export function resetAssessment(formId?: string) {
   if (typeof window === "undefined") return;
   try {
+    const fId = formId || getActiveFormId();
+    const formKeyA = `${STORAGE.answers}_${fId}`;
+    const formKeyQ = `${STORAGE.questionIndex}_${fId}`;
+
     sessionStorage.removeItem(STORAGE.answers);
     sessionStorage.removeItem(STORAGE.questionIndex);
     sessionStorage.removeItem(STORAGE.name);
     sessionStorage.removeItem(STORAGE.sessionTs);
     sessionStorage.removeItem("sh_current_submission_id");
+    sessionStorage.removeItem(formKeyA);
+    sessionStorage.removeItem(formKeyQ);
 
     window.localStorage.removeItem(STORAGE.answers);
     window.localStorage.removeItem(STORAGE.questionIndex);
     window.localStorage.removeItem(STORAGE.name);
     window.localStorage.removeItem(STORAGE.sessionTs);
+    window.localStorage.removeItem(formKeyA);
+    window.localStorage.removeItem(formKeyQ);
   } catch (e) {
     void e;
   }

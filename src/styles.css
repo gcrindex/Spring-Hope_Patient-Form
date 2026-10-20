@@ -6735,6 +6735,22 @@ button:disabled {
   cursor: not-allowed;
 }
 
+@media (max-width: 640px) {
+  .sleek-input-field {
+    min-height: 52px;
+    font-size: 17px;
+    padding: 12px 16px;
+  }
+  .sleek-text-action-wrap {
+    margin-top: 16px;
+    padding-bottom: 24px;
+  }
+  .sleek-primary-btn {
+    min-height: 54px;
+    font-size: 17px;
+  }
+}
+
 /* Sleek Completion Card */
 .sleek-completion-card {
   text-align: center;

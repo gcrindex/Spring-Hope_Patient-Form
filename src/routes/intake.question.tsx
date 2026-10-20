@@ -29,6 +29,23 @@ import {
   type Question,
 } from "../lib/patientform";
 
+function getLocalizedText(obj: unknown, lang: Language, fallback = ""): string {
+  if (!obj) return fallback;
+  if (typeof obj === "string") return obj.trim() || fallback;
+  if (typeof obj === "object" && obj !== null) {
+    const rec = obj as Record<string, unknown>;
+    const target = typeof rec[lang] === "string" ? (rec[lang] as string).trim() : "";
+    if (target) return target;
+    const en = typeof rec.en === "string" ? (rec.en as string).trim() : "";
+    if (en) return en;
+    const id = typeof rec.id === "string" ? (rec.id as string).trim() : "";
+    if (id) return id;
+    const zh = typeof rec.zh === "string" ? (rec.zh as string).trim() : "";
+    if (zh) return zh;
+  }
+  return fallback;
+}
+
 export const Route = createFileRoute("/intake/question")({
   validateSearch: (search: Record<string, unknown>) => ({
     form: (search["form"] as string) || undefined,
@@ -93,6 +110,8 @@ function QuestionPage() {
   const [justSelected, setJustSelected] = useState<string | number | null>(null);
   const [privacyConsent, setPrivacyConsent] = useState(true);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [requiredError, setRequiredError] = useState("");
+  const [showMicDeniedModal, setShowMicDeniedModal] = useState(false);
   const [loadingRemote, setLoadingRemote] = useState(() => {
     const fId = formParam || getActiveFormId();
     const isPreset = fId === newPatientForm.id || fId === kneePainForm.id || fId === elderlyFriendlyForm.id;
@@ -136,13 +155,14 @@ function QuestionPage() {
 
       autoAdvanceTimerRef.current = setTimeout(() => {
         setJustSelected(null);
+        setRequiredError("");
         const total = activeForm?.questions?.length || 1;
         if (index >= total - 1) {
           navigate({ to: "/intake/complete", search: { form: activeForm.id } });
         } else {
           const next = index + 1;
           setIndex(next);
-          setStoredQuestionIndex(next);
+          setStoredQuestionIndex(next, activeForm?.id);
           setVoiceMappedLabel("");
           setVoiceIssue("");
         }
@@ -158,10 +178,11 @@ function QuestionPage() {
         clearTimeout(autoAdvanceTimerRef.current);
       }
       setVoiceIssue("");
+      setRequiredError("");
       setJustSelected(value);
       setAnswers((current) => {
         const next = { ...current, [question.id]: value };
-        setStoredAnswers(next);
+        setStoredAnswers(next, activeForm?.id);
         return next;
       });
 
@@ -181,7 +202,7 @@ function QuestionPage() {
         triggerAutoAdvance(delay);
       }
     },
-    [question, triggerAutoAdvance],
+    [question, triggerAutoAdvance, activeForm?.id],
   );
 
   const handleVoiceFinal = useCallback(
@@ -243,6 +264,12 @@ function QuestionPage() {
     keepAlive: true,
   });
 
+  useEffect(() => {
+    if (voice.error === "permission-denied") {
+      setShowMicDeniedModal(true);
+    }
+  }, [voice.error]);
+
   // Persistent voice mode: automatically activate mic on each question
   useEffect(() => {
     voice.reset();
@@ -299,6 +326,7 @@ function QuestionPage() {
   const goBack = () => {
     if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     voice.stop();
+    setRequiredError("");
     if (index <= 0) {
       if (activeForm.coverPage?.enabled === false) {
         navigate({ to: "/" });
@@ -308,12 +336,22 @@ function QuestionPage() {
     } else {
       const prev = index - 1;
       setIndex(prev);
-      setStoredQuestionIndex(prev);
+      setStoredQuestionIndex(prev, activeForm.id);
     }
   };
 
   const goNextManual = () => {
-    if (!isAnswered) return;
+    if (!isAnswered && !question.optional) {
+      setRequiredError(
+        language === "id"
+          ? "Pertanyaan ini wajib diisi sebelum lanjut."
+          : language === "zh"
+            ? "请先完成此题再继续。"
+            : "Please answer this question before continuing.",
+      );
+      return;
+    }
+    setRequiredError("");
     if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     voice.stop();
     const total = activeForm?.questions?.length || 1;
@@ -322,7 +360,7 @@ function QuestionPage() {
     } else {
       const next = index + 1;
       setIndex(next);
-      setStoredQuestionIndex(next);
+      setStoredQuestionIndex(next, activeForm.id);
     }
   };
 
@@ -423,18 +461,18 @@ function QuestionPage() {
           </button>
         </div>
 
-        {/* Clean, high-legibility prompt */}
+        {/* Clean, high-legibility prompt with multi-language fallback */}
         <div className="sleek-q-body">
           <h1 className="sleek-q-title">
-            {typeof question.prompt === "object" && question.prompt !== null
-              ? question.prompt[language] || question.prompt.en || question.prompt.id || question.prompt.zh
-              : String(question.prompt || question.text || "")}
+            {getLocalizedText(
+              question.prompt,
+              language,
+              question.text || `Question ${safeIndex + 1}`,
+            )}
           </h1>
           {question.helper && (
             <p className="sleek-q-helper">
-              {typeof question.helper === "object" && question.helper !== null
-                ? question.helper[language] || question.helper.en || question.helper.id || question.helper.zh
-                : String(question.helper || "")}
+              {getLocalizedText(question.helper, language, "")}
             </p>
           )}
         </div>
@@ -516,13 +554,21 @@ function QuestionPage() {
           </div>
         )}
 
-        {/* Action Button: Required on Last Question for Consent Confirmation, or for Text Questions */}
-        {(question.type === "text" || isLastQuestion) && (
+        {/* Required Question Error Notice */}
+        {requiredError && (
+          <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-pulse">
+            <span>⚠️</span>
+            <span>{requiredError}</span>
+          </div>
+        )}
+
+        {/* Action Button: Visible for Text, Last Question, or when Question is already answered */}
+        {(question.type === "text" || isLastQuestion || isAnswered) && (
           <div className="sleek-text-action-wrap mt-4">
             <button
               type="button"
               className="sleek-primary-btn"
-              disabled={(!isAnswered && !question.optional) || (isLastQuestion && !privacyConsent)}
+              disabled={isLastQuestion && !privacyConsent}
               onClick={goNextManual}
             >
               <span>
@@ -540,6 +586,69 @@ function QuestionPage() {
               </span>
               <ArrowRight size={18} />
             </button>
+          </div>
+        )}
+
+        {/* Microphone Permission Denied Friendly Guidance Dialog */}
+        {showMicDeniedModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl text-left border border-slate-100">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
+                  <MicOff size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base leading-tight">
+                    {language === "id"
+                      ? "Akses Mikrofon Ditolak"
+                      : language === "zh"
+                        ? "麦克风权限未开启"
+                        : "Microphone Access Denied"}
+                  </h3>
+                  <span className="text-xs text-slate-400">
+                    {language === "id"
+                      ? "Fitur suara dinonaktifkan sementara"
+                      : language === "zh"
+                        ? "语音功能暂时停用"
+                        : "Voice input temporarily disabled"}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 leading-relaxed mb-5">
+                {language === "id"
+                  ? "Browser Anda memblokir izin mikrofon. Anda dapat mengizinkannya melalui ikon gembok pada address bar browser, atau langsung gunakan mode sentuh untuk melanjutkan pengisian tanpa suara."
+                  : language === "zh"
+                    ? "浏览器未授予麦克风权限。您可以在地址栏锁形图标中开启权限，或直接通过触屏点击继续作答。"
+                    : "Microphone permission is blocked by your browser. You can enable it via the address bar lock icon, or switch to manual touch mode to continue."}
+              </p>
+
+              <div className="flex items-center gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowMicDeniedModal(false)}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 transition"
+                >
+                  {language === "id" ? "Tutup" : language === "zh" ? "关闭" : "Close"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVoiceAuto(false);
+                    setVoiceAutoMode(false);
+                    voice.stop();
+                    setShowMicDeniedModal(false);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition"
+                >
+                  {language === "id"
+                    ? "Gunakan Mode Sentuh Saja"
+                    : language === "zh"
+                      ? "使用触屏模式"
+                      : "Use Touch Mode"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -664,9 +773,8 @@ function SleekQuestionInput({
           const isSelected = value === optVal || value === option.value;
           const isFadingNext = justSelected === optVal || justSelected === option.value;
           const optLabel =
-            typeof option.label === "object" && option.label !== null
-              ? option.label[language] || option.label.en || option.label.id || option.label.zh || ""
-              : String(option.label || "");
+            getLocalizedText(option.label, language) ||
+            String(option.label || option.value || `Option ${idx + 1}`);
 
           return (
             <button
@@ -763,6 +871,11 @@ function SleekQuestionInput({
         className="sleek-input-field"
         value={typeof value === "string" ? value : ""}
         onChange={(e) => onSelect(e.target.value, false)}
+        onFocus={(e) => {
+          setTimeout(() => {
+            e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 250);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();

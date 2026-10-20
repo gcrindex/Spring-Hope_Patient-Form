@@ -6,6 +6,7 @@ import {
   HelpCircle,
   Lock,
   Mic,
+  RotateCcw,
   ShieldCheck,
   Sparkles,
   Stethoscope,
@@ -19,7 +20,10 @@ import {
   getActiveFormId,
   getFormById,
   getPatientName,
+  getStoredAnswers,
   getStoredLanguage,
+  getStoredQuestionIndex,
+  hasExistingProgress,
   isVoiceAutoMode,
   kneePainForm,
   newPatientForm,
@@ -31,6 +35,23 @@ import {
   setVoiceAutoMode,
   type Language,
 } from "../lib/patientform";
+
+function getLocalizedText(obj: unknown, lang: Language, fallback = ""): string {
+  if (!obj) return fallback;
+  if (typeof obj === "string") return obj.trim() || fallback;
+  if (typeof obj === "object" && obj !== null) {
+    const rec = obj as Record<string, unknown>;
+    const target = typeof rec[lang] === "string" ? (rec[lang] as string).trim() : "";
+    if (target) return target;
+    const en = typeof rec.en === "string" ? (rec.en as string).trim() : "";
+    if (en) return en;
+    const id = typeof rec.id === "string" ? (rec.id as string).trim() : "";
+    if (id) return id;
+    const zh = typeof rec.zh === "string" ? (rec.zh as string).trim() : "";
+    if (zh) return zh;
+  }
+  return fallback;
+}
 
 export const Route = createFileRoute("/intake/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -103,8 +124,6 @@ function IntakeStart() {
 
     const initialForm = getFormById(currentFId);
     if (initialForm && initialForm.id === currentFId && initialForm.coverPage?.enabled === false) {
-      resetAssessment();
-      setStoredQuestionIndex(0);
       navigate({ to: "/intake/question", search: { form: initialForm.id }, replace: true });
       return;
     }
@@ -112,8 +131,6 @@ function IntakeStart() {
     fetchFormByIdAsync(currentFId).then((resolved) => {
       setActiveForm(resolved);
       if (resolved.coverPage?.enabled === false) {
-        resetAssessment();
-        setStoredQuestionIndex(0);
         navigate({ to: "/intake/question", search: { form: resolved.id }, replace: true });
       } else {
         setLoadingRemote(false);
@@ -131,7 +148,6 @@ function IntakeStart() {
   const switchForm = (formId: string) => {
     setActiveFormId(formId);
     setActiveForm(getFormById(formId));
-    resetAssessment();
     setStoredQuestionIndex(0);
     navigate({ to: "/intake", search: { form: formId } });
   };
@@ -140,6 +156,7 @@ function IntakeStart() {
   const showName = cover.showNameInput ?? true;
   const isNameRequired = cover.nameRequired ?? false;
   const showConsent = cover.showConsent ?? true;
+  const hasProgress = hasExistingProgress(activeForm.id);
 
   const start = (withVoice = false) => {
     if (showName && isNameRequired && (!name || !name.trim())) {
@@ -153,13 +170,27 @@ function IntakeStart() {
       return;
     }
     setNameError("");
-    resetAssessment();
+    resetAssessment(activeForm.id);
     if (name && name.trim()) {
       setPatientName(name.trim());
     }
     setVoiceAutoMode(withVoice || useVoiceFirst);
-    setStoredQuestionIndex(0);
+    setStoredQuestionIndex(0, activeForm.id);
     navigate({ to: "/intake/question", search: { form: activeForm.id } });
+  };
+
+  const resume = () => {
+    if (name && name.trim()) {
+      setPatientName(name.trim());
+    }
+    navigate({ to: "/intake/question", search: { form: activeForm.id } });
+  };
+
+  const startFresh = () => {
+    resetAssessment(activeForm.id);
+    setStoredQuestionIndex(0, activeForm.id);
+    setName("");
+    setNameError("");
   };
 
   const isDemoForm =
@@ -172,31 +203,27 @@ function IntakeStart() {
     !formParam &&
     (activeForm.id === newPatientForm.id || activeForm.id === elderlyFriendlyForm.id);
 
-  // Localized texts
+  // Localized texts with graceful multi-language fallback
   const coverTitle =
-    cover.title?.[language] ||
-    (typeof activeForm.title === "object" && activeForm.title !== null
-      ? activeForm.title[language] ?? activeForm.title.en ?? activeForm.title.id
-      : String(activeForm.title || ""));
+    getLocalizedText(cover.title, language) ||
+    getLocalizedText(activeForm.title, language, "Assessment Form");
 
   const coverDesc =
-    cover.description?.[language] ||
+    getLocalizedText(cover.description, language) ||
     (isSeniorNewPatient
       ? language === "id"
         ? "Formulir singkat & jelas tanpa mengetik. Cukup sentuh jawaban atau gunakan suara."
         : language === "zh"
           ? "清晰简短问卷，支持直接触屏点击或语音快速作答。"
           : "A clean, guided intake. Touch your answer or speak naturally."
-      : typeof activeForm.description === "object" && activeForm.description !== null
-        ? activeForm.description[language] ?? activeForm.description.en ?? activeForm.description.id
-        : String(activeForm.description || ""));
+      : getLocalizedText(activeForm.description, language, ""));
 
   const startBtnText =
-    cover.buttonText?.[language] ||
+    getLocalizedText(cover.buttonText, language) ||
     (language === "id" ? "Mulai Pengisian" : language === "zh" ? "开始填写" : "Start Form");
 
   const voiceBtnText =
-    cover.voiceButtonText?.[language] ||
+    getLocalizedText(cover.voiceButtonText, language) ||
     (language === "id"
       ? "Mulai dengan Suara"
       : language === "zh"
@@ -204,7 +231,7 @@ function IntakeStart() {
         : "Start with Voice");
 
   const consentText =
-    cover.consentText?.[language] ||
+    getLocalizedText(cover.consentText, language) ||
     (language === "id"
       ? "Saya menyetujui pengisian data ini untuk keperluan evaluasi & pelayanan."
       : language === "zh"
@@ -416,6 +443,59 @@ function IntakeStart() {
                 {consentText}
               </span>
             </label>
+          </div>
+        )}
+
+        {/* Resume Banner if user has existing progress */}
+        {hasProgress && (
+          <div className="w-full my-3 p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-left transition-all">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+              <strong className="text-xs font-bold text-sky-950 uppercase tracking-wide">
+                {language === "id"
+                  ? "Draf Pengisian Ditemukan"
+                  : language === "zh"
+                    ? "发现未完成的作答记录"
+                    : "Saved Draft in Progress"}
+              </strong>
+            </div>
+            <p className="text-xs text-sky-800 leading-relaxed mb-3">
+              {language === "id"
+                ? "Jawaban Anda sebelumnya tersimpan aman. Ingin melanjutkan pengisian atau mulai dari awal?"
+                : language === "zh"
+                  ? "您之前填写的回答已妥善保存。您可以继续作答，或重新开始。"
+                  : "Your previous answers are saved. You can resume where you left off or start fresh."}
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={resume}
+                className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+              >
+                <span>
+                  {language === "id"
+                    ? "Lanjutkan Pengisian"
+                    : language === "zh"
+                      ? "继续填写"
+                      : "Resume Progress"}
+                </span>
+                <ArrowRight size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={startFresh}
+                className="px-3 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs flex items-center gap-1.5 transition"
+              >
+                <RotateCcw size={13} className="text-slate-500" />
+                <span>
+                  {language === "id"
+                    ? "Mulai dari Awal"
+                    : language === "zh"
+                      ? "重新开始"
+                      : "Start Fresh"}
+                </span>
+              </button>
+            </div>
           </div>
         )}
 
