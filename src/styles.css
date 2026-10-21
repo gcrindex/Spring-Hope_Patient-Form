@@ -1815,6 +1815,77 @@ button:disabled {
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
+.patient-text-size-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 42px;
+  padding: 0 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-radius: 14px;
+  background: #93c5fd;
+  color: #072e6b;
+  font-weight: 850;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0, 20, 60, 0.15);
+}
+.patient-text-size-btn:hover {
+  background: #bfdbfe;
+  color: #001a44;
+}
+.patient-text-size-btn.active {
+  background: #092c63;
+  color: #ffffff;
+  border-color: #ffffff;
+}
+.patient-ts-sm {
+  font-size: 11px;
+  opacity: 0.8;
+}
+.patient-ts-lg {
+  font-size: 15px;
+  font-weight: 900;
+}
+/* Large Text Mode for Seniors & Accessibility */
+.patient-page[data-text-size="large"] .sleek-main-title,
+.patient-page[data-text-size="large"] .sleek-q-title {
+  font-size: 34px !important;
+  line-height: 1.25 !important;
+}
+.patient-page[data-text-size="large"] .sleek-main-desc,
+.patient-page[data-text-size="large"] .sleek-q-helper {
+  font-size: 19px !important;
+  line-height: 1.5 !important;
+}
+.patient-page[data-text-size="large"] .sleek-option-text {
+  font-size: 21px !important;
+  line-height: 1.4 !important;
+}
+.patient-page[data-text-size="large"] .sleek-option-card {
+  min-height: 72px !important;
+  padding: 16px 20px !important;
+}
+.patient-page[data-text-size="large"] .sleek-scale-hero .sleek-scale-big-num {
+  font-size: 76px !important;
+}
+.patient-page[data-text-size="large"] .sleek-scale-hero .sleek-scale-badge {
+  font-size: 18px !important;
+}
+.patient-page[data-text-size="large"] .sleek-scale-btn {
+  min-height: 52px !important;
+  font-size: 20px !important;
+}
+.patient-page[data-text-size="large"] .sleek-input-field {
+  font-size: 24px !important;
+  min-height: 72px !important;
+}
+.patient-page[data-text-size="large"] .sleek-primary-btn,
+.patient-page[data-text-size="large"] .sleek-giant-btn {
+  font-size: 22px !important;
+  min-height: 70px !important;
+}
 .patient-progress-wrap {
   max-width: 480px;
   margin: 16px auto 0;
@@ -7707,6 +7778,25 @@ html {
   color: #121416 !important;
   font-weight: 900 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.patient-page[data-theme="elderly-dark"] .patient-text-size-btn {
+  background: #232826 !important;
+  border: 1.5px solid #7a847b !important;
+  color: #f3eedf !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+.patient-page[data-theme="elderly-dark"] .patient-text-size-btn:hover {
+  color: #f2c94c !important;
+  border-color: #f2c94c !important;
+}
+
+.patient-page[data-theme="elderly-dark"] .patient-text-size-btn.active {
+  background: #f2c94c !important;
+  color: #121416 !important;
+  border-color: #f2c94c !important;
+  font-weight: 900 !important;
 }
 
 .patient-page[data-theme="elderly-dark"] .patient-progress-track {

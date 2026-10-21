@@ -1,8 +1,15 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, ShieldCheck, Zap } from "lucide-react";
 import { BrandMark } from "./brand";
 import { LanguageSwitcher } from "./language-switcher";
-import { copy, type Language } from "../lib/patientform";
+import {
+  copy,
+  getStoredTextSize,
+  onTextSizeChange,
+  setStoredTextSize,
+  type Language,
+  type TextSize,
+} from "../lib/patientform";
 
 export function PatientShell({
   children,
@@ -27,6 +34,18 @@ export function PatientShell({
   showBrand?: boolean | undefined;
   customLogo?: string | undefined;
 }) {
+  const [textSize, setTextSize] = useState<TextSize>(() => getStoredTextSize());
+
+  useEffect(() => {
+    return onTextSizeChange((newSize) => setTextSize(newSize));
+  }, []);
+
+  const toggleTextSize = () => {
+    const next: TextSize = textSize === "large" ? "normal" : "large";
+    setTextSize(next);
+    setStoredTextSize(next);
+  };
+
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.title = docTitle || copy[language]?.docTitle || "Guided Form — 9forms.com";
@@ -34,7 +53,7 @@ export function PatientShell({
   }, [language, docTitle]);
 
   return (
-    <div className="patient-page" data-theme={theme}>
+    <div className="patient-page" data-theme={theme} data-text-size={textSize}>
       <header className="patient-header">
         <div className="patient-header-inner">
           <div className="flex items-center gap-3">
@@ -57,7 +76,31 @@ export function PatientShell({
               </div>
             )}
           </div>
-          <LanguageSwitcher value={language} onChange={onLanguage} compact />
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`patient-text-size-btn ${textSize === "large" ? "active" : ""}`}
+              onClick={toggleTextSize}
+              title={
+                language === "id"
+                  ? textSize === "large"
+                    ? "Ukuran Teks: Besar (Klik untuk Normal)"
+                    : "Perbesar Ukuran Teks"
+                  : language === "zh"
+                    ? textSize === "large"
+                      ? "字体大小: 大号 (点击恢复正常)"
+                      : "切换大号字体"
+                    : textSize === "large"
+                      ? "Text Size: Large (Click for Normal)"
+                      : "Enlarge Text Size"
+              }
+              aria-label="Toggle text size"
+            >
+              <span className="patient-ts-sm">A</span>
+              <span className="patient-ts-lg">A+</span>
+            </button>
+            <LanguageSwitcher value={language} onChange={onLanguage} compact />
+          </div>
         </div>
         {typeof progress === "number" && (
           <div className="patient-progress-wrap">

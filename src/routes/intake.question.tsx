@@ -12,6 +12,7 @@ import {
   getStoredAnswers,
   getStoredLanguage,
   getStoredQuestionIndex,
+  isSpeechResetCommand,
   isVoiceAutoMode,
   kneePainForm,
   localeFor,
@@ -180,6 +181,14 @@ function QuestionPage() {
       setVoiceIssue("");
       setRequiredError("");
       setJustSelected(value);
+
+      // Subtle tactile haptic feedback on mobile tap
+      if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        try {
+          navigator.vibrate(20);
+        } catch {}
+      }
+
       setAnswers((current) => {
         const next = { ...current, [question.id]: value };
         setStoredAnswers(next, activeForm?.id);
@@ -209,6 +218,21 @@ function QuestionPage() {
     (transcript: string) => {
       setVoiceIssue("");
       if (!question) return;
+
+      // Spoken undo / reset command detection
+      if (isSpeechResetCommand(transcript)) {
+        if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+        setJustSelected(null);
+        setVoiceMappedLabel("");
+        setVoiceIssue(
+          language === "id"
+            ? "Ucapan dibatalkan. Silakan ulangi ucapan jawaban Anda."
+            : language === "zh"
+              ? "已撤销。请重新说出您的回答。"
+              : "Voice input cancelled. Please speak your answer again.",
+        );
+        return;
+      }
 
       if (question.type === "text" || question.id.includes("name")) {
         const cleaned = transcript.trim();
@@ -364,9 +388,75 @@ function QuestionPage() {
     }
   };
 
-	  const progressPercent = questionsList.length > 0
-	    ? Math.min(100, Math.max(0, ((safeIndex + 1) / questionsList.length) * 100))
-	    : 0;
+  // Full Desktop Keyboard Navigation (1-9, A-E, Arrow keys, Enter, Backspace)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        showPrivacyModal ||
+        showMicDeniedModal
+      ) {
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        goNextManual();
+        return;
+      }
+
+      if (e.key === "Backspace" || e.key === "Escape") {
+        e.preventDefault();
+        goBack();
+        return;
+      }
+
+      if (question?.type === "choice" || question?.type === "yesno") {
+        const opts = question.options || [];
+        const keyLower = e.key.toLowerCase();
+        let optIdx = -1;
+        if (/^[1-9]$/.test(e.key)) {
+          optIdx = parseInt(e.key, 10) - 1;
+        } else if (/^[a-e]$/.test(keyLower)) {
+          optIdx = keyLower.charCodeAt(0) - 97;
+        }
+
+        if (optIdx >= 0 && optIdx < opts.length) {
+          e.preventDefault();
+          const opt = opts[optIdx];
+          if (opt) updateAnswer(opt.value, true);
+        }
+      } else if (question?.type === "scale") {
+        const max = question.max ?? 10;
+        if (/^[0-9]$/.test(e.key)) {
+          const num = parseInt(e.key, 10);
+          if (num <= max) {
+            e.preventDefault();
+            updateAnswer(num, true);
+          }
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          const cur = typeof answer === "number" ? answer : 5;
+          const nextVal = Math.max(0, cur - 1);
+          updateAnswer(nextVal, false);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          const cur = typeof answer === "number" ? answer : 5;
+          const nextVal = Math.min(max, cur + 1);
+          updateAnswer(nextVal, false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [question, answer, goNextManual, goBack, updateAnswer, showPrivacyModal, showMicDeniedModal]);
+
+  const progressPercent = questionsList.length > 0
+    ? Math.min(100, Math.max(0, ((safeIndex + 1) / questionsList.length) * 100))
+    : 0;
 	  const stepNumber = String(safeIndex + 1).padStart(2, "0");
 	  const totalNumber = String(questionsList.length || 1).padStart(2, "0");
 
@@ -477,25 +567,46 @@ function QuestionPage() {
           )}
         </div>
 
-        {/* Subtle, sleek voice status line */}
+        {/* Subtle, sleek voice status line with retry button */}
         {voiceAuto && (
           <div className="sleek-voice-status" aria-live="polite">
-            <Volume2 size={15} className="text-blue-500 animate-pulse" />
-            <span className="sleek-voice-status-text">
-              {voice.state === "listening"
-                ? language === "id"
-                  ? "Mendengarkan ucapan Anda..."
-                  : language === "zh"
-                    ? "正在聆听您的回答..."
-                    : "Listening to your voice..."
-                : voice.state === "recognized" || voiceMappedLabel
-                  ? `"${voiceMappedLabel || voice.transcript}"`
-                  : language === "id"
-                    ? "Mikrofon aktif — siap mendengarkan"
+            <div className="flex items-center gap-2 overflow-hidden text-ellipsis flex-1 min-w-0">
+              <Volume2 size={15} className="text-blue-500 animate-pulse flex-shrink-0" />
+              <span className="sleek-voice-status-text truncate">
+                {voice.state === "listening"
+                  ? language === "id"
+                    ? "Mendengarkan ucapan Anda..."
                     : language === "zh"
-                      ? "麦克风已开启 — 请随时作答"
-                      : "Mic active — speak anytime"}
-            </span>
+                      ? "正在聆听您的回答..."
+                      : "Listening to your voice..."
+                  : voice.state === "recognized" || voiceMappedLabel
+                    ? `"${voiceMappedLabel || voice.transcript}"`
+                    : language === "id"
+                      ? "Mikrofon aktif — siap mendengarkan"
+                      : language === "zh"
+                        ? "麦克风已开启 — 请随时作答"
+                        : "Mic active — speak anytime"}
+              </span>
+            </div>
+            {(voiceMappedLabel || voice.transcript || justSelected !== null) && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+                  setJustSelected(null);
+                  setVoiceMappedLabel("");
+                  setVoiceIssue("");
+                  voice.reset();
+                  try {
+                    voice.start();
+                  } catch {}
+                }}
+                className="text-[11px] font-bold text-amber-300 hover:text-white underline flex-shrink-0 ml-2 cursor-pointer transition-colors"
+                title={language === "id" ? "Batal / ulangi rekaman suara" : "Reset voice input"}
+              >
+                {language === "id" ? "↺ Ulangi" : language === "zh" ? "↺ 重试" : "↺ Retry"}
+              </button>
+            )}
           </div>
         )}
 

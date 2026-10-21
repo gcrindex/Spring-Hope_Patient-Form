@@ -848,7 +848,7 @@ function BuilderLandingPage() {
               <div className="pricing-cta-wrap">
                 <a
                   className="button-secondary pricing-cta-btn"
-                  href="mailto:contact@9forms.com?subject=Enterprise%20Plan%20Inquiry%20-%209forms.com"
+                  href="mailto:n311311@gmail.com?subject=Enterprise%20Plan%20Inquiry%20-%209forms.com"
                 >
                   {t.tierEntCta}
                 </a>

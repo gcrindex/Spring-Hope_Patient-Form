@@ -1065,6 +1065,8 @@ export function normalizeSpeech(input: string) {
 const spokenNumbers: Record<Language, Record<string, number>> = {
   en: {
     zero: 0,
+    nil: 0,
+    none: 0,
     one: 1,
     two: 2,
     three: 3,
@@ -1078,19 +1080,56 @@ const spokenNumbers: Record<Language, Record<string, number>> = {
   },
   id: {
     nol: 0,
+    kosong: 0,
     satu: 1,
+    siji: 1,
+    hiji: 1,
     dua: 2,
+    loro: 2,
     tiga: 3,
+    telu: 3,
+    tilu: 3,
     empat: 4,
+    papat: 4,
+    opat: 4,
     lima: 5,
+    limo: 5,
     enam: 6,
+    enem: 6,
+    genep: 6,
     tujuh: 7,
+    pitu: 7,
     delapan: 8,
+    wolu: 8,
+    dalapan: 8,
     sembilan: 9,
+    songo: 9,
+    salapan: 9,
     sepuluh: 10,
+    sedasa: 10,
+    sapuluh: 10,
   },
-  zh: { 零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 },
+  zh: {
+    零: 0,
+    一: 1,
+    二: 2,
+    两: 2,
+    倆: 2,
+    三: 3,
+    四: 4,
+    五: 5,
+    六: 6,
+    七: 7,
+    八: 8,
+    九: 9,
+    十: 10,
+  },
 };
+
+export function isSpeechResetCommand(transcript: string): boolean {
+  const norm = normalizeSpeech(transcript);
+  return /\b(batal|batalkan|ulang|ulangi|salah|reset|hapus|cancel|clear|redo|重说|重来|重新|取消)\b/i.test(norm);
+}
 
 export function parseScaleTranscript(transcript: string, language: Language, max = 10) {
   const normalized = normalizeSpeech(transcript);
@@ -1156,9 +1195,36 @@ export function matchOptionTranscript(question: Question, transcript: string, la
 
   // 3. Ordinal / Index words (e.g. "pertama", "nomor satu", "dua", "kedua", "第一个", "第二个")
   const ordinalMap: Record<string, number> = {
+    "1": 0,
+    "2": 1,
+    "3": 2,
+    "4": 3,
+    "5": 4,
+    "nomor 1": 0,
+    "nomor 2": 1,
+    "nomor 3": 2,
+    "nomor 4": 3,
+    "nomer 1": 0,
+    "nomer 2": 1,
+    "nomer 3": 2,
+    "nomer 4": 3,
+    "opsi 1": 0,
+    "opsi 2": 1,
+    "opsi 3": 2,
+    "opsi 4": 3,
+    "option 1": 0,
+    "option 2": 1,
+    "option 3": 2,
+    "option 4": 3,
+    "choice 1": 0,
+    "choice 2": 1,
+    "choice 3": 2,
+    "choice 4": 3,
     pertama: 0,
     kesatu: 0,
     satu: 0,
+    siji: 0,
+    hiji: 0,
     first: 0,
     one: 0,
     "第1个": 0,
@@ -1167,6 +1233,7 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     "第一": 0,
     kedua: 1,
     dua: 1,
+    loro: 1,
     second: 1,
     two: 1,
     "第2个": 1,
@@ -1175,6 +1242,8 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     "第二": 1,
     ketiga: 2,
     tiga: 2,
+    telu: 2,
+    tilu: 2,
     third: 2,
     three: 2,
     "第3个": 2,
@@ -1183,12 +1252,23 @@ export function matchOptionTranscript(question: Question, transcript: string, la
     "第三": 2,
     keempat: 3,
     empat: 3,
+    papat: 3,
+    opat: 3,
     fourth: 3,
     four: 3,
     "第4个": 3,
     "第四个": 3,
     "第4": 3,
     "第四": 3,
+    kelima: 4,
+    lima: 4,
+    limo: 4,
+    fifth: 4,
+    five: 4,
+    "第5个": 4,
+    "第五个": 4,
+    "第5": 4,
+    "第五": 4,
   };
   for (const [phrase, idx] of Object.entries(ordinalMap)) {
     const isChinese = /[\u4e00-\u9fa5]/.test(phrase);
@@ -1203,23 +1283,25 @@ export function matchOptionTranscript(question: Question, transcript: string, la
         normalized.includes("pilihan") ||
         normalized.includes("opsi") ||
         normalized.includes("nomor") ||
+        normalized.includes("nomer") ||
         normalized.includes("ke-") ||
         normalized.includes("option") ||
-        normalized.includes("number")
+        normalized.includes("number") ||
+        normalized.includes("choice")
       ) {
         return [options[idx]];
       }
     }
   }
 
-  // 4. Binary Yes / No Questions
+  // 4. Binary Yes / No Questions with regional dialects
   const hasYesOption = options.some((o) => o.value === "yes");
   const hasNoOption = options.some((o) => o.value === "no");
   if (hasYesOption && hasNoOption) {
     const noRegex =
-      /\b(tidak|nggak|ngga|enggak|gak|ga|bukan|belum|tak|tanpa|aman|normal|lancar|no|nope|nah|never|none|without|没有|不是|不|否|无)\b/i;
+      /\b(tidak|nggak|ngga|enggak|gak|ga|kagak|ora|mboten|teu|ndak|nda|bukan|belum|tak|tanpa|aman|normal|lancar|no|nope|nah|never|none|without|没有|不是|不|否|无)\b/i;
     const yesRegex =
-      /\b(ya|iya|iye|yoi|yep|yes|ada|pernah|betul|benar|tentu|jelas|bisa|sering|bengkak|kaku|macet|terkunci|lepas|goyang|jatuh|cedera|nyeri|sakit|butuh|perlu|mau|boleh|pasti|ok|oke|siap|会|有|是|是的|对|对的)\b/i;
+      /\b(ya|iya|iye|hooh|nggih|yo|yoi|yep|yes|ada|pernah|betul|benar|tentu|jelas|bisa|sering|bengkak|kaku|macet|terkunci|lepas|goyang|jatuh|cedera|nyeri|sakit|butuh|perlu|mau|boleh|pasti|ok|oke|siap|会|有|是|是的|对|对的)\b/i;
 
     if (noRegex.test(normalized)) {
       const noOpt = options.find((o) => o.value === "no");
@@ -1331,6 +1413,7 @@ const STORAGE = {
   formId: "pf_active_form_id",
   voiceAuto: "pf_voice_auto_mode",
   sessionTs: "pf_intake_session_ts",
+  textSize: "pf_text_size",
 };
 
 const INTAKE_SESSION_TTL_MS = 20 * 60 * 1000; // 20 minutes expiration for patient privacy
@@ -1412,6 +1495,29 @@ export function setStoredLanguage(language: Language) {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE.language, language);
     languageListeners.forEach((fn) => fn(language));
+  }
+}
+
+export type TextSize = "normal" | "large";
+type TextSizeListener = (size: TextSize) => void;
+const textSizeListeners = new Set<TextSizeListener>();
+
+export function onTextSizeChange(fn: TextSizeListener) {
+  textSizeListeners.add(fn);
+  return () => {
+    textSizeListeners.delete(fn);
+  };
+}
+
+export function getStoredTextSize(): TextSize {
+  if (typeof window === "undefined") return "normal";
+  return window.localStorage.getItem(STORAGE.textSize) === "large" ? "large" : "normal";
+}
+
+export function setStoredTextSize(size: TextSize) {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE.textSize, size);
+    textSizeListeners.forEach((fn) => fn(size));
   }
 }
 
