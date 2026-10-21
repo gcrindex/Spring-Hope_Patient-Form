@@ -4,10 +4,13 @@ import {
   BarChart3,
   BookOpen,
   Check,
+  Copy,
+  ExternalLink,
   FileText,
   Languages,
   LayoutDashboard,
   Lock,
+  Mail,
   Mic,
   PenLine,
   Share2,
@@ -59,6 +62,7 @@ function BuilderLandingPage() {
   // Checkout modal state
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<CheckoutPlanDetails | null>(null);
+  const [enterpriseModalOpen, setEnterpriseModalOpen] = useState(false);
 
   useEffect(() => {
     setLanguage(getStoredLanguage());
@@ -68,6 +72,19 @@ function BuilderLandingPage() {
   const handleLang = (next: Language) => {
     setStoredLanguage(next);
     setLanguage(next);
+  };
+
+  const handleEnterpriseClick = (e: React.MouseEvent) => {
+    const isMobile =
+      typeof navigator !== "undefined" &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Mobile native app triggers directly via mailto link
+      return;
+    }
+    // Desktop: prevent default OS mail client launch and open choice modal
+    e.preventDefault();
+    setEnterpriseModalOpen(true);
   };
 
   const handleHeroSelect = (idx: number) => {
@@ -849,6 +866,7 @@ function BuilderLandingPage() {
                 <a
                   className="button-secondary pricing-cta-btn"
                   href="mailto:n311311@gmail.com?subject=Enterprise%20Plan%20Inquiry%20-%209forms.com"
+                  onClick={handleEnterpriseClick}
                 >
                   {t.tierEntCta}
                 </a>
@@ -994,11 +1012,19 @@ function BuilderLandingPage() {
         />
       )}
 
-      {/* ── Senior Research Study Modal Popup ────────────────── */}
-      {researchOpen && <SeniorResearchModal onClose={() => setResearchOpen(false)} />}
-    </div>
-  );
-}
+	      {/* ── Senior Research Study Modal Popup ────────────────── */}
+	      {researchOpen && <SeniorResearchModal onClose={() => setResearchOpen(false)} />}
+
+	      {/* ── Enterprise Contact Choice Modal ─────────────────── */}
+	      {enterpriseModalOpen && (
+	        <EnterpriseContactModal
+	          language={language}
+	          onClose={() => setEnterpriseModalOpen(false)}
+	        />
+	      )}
+	    </div>
+	  );
+	}
 
 function PaypalCheckoutModal({
   plan,
@@ -1511,6 +1537,240 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
           </span>
           <button type="button" className="senior-modal-close-btn" onClick={onClose}>
             Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EnterpriseContactModal({
+  language,
+  onClose,
+}: {
+  language: Language;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const email = "n311311@gmail.com";
+  const subject = "Enterprise Plan Inquiry - 9forms.com";
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}`;
+  const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [onClose]);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = email;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const strings = {
+    en: {
+      title: "Contact Enterprise Sales",
+      subtitle: "Choose how you'd like to reach our sales team:",
+      targetEmail: "Recipient:",
+      gmailTitle: "Open in Web Gmail",
+      gmailDesc: "Direct compose in your browser tab",
+      appTitle: "Default Email App",
+      appDesc: "Open Outlook, Apple Mail, or Windows Mail",
+      copyTitle: "Copy Email Address",
+      copyDesc: email,
+      copied: "Email copied to clipboard!",
+      close: "Close",
+      recommended: "Recommended",
+    },
+    id: {
+      title: "Hubungi Sales Enterprise",
+      subtitle: "Pilih cara pengiriman pesan konsultasi ke tim sales kami:",
+      targetEmail: "Penerima:",
+      gmailTitle: "Buka di Web Gmail",
+      gmailDesc: "Buka tab tulis pesan langsung di browser",
+      appTitle: "Aplikasi Email Laptop",
+      appDesc: "Buka Outlook, Apple Mail, atau Windows Mail",
+      copyTitle: "Salin Alamat Email",
+      copyDesc: email,
+      copied: "Alamat email berhasil disalin!",
+      close: "Tutup",
+      recommended: "Praktis",
+    },
+    zh: {
+      title: "联系企业定制团队",
+      subtitle: "请选择您偏好的方式发送企业方案咨询：",
+      targetEmail: "收件人：",
+      gmailTitle: "在网页版 Gmail 中打开",
+      gmailDesc: "在浏览器标签页中直接撰写邮件",
+      appTitle: "系统默认邮件应用",
+      appDesc: "调用 Outlook、Apple Mail 或 Windows Mail",
+      copyTitle: "复制电子邮箱地址",
+      copyDesc: email,
+      copied: "邮箱地址已复制到剪贴板！",
+      close: "关闭",
+      recommended: "快捷",
+    },
+  }[language] || {
+    title: "Contact Enterprise Sales",
+    subtitle: "Choose how you'd like to reach our sales team:",
+    targetEmail: "Recipient:",
+    gmailTitle: "Open in Web Gmail",
+    gmailDesc: "Direct compose in your browser tab",
+    appTitle: "Default Email App",
+    appDesc: "Open Outlook, Apple Mail, or Windows Mail",
+    copyTitle: "Copy Email Address",
+    copyDesc: email,
+    copied: "Email copied to clipboard!",
+    close: "Close",
+    recommended: "Recommended",
+  };
+
+  return (
+    <div
+      className="senior-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl text-left border border-slate-100 animate-in fade-in zoom-in duration-150"
+        style={{ color: "#0f172a" }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+              <Mail size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base leading-tight">
+                {strings.title}
+              </h3>
+              <span className="text-xs text-slate-500 font-medium">
+                {strings.targetEmail} <span className="font-bold text-slate-800">{email}</span>
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer"
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+          {strings.subtitle}
+        </p>
+
+        {/* Action Options Stack */}
+        <div className="flex flex-col gap-2.5 mb-5">
+          {/* Option 1: Web Gmail */}
+          <a
+            href={gmailUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            className="flex items-center justify-between p-3.5 rounded-xl border-2 border-blue-600 bg-blue-50/60 hover:bg-blue-50 text-slate-900 transition group shadow-sm no-underline"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                <ExternalLink size={18} />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-xs text-blue-950">{strings.gmailTitle}</span>
+                  <span className="bg-blue-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                    {strings.recommended}
+                  </span>
+                </div>
+                <span className="text-[11px] text-blue-800/80 font-medium block">
+                  {strings.gmailDesc}
+                </span>
+              </div>
+            </div>
+            <ArrowRight size={16} className="text-blue-600 transition group-hover:translate-x-0.5" />
+          </a>
+
+          {/* Option 2: Default Mail App */}
+          <a
+            href={mailtoUrl}
+            onClick={onClose}
+            className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-900 transition group no-underline"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                <Mail size={18} />
+              </div>
+              <div className="text-left">
+                <span className="font-bold text-xs text-slate-800 block">{strings.appTitle}</span>
+                <span className="text-[11px] text-slate-500 font-medium block">
+                  {strings.appDesc}
+                </span>
+              </div>
+            </div>
+            <ArrowRight size={16} className="text-slate-400 transition group-hover:translate-x-0.5" />
+          </a>
+
+          {/* Option 3: Copy Email */}
+          <button
+            type="button"
+            onClick={copyEmail}
+            className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-900 transition group w-full cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition ${copied ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+              </div>
+              <div className="text-left">
+                <span className={`font-bold text-xs block ${copied ? "text-emerald-700" : "text-slate-800"}`}>
+                  {copied ? strings.copied : strings.copyTitle}
+                </span>
+                <span className="text-[11px] text-slate-500 font-medium block">
+                  {strings.copyDesc}
+                </span>
+              </div>
+            </div>
+            {copied ? (
+              <span className="text-xs font-bold text-emerald-600">✓</span>
+            ) : (
+              <Copy size={16} className="text-slate-400 transition group-hover:scale-110" />
+            )}
+          </button>
+        </div>
+
+        {/* Footer */}
+        <div className="pt-3 border-t border-slate-100 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+          >
+            {strings.close}
           </button>
         </div>
       </div>
