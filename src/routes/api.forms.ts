@@ -264,6 +264,7 @@ export const Route = createFileRoute("/api/forms")({
               : typeof body.title === "object" && body.title !== null
                 ? sanitizeStr(body.title.en || body.title.id || "Custom Form")
                 : "Custom Form";
+          body.title = title;
           const schemaJson = JSON.stringify(body);
 
           let existing: { id: string; user_id?: string } | null = null;
