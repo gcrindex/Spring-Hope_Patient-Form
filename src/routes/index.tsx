@@ -913,7 +913,7 @@ function BuilderLandingPage() {
               </div>
               <div className="footer-security-pill">
                 <span>
-                  🔒{" "}
+                  <Lock size={12} className="inline mr-1 opacity-80" />
                   {language === "id"
                     ? "ISO/IEC 27001 · Siap HIPAA · Enkripsi AES-256"
                     : language === "zh"
@@ -1200,10 +1200,10 @@ function PaypalCheckoutModal({
             if (res.ok && d.success) {
               setSuccessMsg(
                 language === "id"
-                  ? `🎉 Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
+                  ? `Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
                   : language === "zh"
-                    ? `🎉 支付成功！方案已激活，正在跳转至管理工作区...`
-                    : `🎉 Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`,
+                    ? `支付成功！方案已激活，正在跳转至管理工作区...`
+                    : `Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`,
               );
               setTimeout(() => {
                 window.location.href = "/business.html#/dashboard";

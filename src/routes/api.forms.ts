@@ -169,19 +169,102 @@ export const Route = createFileRoute("/api/forms")({
 	            });
 	          }
 
-	          if (!body.id) {
-	            return Response.json(
-	              { success: false, error: "INVALID_BODY", message: "Invalid form ID." },
-	              { status: 400 },
-	            );
-	          }
+          if (!body.id) {
+            return Response.json(
+              { success: false, error: "INVALID_BODY", message: "Invalid form ID." },
+              { status: 400 },
+            );
+          }
 
-	          const formId = String(body.id).trim();
-	          const title =
-	            typeof body.title === "string"
-	              ? body.title
-	              : body.title?.en || body.title?.id || "Custom Form";
-	          const schemaJson = JSON.stringify(body);
+          const rawId = String(body.id).trim();
+          if (!/^[a-zA-Z0-9_-]{2,64}$/.test(rawId)) {
+            return Response.json(
+              {
+                success: false,
+                error: "INVALID_ID",
+                message: "ID formulir tidak valid (hanya huruf, angka, _ dan -).",
+              },
+              { status: 400 },
+            );
+          }
+
+          // Anti-XSS Sanitization & Strict Payload Normalization
+          const sanitizeStr = (s: unknown, maxLen = 1000): string => {
+            if (typeof s !== "string") return "";
+            return s
+              .trim()
+              .slice(0, maxLen)
+              .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+              .replace(/javascript:/gi, "")
+              .replace(/on\w+\s*=/gi, "")
+              .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "");
+          };
+
+          const sanitizeLoc = (loc: unknown): Record<string, string> | string => {
+            if (typeof loc === "string") return sanitizeStr(loc);
+            if (typeof loc === "object" && loc !== null) {
+              const res: Record<string, string> = {};
+              for (const [k, v] of Object.entries(loc as Record<string, unknown>)) {
+                if (typeof v === "string") res[k] = sanitizeStr(v);
+              }
+              return res;
+            }
+            return "";
+          };
+
+          // Normalize & sanitize questions
+          if (Array.isArray(body.questions)) {
+            body.questions = body.questions.map((q: any, idx: number) => {
+              const qId = sanitizeStr(q.id || `q_${idx + 1}`, 64) || `q_${idx + 1}`;
+              const validTypes = ["choice", "yesno", "scale", "text"];
+              const qType = validTypes.includes(q.type) ? q.type : "choice";
+              const prompt = sanitizeLoc(q.prompt);
+              const helper = q.helper ? sanitizeLoc(q.helper) : undefined;
+              let options = undefined;
+              if (Array.isArray(q.options)) {
+                options = q.options.map((opt: any, oIdx: number) => ({
+                  value: sanitizeStr(opt.value || `opt_${oIdx + 1}`, 64),
+                  label: sanitizeLoc(opt.label),
+                  score: typeof opt.score === "number" ? opt.score : 0,
+                  ...(opt.aliases ? { aliases: opt.aliases } : {}),
+                }));
+              }
+              return {
+                ...q,
+                id: qId,
+                type: qType,
+                prompt,
+                ...(helper ? { helper } : {}),
+                ...(options ? { options } : {}),
+              };
+            });
+          }
+
+          // Normalize & sanitize cover page
+          if (body.coverPage && typeof body.coverPage === "object") {
+            if (body.coverPage.bannerLogoUrl) {
+              const logo = String(body.coverPage.bannerLogoUrl).trim();
+              const isSafeUrl =
+                logo.startsWith("https://") ||
+                logo.startsWith("http://") ||
+                /^data:image\/(png|jpeg|webp);base64,/i.test(logo);
+              if (!isSafeUrl) {
+                body.coverPage.bannerLogoUrl = "";
+              }
+            }
+            if (body.coverPage.title) body.coverPage.title = sanitizeLoc(body.coverPage.title);
+            if (body.coverPage.description)
+              body.coverPage.description = sanitizeLoc(body.coverPage.description);
+          }
+
+          const formId = rawId;
+          const title =
+            typeof body.title === "string"
+              ? sanitizeStr(body.title)
+              : typeof body.title === "object" && body.title !== null
+                ? sanitizeStr(body.title.en || body.title.id || "Custom Form")
+                : "Custom Form";
+          const schemaJson = JSON.stringify(body);
 
           let existing: { id: string; user_id?: string } | null = null;
           try {

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Check, Mic, MicOff, Quote, ShieldCheck, Volume2 } from "lucide-react";
+import { AlertCircle, ArrowRight, Check, Mic, MicOff, Quote, ShieldCheck, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
 import { useSpeechRecognition } from "../hooks/use-speech-recognition";
@@ -63,7 +63,9 @@ export const Route = createFileRoute("/intake/question")({
   errorComponent: ({ reset }) => (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 text-center font-sans">
       <div className="max-w-md bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <p className="text-3xl mb-2">📋</p>
+        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 mx-auto mb-3 flex items-center justify-center">
+          <AlertCircle size={24} />
+        </div>
         <h2 className="text-base font-bold text-slate-800 mb-1">Gagal Memuat Pertanyaan</h2>
         <p className="text-xs text-slate-500 mb-4">Terjadi kendala saat menyinkronkan data form. Silakan coba muat ulang.</p>
         <div className="flex gap-2 justify-center">
@@ -668,7 +670,7 @@ function QuestionPage() {
         {/* Required Question Error Notice */}
         {requiredError && (
           <div className="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-pulse">
-            <span>⚠️</span>
+            <AlertCircle size={15} className="flex-shrink-0" />
             <span>{requiredError}</span>
           </div>
         )}

@@ -1427,6 +1427,9 @@
       .question-card .q-actions .del:hover {
         color: var(--red);
       }
+      .question-card .q-actions .dup:hover {
+        color: var(--primary);
+      }
       .add-question-btn {
         width: 100%;
         padding: 10px;
@@ -1621,6 +1624,15 @@
         overflow: hidden;
         position: relative;
         flex-shrink: 0;
+        transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), min-height 0.25s, border-radius 0.25s;
+      }
+      .phone-frame.desktop-mode {
+        width: 580px;
+        min-height: 520px;
+        border-radius: 16px;
+      }
+      .phone-frame.desktop-mode .phone-notch {
+        display: none;
       }
       .phone-notch {
         width: 120px;
@@ -3421,7 +3433,7 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               <circle cx="12" cy="11" r="3" />
             </svg>
-            <span data-i18n="adminArea">Admin Area 🛡️</span>
+            <span data-i18n="adminArea">Admin Area</span>
           </a>
           <a
             href="/"
@@ -3574,7 +3586,7 @@
             onclick="openTestModal()"
             title="Test Form Live Simulation"
           >
-            🧪 <span class="btn-text-full" data-i18n="builderTestBtn">Test Form</span><span class="btn-text-mobile" data-i18n="builderTestBtnShort">Test</span>
+            <span class="btn-text-full" data-i18n="builderTestBtn">Test Form</span><span class="btn-text-mobile" data-i18n="builderTestBtnShort">Test</span>
           </button>
           <button
             type="button"
@@ -3583,7 +3595,7 @@
             onclick="saveDraftAndExit()"
             style="border: 1.5px solid var(--border); font-weight: 600; padding: 7px 12px; background: #fff; border-radius: 8px; font-size: 12px; color: var(--navy)"
           >
-            💾 <span class="btn-text-full" data-i18n="builderSaveDraft">Save Draft & Exit</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">Draft</span>
+            <span class="btn-text-full" data-i18n="builderSaveDraft">Save Draft & Exit</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">Draft</span>
           </button>
           <button class="publish-btn" id="builder-publish-btn"></button>
 
@@ -3605,11 +3617,11 @@
             </button>
             <div class="builder-more-menu" id="builder-more-menu" style="display: none;" onclick="event.stopPropagation()">
               <button type="button" class="builder-more-item" onclick="closeBuilderMoreMenu(); openTestModal();">
-                <span style="font-size: 15px;">🧪</span>
+                <span style="font-size: 12px; font-weight: 800; color: var(--primary);">&#9654;</span>
                 <span data-i18n="builderTestBtn">Test Form</span>
               </button>
               <button type="button" class="builder-more-item" onclick="closeBuilderMoreMenu(); saveDraftAndExit();">
-                <span style="font-size: 15px;">💾</span>
+                <span style="font-size: 12px; font-weight: 800; color: var(--navy);">&#10003;</span>
                 <span data-i18n="builderSaveDraft">Save Draft &amp; Exit</span>
               </button>
               <div class="builder-more-divider"></div>
@@ -3627,13 +3639,13 @@
       </div>
       <div class="builder-mobile-tabs" id="builder-mobile-tabs">
         <button type="button" class="builder-mob-tab active" id="mob-tab-outline" onclick="setMobileBuilderTab('outline')">
-          📋 <span data-i18n="builderTabOutline">Questions</span> (<span id="mob-qcount-badge">0</span>)
+          <span data-i18n="builderTabOutline">Questions</span> (<span id="mob-qcount-badge">0</span>)
         </button>
         <button type="button" class="builder-mob-tab" id="mob-tab-edit" onclick="setMobileBuilderTab('edit')">
-          ✏️ <span data-i18n="builderTabEdit">Editor</span> <span class="mob-edit-badge" id="mob-edit-target"></span>
+          <span data-i18n="builderTabEdit">Editor</span> <span class="mob-edit-badge" id="mob-edit-target"></span>
         </button>
         <button type="button" class="builder-mob-tab" id="mob-tab-preview" onclick="setMobileBuilderTab('preview')">
-          📱 <span data-i18n="builderTabPreview">Preview</span>
+          <span data-i18n="builderTabPreview">Preview</span>
         </button>
       </div>
       <div class="builder-body" data-mob-tab="outline">
@@ -3650,7 +3662,7 @@
             onclick="selectCoverPage()"
             style="cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border); background: #ffffff; margin-bottom: 12px; transition: all 0.2s ease;"
           >
-            <div class="cover-card-icon" style="font-size: 20px;">📄</div>
+            <div class="cover-card-icon" style="font-size: 13px; font-weight: 850; background: #e0f2fe; color: #0369a1; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">CP</div>
             <div class="cover-card-info" style="flex: 1; min-width: 0;">
               <div class="cover-card-title" style="font-weight: 750; font-size: 13px; color: var(--navy); display: flex; align-items: center; gap: 6px;">
                 <span data-i18n="builderCoverPageTab">Cover Page / Welcome Screen</span>
@@ -3669,7 +3681,7 @@
         <div class="builder-center" id="builder-center-pane">
           <div class="builder-editor-divider" id="builder-editor-divider" style="display: none">
             <div class="divider-left">
-              <span class="divider-icon">✏️</span>
+              <span class="divider-icon" style="font-size: 12px; font-weight: 800; color: var(--navy);">&#9998;</span>
               <span class="divider-title" data-i18n="builderEditSectionTitle">Question Settings</span>
             </div>
             <span class="divider-badge" id="builder-editor-active-q">Q1</span>
@@ -3677,9 +3689,19 @@
           <div class="question-editor" id="question-editor" style="display: none"></div>
         </div>
 
-        <!-- 3. RIGHT: Live Simulator Preview -->
+        <!-- 3. RIGHT: Live Simulator Preview with Responsive Device Switcher -->
         <div class="builder-right">
-          <div class="phone-frame">
+          <div class="preview-mode-bar" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; width: 100%;">
+            <button type="button" class="preview-device-btn active" id="btn-device-mobile" onclick="setPreviewDevice('mobile')" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 9px; font-size: 12px; font-weight: 750; border: 1.5px solid var(--border); background: var(--navy); color: #fff; cursor: pointer; transition: all 0.15s;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+              <span>Mobile</span>
+            </button>
+            <button type="button" class="preview-device-btn" id="btn-device-desktop" onclick="setPreviewDevice('desktop')" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 9px; font-size: 12px; font-weight: 750; border: 1.5px solid var(--border); background: #fff; color: var(--text2); cursor: pointer; transition: all 0.15s;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+              <span>Desktop / Tablet</span>
+            </button>
+          </div>
+          <div class="phone-frame" id="builder-preview-frame">
             <div class="phone-notch"></div>
             <div class="phone-screen" id="phone-screen"></div>
           </div>
@@ -3992,7 +4014,7 @@
             data-i18n="aiPresetClinic"
             onclick="applyAiPreset('clinic')"
           >
-            🏥 Patient Health Intake
+            Patient Health Intake
           </button>
           <button
             type="button"
@@ -4010,7 +4032,7 @@
             data-i18n="aiPresetEvent"
             onclick="applyAiPreset('event')"
           >
-            🎟️ Event & Workshop RSVP
+            Event & Workshop RSVP
           </button>
           <button
             type="button"
@@ -4019,7 +4041,7 @@
             data-i18n="aiPresetHr"
             onclick="applyAiPreset('hr')"
           >
-            💼 Candidate Recruitment (HR)
+            Candidate Recruitment (HR)
           </button>
 	          <button
 	            type="button"
@@ -4028,16 +4050,16 @@
 	            data-i18n="aiPresetLead"
 	            onclick="applyAiPreset('lead')"
 	          >
-	            🚀 B2B Sales Lead Qualification
+	            B2B Sales Lead Qualification
 	          </button>
 	        </div>
 	        <!-- Mobile Segmented Tabs (Visible on mobile screens <= 768px) -->
 	        <div class="ai-modal-mobile-tabs" id="ai-modal-mobile-tabs">
 	          <button type="button" class="ai-mob-tab-btn active" id="ai-mob-tab-chat" onclick="switchAiMobileTab('chat')">
-	            💬 <span data-i18n="aiMobTabChat">Diskusi &amp; Chat</span>
+	            <span data-i18n="aiMobTabChat">Diskusi &amp; Chat</span>
 	          </button>
 	          <button type="button" class="ai-mob-tab-btn" id="ai-mob-tab-preview" onclick="switchAiMobileTab('preview')">
-	            👁️ <span data-i18n="aiMobTabPreview">Pratinjau Form</span>
+	            <span data-i18n="aiMobTabPreview">Pratinjau Form</span>
 	            <span id="ai-mob-preview-badge" class="ai-mob-badge" style="display:none">0 Soal</span>
 	          </button>
 	        </div>
@@ -4134,7 +4156,7 @@
               transition: all 0.15s;
             "
           >
-            🎤
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
           </button>
           <input
             type="text"
@@ -4330,7 +4352,7 @@
       <div class="test-modal-card">
         <div class="test-modal-header">
           <div class="test-header-left">
-            <div class="test-badge-live">🧪 <span data-i18n="testBadge">LIVE TEST SIMULATION</span></div>
+            <div class="test-badge-live"><span data-i18n="testBadge">LIVE TEST SIMULATION</span></div>
             <h3 id="test-modal-form-title">Form Title</h3>
           </div>
           <div class="test-header-actions">
@@ -5506,11 +5528,11 @@
           aiSend: "Send",
           aiListening: "Listening...",
           aiPresetQuick: "Quick Prompts:",
-          aiPresetClinic: "🏥 Patient Health Intake",
+          aiPresetClinic: "Patient Health Intake",
           aiPresetCsat: "⭐ Customer Satisfaction (CSAT)",
-          aiPresetEvent: "🎟️ Event & Workshop RSVP",
-          aiPresetHr: "💼 Candidate Recruitment (HR)",
-	          aiPresetLead: "🚀 B2B Sales Lead Qualification",
+          aiPresetEvent: "Event & Workshop RSVP",
+          aiPresetHr: "Candidate Recruitment (HR)",
+	          aiPresetLead: "B2B Sales Lead Qualification",
 	          aiMobTabChat: "Chat & Brainstorm",
 	          aiMobTabPreview: "Form Preview",
 	          aiPreviewTitle: "✨ Ready-to-Use Form Draft",
@@ -5579,7 +5601,7 @@
           testResetBtn: "↺ Restart Test",
           testCloseBtn: "✓ Back to Builder",
           testScoreIndicator: "Simulated Score:",
-          testCompletedTitle: "Test Run Completed! 🎉",
+          testCompletedTitle: "Test Run Completed!",
           testCompletedSub: "This was an interactive test simulation. You can adjust your questions or publish your form when ready.",
           testPrevBtn: "← Previous",
           testNextBtn: "Next Question →",
@@ -5670,11 +5692,11 @@
           aiSend: "Kirim",
           aiListening: "Mendengarkan suara...",
           aiPresetQuick: "Pilihan Cepat:",
-          aiPresetClinic: "🏥 Asesmen Pasien Klinik",
+          aiPresetClinic: "Asesmen Pasien Klinik",
           aiPresetCsat: "⭐ Kepuasan Pelanggan (CSAT)",
-          aiPresetEvent: "🎟️ Registrasi Event & Seminar",
-          aiPresetHr: "💼 Rekrutmen Karyawan (HR)",
-	          aiPresetLead: "🚀 Kualifikasi Lead Bisnis",
+          aiPresetEvent: "Registrasi Event & Seminar",
+          aiPresetHr: "Rekrutmen Karyawan (HR)",
+	          aiPresetLead: "Kualifikasi Lead Bisnis",
 	          aiMobTabChat: "Diskusi & Chat",
 	          aiMobTabPreview: "Pratinjau Form",
 	          aiPreviewTitle: "✨ Draf Formulir Siap Pakai",
@@ -5743,7 +5765,7 @@
           testResetBtn: "↺ Ulangi Tes",
           testCloseBtn: "✓ Kembali ke Builder",
           testScoreIndicator: "Skor Simulasi:",
-          testCompletedTitle: "Uji Coba Berhasil Selesai! 🎉",
+          testCompletedTitle: "Uji Coba Berhasil Selesai!",
           testCompletedSub: "Ini adalah simulasi pengisian interaktif. Anda dapat menyesuaikan pertanyaan atau langsung mempublikasikan form jika sudah sesuai.",
           testPrevBtn: "← Sebelumnya",
           testNextBtn: "Lanjut →",
@@ -5832,11 +5854,11 @@
           aiSend: "发送",
           aiListening: "正在聆听语音...",
           aiPresetQuick: "快捷预设:",
-          aiPresetClinic: "🏥 患者健康评估问卷",
+          aiPresetClinic: "患者健康评估问卷",
           aiPresetCsat: "⭐ 客户满意度调查 (CSAT)",
-          aiPresetEvent: "🎟️ 活动与研讨会报名表",
-          aiPresetHr: "💼 候选人求职招聘筛选 (HR)",
-	          aiPresetLead: "🚀 B2B 销售线索资格评估",
+          aiPresetEvent: "活动与研讨会报名表",
+          aiPresetHr: "候选人求职招聘筛选 (HR)",
+	          aiPresetLead: "B2B 销售线索资格评估",
 	          aiMobTabChat: "沟通与构思",
 	          aiMobTabPreview: "表单预览",
 	          aiPreviewTitle: "✨ 智能生成的表单草稿",
@@ -5905,7 +5927,7 @@
           testResetBtn: "↺ 重新测试",
           testCloseBtn: "✓ 返回编辑器",
           testScoreIndicator: "模拟得分:",
-          testCompletedTitle: "测试答题已完成！🎉",
+          testCompletedTitle: "测试答题已完成！",
           testCompletedSub: "这是表单的实时模拟测试。如已满意，可返回编辑器保存草稿或直接发布表单。",
           testPrevBtn: "← 上一题",
           testNextBtn: "下一题 →",
@@ -6559,7 +6581,7 @@
 	        const appUrl = (window.location.origin || "https://9forms.com") + "/intake?form=" + id;
 	        if (navigator.clipboard && navigator.clipboard.writeText) {
 	          navigator.clipboard.writeText(appUrl).then(() => {
-	            toast("📋 Tautan form berhasil disalin ke clipboard!", "success");
+	            toast("Tautan form berhasil disalin ke clipboard!", "success");
 	          }).catch(() => {
 	            prompt("Salin tautan formulir di bawah ini:", appUrl);
 	          });
@@ -6921,7 +6943,7 @@
 	              (getEffectiveTier() === "basic")
 	                ? `
 	              <div style="background:#f8fafc; border:1.5px dashed #cbd5e1; border-radius:10px; padding:16px; margin-top:6px; text-align:center;">
-	                <div style="font-size:24px; margin-bottom:6px;">🔒</div>
+	                <div style="font-size:12px; font-weight:800; color:var(--text3); margin-bottom:6px;">LOCKED</div>
 	                <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:4px;">Custom Logo &amp; White-label Terkunci</strong>
 	                <p style="font-size:11.5px; color:var(--text3); margin:0 0 10px 0; line-height:1.45;">Upload logo klinik/perusahaan sendiri tersedia untuk pelanggan paket <strong>Plus</strong> dan <strong>Business</strong>.</p>
 	                <a href="/#pricing" target="_blank" style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:#0284c7; background:#e0f2fe; padding:6px 14px; border-radius:6px; text-decoration:none;">
@@ -6940,25 +6962,25 @@
 	                    <div style="font-size:12px; font-weight:750; color:var(--navy); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Logo Aktif</div>
 	                    <div style="font-size:10.5px; color:var(--text3);">Tampil di atas Cover Page</div>
 	                  </div>
-	                  <button type="button" onclick="removeCoverLogo()" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:750; cursor:pointer;">
-	                    🗑️ Hapus
-	                  </button>
-	                </div>
-	              `
-	                  : ""
-	              }
-	              <div style="display:flex; flex-direction:column; gap:8px;">
-	                <input type="file" id="cover-logo-file-input" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display:none;" onchange="uploadCoverLogoFile(event)" />
-	                <button type="button" onclick="document.getElementById('cover-logo-file-input').click()" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px 12px; background:#f0fdf4; border:1.5px dashed #22c55e; border-radius:8px; font-size:12.5px; font-weight:750; color:#15803d; cursor:pointer;">
-	                  📁 Upload Logo dari Perangkat (Galeri / Komputer)
-	                </button>
-	                <div style="display:flex; align-items:center; gap:6px; margin:2px 0;">
-	                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
-	                  <span style="font-size:10.5px; color:var(--text3); font-weight:700;">ATAU MASUKKAN URL GAMBAR</span>
-	                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
-	                </div>
-	                <input type="text" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-family:monospace;" value="${escHtml(logoUrl.startsWith("data:") ? "" : logoUrl)}" oninput="updateCoverField('bannerLogoUrl', this.value.trim())" placeholder="https://domain.com/logo.png" />
-	              </div>
+                  <button type="button" onclick="removeCoverLogo()" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:750; cursor:pointer;">
+                    Hapus
+                  </button>
+                </div>
+              `
+                  : ""
+              }
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <input type="file" id="cover-logo-file-input" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="uploadCoverLogoFile(event)" />
+                <button type="button" onclick="document.getElementById('cover-logo-file-input').click()" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:10px 12px; background:#f0fdf4; border:1.5px dashed #22c55e; border-radius:8px; font-size:12.5px; font-weight:750; color:#15803d; cursor:pointer;">
+                  Upload Logo dari Perangkat (Galeri / Komputer)
+                </button>
+                <div style="display:flex; align-items:center; gap:6px; margin:2px 0;">
+                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
+                  <span style="font-size:10.5px; color:var(--text3); font-weight:700;">ATAU MASUKKAN URL GAMBAR</span>
+                  <hr style="flex:1; border:none; border-top:1px solid #e2e8f0; margin:0;" />
+                </div>
+                <input type="text" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-family:monospace;" value="${escHtml(logoUrl.startsWith("data:") ? "" : logoUrl)}" oninput="validateAndUpdateLogoUrl(this.value.trim())" placeholder="https://domain.com/logo.png" />
+              </div>
 	            </div>
 	            `
 	            }
@@ -7014,40 +7036,54 @@
 		        renderPhonePreview();
 		      }
 
-		      function uploadCoverLogoFile(event) {
-		        const file = event.target.files?.[0];
-		        if (!file) return;
-		        if (!file.type.startsWith("image/")) {
-		          toast("Harap pilih file gambar (PNG, JPG, WEBP, SVG).", "error");
-		          return;
-		        }
-		        if (file.size > 5 * 1024 * 1024) {
-		          toast("Ukuran gambar maksimal 5MB.", "error");
-		          return;
-		        }
-		        const reader = new FileReader();
-		        reader.onload = (e) => {
-		          const dataUrl = e.target.result;
-		          const img = new Image();
-		          img.onload = () => {
-		            const maxDim = 600;
-		            let w = img.width;
-		            let h = img.height;
-		            if (w > maxDim || h > maxDim) {
-		              if (w > h) {
-		                h = Math.round((h * maxDim) / w);
-		                w = maxDim;
-		              } else {
-		                w = Math.round((w * maxDim) / h);
-		                h = maxDim;
-		              }
-		            }
-		            const canvas = document.createElement("canvas");
-		            canvas.width = w;
-		            canvas.height = h;
-		            const ctx = canvas.getContext("2d");
-		            ctx.drawImage(img, 0, 0, w, h);
-		            const optimizedDataUrl = canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.88);
+      function validateAndUpdateLogoUrl(url) {
+        if (!url) {
+          updateCoverField("bannerLogoUrl", "");
+          return;
+        }
+        const clean = url.trim();
+        if (!/^https?:\/\//i.test(clean) && !/^data:image\/(png|jpeg|webp);base64,/i.test(clean)) {
+          toast(currentAdminLang === "id" ? "URL tidak valid. Hanya URL https:// atau http:// yang diizinkan." : "Invalid URL. Only https:// or http:// allowed.", "error");
+          return;
+        }
+        updateCoverField("bannerLogoUrl", clean);
+      }
+
+      function uploadCoverLogoFile(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const validMimes = ["image/png", "image/jpeg", "image/webp"];
+        if (!validMimes.includes(file.type)) {
+          toast(currentAdminLang === "id" ? "Format file tidak didukung. Harap unggah file raster aman (PNG, JPG, WEBP)." : "Unsupported format. Please upload PNG, JPG, or WEBP.", "error");
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          toast(currentAdminLang === "id" ? "Ukuran gambar maksimal 3MB." : "Image size must be under 3MB.", "error");
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 600;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            const optimizedDataUrl = canvas.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.88);
 		            updateCoverField("bannerLogoUrl", optimizedDataUrl);
 		            renderCoverEditor();
 		            toast("Logo berhasil diunggah!", "success");
@@ -7082,7 +7118,7 @@
           btn.className = "publish-btn draft";
           btn.innerHTML = `<span class="btn-text-full" data-i18n="builderPublish">${t("builderPublish") || "Publish"}</span><span class="btn-text-mobile" data-i18n="builderPublishShort">${t("builderPublishShort") || "Publish"}</span>`;
           if (draftBtn) {
-            draftBtn.innerHTML = `💾 <span class="btn-text-full" data-i18n="builderSaveDraft">${t("builderSaveDraft") || "Save Draft & Exit"}</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">${t("builderSaveDraftShort") || "Draft"}</span>`;
+            draftBtn.innerHTML = `<span class="btn-text-full" data-i18n="builderSaveDraft">${t("builderSaveDraft") || "Save Draft & Exit"}</span><span class="btn-text-mobile" data-i18n="builderSaveDraftShort">${t("builderSaveDraftShort") || "Draft"}</span>`;
           }
         }
       }
@@ -7216,6 +7252,7 @@
           </div>
           <div class="q-actions">
             <button onclick="event.stopPropagation();editQuestion('${q.id}')" title="Edit">&#9998;</button>
+            <button class="dup" onclick="event.stopPropagation();duplicateQuestion('${q.id}')" title="Duplicate">&#x2398;</button>
             <button class="del" onclick="event.stopPropagation();deleteQuestion('${q.id}')" title="Delete">&#10005;</button>
           </div>
         </div>`,
@@ -7435,22 +7472,88 @@
 		        }
 		      });
 
-	      function deleteQuestion(id) {
-	        builderForm.questions = builderForm.questions.filter((x) => x.id !== id);
-	        if (editingQ === id) {
-	          editingQ = builderForm.questions[0]?.id || null;
-	          if (!editingQ) {
-	            $("#question-editor").style.display = "none";
-	            const divider = $("#builder-editor-divider");
-	            if (divider) divider.style.display = "none";
-	          }
-	        }
-	        saveForm();
-	        renderCoverSlot();
-	        renderQuestionList();
-	        if (editingQ) renderQuestionEditor();
-	        renderPhonePreview();
-	      }
+      function duplicateQuestion(id) {
+        if (!builderForm || !builderForm.questions) return;
+        const idx = builderForm.questions.findIndex((x) => x.id === id);
+        if (idx === -1) return;
+        const orig = builderForm.questions[idx];
+        const copy = JSON.parse(JSON.stringify(orig));
+        copy.id = "q_" + Date.now();
+        if (typeof copy.prompt === "object" && copy.prompt !== null) {
+          if (copy.prompt.en) copy.prompt.en += " (Copy)";
+          if (copy.prompt.id) copy.prompt.id += " (Salinan)";
+          if (copy.prompt.zh) copy.prompt.zh += " (副本)";
+        } else if (typeof copy.prompt === "string") {
+          copy.prompt += " (Copy)";
+        }
+        builderForm.questions.splice(idx + 1, 0, copy);
+        saveForm();
+        renderCoverSlot();
+        renderQuestionList();
+        selectQuestion(copy.id);
+        toast(currentAdminLang === "id" ? "Pertanyaan berhasil digandakan!" : "Question duplicated!", "success");
+      }
+
+      function deleteQuestion(id) {
+        const subs = typeof submissions === "function" ? submissions() : [];
+        const hasResponses = subs.some((s) => s.formId === builderForm.id);
+        if (hasResponses) {
+          const warningMsg =
+            currentAdminLang === "id"
+              ? "Perhatian: Formulir ini sudah memiliki data jawaban pasien yang tersimpan. Menghapus pertanyaan ini dapat menyebabkan inkonsistensi riwayat rekam medis. Yakin tetap ingin menghapus?"
+              : currentAdminLang === "zh"
+                ? "警告：此表单已有患者提交记录。删除该题目可能导致历史病例记录不一致。确定要删除吗？"
+                : "Warning: This form already has saved patient submissions. Deleting this question may cause medical record inconsistency. Are you sure you want to delete?";
+          if (!confirm(warningMsg)) return;
+        }
+
+        builderForm.questions = builderForm.questions.filter((x) => x.id !== id);
+        if (editingQ === id) {
+          editingQ = builderForm.questions[0]?.id || null;
+          if (!editingQ) {
+            $("#question-editor").style.display = "none";
+            const divider = $("#builder-editor-divider");
+            if (divider) divider.style.display = "none";
+          }
+        }
+        saveForm();
+        renderCoverSlot();
+        renderQuestionList();
+        if (editingQ) renderQuestionEditor();
+        renderPhonePreview();
+      }
+
+      function setPreviewDevice(mode) {
+        const frame = $("#builder-preview-frame");
+        const btnMob = $("#btn-device-mobile");
+        const btnDesk = $("#btn-device-desktop");
+        if (!frame) return;
+        if (mode === "desktop") {
+          frame.classList.add("desktop-mode");
+          if (btnMob) {
+            btnMob.style.background = "#fff";
+            btnMob.style.color = "var(--text2)";
+            btnMob.classList.remove("active");
+          }
+          if (btnDesk) {
+            btnDesk.style.background = "var(--navy)";
+            btnDesk.style.color = "#fff";
+            btnDesk.classList.add("active");
+          }
+        } else {
+          frame.classList.remove("desktop-mode");
+          if (btnMob) {
+            btnMob.style.background = "var(--navy)";
+            btnMob.style.color = "#fff";
+            btnMob.classList.add("active");
+          }
+          if (btnDesk) {
+            btnDesk.style.background = "#fff";
+            btnDesk.style.color = "var(--text2)";
+            btnDesk.classList.remove("active");
+          }
+        }
+      }
 
       // ===================== TEST SIMULATION MODAL =====================
       let testAnswers = {};
@@ -7570,11 +7673,11 @@
             <div style="max-width: 520px; margin: 0 auto; text-align: center; padding: 10px 0;">
               ${logoUrl ? `<div style="margin-bottom: 16px;"><img src="${escHtml(logoUrl)}" style="max-height: 52px; max-width: 220px; object-fit: contain; margin: 0 auto;" /></div>` : ""}
               <div style="display:inline-flex; align-items:center; gap:8px; margin-bottom:14px; font-size:11.5px; font-weight:750; color:var(--text3); background:#f1f5f9; padding:4px 12px; border-radius:99px;">
-                <span>⏱️ ~${estTime} min</span>
+                <span>~${estTime} min</span>
                 <span>•</span>
-                <span>📋 ${qs.length} Pertanyaan</span>
+                <span>${qs.length} Pertanyaan</span>
                 <span>•</span>
-                <span style="color:#059669;">🔒 Terenkripsi</span>
+                <span style="color:#059669;">Terenkripsi</span>
               </div>
               <h3 style="font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 10px; line-height: 1.35;">${escHtml(coverTitle)}</h3>
               <p style="font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; text-align: center;">${escHtml(coverDesc)}</p>
@@ -7596,7 +7699,7 @@
                   ${escHtml(startBtnText)} &rarr;
                 </button>
                 <button type="button" class="btn" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 750; border-radius: 10px; background: #ecfdf5; color: #065f46; border: 1.5px solid #a7f3d0;" onclick="testCurrentIdx=0; renderTestQuestion();">
-                  🎙️ ${escHtml(voiceBtnText)}
+                  ${escHtml(voiceBtnText)}
                 </button>
               </div>
             </div>
@@ -7652,7 +7755,7 @@
 
           body.innerHTML = `
             <div class="test-completed-box">
-              <div class="test-completed-icon">🎉</div>
+              <div class="test-completed-icon" style="font-size:32px; font-weight:800; color:#10b981;">&#10003;</div>
               <h4>${t("testCompletedTitle") || "Test Run Completed!"}</h4>
               <p>${t("testCompletedSub") || "This was an interactive test simulation. You can adjust your questions or publish your form when ready."}</p>
               
@@ -7844,7 +7947,7 @@
 		          if (!isCoverEnabled) {
 		            screen.innerHTML = `
 		              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:24px 16px; color:var(--text3);">
-		                <div style="font-size:32px; margin-bottom:10px;">⏭️</div>
+		                <div style="font-size:14px; font-weight:800; color:var(--text3); margin-bottom:10px;">SKIP</div>
 		                <h4 style="font-size:14.5px; font-weight:800; color:var(--navy); margin-bottom:6px;">Cover Page Dinonaktifkan</h4>
 		                <p style="font-size:12px; line-height:1.5; color:var(--text2); margin-bottom:16px;">Pengguna akan langsung masuk ke Pertanyaan 1 tanpa melewati halaman pembuka.</p>
 		                <button type="button" class="btn btn-primary btn-sm" style="border-radius:8px;" onclick="phonePreviewIdx=0; renderPhonePreview();">
@@ -7869,9 +7972,9 @@
 		              <div>
 		                ${logoUrl ? `<div style="text-align:center; margin-bottom:12px;"><img src="${escHtml(logoUrl)}" style="max-height:36px; max-width:100%; object-fit:contain;" /></div>` : ""}
 		                <div style="display:flex; justify-content:center; gap:6px; margin-bottom:10px; font-size:10px; font-weight:750; color:var(--text3);">
-		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">⏱️ ~${estTime} min</span>
-		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">📋 ${qs.length} Qs</span>
-		                  <span style="background:#ecfdf5; color:#059669; padding:2px 6px; border-radius:99px;">🔒 AES-256</span>
+		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">~${estTime} min</span>
+		                  <span style="background:#f1f5f9; padding:2px 6px; border-radius:99px;">${qs.length} Qs</span>
+		                  <span style="background:#ecfdf5; color:#059669; padding:2px 6px; border-radius:99px;">AES-256</span>
 		                </div>
 		                <h3 style="font-size:16px; font-weight:800; color:var(--navy); line-height:1.3; text-align:center; margin-bottom:6px;">${escHtml(coverTitle)}</h3>
 		                <p style="font-size:12px; color:var(--text2); line-height:1.45; text-align:center; margin-bottom:14px;">${escHtml(coverDesc)}</p>
@@ -7894,7 +7997,7 @@
 		                  ${escHtml(startBtnText)} &rarr;
 		                </button>
 		                <button type="button" class="btn" style="width:100%; padding:7px; font-size:11.5px; font-weight:700; border-radius:10px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;" onclick="phonePreviewIdx=0; renderPhonePreview();">
-		                  🎙️ ${escHtml(voiceBtnText)}
+		                  ${escHtml(voiceBtnText)}
 		                </button>
 		              </div>
 		            </div>
@@ -8038,7 +8141,7 @@
           tbody.innerHTML = `
                 <tr>
                   <td colspan="5" style="text-align:center;padding:48px 20px;color:var(--text3);">
-                    <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+                    <div style="font-size:14px; font-weight:750; color:var(--text3); margin-bottom:8px;">Hasil Tidak Ditemukan</div>
                     <strong style="color:var(--navy);font-size:14px;display:block;margin-bottom:4px;">Tidak Ada Data Submissions</strong>
                     <span>Belum ada data pasien yang sesuai dengan kata kunci atau filter ini.</span>
                   </td>
@@ -8987,7 +9090,7 @@
                     typeof o.label === "object"
                       ? o.label[lang] || o.label.en || o.label.id || "Option"
                       : String(o.label || "Option");
-                  return "<span>🔘 " + escHtml(lbl) + (typeof o.score === "number" ? " <small style='color:var(--text3)'>(" + o.score + " pts)</small>" : "") + "</span>";
+                  return ""<span>" + escHtml(lbl) + (typeof o.score === "number" ? " <small style='color:var(--text3)'>(" + o.score + " pts)</small>" : "") + "</span>";
                 })
                 .join("") +
               "</div>";
@@ -9019,7 +9122,7 @@
 	            const jumpBtn = document.createElement("button");
 	            jumpBtn.type = "button";
 	            jumpBtn.className = "ai-jump-preview-btn";
-	            jumpBtn.innerHTML = `👁️ ${currentAdminLang === "id" ? "Buka Pratinjau Form" : currentAdminLang === "zh" ? "打开表单预览" : "View Form Preview"} (${totalQ} ${qUnit}) &rarr;`;
+	            jumpBtn.innerHTML = `${currentAdminLang === "id" ? "Buka Pratinjau Form" : currentAdminLang === "zh" ? "打开表单预览" : "View Form Preview"} (${totalQ} ${qUnit}) &rarr;`;
 	            jumpBtn.onclick = () => switchAiMobileTab("preview");
 	            lastAiMsg.appendChild(document.createElement("br"));
 	            lastAiMsg.appendChild(jumpBtn);

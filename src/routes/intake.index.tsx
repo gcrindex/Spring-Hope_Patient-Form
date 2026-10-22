@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
+  AlertCircle,
   ArrowRight,
   Clock,
   HeartHandshake,
@@ -70,7 +71,9 @@ export const Route = createFileRoute("/intake/")({
   errorComponent: ({ reset }) => (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 text-center font-sans">
       <div className="max-w-md bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <p className="text-3xl mb-2">📋</p>
+        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 mx-auto mb-3 flex items-center justify-center">
+          <AlertCircle size={24} />
+        </div>
         <h2 className="text-base font-bold text-slate-800 mb-1">Gagal Memuat Formulir</h2>
         <p className="text-xs text-slate-500 mb-4">Terjadi kendala saat menyinkronkan data form. Silakan coba muat ulang.</p>
         <div className="flex gap-2 justify-center">
