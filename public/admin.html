@@ -5277,101 +5277,107 @@
 	          </button>
 	        </div>
 
-	        <!-- PANE 1: INVITE LINK GENERATOR -->
-	        <div id="prov-pane-invite" style="display: flex; flex-direction: column; gap: 14px;">
-	          <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 12px 14px;">
-	            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-	              <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; text-transform: uppercase;">Paket Langganan Link</span>
-	              <span class="pill pill-blue" id="invite-tier-badge">Business · Level Max</span>
-	            </div>
-	            <p style="font-size: 12px; color: var(--text2); margin: 0; line-height: 1.4;" id="invite-tier-desc">
-	              Pilih paket langganan di bawah. Pengguna yang mendaftar via tautan ini akan langsung aktif pada paket yang dipilih dan mengisi password sendiri secara mandiri.
-	            </p>
-	          </div>
+		        <!-- PANE 1: INVITE LINK GENERATOR -->
+		        <div id="prov-pane-invite" style="display: flex; flex-direction: column; gap: 14px;">
+		          <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 12px 14px;">
+		            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+		              <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; text-transform: uppercase;" data-i18n="provLinkPlanHeading">Link Subscription Plan</span>
+		              <span class="pill pill-blue" id="invite-tier-badge">Business · Level Max</span>
+		            </div>
+		            <p style="font-size: 12px; color: var(--text2); margin: 0; line-height: 1.4;" id="invite-tier-desc">
+		              Registration link for <strong>Business Tier</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync.
+		            </p>
+		          </div>
 
-	          <!-- Billing Cycle Toggle -->
-	          <div class="invite-cycle-wrap">
-	            <span class="invite-cycle-label">Siklus Tagihan:</span>
-	            <button type="button" class="invite-tier-pill active" id="invite-cycle-monthly" onclick="setInviteCycle('monthly')">
-	              <span>Bulanan (Monthly)</span>
-	            </button>
-	            <button type="button" class="invite-tier-pill" id="invite-cycle-yearly" onclick="setInviteCycle('yearly')">
-	              <span>Tahunan (Hemat 20%)</span>
-	            </button>
-	          </div>
+		          <!-- Billing Cycle Toggle -->
+		          <div class="invite-cycle-wrap">
+		            <span class="invite-cycle-label" data-i18n="provBillingCycle">Billing Cycle:</span>
+		            <button type="button" class="invite-tier-pill active" id="invite-cycle-monthly" onclick="setInviteCycle('monthly')">
+		              <span data-i18n="provMonthly">Monthly</span>
+		            </button>
+		            <button type="button" class="invite-tier-pill" id="invite-cycle-yearly" onclick="setInviteCycle('yearly')">
+		              <span data-i18n="provYearly">Yearly (Save 20%)</span>
+		            </button>
+		          </div>
 
-	          <!-- Tier Selector Pills -->
-	          <div class="invite-tiers-wrap" style="grid-template-columns: repeat(2, 1fr);">
-	            <button type="button" class="invite-tier-pill" id="pill-tier-basic" onclick="setInviteTier('basic')">
-	              <span id="label-tier-basic">Basic ($29/mo)</span>
-	            </button>
-	            <button type="button" class="invite-tier-pill" id="pill-tier-plus" onclick="setInviteTier('plus')">
-	              <span id="label-tier-plus">Plus ($59/mo)</span>
-	            </button>
-	            <button type="button" class="invite-tier-pill active" id="pill-tier-business" onclick="setInviteTier('business')">
-	              <span id="label-tier-business">Business ($99/mo · Max)</span>
-	            </button>
-	            <button type="button" class="invite-tier-pill" id="pill-tier-enterprise" onclick="setInviteTier('enterprise')">
-	              <span>Enterprise Custom</span>
-	            </button>
-	          </div>
+		          <!-- Tier Selector Pills -->
+		          <div class="invite-tiers-wrap" style="grid-template-columns: repeat(2, 1fr);">
+		            <button type="button" class="invite-tier-pill" id="pill-tier-basic" onclick="setInviteTier('basic')">
+		              <span id="label-tier-basic">Basic ($29/mo)</span>
+		            </button>
+		            <button type="button" class="invite-tier-pill" id="pill-tier-plus" onclick="setInviteTier('plus')">
+		              <span id="label-tier-plus">Plus ($59/mo)</span>
+		            </button>
+		            <button type="button" class="invite-tier-pill active" id="pill-tier-business" onclick="setInviteTier('business')">
+		              <span id="label-tier-business">Business ($99/mo · Max)</span>
+		            </button>
+		            <button type="button" class="invite-tier-pill" id="pill-tier-enterprise" onclick="setInviteTier('enterprise')">
+		              <span>Enterprise Custom</span>
+		            </button>
+		          </div>
 
-	          <!-- Link input & Copy button -->
-	          <div class="invite-url-wrap">
-	            <input
-	              type="text"
-	              id="admin-invite-url-input"
-	              class="invite-url-input"
-	              readonly
-	              value="Memuat tautan invite..."
-	            />
-	            <button
-	              type="button"
-	              class="btn btn-primary btn-sm invite-copy-btn"
-	              onclick="copyAdminInviteUrl()"
-	            >
-	              Salin Link
-	            </button>
-	          </div>
+		          <!-- Link input & Copy button -->
+		          <div class="invite-url-wrap">
+		            <input
+		              type="text"
+		              id="admin-invite-url-input"
+		              class="invite-url-input"
+		              readonly
+		              value=""
+		            />
+		            <button
+		              type="button"
+		              class="btn btn-primary btn-sm invite-copy-btn"
+		              onclick="copyAdminInviteUrl()"
+		            >
+		              <span data-i18n="provCopyLink">Copy Link</span>
+		            </button>
+		          </div>
 
-	          <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
-	            <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">Tutup</button>
-	          </div>
-	        </div>
+		          <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+		            <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">
+		              <span data-i18n="provClose">Close</span>
+		            </button>
+		          </div>
+		        </div>
 
-	        <!-- PANE 2: MANUAL ACCOUNT PROVISION -->
-	        <div id="prov-pane-manual" style="display: none; flex-direction: column; gap: 14px;">
-	          <div>
-	            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Email Address</label>
-	            <input type="email" id="provision-email-input" placeholder="e.g. clinic@springhope.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
-	          </div>
-	          <div>
-	            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Temporary Password (min. 6 characters)</label>
-	            <input type="password" id="provision-password-input" placeholder="Create secure password" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
-	          </div>
-	          <div>
-	            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;">Assign Pricing / Subscription Tier</label>
-	            <select id="provision-tier-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
-	              <optgroup label="Monthly Billing">
-	                <option value="basic_monthly">Basic — $29/mo (100 resp · 1 seat)</option>
-	                <option value="plus_monthly">Plus — $59/mo (1,000 resp · 3 seats)</option>
-	                <option value="business_monthly" selected>Business — $99/mo (10,000 resp · 5 seats · Level Max)</option>
-	              </optgroup>
-	              <optgroup label="Annual Billing (Save 20%)">
-	                <option value="basic_yearly">Basic — $25/mo · $300/yr (100 resp · 1 seat)</option>
-	                <option value="plus_yearly">Plus — $50/mo · $600/yr (1,000 resp · 3 seats)</option>
-	                <option value="business_yearly">Business — $83/mo · $996/yr (10,000 resp · 5 seats · Level Max)</option>
-	              </optgroup>
-	              <optgroup label="Enterprise">
-	                <option value="enterprise">Enterprise — Custom Dedicated SLA</option>
-	              </optgroup>
-	            </select>
-	          </div>
-	          <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
-	          <div style="margin-top: 6px; display: flex; justify-content: flex-end; gap: 8px;">
-	            <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">Batal</button>
-	            <button type="button" class="btn btn-primary btn-sm" id="provision-submit-btn" onclick="submitProvisionUser()">Buat Akun</button>
-	          </div>
+		        <!-- PANE 2: MANUAL ACCOUNT PROVISION -->
+		        <div id="prov-pane-manual" style="display: none; flex-direction: column; gap: 14px;">
+		          <div>
+		            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="provEmailLabel">Email Address</label>
+		            <input type="email" id="provision-email-input" placeholder="e.g. user@example.com" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
+		          </div>
+		          <div>
+		            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="provPasswordLabel">Temporary Password (min. 6 characters)</label>
+		            <input type="password" id="provision-password-input" placeholder="Create secure password" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; box-sizing: border-box;" />
+		          </div>
+		          <div>
+		            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="provAssignTierLabel">Assign Pricing / Subscription Tier</label>
+		            <select id="provision-tier-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
+		              <optgroup label="Monthly Billing">
+		                <option value="basic_monthly">Basic — $29/mo (100 resp · 1 seat)</option>
+		                <option value="plus_monthly">Plus — $59/mo (1,000 resp · 3 seats)</option>
+		                <option value="business_monthly" selected>Business — $99/mo (10,000 resp · 5 seats · Level Max)</option>
+		              </optgroup>
+		              <optgroup label="Annual Billing (Save 20%)">
+		                <option value="basic_yearly">Basic — $25/mo · $300/yr (100 resp · 1 seat)</option>
+		                <option value="plus_yearly">Plus — $50/mo · $600/yr (1,000 resp · 3 seats)</option>
+		                <option value="business_yearly">Business — $83/mo · $996/yr (10,000 resp · 5 seats · Level Max)</option>
+		              </optgroup>
+		              <optgroup label="Enterprise">
+		                <option value="enterprise">Enterprise — Custom Dedicated SLA</option>
+		              </optgroup>
+		            </select>
+		          </div>
+		          <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
+		          <div style="margin-top: 6px; display: flex; justify-content: flex-end; gap: 8px;">
+		            <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">
+		              <span data-i18n="provCancel">Cancel</span>
+		            </button>
+		            <button type="button" class="btn btn-primary btn-sm" id="provision-submit-btn" onclick="submitProvisionUser()">
+		              <span data-i18n="provCreateAccount">Create Account</span>
+		            </button>
+		          </div>
 	        </div>
 	      </div>
 	    </div>
@@ -6557,11 +6563,22 @@
 	          adminTabTransactions: "Transactions & Revenue",
 	          adminTabSettings: "Integrations & Settings",
 	          adminProvisionModalTitle: "Add New User",
-	          provTabInvite: "Invite Link (Recommended)",
-	          provTabManual: "Manual Account Creation",
-	          resetLandingForms: "3 Landing Forms",
-	          toastDraftSaved: "Form saved as Draft",
-	          toastSaved: "Changes saved",
+		          provTabInvite: "Invite Link (Recommended)",
+		          provTabManual: "Manual Account Creation",
+		          provLinkPlanHeading: "Link Subscription Plan",
+		          provBillingCycle: "Billing Cycle:",
+		          provMonthly: "Monthly",
+		          provYearly: "Yearly (Save 20%)",
+		          provCopyLink: "Copy Link",
+		          provClose: "Close",
+		          provCancel: "Cancel",
+		          provCreateAccount: "Create Account",
+		          provEmailLabel: "Email Address",
+		          provPasswordLabel: "Temporary Password (min. 6 characters)",
+		          provAssignTierLabel: "Assign Pricing / Subscription Tier",
+		          resetLandingForms: "3 Landing Forms",
+		          toastDraftSaved: "Form saved as Draft",
+		          toastSaved: "Changes saved",
 	        },
         id: {
           myForms: "Formulir Saya",
@@ -6725,11 +6742,22 @@
 	          adminTabTransactions: "Transaksi & Omset",
 	          adminTabSettings: "Integrasi & Pengaturan",
 	          adminProvisionModalTitle: "Tambah Pengguna Baru",
-	          provTabInvite: "Link Undangan (Rekomendasi)",
-	          provTabManual: "Buat Akun Manual",
-	          resetLandingForms: "3 Form Landing",
-	          toastDraftSaved: "Formulir tersimpan sebagai Draf",
-	          toastSaved: "Perubahan berhasil disimpan",
+		          provTabInvite: "Link Undangan (Rekomendasi)",
+		          provTabManual: "Buat Akun Manual",
+		          provLinkPlanHeading: "Paket Langganan Link",
+		          provBillingCycle: "Siklus Tagihan:",
+		          provMonthly: "Bulanan (Monthly)",
+		          provYearly: "Tahunan (Hemat 20%)",
+		          provCopyLink: "Salin Link",
+		          provClose: "Tutup",
+		          provCancel: "Batal",
+		          provCreateAccount: "Buat Akun",
+		          provEmailLabel: "Alamat Email",
+		          provPasswordLabel: "Password Sementara (min. 6 karakter)",
+		          provAssignTierLabel: "Pilih Paket Langganan",
+		          resetLandingForms: "3 Form Landing",
+		          toastDraftSaved: "Formulir tersimpan sebagai Draf",
+		          toastSaved: "Perubahan berhasil disimpan",
 	        },
         zh: {
           myForms: "我的表单",
@@ -6891,11 +6919,22 @@
 	          adminTabTransactions: "交易记录与营收",
 	          adminTabSettings: "网关与系统设置",
 	          adminProvisionModalTitle: "添加新用户",
-	          provTabInvite: "邀请链接（自助注册）",
-	          provTabManual: "手动创建账户",
-	          resetLandingForms: "官网3个表单",
-	          toastDraftSaved: "表单已成功保存为草稿",
-	          toastSaved: "已保存修改",
+		          provTabInvite: "邀请链接（自助注册）",
+		          provTabManual: "手动创建账户",
+		          provLinkPlanHeading: "方案开通链接",
+		          provBillingCycle: "计费周期：",
+		          provMonthly: "按月计费",
+		          provYearly: "按年计费（立省20%）",
+		          provCopyLink: "复制链接",
+		          provClose: "关闭",
+		          provCancel: "取消",
+		          provCreateAccount: "创建账户",
+		          provEmailLabel: "电子邮箱地址",
+		          provPasswordLabel: "初始密码（至少6位字符）",
+		          provAssignTierLabel: "分配订阅方案 / 权限级别",
+		          resetLandingForms: "官网3个表单",
+		          toastDraftSaved: "表单已成功保存为草稿",
+		          toastSaved: "已保存修改",
 	        },
       };
 
@@ -6972,6 +7011,7 @@
         }
 
         const r = parseRoute();
+        if (r.screen === "login") setAuthMode(_authMode || "login");
         if (r.screen === "dashboard") {
           if (r.subView === "admin-area") {
             renderAdminArea();
@@ -6990,6 +7030,17 @@
             renderQuestionEditor();
             renderPhonePreview();
           }
+        }
+        const subSearch = $("#sub-search-input");
+        if (subSearch) {
+          subSearch.placeholder = currentAdminLang === "id" ? "Cari nama responden..." : currentAdminLang === "zh" ? "搜索填报人姓名..." : "Search respondent name...";
+        }
+        const adminUserSearch = $("#admin-user-search-input");
+        if (adminUserSearch) {
+          adminUserSearch.placeholder = currentAdminLang === "id" ? "Cari email pengguna..." : currentAdminLang === "zh" ? "按邮箱搜索账户..." : "Filter user accounts by email...";
+        }
+        if (typeof updateInviteLabelsAndUrl === "function") {
+          updateInviteLabelsAndUrl();
         }
         updateUserSidebar();
       }
@@ -7971,6 +8022,9 @@
       }
 
       function updateInviteLabelsAndUrl() {
+        const lang = currentAdminLang || "en";
+        const isId = lang === "id";
+        const isZh = lang === "zh";
         const isYearly = _selectedInviteCycle === "yearly";
         const lBasic = $("#label-tier-basic");
         const lPlus = $("#label-tier-plus");
@@ -7990,23 +8044,27 @@
         const badgeEl = $("#invite-tier-badge");
         const descEl = $("#invite-tier-desc");
         if (_selectedInviteTier === "enterprise") {
-          if (badgeEl) badgeEl.textContent = "Enterprise · Custom Access";
-          if (descEl) descEl.innerHTML = "Registration link for <strong>Enterprise Plan</strong> with unlimited responses, unlimited seats, and custom SLA.";
+          if (badgeEl) badgeEl.textContent = isId ? "Enterprise · Akses Khusus" : isZh ? "Enterprise · 专属定制版" : "Enterprise · Custom Access";
+          if (descEl) descEl.innerHTML = isId
+            ? "Tautan pendaftaran untuk <strong>Paket Enterprise</strong> dengan respon tanpa batas, seats tim tanpa batas, dan SLA dedicated."
+            : isZh
+              ? "<strong>Enterprise 企业定制方案</strong>专属注册链接：无限答卷配额、无限席位及专属 SLA 承诺。"
+              : "Registration link for <strong>Enterprise Plan</strong> with unlimited responses, unlimited seats, and custom SLA.";
         } else if (_selectedInviteTier === "plus") {
-          if (badgeEl) badgeEl.textContent = isYearly ? "Plus · $50/mo (Annual $600/yr)" : "Plus · $59/mo (Monthly)";
+          if (badgeEl) badgeEl.textContent = isYearly ? (isId ? "Plus · $50/bln (Tahunan $600/thn)" : isZh ? "Plus · $50/月（年付 $600/年）" : "Plus · $50/mo (Annual $600/yr)") : (isId ? "Plus · $59/bln (Bulanan)" : isZh ? "Plus · $59/月（月付）" : "Plus · $59/mo (Monthly)");
           if (descEl) descEl.innerHTML = isYearly
-            ? "Registration link for <strong>Plus Tier (Annual · $600/yr)</strong> with 1,000 responses/mo, 3 team seats, and removed branding."
-            : "Registration link for <strong>Plus Tier (Monthly · $59/mo)</strong> with 1,000 responses/mo and 3 team seats.";
+            ? (isId ? "Tautan pendaftaran untuk <strong>Paket Plus (Tahunan · $600/thn)</strong> dengan 1.000 respon/bln, 3 user seats, dan white-label bebas watermark." : isZh ? "<strong>Plus 方案（年付 · $600/年）</strong>专属注册链接：每月 1,000 条答卷配额、3 个团队席位与自定义 Logo。" : "Registration link for <strong>Plus Tier (Annual · $600/yr)</strong> with 1,000 responses/mo, 3 team seats, and removed branding.")
+            : (isId ? "Tautan pendaftaran untuk <strong>Paket Plus (Bulanan · $59/bln)</strong> dengan 1.000 respon/bln dan 3 user seats." : isZh ? "<strong>Plus 方案（月付 · $59/月）</strong>专属注册链接：每月 1,000 条答卷配额与 3 个团队席位。" : "Registration link for <strong>Plus Tier (Monthly · $59/mo)</strong> with 1,000 responses/mo and 3 team seats.");
         } else if (_selectedInviteTier === "basic") {
-          if (badgeEl) badgeEl.textContent = isYearly ? "Basic · $25/mo (Annual $300/yr)" : "Basic · $29/mo (Monthly)";
+          if (badgeEl) badgeEl.textContent = isYearly ? (isId ? "Basic · $25/bln (Tahunan $300/thn)" : isZh ? "Basic · $25/月（年付 $300/年）" : "Basic · $25/mo (Annual $300/yr)") : (isId ? "Basic · $29/bln (Bulanan)" : isZh ? "Basic · $29/月（月付）" : "Basic · $29/mo (Monthly)");
           if (descEl) descEl.innerHTML = isYearly
-            ? "Registration link for <strong>Basic Tier (Annual · $300/yr)</strong> with 100 responses/mo and 1 user seat."
-            : "Registration link for <strong>Basic Tier (Monthly · $29/mo)</strong> with 100 responses/mo and 1 user seat.";
+            ? (isId ? "Tautan pendaftaran untuk <strong>Paket Basic (Tahunan · $300/thn)</strong> dengan 100 respon/bln dan 1 user seat." : isZh ? "<strong>Basic 方案（年付 · $300/年）</strong>专属注册链接：每月 100 条答卷配额与 1 个团队席位。" : "Registration link for <strong>Basic Tier (Annual · $300/yr)</strong> with 100 responses/mo and 1 user seat.")
+            : (isId ? "Tautan pendaftaran untuk <strong>Paket Basic (Bulanan · $29/bln)</strong> dengan 100 respon/bln dan 1 user seat." : isZh ? "<strong>Basic 方案（月付 · $29/月）</strong>专属注册链接：每月 100 条答卷配额与 1 个团队席位。" : "Registration link for <strong>Basic Tier (Monthly · $29/mo)</strong> with 100 responses/mo and 1 user seat.");
         } else {
-          if (badgeEl) badgeEl.textContent = isYearly ? "Business · $83/mo (Annual $996/yr · Max)" : "Business · $99/mo (Monthly · Max)";
+          if (badgeEl) badgeEl.textContent = isYearly ? (isId ? "Business · $83/bln (Tahunan $996/thn · Max)" : isZh ? "Business · $83/月（年付 $996/年 · 顶配）" : "Business · $83/mo (Annual $996/yr · Max)") : (isId ? "Business · $99/bln (Bulanan · Max)" : isZh ? "Business · $99/月（月付 · 顶配）" : "Business · $99/mo (Monthly · Max)");
           if (descEl) descEl.innerHTML = isYearly
-            ? "Registration link for <strong>Business Tier (Annual · $996/yr · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync."
-            : "Registration link for <strong>Business Tier (Monthly · $99/mo · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync.";
+            ? (isId ? "Tautan pendaftaran untuk <strong>Paket Business (Tahunan · $996/thn · Level Max)</strong> dengan 10.000 respon/bln, 5 seats, AI Document Scanner, dan sinkronisasi EMR Plato." : isZh ? "<strong>Business 顶配方案（年付 · $996/年）</strong>专属注册链接：每月 10,000 条答卷配额、5 个席位、AI 智能文档扫描与 EMR 外部集成。" : "Registration link for <strong>Business Tier (Annual · $996/yr · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync.")
+            : (isId ? "Tautan pendaftaran untuk <strong>Paket Business (Bulanan · $99/bln · Level Max)</strong> dengan 10.000 respon/bln, 5 seats, AI Document Scanner, dan sinkronisasi EMR Plato." : isZh ? "<strong>Business 顶配方案（月付 · $99/月）</strong>专属注册链接：每月 10,000 条答卷配额、5 个席位、AI 智能文档扫描与 EMR 外部集成。" : "Registration link for <strong>Business Tier (Monthly · $99/mo · Level Max)</strong> with 10,000 responses/mo, 5 seats, AI Document Scanner, and EMR Plato sync.");
         }
       }
 
