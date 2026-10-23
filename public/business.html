@@ -8637,25 +8637,26 @@
                 ? "Moderate (Prioritas 2)"
                 : "Low Risk (Prioritas 3)";
 
-          const pName = isMasked ? maskSensitiveStr(sub.patientName || "Patient") : (sub.patientName || "Patient");
+          const isClinic = form ? (form.id.includes("patient") || form.id.includes("knee") || form.id.includes("elderly") || form.id.includes("clinic") || form.id.includes("health")) : false;
+          const pName = isMasked ? maskSensitiveStr(sub.patientName || (isClinic ? "Patient" : "Respondent")) : (sub.patientName || (isClinic ? "Patient" : "Respondent"));
           const formTitle = form
             ? (typeof form.title === "object" ? form.title[currentAdminLang] || form.title.id || form.title.en : form.title)
-            : "Formulir Klinis";
+            : "Formulir";
 
           container.innerHTML = `
             <button class="modal-close no-print" onclick="hideModal()">&times;</button>
 
-            <!-- 1. Clinical Letterhead / Kop Surat Resmi (A4 Print Only) -->
+            <!-- 1. Clinical Letterhead / Kop Dokumen Resmi (A4 Print Only) -->
             <div class="print-only clinical-letterhead">
               <div>
-                <h2 class="clinical-letterhead-title">LEMBAR REKAM MEDIS INTAKE PASIEN</h2>
-                <p class="clinical-letterhead-sub">KLINIK SPRING HOPE · SISTEM REKAM MEDIS ELEKTRONIK</p>
-                <div style="font-size:9.5pt; color:#475569; margin-top:3px;">Poliklinik / Asesmen: <strong>${escHtml(formTitle)}</strong></div>
+                <h2 class="clinical-letterhead-title">${isClinic ? "LEMBAR REKAM MEDIS INTAKE PASIEN" : "RESUME RESMI SUBMISI: " + escHtml(formTitle.toUpperCase())}</h2>
+                <p class="clinical-letterhead-sub">${isClinic ? "SPRING HOPE HEALTHCARE · SISTEM REKAM MEDIS ELEKTRONIK" : "9FORMS · PLATFORM FORMULIR &amp; ASESMEN DIGITAL"}</p>
+                <div style="font-size:9.5pt; color:#475569; margin-top:3px;">Kategori / Modul: <strong>${escHtml(formTitle)}</strong></div>
               </div>
               <div style="text-align:right; font-size:9.5pt; color:#334155; line-height:1.4;">
-                <div><strong>No. RM / Submisi:</strong> <code>${escHtml(sub.id)}</code></div>
+                <div><strong>No. Referensi / Submisi:</strong> <code>${escHtml(sub.id)}</code></div>
                 <div><strong>Tanggal &amp; Waktu:</strong> ${safeDateLong(sub.submittedAt)}</div>
-                <div><strong>Identitas Pasien:</strong> <strong>${escHtml(pName)}</strong></div>
+                <div><strong>Nama Responden:</strong> <strong>${escHtml(pName)}</strong></div>
               </div>
             </div>
 
@@ -8670,28 +8671,90 @@
               isMasked
                 ? `<div class="p-2 mb-3 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
                      <span>&#128065;</span>
-                     <span>Mode Sensor PHI Aktif: Nama dan data sensitif disamarkan untuk keperluan arsip / audit non-medis.</span>
+                     <span>Mode Sensor Privasi (PHI) Aktif: Nama dan data sensitif disamarkan untuk keperluan arsip / audit umum.</span>
                    </div>`
                 : ""
             }
 
-            <!-- 2. Standardized Clinical Triage Box (Screen & Print) -->
+            <!-- 2. Standardized Clinical / Assessment Triage Box (Screen & Print) -->
             <div class="clinical-print-triage risk-${sub.risk || "low"}" style="background:${sub.risk === "high" ? "#fef2f2" : sub.risk === "mod" ? "#fffbeb" : "#f0fdf4"}; border:1.5px solid ${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"}; border-radius:8px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
               <div>
-                <div style="font-size:11px; text-transform:uppercase; font-weight:800; color:${sub.risk === "high" ? "#991b1b" : sub.risk === "mod" ? "#92400e" : "#166534"}; letter-spacing:0.5px;">STATUS TRIASE KLINIS</div>
+                <div style="font-size:11px; text-transform:uppercase; font-weight:800; color:${sub.risk === "high" ? "#991b1b" : sub.risk === "mod" ? "#92400e" : "#166534"}; letter-spacing:0.5px;">${isClinic ? "STATUS TRIASE KLINIS" : "STATUS KLASIFIKASI &amp; PRIORITAS"}</div>
                 <strong style="font-size:15px; color:${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"};">${riskLabel}</strong>
                 <div style="font-size:11.5px; color:#475569; margin-top:2px;">
                   ${
                     sub.risk === "high"
-                      ? "Tinjauan segera oleh dokter jaga / tim medis darurat."
+                      ? (isClinic ? "Tinjauan segera oleh dokter jaga / tim medis darurat." : "Prioritas utama — perlu tindak lanjut dan konfirmasi segera.")
                       : sub.risk === "mod"
-                        ? "Bantuan prioritas disiapkan sebelum konsultasi dokter."
-                        : "Pemeriksaan dan konsultasi sesuai antrean standar."
+                        ? (isClinic ? "Bantuan prioritas disiapkan sebelum konsultasi dokter." : "Prioritas menengah — alokasi dalam jadwal antrean prioritas.")
+                        : (isClinic ? "Pemeriksaan dan konsultasi sesuai antrean standar." : "Status reguler — diproses sesuai alur antrean standar.")
                   }
                 </div>
               </div>
               <div style="text-align:center; padding-left:14px; border-left:1.5px solid #cbd5e1;">
                 <div style="font-size:24px; font-weight:900; color:var(--navy);">${sub.score || 0}</div>
+                <div style="font-size:10px; font-weight:750; color:#64748b; text-transform:uppercase;">Skor Asesmen</div>
+              </div>
+            </div>
+
+            <!-- Screen Circular Score Ring (Screen Only) -->
+            <div class="score-ring screen-only">
+              <svg viewBox="0 0 140 140">
+                <circle class="bg" cx="70" cy="70" r="60"/>
+                <circle class="fg" cx="70" cy="70" r="60" stroke="${riskColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+              </svg>
+              <div class="center">
+                <div class="num">${sub.score || 0}</div>
+                <div class="lbl">${riskLabel}</div>
+              </div>
+            </div>
+
+            <!-- 3. Screen Action Buttons Toolbar (Print & PHI Masking) -->
+            <div class="screen-only" style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; justify-content:center;">
+              <button type="button" id="btn-print-record" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>&#128438;</span> ${isClinic ? "Cetak Rekam Medis (A4)" : "Cetak Dokumen Formulir (A4)"}
+              </button>
+              <button type="button" id="btn-toggle-phi" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:${isMasked ? "#fef3c7" : "#f1f5f9"}; color:${isMasked ? "#92400e" : "var(--navy)"}; border:1.5px solid ${isMasked ? "#f59e0b" : "#cbd5e1"}; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>${isMasked ? "&#128065;" : "&#128065;&#8205;&#128488;"}</span> ${isMasked ? "Buka Sensor Privasi" : "Sensor Data Sensitif"}
+              </button>
+              <button type="button" id="btn-share-wa" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:#10b981; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>&#128172;</span> Kirim Konfirmasi WhatsApp
+              </button>
+            </div>
+
+            <!-- 4. Answers Container (Screen Layout) -->
+            <div class="detail-answers screen-only" id="answers-screen-list"></div>
+
+            <!-- 5. Clinical Answers Table (A4 Print Layout Only) -->
+            <div class="print-only">
+              <h3 style="font-size:11pt; font-weight:800; text-transform:uppercase; margin:12px 0 6px 0; color:#0f172a;">${isClinic ? "DAFTAR JAWABAN ASESMEN INTAKE PASIEN" : "DAFTAR JAWABAN SUBMISI FORMULIR"}</h3>
+              <table class="clinical-answers-table">
+                <thead>
+                  <tr>
+                    <th style="width:6%; text-align:center;">No.</th>
+                    <th style="width:54%;">${isClinic ? "Pertanyaan Klinis" : "Pertanyaan / Kolom"}</th>
+                    <th style="width:40%;">Jawaban Terdaftar</th>
+                  </tr>
+                </thead>
+                <tbody id="answers-print-tbody"></tbody>
+              </table>
+
+              <!-- Official Signatures (A4 Print Only) -->
+              <div class="clinical-print-signature">
+                <div class="clinical-signature-box">
+                  <div>${isClinic ? "Tanda Tangan Pasien / Wali" : "Tanda Tangan Responden / Pemohon"}</div>
+                  <div class="clinical-signature-line">(${escHtml(pName)})</div>
+                </div>
+                <div class="clinical-signature-box">
+                  <div>${isClinic ? "Tanda Tangan Dokter / Petugas" : "Tanda Tangan Verifikator / Penanggung Jawab"}</div>
+                  <div class="clinical-signature-line">(...................................................)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EMR Plato Integration Button (Screen Only) -->
+            <button class="send-plato-btn ready screen-only" id="btn-sync-emr" style="margin-top:12px;">Sync to EMR / External System</button>
+          `;
                 <div style="font-size:10px; font-weight:750; color:#64748b; text-transform:uppercase;">Skor Klinis</div>
               </div>
             </div>
@@ -9370,7 +9433,7 @@
                     typeof o.label === "object"
                       ? o.label[lang] || o.label.en || o.label.id || "Option"
                       : String(o.label || "Option");
-                  return ""<span>" + escHtml(lbl) + (typeof o.score === "number" ? " <small style='color:var(--text3)'>(" + o.score + " pts)</small>" : "") + "</span>";
+                  return "<span>" + escHtml(lbl) + (typeof o.score === "number" ? " <small style='color:var(--text3)'>(" + o.score + " pts)</small>" : "") + "</span>";
                 })
                 .join("") +
               "</div>";

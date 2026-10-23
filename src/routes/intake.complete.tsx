@@ -169,6 +169,16 @@ function CompletionPage() {
     activeForm.id === "new-patient-intake" ||
     activeForm.id === "knee-pain-assessment" ||
     activeForm.id === "elderly-friendly-intake";
+  const isClinic =
+    activeForm.id.includes("patient") ||
+    activeForm.id.includes("knee") ||
+    activeForm.id.includes("elderly") ||
+    activeForm.id.includes("clinic") ||
+    activeForm.id.includes("health");
+  const formTitle =
+    typeof activeForm.title === "object"
+      ? activeForm.title[language] || activeForm.title.en || activeForm.title.id || "Form"
+      : activeForm.title || "Form";
 
   const strings = {
     en: {
@@ -185,27 +195,29 @@ function CompletionPage() {
       sent: "Saved & Synced to Cloud DB",
       restart: "Start over",
       backHome: "Back to Home",
-      kioskReset: "Clear Tablet for Next Patient",
+      kioskReset: isClinic ? "Clear Tablet for Next Patient" : "Clear Tablet for Next User",
       submittingTitle: "Saving your response...",
       submittingSubtitle: "Securing clinical data to database",
       errorTitle: "Submission Failed",
       errorDesc: "A network or server issue prevented saving your response. Your answers are safe.",
       retryBtn: "Try Again",
-      printRecord: "Print Record (A4)",
+      printRecord: isClinic ? "Print Clinical Record (A4)" : "Print Document (A4)",
       maskPhi: "Mask PHI Data",
       unmaskPhi: "Show Full Data",
       shareWa: "Share WhatsApp Receipt",
       printAndPurge: "Print & Clear Session",
-      docTitle: "PATIENT CLINICAL INTAKE RECORD",
-      clinicHeader: "SPRING HOPE HEALTHCARE · ELECTRONIC MEDICAL RECORD SYSTEM",
+      docTitle: isClinic ? "PATIENT CLINICAL INTAKE RECORD" : `${formTitle.toUpperCase()} — OFFICIAL RECORD`,
+      clinicHeader: isClinic
+        ? "SPRING HOPE HEALTHCARE · ELECTRONIC MEDICAL RECORD SYSTEM"
+        : "9FORMS · DIGITAL INTAKE & VERIFICATION PLATFORM",
       refNo: "Submission Ref ID:",
       examDate: "Date & Time:",
-      triageHeader: "CLINICAL TRIAGE STATUS",
-      qCol: "Clinical Question",
+      triageHeader: isClinic ? "CLINICAL TRIAGE STATUS" : "ASSESSMENT & PRIORITY STATUS",
+      qCol: "Field / Question",
       aCol: "Recorded Answer",
-      answersHeader: "SUMMARY OF PATIENT INTAKE RESPONSES",
-      docSign: "Attending Doctor / Staff Signature",
-      patientSign: "Patient / Guardian Signature",
+      answersHeader: isClinic ? "SUMMARY OF PATIENT INTAKE RESPONSES" : "RECORDED SUBMISSION RESPONSES",
+      docSign: isClinic ? "Attending Doctor / Staff Signature" : "Reviewer / Authorized Officer Signature",
+      patientSign: isClinic ? "Patient / Guardian Signature" : "Respondent / Applicant Signature",
       maskedNotice: "PHI Masking Active: Patient identity is redacted for non-medical archiving.",
     },
     id: {
@@ -222,28 +234,30 @@ function CompletionPage() {
       sent: "Tersimpan & Terhubung ke Cloud DB",
       restart: "Mulai dari awal",
       backHome: "Kembali ke Beranda",
-      kioskReset: "Bersihkan Sesi untuk Pasien Berikutnya",
+      kioskReset: isClinic ? "Bersihkan Sesi untuk Pasien Berikutnya" : "Bersihkan Sesi untuk Pengguna Berikutnya",
       submittingTitle: "Menyimpan jawaban Anda...",
       submittingSubtitle: "Mengamankan data klinis ke server database",
       errorTitle: "Gagal Mengirim Formulir",
       errorDesc:
         "Terjadi gangguan jaringan atau server saat menyimpan data. Jawaban Anda tetap aman.",
       retryBtn: "Coba Lagi",
-      printRecord: "Cetak Rekam Medis (A4)",
+      printRecord: isClinic ? "Cetak Rekam Medis (A4)" : "Cetak Dokumen Formulir (A4)",
       maskPhi: "Sensor Data PHI",
       unmaskPhi: "Buka Sensor PHI",
       shareWa: "Kirim Bukti ke WhatsApp",
       printAndPurge: "Cetak & Bersihkan Sesi (Kiosk)",
-      docTitle: "LEMBAR REKAM MEDIS INTAKE PASIEN",
-      clinicHeader: "KLINIK SPRING HOPE · SISTEM REKAM MEDIS ELEKTRONIK",
+      docTitle: isClinic ? "LEMBAR REKAM MEDIS INTAKE PASIEN" : `RESUME RESMI DOKUMEN: ${formTitle.toUpperCase()}`,
+      clinicHeader: isClinic
+        ? "SPRING HOPE HEALTHCARE · SISTEM REKAM MEDIS ELEKTRONIK"
+        : "9FORMS · PLATFORM FORMULIR & ASESMEN DIGITAL",
       refNo: "No. Referensi Submisi:",
       examDate: "Tanggal & Jam:",
-      triageHeader: "STATUS TRIASE KLINIS",
-      qCol: "Pertanyaan Klinis",
+      triageHeader: isClinic ? "STATUS TRIASE KLINIS" : "STATUS KLASIFIKASI & PRIORITAS",
+      qCol: "Pertanyaan / Kolom",
       aCol: "Jawaban Terdaftar",
-      answersHeader: "RINGKASAN JAWABAN ASESMEN PASIEN",
-      docSign: "Tanda Tangan Dokter / Petugas",
-      patientSign: "Tanda Tangan Pasien / Wali",
+      answersHeader: isClinic ? "RINGKASAN JAWABAN ASESMEN PASIEN" : "RINGKASAN JAWABAN SUBMISI FORMULIR",
+      docSign: isClinic ? "Tanda Tangan Dokter / Petugas" : "Tanda Tangan Verifikator / Penanggung Jawab",
+      patientSign: isClinic ? "Tanda Tangan Pasien / Wali" : "Tanda Tangan Responden / Pemohon",
       maskedNotice: "Mode Sensor PHI Aktif: Nama & data pribadi disamarkan untuk arsip privasi.",
     },
     zh: {
@@ -260,27 +274,29 @@ function CompletionPage() {
       sent: "已同步至云端数据库",
       restart: "重新填写",
       backHome: "返回首页",
-      kioskReset: "清除平板缓存（接待下一位患者）",
+      kioskReset: isClinic ? "清除平板缓存（接待下一位患者）" : "清除平板缓存（接待下一位用户）",
       submittingTitle: "正在保存您的回答...",
       submittingSubtitle: "正在将数据安全同步至云端数据库",
       errorTitle: "提交失败",
       errorDesc: "网络或服务器异常导致无法保存问卷，您的回答仍安全保留在设备中。",
       retryBtn: "重试提交",
-      printRecord: "打印就诊记录 (A4)",
+      printRecord: isClinic ? "打印就诊记录 (A4)" : "打印登记表格 (A4)",
       maskPhi: "隐藏敏感隐私 (PHI)",
       unmaskPhi: "显示完整信息",
       shareWa: "通过 WhatsApp 发送凭证",
       printAndPurge: "打印并清除设备缓存",
-      docTitle: "患者临床初诊登记表",
-      clinicHeader: "春晖诊疗中心 · 电子病历系统",
+      docTitle: isClinic ? "患者临床初诊登记表" : `${formTitle.toUpperCase()} 官方凭证报告`,
+      clinicHeader: isClinic
+        ? "春晖诊疗中心 · 电子病历系统"
+        : "9FORMS · 数字问卷与数据登记平台",
       refNo: "提交参考编号:",
       examDate: "就诊日期与时间:",
-      triageHeader: "临床分诊优先级状态",
-      qCol: "评估项目",
+      triageHeader: isClinic ? "临床分诊优先级状态" : "评估结果与处理优先级",
+      qCol: "项目 / 题目",
       aCol: "患者回答记录",
-      answersHeader: "患者问卷详细回答摘要",
-      docSign: "接诊医师 / 医护人员签名",
-      patientSign: "患者 / 家属签名",
+      answersHeader: isClinic ? "患者问卷详细回答摘要" : "问卷详细回答记录摘要",
+      docSign: isClinic ? "接诊医师 / 医护人员签名" : "审核专员 / 经办负责人签名",
+      patientSign: isClinic ? "患者 / 家属签名" : "填报人 / 申请人签名",
       maskedNotice: "隐私保护模式已开启：患者身份信息已脱敏加密用于归档。",
     },
   }[language];
