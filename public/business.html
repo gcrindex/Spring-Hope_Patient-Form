@@ -3252,6 +3252,160 @@
           max-width: 100%;
         }
       }
+
+      /* ========== CLINICAL MEDICAL RECORD PRINT STYLING (A4 & PHI PROTECTION) ========== */
+      .print-only {
+        display: none !important;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+      }
+
+      @media print {
+        html, body {
+          background: #ffffff !important;
+          color: #0f172a !important;
+          font-size: 11pt !important;
+          line-height: 1.4 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        /* Hide administrative web UI and navigation */
+        .sidebar,
+        .topbar,
+        .sub-topbar,
+        .screen,
+        .modal-close,
+        .send-plato-btn,
+        .no-print,
+        button,
+        #toast-container,
+        #login-screen,
+        #dashboard-screen,
+        #builder-screen,
+        #submissions-screen > *:not(#modal-overlay) {
+          display: none !important;
+        }
+
+        /* Unbox modal overlay for clean paper flow */
+        .modal-overlay {
+          position: static !important;
+          background: transparent !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          padding: 0 !important;
+          display: block !important;
+          inset: auto !important;
+          z-index: auto !important;
+        }
+
+        .modal {
+          position: static !important;
+          box-shadow: none !important;
+          border: none !important;
+          max-width: 100% !important;
+          width: 100% !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          background: transparent !important;
+        }
+
+        .print-only {
+          display: block !important;
+        }
+        .screen-only {
+          display: none !important;
+        }
+
+        .clinical-letterhead {
+          display: flex !important;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 2.5px solid #0f172a;
+          padding-bottom: 10px;
+          margin-bottom: 14px;
+        }
+
+        .clinical-letterhead-title {
+          font-size: 16pt !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+          margin: 0 0 2px 0 !important;
+          text-transform: uppercase;
+        }
+
+        .clinical-letterhead-sub {
+          font-size: 9.5pt !important;
+          color: #475569 !important;
+          margin: 0 !important;
+        }
+
+        .clinical-print-triage {
+          border: 1.5px solid #0f172a !important;
+          border-radius: 6px !important;
+          padding: 10px 14px !important;
+          margin-bottom: 14px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          page-break-inside: avoid;
+        }
+
+        .clinical-print-triage.risk-high {
+          background: #fef2f2 !important;
+          border-color: #dc2626 !important;
+        }
+        .clinical-print-triage.risk-mod {
+          background: #fffbeb !important;
+          border-color: #d97706 !important;
+        }
+        .clinical-print-triage.risk-low {
+          background: #f0fdf4 !important;
+          border-color: #16a34a !important;
+        }
+
+        .clinical-answers-table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          margin-top: 12px !important;
+          margin-bottom: 16px !important;
+        }
+
+        .clinical-answers-table th,
+        .clinical-answers-table td {
+          border: 1px solid #cbd5e1 !important;
+          padding: 6px 10px !important;
+          font-size: 10pt !important;
+          text-align: left !important;
+        }
+
+        .clinical-answers-table th {
+          background: #f1f5f9 !important;
+          font-weight: 750 !important;
+        }
+
+        .clinical-print-signature {
+          margin-top: 30px !important;
+          display: flex !important;
+          justify-content: space-between !important;
+          page-break-inside: avoid;
+          font-size: 9.5pt !important;
+        }
+
+        .clinical-signature-box {
+          text-align: center !important;
+          width: 180px !important;
+        }
+
+        .clinical-signature-line {
+          margin-top: 55px !important;
+          border-top: 1px solid #0f172a !important;
+          padding-top: 4px !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -8444,112 +8598,238 @@
         return String(rawVal);
       }
 
+      function maskSensitiveStr(str) {
+        if (!str) return "";
+        const words = String(str).trim().split(/\s+/);
+        return words
+          .map((w) => {
+            if (w.length <= 1) return w;
+            if (w.length === 2) return w[0] + "*";
+            return w[0] + "*".repeat(w.length - 2) + w[w.length - 1];
+          })
+          .join(" ");
+      }
+
       function viewSubmission(subId, formId) {
         const sub = submissions().find((x) => x.id === subId);
         const form = forms().find((x) => x.id === formId);
         if (!sub) return;
-        const circumference = 2 * Math.PI * 60;
-        const offset = circumference - ((sub.score || 0) / 100) * circumference;
-        const riskColor =
-          sub.risk === "high"
-            ? "var(--red)"
-            : sub.risk === "mod"
-              ? "var(--orange)"
-              : "var(--green)";
-        const riskLabel =
-          sub.risk === "high" ? "High Risk" : sub.risk === "mod" ? "Moderate" : "Low Risk";
+
+        let isMasked = false;
 
         const container = document.createElement("div");
         container.style.position = "relative";
+        container.id = "submission-detail-container";
 
-        const closeBtn = document.createElement("button");
-        closeBtn.className = "modal-close";
-        closeBtn.innerHTML = "&times;";
-        closeBtn.onclick = hideModal;
-        container.appendChild(closeBtn);
+        function renderDetailContent() {
+          const circumference = 2 * Math.PI * 60;
+          const offset = circumference - ((sub.score || 0) / 100) * circumference;
+          const riskColor =
+            sub.risk === "high"
+              ? "var(--red)"
+              : sub.risk === "mod"
+                ? "var(--orange)"
+                : "var(--green)";
+          const riskLabel =
+            sub.risk === "high"
+              ? "High Risk (Prioritas 1)"
+              : sub.risk === "mod"
+                ? "Moderate (Prioritas 2)"
+                : "Low Risk (Prioritas 3)";
 
-        const header = document.createElement("div");
-        header.className = "detail-header";
-        const nameEl = document.createElement("div");
-        nameEl.className = "name";
-        nameEl.textContent = sub.patientName || "Patient";
-        const dateEl = document.createElement("div");
-        dateEl.className = "date";
-        dateEl.textContent = safeDateLong(sub.submittedAt);
-        header.appendChild(nameEl);
-        header.appendChild(dateEl);
-        container.appendChild(header);
+          const pName = isMasked ? maskSensitiveStr(sub.patientName || "Patient") : (sub.patientName || "Patient");
+          const formTitle = form
+            ? (typeof form.title === "object" ? form.title[currentAdminLang] || form.title.id || form.title.en : form.title)
+            : "Formulir Klinis";
 
-        const ring = document.createElement("div");
-        ring.className = "score-ring";
-        ring.innerHTML = `
+          container.innerHTML = `
+            <button class="modal-close no-print" onclick="hideModal()">&times;</button>
+
+            <!-- 1. Clinical Letterhead / Kop Surat Resmi (A4 Print Only) -->
+            <div class="print-only clinical-letterhead">
+              <div>
+                <h2 class="clinical-letterhead-title">LEMBAR REKAM MEDIS INTAKE PASIEN</h2>
+                <p class="clinical-letterhead-sub">KLINIK SPRING HOPE · SISTEM REKAM MEDIS ELEKTRONIK</p>
+                <div style="font-size:9.5pt; color:#475569; margin-top:3px;">Poliklinik / Asesmen: <strong>${escHtml(formTitle)}</strong></div>
+              </div>
+              <div style="text-align:right; font-size:9.5pt; color:#334155; line-height:1.4;">
+                <div><strong>No. RM / Submisi:</strong> <code>${escHtml(sub.id)}</code></div>
+                <div><strong>Tanggal &amp; Waktu:</strong> ${safeDateLong(sub.submittedAt)}</div>
+                <div><strong>Identitas Pasien:</strong> <strong>${escHtml(pName)}</strong></div>
+              </div>
+            </div>
+
+            <!-- Screen Header -->
+            <div class="detail-header screen-only">
+              <div class="name">${escHtml(pName)}</div>
+              <div class="date">${safeDateLong(sub.submittedAt)} · <code>${escHtml(sub.id)}</code></div>
+            </div>
+
+            <!-- PHI Masking Notice Badge -->
+            ${
+              isMasked
+                ? `<div class="p-2 mb-3 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
+                     <span>&#128065;</span>
+                     <span>Mode Sensor PHI Aktif: Nama dan data sensitif disamarkan untuk keperluan arsip / audit non-medis.</span>
+                   </div>`
+                : ""
+            }
+
+            <!-- 2. Standardized Clinical Triage Box (Screen & Print) -->
+            <div class="clinical-print-triage risk-${sub.risk || "low"}" style="background:${sub.risk === "high" ? "#fef2f2" : sub.risk === "mod" ? "#fffbeb" : "#f0fdf4"}; border:1.5px solid ${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"}; border-radius:8px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div style="font-size:11px; text-transform:uppercase; font-weight:800; color:${sub.risk === "high" ? "#991b1b" : sub.risk === "mod" ? "#92400e" : "#166534"}; letter-spacing:0.5px;">STATUS TRIASE KLINIS</div>
+                <strong style="font-size:15px; color:${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"};">${riskLabel}</strong>
+                <div style="font-size:11.5px; color:#475569; margin-top:2px;">
+                  ${
+                    sub.risk === "high"
+                      ? "Tinjauan segera oleh dokter jaga / tim medis darurat."
+                      : sub.risk === "mod"
+                        ? "Bantuan prioritas disiapkan sebelum konsultasi dokter."
+                        : "Pemeriksaan dan konsultasi sesuai antrean standar."
+                  }
+                </div>
+              </div>
+              <div style="text-align:center; padding-left:14px; border-left:1.5px solid #cbd5e1;">
+                <div style="font-size:24px; font-weight:900; color:var(--navy);">${sub.score || 0}</div>
+                <div style="font-size:10px; font-weight:750; color:#64748b; text-transform:uppercase;">Skor Klinis</div>
+              </div>
+            </div>
+
+            <!-- Screen Circular Score Ring (Screen Only) -->
+            <div class="score-ring screen-only">
               <svg viewBox="0 0 140 140">
                 <circle class="bg" cx="70" cy="70" r="60"/>
                 <circle class="fg" cx="70" cy="70" r="60" stroke="${riskColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
               </svg>
-            `;
-        const center = document.createElement("div");
-        center.className = "center";
-        const num = document.createElement("div");
-        num.className = "num";
-        num.textContent = String(sub.score || 0);
-        const lbl = document.createElement("div");
-        lbl.className = "lbl";
-        lbl.textContent = riskLabel;
-        center.appendChild(num);
-        center.appendChild(lbl);
-        ring.appendChild(center);
-        container.appendChild(ring);
+              <div class="center">
+                <div class="num">${sub.score || 0}</div>
+                <div class="lbl">${riskLabel}</div>
+              </div>
+            </div>
 
-        const answersWrap = document.createElement("div");
-        answersWrap.className = "detail-answers";
+            <!-- 3. Screen Action Buttons Toolbar (Print & PHI Masking) -->
+            <div class="screen-only" style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; justify-content:center;">
+              <button type="button" id="btn-print-record" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>&#128438;</span> Cetak Rekam Medis (A4)
+              </button>
+              <button type="button" id="btn-toggle-phi" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:${isMasked ? "#fef3c7" : "#f1f5f9"}; color:${isMasked ? "#92400e" : "var(--navy)"}; border:1.5px solid ${isMasked ? "#f59e0b" : "#cbd5e1"}; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>${isMasked ? "&#128065;" : "&#128065;&#8205;&#128488;"}</span> ${isMasked ? "Buka Sensor PHI" : "Sensor Data PHI"}
+              </button>
+              <button type="button" id="btn-share-wa" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:#10b981; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
+                <span>&#128172;</span> Kirim Konfirmasi WhatsApp
+              </button>
+            </div>
 
-        if (form && Array.isArray(form.questions) && form.questions.length > 0) {
-          form.questions.forEach((q) => {
-            let ans = sub.answers ? sub.answers[q.id] : undefined;
-            const displayAns = formatDisplayAnswer(q, ans);
-            const qText =
-              q.text ||
-              (typeof q.prompt === "object" ? q.prompt.en || q.prompt.id : q.prompt) ||
-              "Question";
+            <!-- 4. Answers Container (Screen Layout) -->
+            <div class="detail-answers screen-only" id="answers-screen-list"></div>
 
-            const row = document.createElement("div");
-            row.className = "detail-answer";
-            const qEl = document.createElement("div");
-            qEl.className = "q";
-            qEl.textContent = qText;
-            const aEl = document.createElement("div");
-            aEl.className = "a";
-            aEl.textContent = displayAns;
-            row.appendChild(qEl);
-            row.appendChild(aEl);
-            answersWrap.appendChild(row);
+            <!-- 5. Clinical Answers Table (A4 Print Layout Only) -->
+            <div class="print-only">
+              <h3 style="font-size:11pt; font-weight:800; text-transform:uppercase; margin:12px 0 6px 0; color:#0f172a;">DAFTAR JAWABAN ASESMEN INTAKE PASIEN</h3>
+              <table class="clinical-answers-table">
+                <thead>
+                  <tr>
+                    <th style="width:6%; text-align:center;">No.</th>
+                    <th style="width:54%;">Pertanyaan Klinis</th>
+                    <th style="width:40%;">Jawaban Terdaftar</th>
+                  </tr>
+                </thead>
+                <tbody id="answers-print-tbody"></tbody>
+              </table>
+
+              <!-- Official Signatures (A4 Print Only) -->
+              <div class="clinical-print-signature">
+                <div class="clinical-signature-box">
+                  <div>Tanda Tangan Pasien / Wali</div>
+                  <div class="clinical-signature-line">(${escHtml(pName)})</div>
+                </div>
+                <div class="clinical-signature-box">
+                  <div>Tanda Tangan Dokter / Petugas</div>
+                  <div class="clinical-signature-line">(...................................................)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EMR Plato Integration Button (Screen Only) -->
+            <button class="send-plato-btn ready screen-only" id="btn-sync-emr" style="margin-top:12px;">Sync to EMR / Plato</button>
+          `;
+
+          // Populate answers list & print table
+          const answersScreenList = container.querySelector("#answers-screen-list");
+          const answersPrintTbody = container.querySelector("#answers-print-tbody");
+
+          let answerEntries = [];
+          if (form && Array.isArray(form.questions) && form.questions.length > 0) {
+            form.questions.forEach((q) => {
+              let ans = sub.answers ? sub.answers[q.id] : undefined;
+              let displayAns = formatDisplayAnswer(q, ans);
+              const qText =
+                q.text ||
+                (typeof q.prompt === "object" ? q.prompt[currentAdminLang] || q.prompt.id || q.prompt.en : q.prompt) ||
+                "Question";
+
+              if (isMasked && (q.id.toLowerCase().includes("name") || q.id.toLowerCase().includes("phone") || q.type === "text")) {
+                displayAns = maskSensitiveStr(displayAns);
+              }
+              answerEntries.push({ qText, displayAns });
+            });
+          } else if (sub.answers && typeof sub.answers === "object") {
+            Object.entries(sub.answers).forEach(([k, v]) => {
+              let displayAns = formatDisplayAnswer(null, v);
+              if (isMasked && (k.toLowerCase().includes("name") || k.toLowerCase().includes("phone"))) {
+                displayAns = maskSensitiveStr(displayAns);
+              }
+              answerEntries.push({ qText: k, displayAns });
+            });
+          }
+
+          answerEntries.forEach((item, idx) => {
+            // Screen row
+            if (answersScreenList) {
+              const row = document.createElement("div");
+              row.className = "detail-answer";
+              row.innerHTML = `<div class="q">${escHtml(item.qText)}</div><div class="a">${escHtml(item.displayAns)}</div>`;
+              answersScreenList.appendChild(row);
+            }
+            // Print row
+            if (answersPrintTbody) {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `<td style="text-align:center;font-weight:700;">${idx + 1}</td><td>${escHtml(item.qText)}</td><td style="font-weight:600;">${escHtml(item.displayAns)}</td>`;
+              answersPrintTbody.appendChild(tr);
+            }
           });
-        } else if (sub.answers && typeof sub.answers === "object") {
-          Object.entries(sub.answers).forEach(([k, v]) => {
-            const row = document.createElement("div");
-            row.className = "detail-answer";
-            const qEl = document.createElement("div");
-            qEl.className = "q";
-            qEl.textContent = k;
-            const aEl = document.createElement("div");
-            aEl.className = "a";
-            aEl.textContent = formatDisplayAnswer(null, v);
-            row.appendChild(qEl);
-            row.appendChild(aEl);
-            answersWrap.appendChild(row);
+
+          // Bind event listeners
+          container.querySelector("#btn-print-record")?.addEventListener("click", () => {
+            window.print();
+          });
+
+          container.querySelector("#btn-toggle-phi")?.addEventListener("click", () => {
+            isMasked = !isMasked;
+            renderDetailContent();
+            toast(isMasked ? "Data sensitif (PHI) telah disensor." : "Data pasien ditampilkan penuh.", "info");
+          });
+
+          container.querySelector("#btn-share-wa")?.addEventListener("click", () => {
+            const safeMsg = encodeURIComponent(
+              `Halo Bpk/Ibu ${pName},\n\n` +
+              `Berikut konfirmasi formulir intake digital Anda:\n` +
+              `No. Referensi: ${sub.id}\n` +
+              `Layanan / Form: ${formTitle}\n` +
+              `Tanggal: ${safeDateStr(sub.submittedAt)}\n` +
+              `Status: Data Berhasil Tersimpan di Rekam Medis Klinik.\n\n` +
+              `Silakan tunjukkan pesan ini ke meja registrasi saat kedatangan. Terima kasih.`
+            );
+            window.open(`https://wa.me/?text=${safeMsg}`, "_blank", "noopener,noreferrer");
+          });
+
+          container.querySelector("#btn-sync-emr")?.addEventListener("click", function () {
+            sendToPlato(this, sub);
           });
         }
-        container.appendChild(answersWrap);
 
-        const platoBtn = document.createElement("button");
-        platoBtn.className = "send-plato-btn ready";
-        platoBtn.textContent = "Sync to EMR / Plato";
-        platoBtn.onclick = function () {
-          sendToPlato(this, sub);
-        };
-        container.appendChild(platoBtn);
-
+        renderDetailContent();
         showModal(container);
       }
       function sendToPlato(btn, sub) {

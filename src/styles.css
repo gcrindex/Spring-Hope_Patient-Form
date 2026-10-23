@@ -8498,6 +8498,159 @@ html {
   }
 }
 
+/* ── Clinical Medical Record Print Styling (A4 Physical Print & PHI Protection) ── */
+.print-only {
+  display: none !important;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm 15mm;
+}
+
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide interactive web chrome, navbars, floating action buttons */
+  .no-print,
+  .patient-shell-header,
+  .patient-progress-bar,
+  .patient-progress-fill,
+  .sleek-complete-actions,
+  .screen-only,
+  button,
+  .btn,
+  .admin-header,
+  .sidebar,
+  .topbar,
+  .modal-close,
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  /* Unbox patient shell container for clean page flow */
+  .patient-shell,
+  .patient-shell-inner,
+  .patient-container,
+  .patient-card,
+  .completion-card,
+  .sleek-completion-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Clinical letterhead / Kop Surat Faskes */
+  .clinical-letterhead {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2.5px solid #0f172a;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .clinical-letterhead-title {
+    font-size: 16pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 0 2px 0 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .clinical-letterhead-sub {
+    font-size: 9.5pt !important;
+    color: #475569 !important;
+    margin: 0 !important;
+  }
+
+  /* Standardized Triage Banner for Print */
+  .clinical-print-triage {
+    border: 1.5px solid #0f172a !important;
+    border-radius: 6px !important;
+    padding: 10px 14px !important;
+    margin-bottom: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    page-break-inside: avoid;
+  }
+
+  .clinical-print-triage.risk-high {
+    background: #fef2f2 !important;
+    border-color: #dc2626 !important;
+  }
+
+  .clinical-print-triage.risk-mod {
+    background: #fffbeb !important;
+    border-color: #d97706 !important;
+  }
+
+  .clinical-print-triage.risk-low {
+    background: #f0fdf4 !important;
+    border-color: #16a34a !important;
+  }
+
+  /* Clinical Answers Table */
+  .clinical-answers-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .clinical-answers-table th,
+  .clinical-answers-table td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 6px 10px !important;
+    font-size: 10pt !important;
+    text-align: left !important;
+  }
+
+  .clinical-answers-table th {
+    background: #f1f5f9 !important;
+    font-weight: 750 !important;
+  }
+
+  /* Official signature footer */
+  .clinical-print-signature {
+    margin-top: 28px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    page-break-inside: avoid;
+    font-size: 9.5pt !important;
+  }
+
+  .clinical-signature-box {
+    text-align: center !important;
+    width: 180px !important;
+  }
+
+  .clinical-signature-line {
+    margin-top: 55px !important;
+    border-top: 1px solid #0f172a !important;
+    padding-top: 4px !important;
+  }
+}
+
 .research-table-wrap {
   overflow-x: auto;
   border: 1px solid #e2e8f0;

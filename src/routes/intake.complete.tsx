@@ -4,12 +4,17 @@ import {
   AlertTriangle,
   Check,
   CheckCircle2,
+  Eye,
+  EyeOff,
   HeartHandshake,
   Home,
   Loader2,
+  Printer,
   RefreshCw,
   RotateCcw,
+  Share2,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PatientShell } from "../components/patient-shell";
@@ -48,6 +53,18 @@ type CompletedSummary = {
 
 type SubmissionState = "submitting" | "success" | "error" | "invalid_session";
 
+function maskSensitiveText(text: string): string {
+  if (!text) return "";
+  const words = text.trim().split(/\s+/);
+  return words
+    .map((w) => {
+      if (w.length <= 1) return w;
+      if (w.length === 2) return w[0] + "*";
+      return w[0] + "*".repeat(w.length - 2) + w[w.length - 1];
+    })
+    .join(" ");
+}
+
 function CompletionPage() {
   const { form: formParam } = Route.useSearch();
   const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
@@ -55,6 +72,7 @@ function CompletionPage() {
   const [cachedSummary, setCachedSummary] = useState<CompletedSummary | null>(null);
   const [submissionState, setSubmissionState] = useState<SubmissionState>("submitting");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isMasked, setIsMasked] = useState(false);
 
   const activeForm = useMemo(() => {
     return getFormById(formParam || getActiveFormId());
@@ -155,7 +173,7 @@ function CompletionPage() {
   const strings = {
     en: {
       done: isSenior ? "Registration Completed" : "Assessment Complete",
-      thanks: `Thank you, ${name}. Your response has been recorded.`,
+      thanks: `Thank you, ${isMasked ? maskSensitiveText(name) : name}. Your response has been recorded.`,
       result: "Priority Status",
       low: "Standard Routine",
       mod: "Priority Attention",
@@ -173,10 +191,26 @@ function CompletionPage() {
       errorTitle: "Submission Failed",
       errorDesc: "A network or server issue prevented saving your response. Your answers are safe.",
       retryBtn: "Try Again",
+      printRecord: "Print Record (A4)",
+      maskPhi: "Mask PHI Data",
+      unmaskPhi: "Show Full Data",
+      shareWa: "Share WhatsApp Receipt",
+      printAndPurge: "Print & Clear Session",
+      docTitle: "PATIENT CLINICAL INTAKE RECORD",
+      clinicHeader: "SPRING HOPE HEALTHCARE · ELECTRONIC MEDICAL RECORD SYSTEM",
+      refNo: "Submission Ref ID:",
+      examDate: "Date & Time:",
+      triageHeader: "CLINICAL TRIAGE STATUS",
+      qCol: "Clinical Question",
+      aCol: "Recorded Answer",
+      answersHeader: "SUMMARY OF PATIENT INTAKE RESPONSES",
+      docSign: "Attending Doctor / Staff Signature",
+      patientSign: "Patient / Guardian Signature",
+      maskedNotice: "PHI Masking Active: Patient identity is redacted for non-medical archiving.",
     },
     id: {
       done: isSenior ? "Pendaftaran Berhasil Selesai" : "Penilaian Selesai",
-      thanks: `Terima kasih, ${name}. Formulir Anda telah tercatat.`,
+      thanks: `Terima kasih, ${isMasked ? maskSensitiveText(name) : name}. Formulir Anda telah tercatat.`,
       result: "Status Prioritas",
       low: "Pemeriksaan Rutin",
       mod: "Perhatian Prioritas",
@@ -195,10 +229,26 @@ function CompletionPage() {
       errorDesc:
         "Terjadi gangguan jaringan atau server saat menyimpan data. Jawaban Anda tetap aman.",
       retryBtn: "Coba Lagi",
+      printRecord: "Cetak Rekam Medis (A4)",
+      maskPhi: "Sensor Data PHI",
+      unmaskPhi: "Buka Sensor PHI",
+      shareWa: "Kirim Bukti ke WhatsApp",
+      printAndPurge: "Cetak & Bersihkan Sesi (Kiosk)",
+      docTitle: "LEMBAR REKAM MEDIS INTAKE PASIEN",
+      clinicHeader: "KLINIK SPRING HOPE · SISTEM REKAM MEDIS ELEKTRONIK",
+      refNo: "No. Referensi Submisi:",
+      examDate: "Tanggal & Jam:",
+      triageHeader: "STATUS TRIASE KLINIS",
+      qCol: "Pertanyaan Klinis",
+      aCol: "Jawaban Terdaftar",
+      answersHeader: "RINGKASAN JAWABAN ASESMEN PASIEN",
+      docSign: "Tanda Tangan Dokter / Petugas",
+      patientSign: "Tanda Tangan Pasien / Wali",
+      maskedNotice: "Mode Sensor PHI Aktif: Nama & data pribadi disamarkan untuk arsip privasi.",
     },
     zh: {
       done: isSenior ? "登记完成" : "评估完成",
-      thanks: `谢谢您，${name}。您的问卷已记录完毕。`,
+      thanks: `谢谢您，${isMasked ? maskSensitiveText(name) : name}。您的问卷已记录完毕。`,
       result: "分流状态",
       low: "常规就诊",
       mod: "优先跟进",
@@ -216,6 +266,22 @@ function CompletionPage() {
       errorTitle: "提交失败",
       errorDesc: "网络或服务器异常导致无法保存问卷，您的回答仍安全保留在设备中。",
       retryBtn: "重试提交",
+      printRecord: "打印就诊记录 (A4)",
+      maskPhi: "隐藏敏感隐私 (PHI)",
+      unmaskPhi: "显示完整信息",
+      shareWa: "通过 WhatsApp 发送凭证",
+      printAndPurge: "打印并清除设备缓存",
+      docTitle: "患者临床初诊登记表",
+      clinicHeader: "春晖诊疗中心 · 电子病历系统",
+      refNo: "提交参考编号:",
+      examDate: "就诊日期与时间:",
+      triageHeader: "临床分诊优先级状态",
+      qCol: "评估项目",
+      aCol: "患者回答记录",
+      answersHeader: "患者问卷详细回答摘要",
+      docSign: "接诊医师 / 医护人员签名",
+      patientSign: "患者 / 家属签名",
+      maskedNotice: "隐私保护模式已开启：患者身份信息已脱敏加密用于归档。",
     },
   }[language];
 
@@ -328,6 +394,75 @@ function CompletionPage() {
     }
   };
 
+  const displayName = isMasked ? maskSensitiveText(name) : name;
+
+  const clinicalAnswers = useMemo(() => {
+    return (activeForm.questions || []).map((q) => {
+      const rawVal = answers[q.id];
+      let displayVal = "-";
+      if (rawVal !== undefined && rawVal !== null) {
+        if (q.type === "choice" && Array.isArray(q.options)) {
+          const opt = q.options.find((o) => o.value === rawVal || o.score === rawVal);
+          displayVal = opt
+            ? typeof opt.label === "object"
+              ? opt.label[language] || opt.label.en
+              : String(opt.label)
+            : String(rawVal);
+        } else if (q.type === "scale") {
+          displayVal = `${rawVal} / ${q.max || 10} pts`;
+        } else if (q.type === "yesno") {
+          displayVal = rawVal === "yes" || rawVal === true ? "Ya / Yes" : "Tidak / No";
+        } else {
+          displayVal = String(rawVal);
+        }
+      }
+      const qText = typeof q.prompt === "object" ? q.prompt[language] || q.prompt.en : q.prompt;
+      return {
+        id: q.id,
+        prompt: qText,
+        value:
+          isMasked &&
+          (q.id.toLowerCase().includes("name") ||
+            q.id.toLowerCase().includes("phone") ||
+            q.type === "text")
+            ? maskSensitiveText(displayVal)
+            : displayVal,
+      };
+    });
+  }, [activeForm.questions, answers, isMasked, language]);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handlePrintAndPurge = () => {
+    window.print();
+    setTimeout(() => {
+      handleClearAndReset();
+    }, 1200);
+  };
+
+  const handleShareWhatsApp = () => {
+    const subId =
+      cachedSummary?.id ||
+      (typeof window !== "undefined" ? sessionStorage.getItem("sh_current_submission_id") : null) ||
+      `REF-${Date.now().toString().slice(-6)}`;
+    const formTitle =
+      typeof activeForm.title === "object"
+        ? activeForm.title[language] || activeForm.title.en
+        : activeForm.title;
+    // Sanitized confirmation message without medical diagnoses/symptoms
+    const msg = encodeURIComponent(
+      `Halo Layanan Faskes, saya telah menyelesaikan formulir intake digital.\n\n` +
+        `No. Referensi: ${subId}\n` +
+        `Nama Pasien: ${displayName}\n` +
+        `Formulir: ${formTitle}\n` +
+        `Status: Tersimpan di Sistem Rekam Medis Cloud.\n\n` +
+        `Mohon konfirmasi pendaftaran. Terima kasih.`,
+    );
+    window.open(`https://wa.me/?text=${msg}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <PatientShell
       language={language}
@@ -436,8 +571,33 @@ function CompletionPage() {
 
       {submissionState === "success" && (
         <div className="patient-card completion-card sleek-completion-card patient-enter">
-          {/* Sleek animated checkmark */}
-          <div className="sleek-check-bubble">
+          {/* Clinical Letterhead — Kop Surat Resmi Faskes (A4 Print Only) */}
+          <div className="print-only clinical-letterhead">
+            <div>
+              <h2 className="clinical-letterhead-title">{strings.docTitle}</h2>
+              <p className="clinical-letterhead-sub">{strings.clinicHeader}</p>
+            </div>
+            <div className="text-right text-xs text-slate-600">
+              <div>
+                <strong>{strings.refNo}</strong>{" "}
+                {cachedSummary?.id ||
+                  (typeof window !== "undefined"
+                    ? sessionStorage.getItem("sh_current_submission_id")
+                    : null) ||
+                  `REF-${Date.now().toString().slice(-6)}`}
+              </div>
+              <div>
+                <strong>{strings.examDate}</strong>{" "}
+                {new Date().toLocaleDateString(
+                  language === "id" ? "id-ID" : language === "zh" ? "zh-CN" : "en-US",
+                  { dateStyle: "long", timeStyle: "short" },
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Sleek animated checkmark (Screen only) */}
+          <div className="sleek-check-bubble screen-only">
             <Check size={28} strokeWidth={3} />
           </div>
 
@@ -446,11 +606,19 @@ function CompletionPage() {
             <h1 className="sleek-complete-title">{strings.thanks}</h1>
           </div>
 
-          {/* Minimalist sleek summary card */}
-          <div className={`sleek-result-box risk-${risk}`}>
+          {/* Masking PHI Status Alert */}
+          {isMasked && (
+            <div className="mb-3 p-2.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-800 text-xs font-medium flex items-center gap-2">
+              <EyeOff size={14} className="flex-shrink-0" />
+              <span>{strings.maskedNotice}</span>
+            </div>
+          )}
+
+          {/* Standardized Clinical Triage Box (Screen & Print) */}
+          <div className={`clinical-print-triage risk-${risk} sleek-result-box mb-4`}>
             <div className="sleek-result-row">
               <div>
-                <span className="sleek-result-sub">{strings.result}</span>
+                <span className="sleek-result-sub">{strings.triageHeader}</span>
                 <strong className="sleek-result-title">{riskLabel}</strong>
               </div>
               <div className="sleek-result-score-badge">
@@ -461,14 +629,90 @@ function CompletionPage() {
             <p className="sleek-result-desc">{riskBody}</p>
           </div>
 
-          {/* Live sync badge */}
-          <div className="sleek-synced-pill">
+          {/* Live sync badge (Screen only) */}
+          <div className="sleek-synced-pill screen-only">
             <CheckCircle2 size={15} className="text-emerald-500" />
             <span>{strings.sent}</span>
           </div>
 
-          {/* Clean Action Buttons */}
-          <div className="sleek-complete-actions">
+          {/* Clinical Print Action Toolbar (Screen only) */}
+          <div className="screen-only flex flex-wrap gap-2 justify-center my-4 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition shadow-sm"
+              title="Cetak lembar rekam medis fisik A4"
+            >
+              <Printer size={14} />
+              <span>{strings.printRecord}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsMasked((prev) => !prev)}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold border transition ${
+                isMasked
+                  ? "bg-amber-50 text-amber-800 border-amber-300"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+              }`}
+              title="Sensor identitas pasien untuk menjaga kerahasiaan PHI"
+            >
+              {isMasked ? <Eye size={14} /> : <EyeOff size={14} />}
+              <span>{isMasked ? strings.unmaskPhi : strings.maskPhi}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleShareWhatsApp}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-sm"
+              title="Kirim konfirmasi referensi ke WhatsApp petugas klinik"
+            >
+              <Share2 size={14} />
+              <span>{strings.shareWa}</span>
+            </button>
+          </div>
+
+          {/* Clinical Answers Table (Print only) */}
+          <div className="print-only">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 mt-4">
+              {strings.answersHeader}
+            </h3>
+            <table className="clinical-answers-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "6%" }}>No.</th>
+                  <th style={{ width: "54%" }}>{strings.qCol}</th>
+                  <th style={{ width: "40%" }}>{strings.aCol}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clinicalAnswers.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center font-bold">{idx + 1}</td>
+                    <td>{item.prompt}</td>
+                    <td className="font-semibold">{item.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Official Signature Lines */}
+            <div className="clinical-print-signature">
+              <div className="clinical-signature-box">
+                <div>{strings.patientSign}</div>
+                <div className="clinical-signature-line">({displayName})</div>
+              </div>
+              <div className="clinical-signature-box">
+                <div>{strings.docSign}</div>
+                <div className="clinical-signature-line">
+                  (...................................................)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Clean Action Navigation Buttons (Screen only) */}
+          <div className="sleek-complete-actions screen-only">
             {isDemoForm && (
               <Link
                 to="/intake"
@@ -497,7 +741,18 @@ function CompletionPage() {
             </Link>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100/80 text-center">
+          {/* Shared Kiosk Auto-Purge Protection Button (Screen only) */}
+          <div className="screen-only mt-4 pt-3 border-t border-slate-100/80 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handlePrintAndPurge}
+              className="text-xs text-slate-600 hover:text-slate-900 transition inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-slate-100 border border-slate-200"
+              title="Cetak formulir dan langsung bersihkan memori tablet/kiosk"
+            >
+              <Trash2 size={13} className="text-amber-600" />
+              <span>{strings.printAndPurge}</span>
+            </button>
+
             <Link
               to="/intake"
               search={{ form: activeForm.id }}
