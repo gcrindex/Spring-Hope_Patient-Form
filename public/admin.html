@@ -7196,14 +7196,33 @@
         const passInput = $("#login-pass");
         const inviteBanner = $("#invite-badge-banner");
 
+        const lang = currentAdminLang || "en";
+        const isId = lang === "id";
+        const isZh = lang === "zh";
+
         if (tabLogin) {
+          tabLogin.textContent = isId ? "Masuk" : isZh ? "登录" : "Sign In";
           tabLogin.style.background = isReg ? "transparent" : "white";
           tabLogin.style.color = isReg ? "var(--text3)" : "var(--navy)";
         }
         if (tabReg) {
+          tabReg.textContent = isId ? "Buat Akun Baru" : isZh ? "注册新账户" : "Create Account";
           tabReg.style.background = isReg ? "white" : "transparent";
           tabReg.style.color = isReg ? "var(--navy)" : "var(--text3)";
         }
+
+        const emailLabel = $("#login-email-label");
+        if (emailLabel) emailLabel.textContent = isId ? "Email Admin" : isZh ? "管理员邮箱" : "Admin Email";
+
+        const passLabel = $("#login-pass-label");
+        if (passLabel) passLabel.textContent = isId ? "Password" : isZh ? "密码" : "Password";
+
+        const confirmFieldLabel = $("#login-confirm-field label");
+        if (confirmFieldLabel) confirmFieldLabel.textContent = isId ? "Konfirmasi Password" : isZh ? "确认密码" : "Confirm Password";
+
+        const backBtnSpan = $("#login-back-btn span");
+        if (backBtnSpan) backBtnSpan.textContent = isId ? "Kembali ke Beranda" : isZh ? "返回官网首页" : "Back to Website";
+
         if (confirmField) {
           confirmField.style.display = isReg ? "block" : "none";
         }
@@ -7214,20 +7233,33 @@
           const baseTier = tier.replace(/_monthly|_yearly/g, "");
 
           let tierName = "Business Plan (Level Max)";
-          let tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & EMR Sync).";
+          let tierDesc = isId
+            ? "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & Level Max)."
+            : isZh
+              ? "立即注册即可激活 Business 方案（每月 10,000 条答卷配额与顶配权限）。"
+              : "Register now to activate your Business Plan account (10,000 responses/mo & Level Max).";
 
           if (baseTier === "enterprise") {
             tierName = "Enterprise Plan (Custom SLA)";
-            tierDesc = "Daftar sekarang untuk mengaktifkan akun Enterprise dengan respon & seats tanpa batas.";
+            tierDesc = isId
+              ? "Daftar sekarang untuk mengaktifkan akun Enterprise dengan respon & seats tanpa batas."
+              : isZh
+                ? "立即注册即可激活企业定制版（无限答卷配额与席位）。"
+                : "Register now to activate Enterprise tier with unlimited responses & seats.";
           } else if (baseTier === "plus") {
             tierName = isYearly ? "Plus Plan (Tahunan · $50/bln)" : "Plus Plan (Bulanan · $59/bln)";
-            tierDesc = "Daftar sekarang untuk mengaktifkan akun Plus Plan (1.000 respon/bln & 3 user seats).";
+            tierDesc = isId
+              ? "Daftar sekarang untuk mengaktifkan akun Plus Plan (1.000 respon/bln & 3 user seats)."
+              : isZh
+                ? "立即注册即可激活 Plus 方案（每月 1,000 条答卷配额与 3 个席位）。"
+                : "Register now to activate Plus Plan (1,000 responses/mo & 3 user seats).";
           } else if (baseTier === "basic") {
             tierName = isYearly ? "Basic Plan (Tahunan · $25/bln)" : "Basic Plan (Bulanan · $29/bln)";
-            tierDesc = "Daftar sekarang untuk mengaktifkan akun Basic Plan (100 respon/bln & 1 user seat).";
-          } else {
-            tierName = isYearly ? "Business Plan (Tahunan · $83/bln · Max)" : "Business Plan (Bulanan · $99/bln · Max)";
-            tierDesc = "Daftar sekarang untuk mengaktifkan akun Business Plan (10.000 respon/bln & Level Max).";
+            tierDesc = isId
+              ? "Daftar sekarang untuk mengaktifkan akun Basic Plan (100 respon/bln & 1 user seat)."
+              : isZh
+                ? "立即注册即可激活 Basic 方案（每月 100 条答卷配额与 1 个席位）。"
+                : "Register now to activate Basic Plan (100 responses/mo & 1 user seat).";
           }
 
           const bannerTextContainer = inviteBanner.querySelector("div");
@@ -7241,19 +7273,21 @@
         if (titleEl) {
           titleEl.textContent = isReg
             ? inviteCode
-              ? "Registrasi Akun"
-              : "Registrasi Akun Baru"
+              ? (isId ? "Registrasi Akun" : isZh ? "账户注册" : "Account Registration")
+              : (isId ? "Registrasi Akun Baru" : isZh ? "注册新账户" : "Create New Account")
             : "Admin Portal";
         }
         if (hintEl) {
           hintEl.textContent = isReg
             ? inviteCode
-              ? "Lengkapi pendaftaran untuk mengaktifkan akun sesuai paket pilihan Anda"
-              : "Buat akun baru atau atur ulang password Anda"
-            : "Masukkan email dan password Anda";
+              ? (isId ? "Lengkapi pendaftaran untuk mengaktifkan akun sesuai paket pilihan Anda" : isZh ? "填写信息即可按所选方案开通账户" : "Complete registration to activate your selected plan")
+              : (isId ? "Buat akun baru atau atur ulang password Anda" : isZh ? "创建新账户或设置登录密码" : "Create a new account or set up your password")
+            : (isId ? "Masukkan kredensial administrator Anda" : isZh ? "请输入您的管理员邮箱与密码" : "Enter your administrator credentials");
         }
         if (btnEl) {
-          btnEl.textContent = isReg ? "Daftar & Masuk" : "Sign In";
+          btnEl.textContent = isReg
+            ? (isId ? "Daftar & Masuk" : isZh ? "注册并登录" : "Register & Sign In")
+            : (isId ? "Masuk" : isZh ? "登录" : "Sign In");
         }
 
         if (isReg) {
@@ -9079,7 +9113,7 @@
           : isZh
             ? "请将此链接分享给您的填表用户："
             : "Share this link with your respondents:";
-        const copyText = isId ? "Salin" : isZh ? "复制" : "Copy";
+        const copyText = isId ? "Salin Link" : isZh ? "复制链接" : "Copy Link";
         const openText = isId
           ? "Buka formulir &rarr;"
           : isZh
@@ -9090,25 +9124,45 @@
           : isZh
             ? "扫描二维码打开表单"
             : "Scan QR code to open form";
+        const downloadQrText = isId ? "Unduh Gambar QR" : isZh ? "下载二维码图片" : "Download QR Image";
         const copiedToast = isId ? "Tautan berhasil disalin!" : isZh ? "已复制到剪贴板！" : "Link copied!";
 
-        const localUrl =
-          (window.location.host || "9forms.com") + "/intake?form=" + builderForm.id;
-        const fullUrl =
-          (window.location.origin || "https://9forms.com") + "/intake?form=" + builderForm.id;
+        const cleanFormId = encodeURIComponent(builderForm.id);
+        const origin = window.location.origin && window.location.origin !== "null" ? window.location.origin : "https://9forms.com";
+        const host = window.location.host || "9forms.com";
+        const localUrl = host + "/intake?form=" + cleanFormId;
+        const fullUrl = origin + "/intake?form=" + cleanFormId;
 
         showModal(`<div class="publish-modal">
         <h2>${titleText}</h2>
         <p style="color:var(--text2);font-size:14px;margin-bottom:4px">${subText}</p>
-        <div class="url-field"><input value="${localUrl}" readonly id="publish-url"><button onclick="navigator.clipboard?.writeText('${fullUrl}');toast('${copiedToast}')">${copyText}</button></div>
-        <div class="modal-links"><a href="${fullUrl}" target="_blank" rel="noopener">${openText}</a></div>
+        <div class="url-field">
+          <input value="${localUrl}" readonly id="publish-url">
+          <button type="button" onclick="navigator.clipboard?.writeText('${fullUrl}');toast('${copiedToast}')">${copyText}</button>
+        </div>
+        <div class="modal-links">
+          <a href="${fullUrl}" target="_blank" rel="noopener">${openText}</a>
+        </div>
         <div class="qr-box-container">
           <div class="qr-canvas-wrapper">
             <canvas id="publish-qr-canvas"></canvas>
           </div>
           <p style="text-align:center;font-size:12px;font-weight:600;color:var(--navy);margin-top:10px">${qrText}</p>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="downloadPublishQr()" style="margin-top:6px; font-size:11.5px; padding:6px 14px; border-radius:8px; cursor:pointer; background:#f1f5f9; border:1px solid #cbd5e1; font-weight:600; color:var(--navy);">
+            📥 ${downloadQrText}
+          </button>
         </div>
       </div>`);
+
+        window.downloadPublishQr = function() {
+          const canvas = document.getElementById("publish-qr-canvas");
+          if (!canvas) return;
+          const link = document.createElement("a");
+          link.download = `QR_${builderForm.id}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        };
+
         const canvas = $("#publish-qr-canvas");
         if (canvas) {
           if (typeof QRCode !== "undefined" && QRCode.toCanvas) {
@@ -9120,7 +9174,7 @@
                 light: "#ffffff",
               },
             }, function(err) {
-              if (err) console.error(err);
+              if (err) console.error("QR Code generation error:", err);
             });
           } else {
             const wrapper = canvas.parentElement;
@@ -10025,13 +10079,21 @@
         const tbody = $("#sub-tbody");
         if (!tbody) return;
 
+        const lang = currentAdminLang || "en";
+        const emptyTitle = lang === "id" ? "Tidak Ada Data Submisi" : lang === "zh" ? "暂无答卷数据" : "No Submissions Found";
+        const emptySub = lang === "id"
+          ? "Belum ada respon yang sesuai dengan kata kunci atau filter ini."
+          : lang === "zh"
+            ? "暂无符合当前筛选或搜索条件的用户提交记录。"
+            : "No submissions match this keyword or filter criteria.";
+        const viewBtnText = t("subViewDetail") || "View";
+
         if (!subs || subs.length === 0) {
           tbody.innerHTML = `
                 <tr>
                   <td colspan="5" style="text-align:center;padding:48px 20px;color:var(--text3);">
-                    <div style="font-size:14px; font-weight:750; color:var(--text3); margin-bottom:8px;">Hasil Tidak Ditemukan</div>
-                    <strong style="color:var(--navy);font-size:14px;display:block;margin-bottom:4px;">Tidak Ada Data Submissions</strong>
-                    <span>Belum ada data pasien yang sesuai dengan kata kunci atau filter ini.</span>
+                    <strong style="color:var(--navy);font-size:15px;display:block;margin-bottom:6px;">${emptyTitle}</strong>
+                    <span style="font-size:12.5px;">${emptySub}</span>
                   </td>
                 </tr>
               `;
@@ -10040,13 +10102,17 @@
             .map((s) => {
               const riskPill =
                 s.risk === "high" ? "pill-red" : s.risk === "mod" ? "pill-amber" : "pill-green";
-              const riskLabel = s.risk === "high" ? "High" : s.risk === "mod" ? "Moderate" : "Low";
+              const riskLabel = s.risk === "high"
+                ? (lang === "id" ? "Tinggi" : lang === "zh" ? "重点" : "High")
+                : s.risk === "mod"
+                  ? (lang === "id" ? "Sedang" : lang === "zh" ? "优先" : "Moderate")
+                  : (lang === "id" ? "Rendah" : lang === "zh" ? "常规" : "Low");
               return `<tr data-sub-id="${s.id}">
                     <td><strong>${escHtml(s.patientName)}</strong></td>
                     <td>${safeDateStr(s.submittedAt)}</td>
                     <td><strong>${s.score}</strong></td>
                     <td><span class="pill ${riskPill}">${riskLabel}</span></td>
-                    <td><button class="action-btn sub-view-btn">View</button></td>
+                    <td><button class="action-btn sub-view-btn">${viewBtnText}</button></td>
                   </tr>`;
             })
             .join("");
@@ -10058,13 +10124,19 @@
         const nextBtn = $("#sub-next-page-btn");
 
         if (infoEl) {
-          infoEl.textContent = `Halaman ${_subQuery.page} dari ${_subQuery.totalPages} (Total ${_subQuery.total} data)`;
+          infoEl.textContent = lang === "id"
+            ? `Halaman ${_subQuery.page} dari ${_subQuery.totalPages} (Total ${_subQuery.total} data)`
+            : lang === "zh"
+              ? `第 ${_subQuery.page} 页 / 共 ${_subQuery.totalPages} 页（共 ${_subQuery.total} 条数据）`
+              : `Page ${_subQuery.page} of ${_subQuery.totalPages} (Total ${_subQuery.total} items)`;
         }
         if (prevBtn) {
           prevBtn.disabled = _subQuery.page <= 1;
+          prevBtn.textContent = lang === "id" ? "← Sebelumnya" : lang === "zh" ? "← 上一页" : "← Previous";
         }
         if (nextBtn) {
           nextBtn.disabled = _subQuery.page >= _subQuery.totalPages;
+          nextBtn.textContent = lang === "id" ? "Berikutnya →" : lang === "zh" ? "下一页 →" : "Next →";
         }
       }
 
@@ -10364,18 +10436,56 @@
               : sub.risk === "mod"
                 ? "var(--orange)"
                 : "var(--green)";
-          const riskLabel =
-            sub.risk === "high"
-              ? "High Risk (Prioritas 1)"
-              : sub.risk === "mod"
-                ? "Moderate (Prioritas 2)"
-                : "Low Risk (Prioritas 3)";
 
           const isClinic = form ? (form.id.includes("patient") || form.id.includes("knee") || form.id.includes("elderly") || form.id.includes("clinic") || form.id.includes("health")) : false;
           const pName = isMasked ? maskSensitiveStr(sub.patientName || (isClinic ? "Patient" : "Respondent")) : (sub.patientName || (isClinic ? "Patient" : "Respondent"));
           const formTitle = form
             ? (typeof form.title === "object" ? form.title[currentAdminLang] || form.title.id || form.title.en : form.title)
-            : "Formulir";
+            : (currentAdminLang === "id" ? "Formulir" : currentAdminLang === "zh" ? "表单" : "Form");
+
+          const isId = currentAdminLang === "id";
+          const isZh = currentAdminLang === "zh";
+
+          const txtDocTitle = isClinic
+            ? (isId ? "LEMBAR REKAM MEDIS INTAKE PASIEN" : isZh ? "患者临床初诊登记表" : "PATIENT CLINICAL INTAKE RECORD")
+            : (isId ? "RESUME RESMI SUBMISI: " + escHtml(formTitle.toUpperCase()) : isZh ? "官方答卷报告: " + escHtml(formTitle.toUpperCase()) : "OFFICIAL SUBMISSION RECORD: " + escHtml(formTitle.toUpperCase()));
+          const txtOrgHeader = isClinic
+            ? (isId ? "SPRING HOPE HEALTHCARE · SISTEM REKAM MEDIS ELEKTRONIK" : isZh ? "春晖医疗中心 · 电子病历系统" : "SPRING HOPE HEALTHCARE · ELECTRONIC MEDICAL RECORD SYSTEM")
+            : (isId ? "9FORMS · PLATFORM FORMULIR & ASESMEN DIGITAL" : isZh ? "9FORMS · 数字化问卷与数据管理平台" : "9FORMS · DIGITAL INTAKE & VERIFICATION PLATFORM");
+          const txtCategory = isId ? "Kategori / Modul:" : isZh ? "分类 / 模块:" : "Category / Module:";
+          const txtRef = isId ? "No. Referensi / Submisi:" : isZh ? "参考凭证编号:" : "Reference / Submission ID:";
+          const txtDate = isId ? "Tanggal & Waktu:" : isZh ? "提交日期与时间:" : "Date & Time:";
+          const txtRespondent = isId ? "Nama Responden:" : isZh ? "填报人 / 用户姓名:" : "Respondent Name:";
+          const txtTriage = isClinic
+            ? (isId ? "STATUS TRIASE KLINIS" : isZh ? "临床分诊优先级状态" : "CLINICAL TRIAGE STATUS")
+            : (isId ? "STATUS KLASIFIKASI & PRIORITAS" : isZh ? "评估结果与处理优先级" : "ASSESSMENT & PRIORITY STATUS");
+          const txtScore = isClinic
+            ? (isId ? "Skor Klinis" : isZh ? "临床评分" : "Clinical Score")
+            : (isId ? "Skor Asesmen" : isZh ? "测评得分" : "Assessment Score");
+          const txtPrintBtn = isClinic
+            ? (isId ? "Cetak Rekam Medis (A4)" : isZh ? "打印就诊记录 (A4)" : "Print Clinical Record (A4)")
+            : (isId ? "Cetak Dokumen Formulir (A4)" : isZh ? "打印登记表格 (A4)" : "Print Document (A4)");
+          const txtMaskBtn = isMasked
+            ? (isId ? "Buka Sensor Privasi" : isZh ? "显示完整信息" : "Show Full Data")
+            : (isId ? "Sensor Data Sensitif (PHI)" : isZh ? "隐藏敏感隐私 (PHI)" : "Mask PHI Data");
+          const txtWaBtn = isId ? "Kirim Konfirmasi WhatsApp" : isZh ? "通过 WhatsApp 发送凭证" : "Share WhatsApp Receipt";
+          const txtTableHeadQ = isClinic
+            ? (isId ? "Pertanyaan Klinis" : isZh ? "临床评估项目" : "Clinical Question")
+            : (isId ? "Pertanyaan / Kolom" : isZh ? "题目 / 字段" : "Field / Question");
+          const txtTableHeadA = isId ? "Jawaban Terdaftar" : isZh ? "记录结果" : "Recorded Answer";
+          const txtSign1 = isClinic
+            ? (isId ? "Tanda Tangan Pasien / Wali" : isZh ? "患者 / 家属签名" : "Patient / Guardian Signature")
+            : (isId ? "Tanda Tangan Responden / Pemohon" : isZh ? "填报人 / 申请人签名" : "Respondent / Applicant Signature");
+          const txtSign2 = isClinic
+            ? (isId ? "Tanda Tangan Dokter / Petugas" : isZh ? "接诊医师 / 医护签名" : "Attending Doctor / Staff Signature")
+            : (isId ? "Tanda Tangan Verifikator / Penanggung Jawab" : isZh ? "审核人 / 经办负责人签名" : "Reviewer / Authorized Officer Signature");
+
+          const riskLabel =
+            sub.risk === "high"
+              ? (isId ? "High Risk (Prioritas 1)" : isZh ? "重点关照 (优先级 1)" : "High Risk (Priority 1)")
+              : sub.risk === "mod"
+                ? (isId ? "Moderate (Prioritas 2)" : isZh ? "优先跟进 (优先级 2)" : "Moderate (Priority 2)")
+                : (isId ? "Low Risk (Prioritas 3)" : isZh ? "常规就诊 (优先级 3)" : "Low Risk (Priority 3)");
 
           container.innerHTML = `
             <button class="modal-close no-print" onclick="hideModal()">&times;</button>
@@ -10383,14 +10493,14 @@
             <!-- 1. Clinical Letterhead / Kop Dokumen Resmi (A4 Print Only) -->
             <div class="print-only clinical-letterhead">
               <div>
-                <h2 class="clinical-letterhead-title">${isClinic ? "LEMBAR REKAM MEDIS INTAKE PASIEN" : "RESUME RESMI SUBMISI: " + escHtml(formTitle.toUpperCase())}</h2>
-                <p class="clinical-letterhead-sub">${isClinic ? "SPRING HOPE HEALTHCARE · SISTEM REKAM MEDIS ELEKTRONIK" : "9FORMS · PLATFORM FORMULIR &amp; ASESMEN DIGITAL"}</p>
-                <div style="font-size:9.5pt; color:#475569; margin-top:3px;">Kategori / Modul: <strong>${escHtml(formTitle)}</strong></div>
+                <h2 class="clinical-letterhead-title">${txtDocTitle}</h2>
+                <p class="clinical-letterhead-sub">${txtOrgHeader}</p>
+                <div style="font-size:9.5pt; color:#475569; margin-top:3px;">${txtCategory} <strong>${escHtml(formTitle)}</strong></div>
               </div>
               <div style="text-align:right; font-size:9.5pt; color:#334155; line-height:1.4;">
-                <div><strong>No. Referensi / Submisi:</strong> <code>${escHtml(sub.id)}</code></div>
-                <div><strong>Tanggal &amp; Waktu:</strong> ${safeDateLong(sub.submittedAt)}</div>
-                <div><strong>Nama Responden:</strong> <strong>${escHtml(pName)}</strong></div>
+                <div><strong>${txtRef}</strong> <code>${escHtml(sub.id)}</code></div>
+                <div><strong>${txtDate}</strong> ${safeDateLong(sub.submittedAt)}</div>
+                <div><strong>${txtRespondent}</strong> <strong>${escHtml(pName)}</strong></div>
               </div>
             </div>
 
@@ -10405,7 +10515,7 @@
               isMasked
                 ? `<div class="p-2 mb-3 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
                      <span>&#128065;</span>
-                     <span>Mode Sensor Privasi (PHI) Aktif: Nama dan data sensitif disamarkan untuk keperluan arsip / audit umum.</span>
+                     <span>${isId ? "Mode Sensor Privasi (PHI) Aktif: Nama dan data sensitif disamarkan untuk keperluan arsip / audit umum." : isZh ? "隐私保护模式已开启：患者与用户个人信息已脱敏加密用于非医疗归档。" : "PHI Masking Active: Patient and personal identity is redacted for non-medical archiving."}</span>
                    </div>`
                 : ""
             }
@@ -10413,21 +10523,27 @@
             <!-- 2. Standardized Clinical / Assessment Triage Box (Screen & Print) -->
             <div class="clinical-print-triage risk-${sub.risk || "low"}" style="background:${sub.risk === "high" ? "#fef2f2" : sub.risk === "mod" ? "#fffbeb" : "#f0fdf4"}; border:1.5px solid ${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"}; border-radius:8px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
               <div>
-                <div style="font-size:11px; text-transform:uppercase; font-weight:800; color:${sub.risk === "high" ? "#991b1b" : sub.risk === "mod" ? "#92400e" : "#166534"}; letter-spacing:0.5px;">${isClinic ? "STATUS TRIASE KLINIS" : "STATUS KLASIFIKASI &amp; PRIORITAS"}</div>
+                <div style="font-size:11px; text-transform:uppercase; font-weight:800; color:${sub.risk === "high" ? "#991b1b" : sub.risk === "mod" ? "#92400e" : "#166534"}; letter-spacing:0.5px;">${txtTriage}</div>
                 <strong style="font-size:15px; color:${sub.risk === "high" ? "#dc2626" : sub.risk === "mod" ? "#d97706" : "#16a34a"};">${riskLabel}</strong>
                 <div style="font-size:11.5px; color:#475569; margin-top:2px;">
                   ${
                     sub.risk === "high"
-                      ? (isClinic ? "Tinjauan segera oleh dokter jaga / tim medis darurat." : "Prioritas utama — perlu tindak lanjut dan konfirmasi segera.")
+                      ? (isClinic
+                          ? (isId ? "Tinjauan segera oleh dokter jaga / tim medis darurat." : isZh ? "医护团队已收到优先分诊提醒，请立即接诊。" : "Urgent review required by attending doctor or emergency team.")
+                          : (isId ? "Prioritas utama — perlu tindak lanjut dan konfirmasi segera." : isZh ? "重点关注条目 — 请工作人员尽快跟进与确认。" : "High priority — immediate review and follow-up recommended."))
                       : sub.risk === "mod"
-                        ? (isClinic ? "Bantuan prioritas disiapkan sebelum konsultasi dokter." : "Prioritas menengah — alokasi dalam jadwal antrean prioritas.")
-                        : (isClinic ? "Pemeriksaan dan konsultasi sesuai antrean standar." : "Status reguler — diproses sesuai alur antrean standar.")
+                        ? (isClinic
+                            ? (isId ? "Bantuan prioritas disiapkan sebelum konsultasi dokter." : isZh ? "诊所工作人员已为您做好优先接待准备。" : "Priority assistance prepared before physician consultation.")
+                            : (isId ? "Prioritas menengah — alokasi dalam jadwal antrean prioritas." : isZh ? "次优先条目 — 已列入优先处理序列。" : "Moderate priority — scheduled for priority queue."))
+                        : (isClinic
+                            ? (isId ? "Pemeriksaan dan konsultasi sesuai antrean standar." : isZh ? "常规就诊序列，按常规就诊流程指引。" : "Standard routine intake and examination queue.")
+                            : (isId ? "Status reguler — diproses sesuai alur antrean standar." : isZh ? "常规状态 — 按照标准流程自动处理。" : "Standard status — processed through standard routine workflow."))
                   }
                 </div>
               </div>
               <div style="text-align:center; padding-left:14px; border-left:1.5px solid #cbd5e1;">
                 <div style="font-size:24px; font-weight:900; color:var(--navy);">${sub.score || 0}</div>
-                <div style="font-size:10px; font-weight:750; color:#64748b; text-transform:uppercase;">Skor Asesmen</div>
+                <div style="font-size:10px; font-weight:750; color:#64748b; text-transform:uppercase;">${txtScore}</div>
               </div>
             </div>
 
@@ -10446,13 +10562,13 @@
             <!-- 3. Screen Action Buttons Toolbar (Print & PHI Masking) -->
             <div class="screen-only" style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; justify-content:center;">
               <button type="button" id="btn-print-record" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
-                <span>&#128438;</span> ${isClinic ? "Cetak Rekam Medis (A4)" : "Cetak Dokumen Formulir (A4)"}
+                <span>&#128438;</span> ${txtPrintBtn}
               </button>
               <button type="button" id="btn-toggle-phi" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:${isMasked ? "#fef3c7" : "#f1f5f9"}; color:${isMasked ? "#92400e" : "var(--navy)"}; border:1.5px solid ${isMasked ? "#f59e0b" : "#cbd5e1"}; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
-                <span>${isMasked ? "&#128065;" : "&#128065;&#8205;&#128488;"}</span> ${isMasked ? "Buka Sensor Privasi" : "Sensor Data Sensitif"}
+                <span>${isMasked ? "&#128065;" : "&#128065;&#8205;&#128488;"}</span> ${txtMaskBtn}
               </button>
               <button type="button" id="btn-share-wa" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; background:#10b981; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:750; cursor:pointer;">
-                <span>&#128172;</span> Kirim Konfirmasi WhatsApp
+                <span>&#128172;</span> ${txtWaBtn}
               </button>
             </div>
 
@@ -10461,13 +10577,13 @@
 
             <!-- 5. Clinical Answers Table (A4 Print Layout Only) -->
             <div class="print-only">
-              <h3 style="font-size:11pt; font-weight:800; text-transform:uppercase; margin:12px 0 6px 0; color:#0f172a;">${isClinic ? "DAFTAR JAWABAN ASESMEN INTAKE PASIEN" : "DAFTAR JAWABAN SUBMISI FORMULIR"}</h3>
+              <h3 style="font-size:11pt; font-weight:800; text-transform:uppercase; margin:12px 0 6px 0; color:#0f172a;">${isId ? "RINGKASAN JAWABAN FORMULIR" : isZh ? "问卷详细回答记录摘要" : "SUMMARY OF RESPONSES"}</h3>
               <table class="clinical-answers-table">
                 <thead>
                   <tr>
                     <th style="width:6%; text-align:center;">No.</th>
-                    <th style="width:54%;">${isClinic ? "Pertanyaan Klinis" : "Pertanyaan / Kolom"}</th>
-                    <th style="width:40%;">Jawaban Terdaftar</th>
+                    <th style="width:54%;">${txtTableHeadQ}</th>
+                    <th style="width:40%;">${txtTableHeadA}</th>
                   </tr>
                 </thead>
                 <tbody id="answers-print-tbody"></tbody>
@@ -10476,11 +10592,11 @@
               <!-- Official Signatures (A4 Print Only) -->
               <div class="clinical-print-signature">
                 <div class="clinical-signature-box">
-                  <div>${isClinic ? "Tanda Tangan Pasien / Wali" : "Tanda Tangan Responden / Pemohon"}</div>
+                  <div>${txtSign1}</div>
                   <div class="clinical-signature-line">(${escHtml(pName)})</div>
                 </div>
                 <div class="clinical-signature-box">
-                  <div>${isClinic ? "Tanda Tangan Dokter / Petugas" : "Tanda Tangan Verifikator / Penanggung Jawab"}</div>
+                  <div>${txtSign2}</div>
                   <div class="clinical-signature-line">(...................................................)</div>
                 </div>
               </div>
