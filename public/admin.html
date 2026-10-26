@@ -4615,24 +4615,46 @@
         <div class="sub-header">
           <div class="sub-header-row">
             <h1 id="sub-title" data-i18n="subTitle">Submissions</h1>
-            <button class="btn btn-ghost btn-sm" id="export-csv-btn">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="margin-right: 4px; vertical-align: -2px"
+            <div style="display: flex; align-items: center; gap: 8px">
+              <button
+                class="btn btn-ghost btn-sm"
+                id="purge-test-btn"
+                style="color: #ef4444; border: 1.5px solid #fecaca; background: #fff5f5"
               >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span data-i18n="subExportCsv">Export CSV</span>
-            </button>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="margin-right: 4px; vertical-align: -2px"
+                >
+                  <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                </svg>
+                <span data-i18n="subPurgeTestBtn">Purge Test Data</span>
+              </button>
+              <button class="btn btn-ghost btn-sm" id="export-csv-btn">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="margin-right: 4px; vertical-align: -2px"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span data-i18n="subExportCsv">Export CSV</span>
+              </button>
+            </div>
           </div>
           <div
             class="sub-filter-wrap"
@@ -4682,6 +4704,52 @@
               </div>
             </div>
 
+            <div style="display: flex; align-items: center; gap: 6px">
+              <span class="sub-filter-label" data-i18n="subDateFromLabel">From:</span>
+              <input
+                type="date"
+                id="sub-date-from"
+                style="
+                  height: 38px;
+                  padding: 0 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  font-size: 12.5px;
+                  background: white;
+                  color: var(--navy);
+                  outline: none;
+                "
+              />
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px">
+              <span class="sub-filter-label" data-i18n="subDateToLabel">To:</span>
+              <input
+                type="date"
+                id="sub-date-to"
+                style="
+                  height: 38px;
+                  padding: 0 8px;
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  font-size: 12.5px;
+                  background: white;
+                  color: var(--navy);
+                  outline: none;
+                "
+              />
+            </div>
+
+            <button
+              type="button"
+              id="sub-reset-filter-btn"
+              class="btn btn-ghost btn-sm"
+              style="height: 38px; padding: 0 12px; font-size: 12px; font-weight: 700"
+              data-i18n="subResetFilterBtn"
+            >
+              Reset
+            </button>
+
             <div style="flex: 1; min-width: 200px">
               <input
                 type="search"
@@ -4725,10 +4793,33 @@
             align-items: center;
             margin-top: 14px;
             padding: 8px 4px;
+            flex-wrap: wrap;
+            gap: 10px;
           "
         >
-          <div id="sub-pagination-info" style="font-size: 12px; color: var(--text3)">
-            Showing 0 submissions
+          <div style="display: flex; align-items: center; gap: 12px">
+            <div id="sub-pagination-info" style="font-size: 12px; color: var(--text3)">
+              Showing 0 submissions
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px">
+              <span style="font-size: 11px; color: var(--text3); font-weight: 700">Per page:</span>
+              <select
+                id="sub-page-size-select"
+                style="
+                  height: 28px;
+                  padding: 0 6px;
+                  font-size: 11.5px;
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                  background: #fff;
+                "
+              >
+                <option value="15" selected>15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
           </div>
           <div style="display: flex; gap: 8px">
             <button type="button" id="sub-prev-page-btn" class="btn btn-ghost btn-sm" disabled>
@@ -6437,9 +6528,19 @@
           btnDelete: "Delete",
           btnPublish: "Publish",
           btnDraft: "Unpublish",
-          subTitle: "Submissions",
-          subFormLabel: "Form:",
-          subExportCsv: "Export CSV",
+	          subTitle: "Submissions",
+	          subFormLabel: "Form:",
+	          subExportCsv: "Export CSV",
+	          subPurgeTestBtn: "Purge Test Data",
+	          subDateFromLabel: "From:",
+	          subDateToLabel: "To:",
+	          subResetFilterBtn: "Reset",
+	          purgeModalTitle: "Purge Test Submissions",
+	          purgeModalDesc: "Permanently delete dummy, test, or simulation submissions. Enter admin password to confirm.",
+	          purgeModeTestOnly: "Test & Incomplete data only (Recommended)",
+	          purgeModeAll: "ALL submissions for this form",
+	          purgePasswordLabel: "Admin Confirmation Password",
+	          purgeConfirmBtn: "Permanently Purge Data",
           subTotal: "TOTAL",
           subHighRisk: "HIGH RISK",
           subModRisk: "MODERATE",
@@ -6614,9 +6715,19 @@
           btnDelete: "Hapus",
           btnPublish: "Publikasikan",
           btnDraft: "Jadikan Draft",
-          subTitle: "Hasil Respon",
-          subFormLabel: "Formulir:",
-          subExportCsv: "Unduh CSV",
+	          subTitle: "Hasil Respon",
+	          subFormLabel: "Formulir:",
+	          subExportCsv: "Unduh CSV",
+	          subPurgeTestBtn: "Hapus Data Uji",
+	          subDateFromLabel: "Dari:",
+	          subDateToLabel: "Sampai:",
+	          subResetFilterBtn: "Reset",
+	          purgeModalTitle: "Hapus Massal Data Uji Coba",
+	          purgeModalDesc: "Hapus permanen data submisi dummy, pengujian, atau simulasi. Masukkan password admin untuk konfirmasi ganda.",
+	          purgeModeTestOnly: "Hanya data uji coba & belum lengkap (Rekomendasi)",
+	          purgeModeAll: "SEMUA data submisi formulir ini",
+	          purgePasswordLabel: "Password Konfirmasi Admin",
+	          purgeConfirmBtn: "Hapus Permanen Data",
           subTotal: "TOTAL",
           subHighRisk: "RISIKO TINGGI",
           subModRisk: "RISIKO SEDANG",
@@ -6793,9 +6904,19 @@
           btnDelete: "删除",
           btnPublish: "发布",
           btnDraft: "设为草稿",
-          subTitle: "提交记录",
-          subFormLabel: "选择表单:",
-          subExportCsv: "导出 CSV",
+	          subTitle: "提交记录",
+	          subFormLabel: "选择表单:",
+	          subExportCsv: "导出 CSV",
+	          subPurgeTestBtn: "清理测试数据",
+	          subDateFromLabel: "起始:",
+	          subDateToLabel: "截止:",
+	          subResetFilterBtn: "重置",
+	          purgeModalTitle: "批量清理测试数据",
+	          purgeModalDesc: "永久清理测试、模拟或占位答卷数据。请输入管理员密码进行二次确认。",
+	          purgeModeTestOnly: "仅测试与未完成数据（推荐）",
+	          purgeModeAll: "清空此表单的所有数据",
+	          purgePasswordLabel: "管理员确认密码",
+	          purgeConfirmBtn: "确认永久清理",
           subTotal: "总计",
           subHighRisk: "高风险",
           subModRisk: "中风险",
@@ -10080,8 +10201,10 @@
         formId: "",
         search: "",
         risk: "",
+        dateFrom: "",
+        dateTo: "",
         page: 1,
-        limit: 12,
+        limit: 15,
         total: 0,
         totalPages: 1,
         loading: false,
@@ -10100,6 +10223,8 @@
             formId: _subQuery.formId,
             search: _subQuery.search,
             risk: _subQuery.risk,
+            dateFrom: _subQuery.dateFrom,
+            dateTo: _subQuery.dateTo,
             page: String(_subQuery.page),
             limit: String(_subQuery.limit),
           });
@@ -10255,6 +10380,7 @@
         const searchInput = $("#sub-search-input");
         if (searchInput) {
           searchInput.placeholder = t("searchPatientPlaceholder");
+          searchInput.value = _subQuery.search || "";
           searchInput.oninput = (e) => {
             clearTimeout(_subSearchDebounce);
             _subSearchDebounce = setTimeout(() => {
@@ -10262,6 +10388,55 @@
               _subQuery.page = 1;
               fetchServerSubmissions();
             }, 300);
+          };
+        }
+
+        // Date range filters
+        const dateFromEl = $("#sub-date-from");
+        if (dateFromEl) {
+          dateFromEl.value = _subQuery.dateFrom || "";
+          dateFromEl.onchange = (e) => {
+            _subQuery.dateFrom = e.target.value.trim();
+            _subQuery.page = 1;
+            fetchServerSubmissions();
+          };
+        }
+
+        const dateToEl = $("#sub-date-to");
+        if (dateToEl) {
+          dateToEl.value = _subQuery.dateTo || "";
+          dateToEl.onchange = (e) => {
+            _subQuery.dateTo = e.target.value.trim();
+            _subQuery.page = 1;
+            fetchServerSubmissions();
+          };
+        }
+
+        // Reset filter button
+        const resetFilterBtn = $("#sub-reset-filter-btn");
+        if (resetFilterBtn) {
+          resetFilterBtn.onclick = () => {
+            _subQuery.search = "";
+            _subQuery.risk = "";
+            _subQuery.dateFrom = "";
+            _subQuery.dateTo = "";
+            _subQuery.page = 1;
+            if (searchInput) searchInput.value = "";
+            if (riskFilter) riskFilter.value = "";
+            if (dateFromEl) dateFromEl.value = "";
+            if (dateToEl) dateToEl.value = "";
+            fetchServerSubmissions();
+          };
+        }
+
+        // Page size selector
+        const pageSizeSelect = $("#sub-page-size-select");
+        if (pageSizeSelect) {
+          pageSizeSelect.value = String(_subQuery.limit || 15);
+          pageSizeSelect.onchange = (e) => {
+            _subQuery.limit = parseInt(e.target.value, 10) || 15;
+            _subQuery.page = 1;
+            fetchServerSubmissions();
           };
         }
 
@@ -10318,29 +10493,73 @@
 
       function sanitizeCsvCell(value) {
         if (value === null || value === undefined) return '""';
-        let str = String(value).trim();
-        // Formula injection protection: prepend single quote on dangerous prefix characters
-        if (/^[=\+\-@\t\r]/.test(str)) {
+        let str = String(value).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+        const trimmed = str.trimStart();
+        // Formula injection protection (CWE-1236):
+        // Prepend single quote on dangerous prefix characters (=, +, -, @, \t, \r, %, |)
+        if (/^[=\+\-@\t\r%|]/.test(trimmed)) {
           str = "'" + str;
         }
         return `"${str.replace(/"/g, '""')}"`;
       }
 
-      $("#export-csv-btn").addEventListener("click", () => {
+      $("#export-csv-btn").addEventListener("click", async () => {
         const formId = window._currentSubFormId;
         const form = forms().find((x) => x.id === formId);
+        const formTitle =
+          form && typeof form.title === "object"
+            ? form.title[currentAdminLang] || form.title.en || form.title.id
+            : form?.title || "submissions";
+
+        const params = new URLSearchParams({
+          export: "csv",
+          formId: formId || "",
+          risk: _subQuery.risk || "",
+          dateFrom: _subQuery.dateFrom || "",
+          dateTo: _subQuery.dateTo || "",
+          search: _subQuery.search || "",
+        });
+
+        // 1. Try server-side stream export with IDOR validation
+        try {
+          const res = await fetch(`/api/submissions?${params.toString()}`);
+          if (res.ok) {
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            const cd = res.headers.get("Content-Disposition");
+            let filename = `${slugify(String(formTitle))}-clinical-export.csv`;
+            if (cd && cd.includes("filename=")) {
+              filename = cd.split("filename=")[1].replace(/["']/g, "").trim();
+            }
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast(currentAdminLang === "id" ? "CSV berhasil diunduh secara aman!" : "CSV exported securely!", "success");
+            return;
+          } else if (res.status === 403) {
+            const err = await res.json().catch(() => ({}));
+            toast(err.message || "Akses ditolak (IDOR protection)", "error");
+            return;
+          }
+        } catch (err) {
+          console.warn("Server CSV export error, falling back to client-side", err);
+        }
+
+        // 2. Client-side sanitized fallback
         const allCandidates = (typeof liveSubmissions !== "undefined" && Array.isArray(liveSubmissions) && liveSubmissions.length > 0)
           ? liveSubmissions
           : submissions();
         const subs = allCandidates.filter((x) => x.formId === formId);
         if (!subs.length) {
-          toast("No submissions to export", "error");
+          toast(currentAdminLang === "id" ? "Tidak ada data untuk diekspor" : "No submissions to export", "error");
           return;
         }
 
         const questions = form && Array.isArray(form.questions) ? form.questions : [];
-
-        // Build header columns with complete question prompts
         const headers = [
           "Submission ID",
           "Patient Name",
@@ -10351,13 +10570,13 @@
           ...questions.map((q, i) => {
             const prompt =
               q.text ||
-              (typeof q.prompt === "object" ? q.prompt.en || q.prompt.id : q.prompt) ||
+              (typeof q.prompt === "object" ? q.prompt[currentAdminLang] || q.prompt.en || q.prompt.id : q.prompt) ||
               `Q${i + 1}`;
             return `[Q${i + 1}] ${prompt}`;
           }),
         ];
 
-        let csv = "\uFEFFsep=,\r\n" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
+        let csv = "\uFEFF" + headers.map(sanitizeCsvCell).join(",") + "\r\n";
 
         function formatCsvDate(d) {
           const dt = new Date(d);
@@ -10377,7 +10596,6 @@
               (s.risk === "high" ? "review" : s.risk === "mod" ? "scheduled" : "completed"),
           ];
 
-          // Append each clinical question's human-readable answer
           questions.forEach((q) => {
             const ans = s.answers ? s.answers[q.id] : undefined;
             const displayAns = formatDisplayAnswer(q, ans);
@@ -10391,16 +10609,131 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        const formTitle =
-          form && typeof form.title === "object"
-            ? form.title.en || form.title.id
-            : form?.title || "submissions";
         a.download = `${slugify(String(formTitle))}-clinical-export.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        toast("Clinical CSV exported securely!");
+        toast(currentAdminLang === "id" ? "CSV berhasil diunduh secara aman!" : "CSV exported securely!", "success");
+      });
+
+      // ===================== BULK PURGE TEST DATA (Double Auth) =====================
+      function openPurgeTestModal(formId) {
+        const lang = currentAdminLang || "en";
+        const title = t("purgeModalTitle") || "Purge Test Submissions";
+        const desc = t("purgeModalDesc") || "Permanently delete dummy, test, or simulation submissions. Enter admin password to confirm.";
+        const modeTest = t("purgeModeTestOnly") || "Test & Incomplete data only (Recommended)";
+        const modeAll = t("purgeModeAll") || "ALL submissions for this form";
+        const passLabel = t("purgePasswordLabel") || "Admin Confirmation Password";
+        const confirmBtnText = t("purgeConfirmBtn") || "Permanently Purge Data";
+        const cancelBtnText = lang === "id" ? "Batal" : lang === "zh" ? "取消" : "Cancel";
+
+        const modalDiv = document.createElement("div");
+        modalDiv.style.padding = "20px";
+        modalDiv.style.maxWidth = "440px";
+        modalDiv.innerHTML = `
+          <button class="modal-close no-print" onclick="hideModal()">&times;</button>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="width:36px; height:36px; border-radius:10px; background:#fee2e2; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:18px;">
+              &#9888;
+            </div>
+            <div>
+              <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:0;">${escHtml(title)}</h3>
+              <span style="font-size:11.5px; color:var(--text3);">Double-Authentication Security Gate</span>
+            </div>
+          </div>
+          <p style="font-size:12.5px; color:var(--text2); line-height:1.5; margin-bottom:14px;">${escHtml(desc)}</p>
+
+          <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+            <label style="display:block; font-size:12px; font-weight:750; color:#991b1b; margin-bottom:6px;">Target Penghapusan:</label>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#7f1d1d; cursor:pointer;">
+                <input type="radio" name="purge-target-mode" value="test_only" checked />
+                <span>${escHtml(modeTest)}</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#7f1d1d; cursor:pointer;">
+                <input type="radio" name="purge-target-mode" value="all" />
+                <span>${escHtml(modeAll)}</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:11.5px; font-weight:750; color:var(--navy); margin-bottom:4px;">${escHtml(passLabel)} <span style="color:#dc2626">*</span></label>
+            <input type="password" id="purge-admin-password" placeholder="••••••••" style="width:100%; height:38px; padding:0 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; box-sizing:border-box;" />
+            <div id="purge-error-msg" style="display:none; color:#dc2626; font-size:11.5px; margin-top:4px; font-weight:600;"></div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="hideModal()">${escHtml(cancelBtnText)}</button>
+            <button type="button" id="purge-confirm-submit-btn" class="btn btn-sm" style="background:#dc2626; color:#fff; font-weight:750; border:none; padding:8px 14px; border-radius:8px; cursor:pointer;">
+              ${escHtml(confirmBtnText)}
+            </button>
+          </div>
+        `;
+
+        showModal(modalDiv);
+
+        const submitBtn = modalDiv.querySelector("#purge-confirm-submit-btn");
+        const passInput = modalDiv.querySelector("#purge-admin-password");
+        const errMsg = modalDiv.querySelector("#purge-error-msg");
+
+        if (submitBtn) {
+          submitBtn.onclick = async () => {
+            const password = passInput ? passInput.value.trim() : "";
+            if (!password) {
+              if (errMsg) {
+                errMsg.textContent = lang === "id" ? "Password wajib dimasukkan!" : "Password is required!";
+                errMsg.style.display = "block";
+              }
+              return;
+            }
+
+            const selectedMode = modalDiv.querySelector('input[name="purge-target-mode"]:checked')?.value || "test_only";
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = lang === "id" ? "Memproses..." : "Purging...";
+
+            try {
+              const res = await fetch("/api/submissions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "bulk-purge",
+                  formId: formId || window._currentSubFormId,
+                  mode: selectedMode,
+                  password,
+                }),
+              });
+
+              const data = await res.json().catch(() => ({}));
+              if (res.ok && data.success) {
+                toast(data.message || "Data uji coba berhasil dibersihkan!", "success");
+                hideModal();
+                _subQuery.page = 1;
+                fetchServerSubmissions();
+              } else {
+                submitBtn.disabled = false;
+                submitBtn.textContent = escHtml(confirmBtnText);
+                if (errMsg) {
+                  errMsg.textContent = data.message || "Gagal menghapus data uji coba.";
+                  errMsg.style.display = "block";
+                }
+              }
+            } catch (err) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = escHtml(confirmBtnText);
+              if (errMsg) {
+                errMsg.textContent = "Terjadi kesalahan jaringan.";
+                errMsg.style.display = "block";
+              }
+            }
+          };
+        }
+      }
+
+      $("#purge-test-btn")?.addEventListener("click", () => {
+        openPurgeTestModal(window._currentSubFormId);
       });
 
       function formatDisplayAnswer(q, rawVal) {
