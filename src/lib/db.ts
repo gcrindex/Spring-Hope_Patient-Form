@@ -147,22 +147,37 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
 		      )
 		      .run();
 
-		    await d1
-		      .prepare(
-		        `CREATE TABLE IF NOT EXISTS transactions (
-		          id TEXT PRIMARY KEY,
-		          order_id TEXT UNIQUE NOT NULL,
-		          payer_email TEXT,
-		          user_id TEXT,
-		          plan_tier TEXT NOT NULL,
-		          amount TEXT NOT NULL,
-		          currency TEXT DEFAULT 'USD',
-		          status TEXT DEFAULT 'COMPLETED',
-		          paypal_capture_id TEXT,
-		          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		        );`,
-		      )
-		      .run();
+			    await d1
+			      .prepare(
+			        `CREATE TABLE IF NOT EXISTS transactions (
+			          id TEXT PRIMARY KEY,
+			          order_id TEXT UNIQUE NOT NULL,
+			          payer_email TEXT,
+			          user_id TEXT,
+			          plan_tier TEXT NOT NULL,
+			          amount TEXT NOT NULL,
+			          currency TEXT DEFAULT 'USD',
+			          status TEXT DEFAULT 'COMPLETED',
+			          paypal_capture_id TEXT,
+			          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			        );`,
+			      )
+			      .run();
+
+			    await d1
+			      .prepare(
+			        `CREATE TABLE IF NOT EXISTS webhook_logs (
+			          id TEXT PRIMARY KEY,
+			          webhook_url TEXT NOT NULL,
+			          event_type TEXT NOT NULL,
+			          status_code INTEGER,
+			          response_body TEXT,
+			          attempt_count INTEGER DEFAULT 1,
+			          success INTEGER DEFAULT 0,
+			          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			        );`,
+			      )
+			      .run();
 
 		    try {
       await d1.prepare("ALTER TABLE forms ADD COLUMN user_id TEXT DEFAULT 'admin';").run();
@@ -244,11 +259,22 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
 	      FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 	    );
 
-	    CREATE TABLE IF NOT EXISTS system_settings (
-	      key TEXT PRIMARY KEY,
-	      value_encrypted TEXT NOT NULL,
-	      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	    );
+		    CREATE TABLE IF NOT EXISTS system_settings (
+		      key TEXT PRIMARY KEY,
+		      value_encrypted TEXT NOT NULL,
+		      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		    );
+
+		    CREATE TABLE IF NOT EXISTS webhook_logs (
+		      id TEXT PRIMARY KEY,
+		      webhook_url TEXT NOT NULL,
+		      event_type TEXT NOT NULL,
+		      status_code INTEGER,
+		      response_body TEXT,
+		      attempt_count INTEGER DEFAULT 1,
+		      success INTEGER DEFAULT 0,
+		      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		    );
 
 	    CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
     CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at);

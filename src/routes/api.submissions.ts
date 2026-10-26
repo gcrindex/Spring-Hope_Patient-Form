@@ -573,6 +573,46 @@ export const Route = createFileRoute("/api/submissions")({
             [id, formId, patientName, score, riskLevel, encryptedPayload, submissionUserId],
           );
 
+          // Optional Background Auto-Sync to EMR if configured
+          try {
+            const cfgRow = await dbQueryOne<{ value_encrypted: string }>(
+              "SELECT value_encrypted FROM system_settings WHERE key = 'emr_webhook_config'",
+            );
+            if (cfgRow?.value_encrypted) {
+              const dec = await decryptData(cfgRow.value_encrypted);
+              const cfg = JSON.parse(dec);
+              if (cfg.enabled && cfg.autoSync && cfg.webhookUrl) {
+                const { buildEmrPayload, dispatchWebhookWithRetry } = await import(
+                  "../lib/emr-webhook"
+                );
+                const emrPayload = buildEmrPayload(
+                  {
+                    id,
+                    formId,
+                    patientName,
+                    score,
+                    risk: riskLevel,
+                    triageStatus,
+                    submittedAt: new Date().toISOString(),
+                    answers,
+                  },
+                  cfg.provider || "plato",
+                );
+                // Dispatch async in background without blocking patient response
+                dispatchWebhookWithRetry(
+                  cfg.webhookUrl,
+                  cfg.webhookSecret || "",
+                  emrPayload,
+                  "patient.intake.completed",
+                ).catch((e) => {
+                  console.warn("Background EMR auto-sync error:", e);
+                });
+              }
+            }
+          } catch (emrErr) {
+            console.warn("EMR auto-sync check notice:", emrErr);
+          }
+
           return Response.json(
             {
               success: true,

@@ -5865,6 +5865,17 @@
           testSummaryLabel: "Test Response Summary",
 	          toastDraftSaved: "Form saved as Draft",
 	          toastSaved: "Changes saved",
+	          emrCardTitle: "EMR & Hospital Webhook Integration (Plato / ClinicOS)",
+	          emrCardDesc: "Connect your clinic's electronic medical records system (Plato, ClinicOS, or Generic EMR API). Payloads are signed with HMAC-SHA256 and guarded against SSRF.",
+	          emrProviderLabel: "EMR Software Target",
+	          emrUrlLabel: "Webhook Endpoint URL",
+	          emrSsrfNotice: "🛡 SSRF Protection: Loopback (127.0.0.1) & metadata IPs (169.254.x.x) strictly blocked.",
+	          emrSecretLabel: "Webhook Secret Key (HMAC-SHA256 Signing)",
+	          emrAutoSyncLabel: "Automatically dispatch new patient intake submissions to this EMR webhook",
+	          emrTestBtn: "Test Connection (Ping)",
+	          emrSaveBtn: "Save EMR Webhook",
+	          emrLogsTitle: "Recent Webhook Dispatch Logs",
+	          emrCopyPayload: "Copy EMR Payload (1-Click)",
 	          resetLandingForms: "3 Landing Forms",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Enter your business account credentials",
@@ -6040,6 +6051,17 @@
           testSummaryLabel: "Ringkasan Jawaban Uji Coba",
           toastDraftSaved: "Formulir tersimpan sebagai Draf",
           toastSaved: "Perubahan berhasil disimpan",
+          emrCardTitle: "Integrasi Webhook EMR & RS (Plato / ClinicOS)",
+          emrCardDesc: "Hubungkan sistem rekam medis elektronik klinik (Plato, ClinicOS, atau Generic EMR API). Payload diamankan dengan tanda tangan digital HMAC-SHA256 dan proteksi SSRF.",
+          emrProviderLabel: "Target Sistem EMR",
+          emrUrlLabel: "URL Endpoint Webhook",
+          emrSsrfNotice: "🛡 Proteksi SSRF: IP loopback (127.0.0.1) & metadata cloud (169.254.x.x) diblokir ketat.",
+          emrSecretLabel: "Kunci Rahasia Webhook (Tanda Tangan HMAC-SHA256)",
+          emrAutoSyncLabel: "Sinkronkan otomatis hasil submisi pasien baru ke webhook EMR ini",
+          emrTestBtn: "Uji Koneksi (Ping)",
+          emrSaveBtn: "Simpan Webhook EMR",
+          emrLogsTitle: "Riwayat Log Pengiriman Webhook",
+          emrCopyPayload: "Salin Payload EMR (1-Klik)",
           resetLandingForms: "3 Form Landing",
           loginPortalTitle: "Business Portal",
           loginPortalDesc: "Masukkan kredensial akun bisnis Anda",
@@ -6213,6 +6235,17 @@
           testSummaryLabel: "测试答题记录摘要",
           toastDraftSaved: "表单已成功保存为草稿",
           toastSaved: "已保存修改",
+          emrCardTitle: "医疗 EMR 与医院 Webhook 对接（Plato / ClinicOS）",
+          emrCardDesc: "对接门诊电子病历系统（Plato、ClinicOS 或通用 EMR API）。数据包采用 HMAC-SHA256 数字签名加密并防御 SSRF。",
+          emrProviderLabel: "目标 EMR 系统",
+          emrUrlLabel: "Webhook 接收端点 URL",
+          emrSsrfNotice: "🛡 SSRF 安全防护：严格屏蔽回环 (127.0.0.1) 与云元数据地址 (169.254.x.x)。",
+          emrSecretLabel: "Webhook 密钥（HMAC-SHA256 签名）",
+          emrAutoSyncLabel: "在患者完成填报后自动推送数据至此 EMR Webhook",
+          emrTestBtn: "测试连接 (Ping)",
+          emrSaveBtn: "保存 EMR Webhook",
+          emrLogsTitle: "近期 Webhook 推送日志",
+          emrCopyPayload: "一键复制 EMR 数据包",
           resetLandingForms: "官网3个表单",
           loginPortalTitle: "企业商业门户",
           loginPortalDesc: "输入您的企业商业账户凭据",
@@ -9215,8 +9248,14 @@
               </div>
             </div>
 
-            <!-- EMR Plato Integration Button (Screen Only) -->
-            <button class="send-plato-btn ready screen-only" id="btn-sync-emr" style="margin-top:12px;">Sync to EMR / External System</button>
+	            <!-- EMR Plato Integration Button & Clipboard Fallback (Screen Only) -->
+	            <div class="screen-only" style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+	              <button class="send-plato-btn ready" id="btn-sync-emr" style="flex:1; min-width:200px;">Sync to EMR / External System</button>
+	              <button type="button" class="btn btn-ghost btn-sm" id="btn-copy-emr-payload" style="border:1.5px solid var(--border); background:#fff; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+	                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+	                <span data-i18n="emrCopyPayload">Copy EMR Payload (1-Click)</span>
+	              </button>
+	            </div>
           `;
 
           // Populate answers list & print table
@@ -9288,32 +9327,84 @@
             window.open(`https://wa.me/?text=${safeMsg}`, "_blank", "noopener,noreferrer");
           });
 
-          container.querySelector("#btn-sync-emr")?.addEventListener("click", function () {
-            sendToPlato(this, sub);
-          });
-        }
+	          container.querySelector("#btn-sync-emr")?.addEventListener("click", function () {
+	            sendToPlato(this, sub);
+	          });
 
-        renderDetailContent();
-        showModal(container);
-      }
-      function sendToPlato(btn, sub) {
-        btn.textContent = "Synced to EMR ✓";
-        btn.classList.remove("ready");
-        btn.classList.add("sent");
-        if (sub && navigator.clipboard) {
-          const emrPayload = JSON.stringify({
-            emr_integration: "Plato/ClinicOS",
-            patient: sub.patientName,
-            submitted_at: sub.submittedAt,
-            risk_tier: sub.risk,
-            clinical_score: sub.score,
-            triage_status: sub.triageStatus || "review",
-            answers: sub.answers
-          }, null, 2);
-          navigator.clipboard.writeText(emrPayload).catch(() => {});
-        }
-        toast("Synced & EMR record copied to clipboard!");
-      }
+	          container.querySelector("#btn-copy-emr-payload")?.addEventListener("click", function () {
+	            copyEmrPayload(this, sub);
+	          });
+	        }
+
+	        renderDetailContent();
+	        showModal(container);
+	      }
+
+	      async function sendToPlato(btn, sub) {
+	        if (!sub) return;
+	        const originalText = btn.textContent;
+	        btn.disabled = true;
+	        btn.textContent = "Syncing to EMR (Retrying if needed)...";
+
+	        try {
+	          const res = await fetch("/api/admin/emr", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            credentials: "include",
+	            body: JSON.stringify({
+	              action: "sync-submission",
+	              submissionId: sub.id,
+	            }),
+	          });
+	          const data = await res.json().catch(() => ({}));
+	          btn.disabled = false;
+
+	          if (res.ok && data.success) {
+	            btn.textContent = `Synced to EMR ✓ (HTTP ${data.statusCode})`;
+	            btn.classList.remove("ready");
+	            btn.classList.add("sent");
+	            toast(`EMR Sync Success: HTTP ${data.statusCode} (${data.attempts} attempt)`, "success");
+	          } else {
+	            btn.textContent = `Sync Failed (HTTP ${data.statusCode || 400}) - Retry?`;
+	            btn.classList.remove("sent");
+	            btn.classList.add("ready");
+	            toast(data.message || `EMR Sync failed: HTTP ${data.statusCode || 400}`, "error");
+	          }
+	        } catch (err) {
+	          btn.disabled = false;
+	          btn.textContent = "Sync Failed (Network Error) - Retry?";
+	          toast("Network error during EMR synchronization.", "error");
+	        }
+	      }
+
+	      function copyEmrPayload(btn, sub) {
+	        if (!sub) return;
+	        const emrPayload = JSON.stringify({
+	          event: "patient.intake.completed",
+	          timestamp: Math.floor(Date.now() / 1000),
+	          emr_target: "Plato/ClinicOS",
+	          schema_version: "2.0",
+	          data: {
+	            submission_id: sub.id,
+	            patient_name: sub.patientName,
+	            clinical_score: sub.score,
+	            risk_tier: sub.risk === "high" ? "High Risk" : sub.risk === "mod" ? "Moderate" : "Low Risk",
+	            triage_status: sub.triageStatus || "review",
+	            submitted_at: sub.submittedAt,
+	            answers: sub.answers || {},
+	          }
+	        }, null, 2);
+
+	        if (navigator.clipboard) {
+	          navigator.clipboard.writeText(emrPayload).then(() => {
+	            toast(currentAdminLang === "id" ? "Payload EMR berhasil disalin ke clipboard!" : "Standardized EMR payload copied to clipboard!", "success");
+	          }).catch(() => {
+	            prompt("Salin payload EMR berikut:", emrPayload);
+	          });
+	        } else {
+	          prompt("Salin payload EMR berikut:", emrPayload);
+	        }
+	      }
 
       // ===================== CHOICE SCREEN =====================
       function renderChoiceScreen() {

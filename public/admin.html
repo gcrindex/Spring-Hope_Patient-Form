@@ -4335,13 +4335,137 @@
 	                      id="paypal-save-btn"
 	                      style="font-weight: 700; padding: 8px 20px; background: #0284c7;"
 	                    >
-	                      Save Credentials
-	                    </button>
-	                  </div>
-	                </form>
-	              </div>
+		                      Save Credentials
+		                    </button>
+		                  </div>
+		                </form>
+		              </div>
 
-	              <!-- DANGER ZONE: Delete Account -->
+		              <!-- EMR Webhook & Hospital System Integration (Plato / ClinicOS) -->
+		              <div class="admin-panel-card" style="border-color: #a7f3d0; background: #ffffff;">
+		                <div class="admin-panel-header">
+		                  <div style="display:flex; align-items:center; gap:8px;">
+		                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+		                    <h3 style="margin:0; font-size:16px; font-weight:800; color:var(--navy);">
+		                      <span data-i18n="emrCardTitle">EMR & Hospital Webhook Integration (Plato / ClinicOS)</span>
+		                    </h3>
+		                  </div>
+		                  <div style="display:flex; align-items:center; gap:8px;">
+		                    <span class="pill pill-green" id="emr-status-badge">Checking...</span>
+		                  </div>
+		                </div>
+		                <p style="font-size: 13px; color: var(--text2); margin: 0 0 16px 0;" data-i18n="emrCardDesc">
+		                  Connect your clinic's electronic medical records system (Plato, ClinicOS, or Generic EMR API). Payloads are signed with <strong>HMAC-SHA256</strong> and guarded against SSRF.
+		                </p>
+
+		                <form id="emr-settings-form" onsubmit="event.preventDefault(); saveEmrConfig();" style="display: flex; flex-direction: column; gap: 14px;">
+		                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+		                    <div>
+		                      <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="emrProviderLabel">
+		                        EMR Software Target <span style="color:#ef4444;">*</span>
+		                      </label>
+		                      <select id="emr-provider-select" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 700; background: #fff; color: var(--navy); box-sizing: border-box;">
+		                        <option value="plato">Plato EMR (Orthopaedic & Medical Practice)</option>
+		                        <option value="clinicos">ClinicOS (Primary Care & Hospital)</option>
+		                        <option value="generic">Generic FHIR / JSON Webhook</option>
+		                      </select>
+		                    </div>
+
+		                    <div>
+		                      <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="emrUrlLabel">
+		                        Webhook Endpoint URL <span style="color:#ef4444;">*</span>
+		                      </label>
+		                      <input
+		                        type="url"
+		                        id="emr-webhook-url"
+		                        placeholder="https://api.plato.healthcare/v1/intake/webhook"
+		                        spellcheck="false"
+		                        style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+		                      />
+		                      <div style="font-size:11px; color:#059669; margin-top:4px; font-weight:600;" data-i18n="emrSsrfNotice">
+		                        &#128737; SSRF Protection: Loopback (127.0.0.1) & metadata IPs (169.254.x.x) strictly blocked.
+		                      </div>
+		                    </div>
+
+		                    <div style="grid-column: 1 / -1;">
+		                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+		                        <label style="font-size: 12px; font-weight: 750; color: var(--navy);" data-i18n="emrSecretLabel">
+		                          Webhook Secret Key (HMAC-SHA256 Signing)
+		                        </label>
+		                        <button type="button" class="btn btn-ghost btn-sm" onclick="generateRandomEmrSecret()" style="padding:2px 8px; font-size:11px; font-weight:700; height:24px;">
+		                          &#8635; Generate Random
+		                        </button>
+		                      </div>
+		                      <input
+		                        type="text"
+		                        id="emr-webhook-secret"
+		                        placeholder="Enter or generate 32-character secret"
+		                        spellcheck="false"
+		                        style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-family: monospace; background: #f8fafc; color: var(--navy); box-sizing: border-box;"
+		                      />
+		                    </div>
+		                  </div>
+
+		                  <div style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+		                    <input type="checkbox" id="emr-autosync-toggle" checked style="width:16px; height:16px; cursor:pointer;" />
+		                    <label for="emr-autosync-toggle" style="font-size:12.5px; font-weight:650; color:var(--navy); cursor:pointer;" data-i18n="emrAutoSyncLabel">
+		                      Automatically dispatch new patient intake submissions to this EMR webhook
+		                    </label>
+		                  </div>
+
+		                  <div id="emr-test-status" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600;"></div>
+
+		                  <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin-top: 4px;">
+		                    <button
+		                      type="button"
+		                      class="btn btn-ghost btn-sm"
+		                      id="emr-test-btn"
+		                      onclick="testEmrConnection()"
+		                      style="border: 1.5px solid var(--border); font-weight: 700; padding: 8px 16px; background: #fff;"
+		                      data-i18n="emrTestBtn"
+		                    >
+		                      Test Connection (Ping)
+		                    </button>
+		                    <button
+		                      type="submit"
+		                      class="btn btn-primary btn-sm"
+		                      id="emr-save-btn"
+		                      style="font-weight: 700; padding: 8px 20px; background: #059669;"
+		                      data-i18n="emrSaveBtn"
+		                    >
+		                      Save EMR Webhook
+		                    </button>
+		                  </div>
+		                </form>
+
+		                <!-- Webhook Dispatch Audit Logs Table -->
+		                <div style="margin-top:20px; border-top:1px solid #f1f5f9; padding-top:16px;">
+		                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+		                    <span style="font-size:13px; font-weight:800; color:var(--navy);" data-i18n="emrLogsTitle">Recent Webhook Dispatch Logs</span>
+		                    <button type="button" class="btn btn-ghost btn-sm" onclick="loadEmrConfigAndLogs()" style="font-size:11.5px; padding:3px 8px; height:26px;">
+		                      &#8635; Refresh
+		                    </button>
+		                  </div>
+		                  <div style="max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:8px;">
+		                    <table style="width:100%; border-collapse:collapse; font-size:11.5px;">
+		                      <thead>
+		                        <tr style="background:#f8fafc; border-bottom:1px solid var(--border); color:var(--text3); text-align:left;">
+		                          <th style="padding:6px 10px;">Time</th>
+		                          <th style="padding:6px 10px;">Event</th>
+		                          <th style="padding:6px 10px;">Status Code</th>
+		                          <th style="padding:6px 10px;">Attempts</th>
+		                          <th style="padding:6px 10px;">Result</th>
+		                        </tr>
+		                      </thead>
+		                      <tbody id="emr-logs-tbody">
+		                        <tr><td colspan="5" style="text-align:center; padding:16px; color:var(--text3);">No webhook logs yet.</td></tr>
+		                      </tbody>
+		                    </table>
+		                  </div>
+		                </div>
+		              </div>
+
+		              <!-- DANGER ZONE: Delete Account -->
 	              <div
 	                class="admin-panel-card danger-zone-card"
 	                style="border: 1.5px solid #fecaca; background: #fffbfb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.04);"
@@ -6674,10 +6798,21 @@
 		          provClose: "Close",
 		          provCancel: "Cancel",
 		          provCreateAccount: "Create Account",
-		          provEmailLabel: "Email Address",
-		          provPasswordLabel: "Temporary Password (min. 6 characters)",
-		          provAssignTierLabel: "Assign Pricing / Subscription Tier",
-		          resetLandingForms: "3 Landing Forms",
+			          provEmailLabel: "Email Address",
+			          provPasswordLabel: "Temporary Password (min. 6 characters)",
+			          provAssignTierLabel: "Assign Pricing / Subscription Tier",
+			          emrCardTitle: "EMR & Hospital Webhook Integration (Plato / ClinicOS)",
+			          emrCardDesc: "Connect your clinic's electronic medical records system (Plato, ClinicOS, or Generic EMR API). Payloads are signed with HMAC-SHA256 and guarded against SSRF.",
+			          emrProviderLabel: "EMR Software Target",
+			          emrUrlLabel: "Webhook Endpoint URL",
+			          emrSsrfNotice: "🛡 SSRF Protection: Loopback (127.0.0.1) & metadata IPs (169.254.x.x) strictly blocked.",
+			          emrSecretLabel: "Webhook Secret Key (HMAC-SHA256 Signing)",
+			          emrAutoSyncLabel: "Automatically dispatch new patient intake submissions to this EMR webhook",
+			          emrTestBtn: "Test Connection (Ping)",
+			          emrSaveBtn: "Save EMR Webhook",
+			          emrLogsTitle: "Recent Webhook Dispatch Logs",
+			          emrCopyPayload: "Copy EMR Payload (1-Click)",
+			          resetLandingForms: "3 Landing Forms",
 		          toastDraftSaved: "Form saved as Draft",
 		          toastSaved: "Changes saved",
 	        },
@@ -6866,6 +7001,17 @@
 		          provEmailLabel: "Alamat Email",
 		          provPasswordLabel: "Password Sementara (min. 6 karakter)",
 		          provAssignTierLabel: "Pilih Paket Langganan",
+		          emrCardTitle: "Integrasi Webhook EMR & RS (Plato / ClinicOS)",
+		          emrCardDesc: "Hubungkan sistem rekam medis elektronik klinik (Plato, ClinicOS, atau Generic EMR API). Payload diamankan dengan tanda tangan digital HMAC-SHA256 dan proteksi SSRF.",
+		          emrProviderLabel: "Target Sistem EMR",
+		          emrUrlLabel: "URL Endpoint Webhook",
+		          emrSsrfNotice: "🛡 Proteksi SSRF: IP loopback (127.0.0.1) & metadata cloud (169.254.x.x) diblokir ketat.",
+		          emrSecretLabel: "Kunci Rahasia Webhook (Tanda Tangan HMAC-SHA256)",
+		          emrAutoSyncLabel: "Sinkronkan otomatis hasil submisi pasien baru ke webhook EMR ini",
+		          emrTestBtn: "Uji Koneksi (Ping)",
+		          emrSaveBtn: "Simpan Webhook EMR",
+		          emrLogsTitle: "Riwayat Log Pengiriman Webhook",
+		          emrCopyPayload: "Salin Payload EMR (1-Klik)",
 		          resetLandingForms: "3 Form Landing",
 		          toastDraftSaved: "Formulir tersimpan sebagai Draf",
 		          toastSaved: "Perubahan berhasil disimpan",
@@ -7053,6 +7199,17 @@
 		          provEmailLabel: "电子邮箱地址",
 		          provPasswordLabel: "初始密码（至少6位字符）",
 		          provAssignTierLabel: "分配订阅方案 / 权限级别",
+		          emrCardTitle: "医疗 EMR 与医院 Webhook 对接（Plato / ClinicOS）",
+		          emrCardDesc: "对接门诊电子病历系统（Plato、ClinicOS 或通用 EMR API）。数据包采用 HMAC-SHA256 数字签名加密并防御 SSRF。",
+		          emrProviderLabel: "目标 EMR 系统",
+		          emrUrlLabel: "Webhook 接收端点 URL",
+		          emrSsrfNotice: "🛡 SSRF 安全防护：严格屏蔽回环 (127.0.0.1) 与云元数据地址 (169.254.x.x)。",
+		          emrSecretLabel: "Webhook 密钥（HMAC-SHA256 签名）",
+		          emrAutoSyncLabel: "在患者完成填报后自动推送数据至此 EMR Webhook",
+		          emrTestBtn: "测试连接 (Ping)",
+		          emrSaveBtn: "保存 EMR Webhook",
+		          emrLogsTitle: "近期 Webhook 推送日志",
+		          emrCopyPayload: "一键复制 EMR 数据包",
 		          resetLandingForms: "官网3个表单",
 		          toastDraftSaved: "表单已成功保存为草稿",
 		          toastSaved: "已保存修改",
@@ -7931,6 +8088,7 @@
 
         setInviteTier(_selectedInviteTier);
         await loadPaypalConfig();
+        await loadEmrConfigAndLogs();
 
         const badgeEl = $("#admin-users-count-badge");
         if (badgeEl) badgeEl.textContent = `${users.length} Active Accounts`;
@@ -8751,6 +8909,225 @@
           if (testBtn) {
             testBtn.disabled = false;
             testBtn.textContent = "Test Connection";
+          }
+	          toast("Terjadi kesalahan jaringan saat tes koneksi.", "error");
+	        }
+	      }
+
+      // ===================== EMR WEBHOOK MANAGEMENT =====================
+      let _emrConfig = null;
+
+      function generateRandomEmrSecret() {
+        const randBytes = new Uint8Array(16);
+        window.crypto.getRandomValues(randBytes);
+        const secret = Array.from(randBytes)
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+        const input = $("#emr-webhook-secret");
+        if (input) {
+          input.value = secret;
+          input.focus();
+        }
+        toast(currentAdminLang === "id" ? "Kunci rahasia HMAC-SHA256 baru dibuat!" : "New HMAC-SHA256 secret key generated!", "success");
+      }
+
+      async function loadEmrConfigAndLogs() {
+        try {
+          const res = await fetch("/api/admin/emr", { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              if (data.config) {
+                _emrConfig = data.config;
+                const provSelect = $("#emr-provider-select");
+                const urlInput = $("#emr-webhook-url");
+                const secretInput = $("#emr-webhook-secret");
+                const autoSyncToggle = $("#emr-autosync-toggle");
+                const statusBadge = $("#emr-status-badge");
+
+                if (provSelect) provSelect.value = _emrConfig.provider || "plato";
+                if (urlInput) urlInput.value = _emrConfig.webhookUrl || "";
+                if (secretInput) secretInput.value = _emrConfig.webhookSecret || "";
+                if (autoSyncToggle) autoSyncToggle.checked = Boolean(_emrConfig.autoSync);
+
+                if (statusBadge) {
+                  if (_emrConfig.webhookUrl) {
+                    statusBadge.className = "pill pill-green";
+                    statusBadge.textContent = `${(_emrConfig.provider || "PLATO").toUpperCase()} Active`;
+                  } else {
+                    statusBadge.className = "pill pill-amber";
+                    statusBadge.textContent = "Not Configured";
+                  }
+                }
+              }
+
+              if (Array.isArray(data.logs)) {
+                renderEmrLogs(data.logs);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to load EMR webhook config", e);
+        }
+      }
+
+      function renderEmrLogs(logs) {
+        const tbody = $("#emr-logs-tbody");
+        if (!tbody) return;
+
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:var(--text3);">No webhook logs recorded yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = logs.map((l) => {
+          const isSuccess = l.success === 1 || (l.status_code >= 200 && l.status_code < 300);
+          const badgeClass = isSuccess ? "pill-green" : "pill-red";
+          const badgeText = isSuccess ? "Delivered" : "Failed";
+          const d = new Date(l.created_at);
+          const timeStr = isNaN(d.getTime()) ? l.created_at : `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')} (${d.getDate()}/${d.getMonth()+1})`;
+          const codeColor = isSuccess ? "#059669" : "#dc2626";
+
+          return `
+            <tr style="border-bottom:1px solid #f1f5f9;">
+              <td style="padding:6px 10px; color:var(--text2); font-family:monospace; font-size:11px;">${timeStr}</td>
+              <td style="padding:6px 10px; font-weight:700; color:var(--navy); font-size:11px;">${escHtml(l.event_type || "-")}</td>
+              <td style="padding:6px 10px; font-weight:800; color:${codeColor}; font-size:11px;">HTTP ${l.status_code || 0}</td>
+              <td style="padding:6px 10px; color:var(--text3); font-size:11px;">${l.attempt_count || 1} att.</td>
+              <td style="padding:6px 10px;"><span class="pill ${badgeClass}" style="font-size:10px; padding:2px 6px;">${badgeText}</span></td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      async function saveEmrConfig() {
+        const provider = $("#emr-provider-select")?.value || "plato";
+        const webhookUrl = $("#emr-webhook-url")?.value?.trim() || "";
+        const webhookSecret = $("#emr-webhook-secret")?.value?.trim() || "";
+        const autoSync = $("#emr-autosync-toggle")?.checked ?? true;
+        const saveBtn = $("#emr-save-btn");
+        const statusEl = $("#emr-test-status");
+
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+
+        try {
+          const res = await fetch("/api/admin/emr", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              action: "update-config",
+              enabled: true,
+              provider,
+              webhookUrl,
+              webhookSecret,
+              autoSync,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = t("emrSaveBtn") || "Save EMR Webhook";
+          }
+
+          if (res.ok && data.success) {
+            toast(data.message || "Konfigurasi Webhook EMR tersimpan!", "success");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#f0fdf4";
+              statusEl.style.color = "#15803d";
+              statusEl.style.border = "1px solid #bbf7d0";
+              statusEl.textContent = "✓ Webhook EMR tersimpan aman dengan proteksi SSRF & HMAC-SHA256.";
+            }
+            await loadEmrConfigAndLogs();
+          } else {
+            toast(data.message || "Gagal menyimpan webhook EMR.", "error");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#fef2f2";
+              statusEl.style.color = "#dc2626";
+              statusEl.style.border = "1px solid #fecaca";
+              statusEl.textContent = `✕ Gagal: ${data.message || "Validasi gagal."}`;
+            }
+          }
+        } catch (e) {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = t("emrSaveBtn") || "Save EMR Webhook";
+          }
+          toast("Terjadi kesalahan jaringan.", "error");
+        }
+      }
+
+      async function testEmrConnection() {
+        const provider = $("#emr-provider-select")?.value || "plato";
+        const webhookUrl = $("#emr-webhook-url")?.value?.trim() || "";
+        const webhookSecret = $("#emr-webhook-secret")?.value?.trim() || "";
+        const testBtn = $("#emr-test-btn");
+        const statusEl = $("#emr-test-status");
+
+        if (!webhookUrl) {
+          toast(currentAdminLang === "id" ? "Masukkan Webhook URL terlebih dahulu." : "Enter Webhook URL first.", "error");
+          return;
+        }
+
+        if (testBtn) {
+          testBtn.disabled = true;
+          testBtn.textContent = "Pinging EMR...";
+        }
+        if (statusEl) {
+          statusEl.style.display = "block";
+          statusEl.style.background = "#f8fafc";
+          statusEl.style.color = "var(--navy)";
+          statusEl.style.border = "1px solid var(--border)";
+          statusEl.textContent = "Mengirim payload uji coba dengan tanda tangan HMAC-SHA256...";
+        }
+
+        try {
+          const res = await fetch("/api/admin/emr", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              action: "test-ping",
+              provider,
+              webhookUrl,
+              webhookSecret,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.textContent = t("emrTestBtn") || "Test Connection (Ping)";
+          }
+
+          if (res.ok && data.success) {
+            toast(data.message || "Test Ping EMR Berhasil!", "success");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#f0fdf4";
+              statusEl.style.color = "#15803d";
+              statusEl.style.border = "1px solid #bbf7d0";
+              statusEl.textContent = `✓ ${data.message}`;
+            }
+          } else {
+            toast(data.message || "Test ping EMR gagal.", "error");
+            if (statusEl) {
+              statusEl.style.display = "block";
+              statusEl.style.background = "#fef2f2";
+              statusEl.style.color = "#dc2626";
+              statusEl.style.border = "1px solid #fecaca";
+              statusEl.textContent = `✕ Gagal (HTTP ${data.statusCode || 400}): ${data.message || data.error || "Gagal menghubungi endpoint."}`;
+            }
+          }
+          await loadEmrConfigAndLogs();
+        } catch (e) {
+          if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.textContent = t("emrTestBtn") || "Test Connection (Ping)";
           }
           toast("Terjadi kesalahan jaringan saat tes koneksi.", "error");
         }
@@ -10990,12 +11367,18 @@
                   <div>${txtSign2}</div>
                   <div class="clinical-signature-line">(...................................................)</div>
                 </div>
-              </div>
-            </div>
+	              </div>
+	            </div>
 
-            <!-- EMR Plato Integration Button (Screen Only) -->
-            <button class="send-plato-btn ready screen-only" id="btn-sync-emr" style="margin-top:12px;">Sync to EMR / External System</button>
-          `;
+	            <!-- EMR Plato Integration Button & Clipboard Fallback (Screen Only) -->
+	            <div class="screen-only" style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+	              <button class="send-plato-btn ready" id="btn-sync-emr" style="flex:1; min-width:200px;">Sync to EMR / External System</button>
+	              <button type="button" class="btn btn-ghost btn-sm" id="btn-copy-emr-payload" style="border:1.5px solid var(--border); background:#fff; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+	                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+	                <span data-i18n="emrCopyPayload">Copy EMR Payload (1-Click)</span>
+	              </button>
+	            </div>
+	          `;
 
           // Populate answers list & print table
           const answersScreenList = container.querySelector("#answers-screen-list");
@@ -11066,32 +11449,84 @@
             window.open(`https://wa.me/?text=${safeMsg}`, "_blank", "noopener,noreferrer");
           });
 
-          container.querySelector("#btn-sync-emr")?.addEventListener("click", function () {
-            sendToPlato(this, sub);
-          });
-        }
+	          container.querySelector("#btn-sync-emr")?.addEventListener("click", function () {
+	            sendToPlato(this, sub);
+	          });
 
-        renderDetailContent();
-        showModal(container);
-      }
-      function sendToPlato(btn, sub) {
-        btn.textContent = "Synced to EMR ✓";
-        btn.classList.remove("ready");
-        btn.classList.add("sent");
-        if (sub && navigator.clipboard) {
-          const emrPayload = JSON.stringify({
-            emr_integration: "Plato/ClinicOS",
-            patient: sub.patientName,
-            submitted_at: sub.submittedAt,
-            risk_tier: sub.risk,
-            clinical_score: sub.score,
-            triage_status: sub.triageStatus || "review",
-            answers: sub.answers
-          }, null, 2);
-          navigator.clipboard.writeText(emrPayload).catch(() => {});
-        }
-        toast("Synced & EMR record copied to clipboard!");
-      }
+	          container.querySelector("#btn-copy-emr-payload")?.addEventListener("click", function () {
+	            copyEmrPayload(this, sub);
+	          });
+	        }
+
+	        renderDetailContent();
+	        showModal(container);
+	      }
+
+	      async function sendToPlato(btn, sub) {
+	        if (!sub) return;
+	        const originalText = btn.textContent;
+	        btn.disabled = true;
+	        btn.textContent = "Syncing to EMR (Retrying if needed)...";
+
+	        try {
+	          const res = await fetch("/api/admin/emr", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            credentials: "include",
+	            body: JSON.stringify({
+	              action: "sync-submission",
+	              submissionId: sub.id,
+	            }),
+	          });
+	          const data = await res.json().catch(() => ({}));
+	          btn.disabled = false;
+
+	          if (res.ok && data.success) {
+	            btn.textContent = `Synced to EMR ✓ (HTTP ${data.statusCode})`;
+	            btn.classList.remove("ready");
+	            btn.classList.add("sent");
+	            toast(`EMR Sync Success: HTTP ${data.statusCode} (${data.attempts} attempt)`, "success");
+	          } else {
+	            btn.textContent = `Sync Failed (HTTP ${data.statusCode || 400}) - Retry?`;
+	            btn.classList.remove("sent");
+	            btn.classList.add("ready");
+	            toast(data.message || `EMR Sync failed: HTTP ${data.statusCode || 400}`, "error");
+	          }
+	        } catch (err) {
+	          btn.disabled = false;
+	          btn.textContent = "Sync Failed (Network Error) - Retry?";
+	          toast("Network error during EMR synchronization.", "error");
+	        }
+	      }
+
+	      function copyEmrPayload(btn, sub) {
+	        if (!sub) return;
+	        const emrPayload = JSON.stringify({
+	          event: "patient.intake.completed",
+	          timestamp: Math.floor(Date.now() / 1000),
+	          emr_target: "Plato/ClinicOS",
+	          schema_version: "2.0",
+	          data: {
+	            submission_id: sub.id,
+	            patient_name: sub.patientName,
+	            clinical_score: sub.score,
+	            risk_tier: sub.risk === "high" ? "High Risk" : sub.risk === "mod" ? "Moderate" : "Low Risk",
+	            triage_status: sub.triageStatus || "review",
+	            submitted_at: sub.submittedAt,
+	            answers: sub.answers || {},
+	          }
+	        }, null, 2);
+
+	        if (navigator.clipboard) {
+	          navigator.clipboard.writeText(emrPayload).then(() => {
+	            toast(currentAdminLang === "id" ? "Payload EMR berhasil disalin ke clipboard!" : "Standardized EMR payload copied to clipboard!", "success");
+	          }).catch(() => {
+	            prompt("Salin payload EMR berikut:", emrPayload);
+	          });
+	        } else {
+	          prompt("Salin payload EMR berikut:", emrPayload);
+	        }
+	      }
 
       // ===================== CHOICE SCREEN =====================
       function renderChoiceScreen() {

@@ -25,6 +25,7 @@ import { Route as IntakeQuestionRouteImport } from './routes/intake.question'
 import { Route as AdminFormsBuilderIndexRouteImport } from './routes/admin.forms-builder.index'
 import { Route as AdminFormsBuilderPublishRouteImport } from './routes/admin.forms-builder.publish'
 import { Route as AdminNewAiRouteImport } from './routes/admin.new.ai'
+import { Route as ApiAdminEmrRouteImport } from './routes/api.admin.emr'
 import { Route as ApiAdminLoginRouteImport } from './routes/api.admin.login'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api.admin.logout'
 import { Route as ApiAdminPaypalRouteImport } from './routes/api.admin.paypal'
@@ -121,6 +122,11 @@ const AdminNewAiRoute = AdminNewAiRouteImport.update({
   path: '/ai',
   getParentRoute: () => AdminNewRoute,
 } as any)
+const ApiAdminEmrRoute = ApiAdminEmrRouteImport.update({
+  id: '/api/admin/emr',
+  path: '/api/admin/emr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
   id: '/api/admin/login',
   path: '/api/admin/login',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/emr': typeof ApiAdminEmrRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/paypal': typeof ApiAdminPaypalRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/intake': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/emr': typeof ApiAdminEmrRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/paypal': typeof ApiAdminPaypalRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/intake/': typeof IntakeIndexRoute
   '/admin/forms-builder/publish': typeof AdminFormsBuilderPublishRoute
   '/admin/new/ai': typeof AdminNewAiRoute
+  '/api/admin/emr': typeof ApiAdminEmrRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/paypal': typeof ApiAdminPaypalRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/emr'
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/paypal'
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/intake'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/emr'
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/paypal'
@@ -371,6 +382,7 @@ export interface FileRouteTypes {
     | '/intake/'
     | '/admin/forms-builder/publish'
     | '/admin/new/ai'
+    | '/api/admin/emr'
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/paypal'
@@ -403,6 +415,7 @@ export interface RootRouteChildren {
   BusinessIndexRoute: typeof BusinessIndexRoute
   IntakeIndexRoute: typeof IntakeIndexRoute
   AdminFormsBuilderPublishRoute: typeof AdminFormsBuilderPublishRoute
+  ApiAdminEmrRoute: typeof ApiAdminEmrRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
   ApiAdminPaypalRoute: typeof ApiAdminPaypalRoute
@@ -534,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewAiRouteImport
       parentRoute: typeof AdminNewRoute
     }
+    '/api/admin/emr': {
+      id: '/api/admin/emr'
+      path: '/api/admin/emr'
+      fullPath: '/api/admin/emr'
+      preLoaderRoute: typeof ApiAdminEmrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/login': {
       id: '/api/admin/login'
       path: '/api/admin/login'
@@ -662,6 +682,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessIndexRoute: BusinessIndexRoute,
   IntakeIndexRoute: IntakeIndexRoute,
   AdminFormsBuilderPublishRoute: AdminFormsBuilderPublishRoute,
+  ApiAdminEmrRoute: ApiAdminEmrRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
   ApiAdminPaypalRoute: ApiAdminPaypalRoute,
