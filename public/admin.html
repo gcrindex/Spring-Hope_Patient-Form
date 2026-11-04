@@ -5579,12 +5579,19 @@
 		                <option value="plus_yearly">Plus — $50/mo · $600/yr (1,000 resp · 3 seats)</option>
 		                <option value="business_yearly">Business — $83/mo · $996/yr (10,000 resp · 5 seats · Level Max)</option>
 		              </optgroup>
-		              <optgroup label="Enterprise">
-		                <option value="enterprise">Enterprise — Custom Dedicated SLA</option>
-		              </optgroup>
-		            </select>
-		          </div>
-		          <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
+			              <optgroup label="Enterprise">
+			                <option value="enterprise">Enterprise — Custom Dedicated SLA</option>
+			              </optgroup>
+			            </select>
+			          </div>
+			          <div>
+			            <label style="font-size: 12px; font-weight: 750; color: var(--navy); display: block; margin-bottom: 6px;" data-i18n="provAssignRoleLabel">Assign User Role / Permissions</label>
+			            <select id="provision-role-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-weight: 600; background: #fff; box-sizing: border-box;">
+			              <option value="admin" selected>Administrator (Full Form Builder &amp; Settings)</option>
+			              <option value="staff">Staff / Reviewer (Read &amp; Triage Submissions Only)</option>
+			            </select>
+			          </div>
+			          <div id="provision-error-msg" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600;"></div>
 		          <div style="margin-top: 6px; display: flex; justify-content: flex-end; gap: 8px;">
 		            <button type="button" class="btn btn-ghost btn-sm" onclick="closeProvisionModal()">
 		              <span data-i18n="provCancel">Cancel</span>
@@ -6468,25 +6475,35 @@
 	          "user";
 
 		        const isSuperAdmin = isCurrentSuperAdmin();
+		        const isStaff = role === "staff";
 
-			        if (avEl) {
-			          const initials = isSuperAdmin
-			            ? "SA"
-			            : (email ? email.replace(/[^a-zA-Z0-9]/g, "").substring(0, 2).toUpperCase() : "US") || "US";
-			          avEl.textContent = initials;
-			        }
-			        if (userEl) {
-			          userEl.textContent = isSuperAdmin ? "Super Admin" : (email || "Akun Member");
-			          userEl.title = email;
-			        }
+		        if (avEl) {
+		          const initials = isSuperAdmin
+		            ? "SA"
+		            : isStaff
+		              ? "ST"
+		              : (email ? email.replace(/[^a-zA-Z0-9]/g, "").substring(0, 2).toUpperCase() : "US") || "US";
+		          avEl.textContent = initials;
+		        }
+		        if (userEl) {
+		          userEl.textContent = isSuperAdmin ? "Super Admin" : (email || "Akun Member");
+		          userEl.title = email;
+		        }
 		        if (roleEl) {
 		          if (isSuperAdmin) {
 		            roleEl.innerHTML = '<span style="color:#f59e0b; font-size:11.5px; font-weight:700;">★ Super Admin</span>';
+		          } else if (isStaff) {
+		            roleEl.innerHTML = '<span style="color:#c084fc; font-weight:800; font-size:11px;">🛡 Staff / Reviewer</span>';
 		          } else {
 		            const tierNames = { basic: "Basic Plan", plus: "Plus Plan", business: "Business Plan", enterprise: "Enterprise" };
 		            const displayTier = tierNames[tier] || "Basic Plan";
 		            roleEl.innerHTML = `<span style="color:#38bdf8; font-weight:700; font-size:11px;">✦ ${displayTier}</span>`;
 		          }
+		        }
+
+		        const purgeBtn = $("#purge-test-btn");
+		        if (purgeBtn) {
+		          purgeBtn.style.display = isStaff ? "none" : "inline-flex";
 		        }
 
 		        const inviteBtn = $("#invite-max-btn");
@@ -6801,6 +6818,7 @@
 			          provEmailLabel: "Email Address",
 			          provPasswordLabel: "Temporary Password (min. 6 characters)",
 			          provAssignTierLabel: "Assign Pricing / Subscription Tier",
+			          provAssignRoleLabel: "Assign User Role / Permissions",
 			          emrCardTitle: "EMR & Hospital Webhook Integration (Plato / ClinicOS)",
 			          emrCardDesc: "Connect your clinic's electronic medical records system (Plato, ClinicOS, or Generic EMR API). Payloads are signed with HMAC-SHA256 and guarded against SSRF.",
 			          emrProviderLabel: "EMR Software Target",
@@ -7001,6 +7019,7 @@
 		          provEmailLabel: "Alamat Email",
 		          provPasswordLabel: "Password Sementara (min. 6 karakter)",
 		          provAssignTierLabel: "Pilih Paket Langganan",
+		          provAssignRoleLabel: "Hak Akses / Peran Pengguna",
 		          emrCardTitle: "Integrasi Webhook EMR & RS (Plato / ClinicOS)",
 		          emrCardDesc: "Hubungkan sistem rekam medis elektronik klinik (Plato, ClinicOS, atau Generic EMR API). Payload diamankan dengan tanda tangan digital HMAC-SHA256 dan proteksi SSRF.",
 		          emrProviderLabel: "Target Sistem EMR",
@@ -7199,6 +7218,7 @@
 		          provEmailLabel: "电子邮箱地址",
 		          provPasswordLabel: "初始密码（至少6位字符）",
 		          provAssignTierLabel: "分配订阅方案 / 权限级别",
+		          provAssignRoleLabel: "分配用户角色与权限",
 		          emrCardTitle: "医疗 EMR 与医院 Webhook 对接（Plato / ClinicOS）",
 		          emrCardDesc: "对接门诊电子病历系统（Plato、ClinicOS 或通用 EMR API）。数据包采用 HMAC-SHA256 数字签名加密并防御 SSRF。",
 		          emrProviderLabel: "目标 EMR 系统",
@@ -7735,10 +7755,16 @@
 	            navigate("#/dashboard");
 	            route();
 	          } else {
-            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
-            btn.disabled = false;
-            toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
-          }
+	            btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
+	            btn.disabled = false;
+	            if (res.status === 429) {
+	              const retrySec = data.retryAfter || 900;
+	              const mins = Math.ceil(retrySec / 60);
+	              toast(data.message || `Terlalu banyak percobaan gagal. Silakan coba lagi dalam ${mins} menit.`, "error");
+	            } else {
+	              toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
+	            }
+	          }
         } catch (err) {
           console.error("Auth action failed", err);
           btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
@@ -7854,6 +7880,8 @@
           }
         }
 
+        const isStaff = (_serverAuth?.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim() === "staff";
+
         $("#stats-row").innerHTML = `
         <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${currentAdminLang === "id" ? "Form & Soal Unlimited" : t("allFormsLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
@@ -7890,7 +7918,7 @@
             <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">${t("submissions")} (${count})</button>
             ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">${t("btnCopyLink")}</button>` : ""}
             ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">${t("btnPublish")}</button>` : ""}
-            <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>
+            ${isStaff ? "" : `<button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>`}
           </td>
         </tr>`;
           })
@@ -8151,10 +8179,15 @@
                     ? "1,000 resp/mo · 3 seats · Custom Domain"
                     : "100 resp/mo · 1 seat · Standard";
 
-            const roleBadge =
-              u.role === "superadmin"
-                ? '<span style="color:#0284c7; font-weight:750;">Superadmin</span>'
-                : '<span style="color:#64748b; font-weight:600;">Admin User</span>';
+            const isMasterAcc = u.email === "admin@gmail.com" || u.email === "admin@9forms.com" || u.email === "superadmin@9forms.com";
+            const roleSelect = isMasterAcc || u.role === "superadmin"
+              ? '<span style="color:#0284c7; font-weight:750;">★ Superadmin</span>'
+              : `
+                <select class="admin-select-role" id="role-select-${u.id}" onchange="updateUserRole('${u.id}', this.value)" style="padding: 3px 6px; font-size: 11px; font-weight: 700; border-radius: 6px; border: 1.5px solid var(--border); background: ${u.role === 'staff' ? '#f5f3ff' : '#ecfdf5'}; color: ${u.role === 'staff' ? '#7c3aed' : '#059669'}; cursor: pointer;">
+                  <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin User</option>
+                  <option value="staff" ${u.role === "staff" ? "selected" : ""}>Staff / Reviewer</option>
+                </select>
+              `;
 
             const selectedVal =
               baseTier === "enterprise"
@@ -8175,7 +8208,7 @@
                     </div>
                   </div>
                 </td>
-                <td>${roleBadge}</td>
+                <td>${roleSelect}</td>
                 <td>
                   <div style="display:flex; flex-direction:column; gap:2px;">
                     <span class="tier-badge ${tierBadgeClass}">${tierDisplay}</span>
@@ -8367,6 +8400,27 @@
           }
         } catch (err) {
           console.error("Update plan failed", err);
+          toast("Terjadi kesalahan jaringan.", "error");
+        }
+      }
+
+      async function updateUserRole(userId, newRole) {
+        try {
+          const res = await fetch("/api/admin/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "update-role", userId, role: newRole }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success) {
+            toast(data.message || `Role pengguna berhasil diubah menjadi ${newRole.toUpperCase()}!`, "success");
+            renderAdminArea();
+          } else {
+            toast(data.message || "Gagal mengubah role pengguna.", "error");
+          }
+        } catch (err) {
+          console.error("Update role failed", err);
           toast("Terjadi kesalahan jaringan.", "error");
         }
       }
@@ -8683,6 +8737,7 @@
         const email = $("#provision-email-input")?.value?.trim();
         const password = $("#provision-password-input")?.value?.trim();
         const planTier = $("#provision-tier-select")?.value || "business";
+        const role = $("#provision-role-select")?.value || "admin";
         const errEl = $("#provision-error-msg");
         const btn = $("#provision-submit-btn");
 
@@ -8710,7 +8765,7 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({ action: "create-user", email, password, planTier }),
+            body: JSON.stringify({ action: "create-user", email, password, planTier, role }),
           });
           const data = await res.json().catch(() => ({}));
           btn.disabled = false;

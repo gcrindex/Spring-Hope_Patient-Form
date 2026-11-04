@@ -164,20 +164,38 @@ async function ensureD1Tables(d1: D1DatabaseLike): Promise<void> {
 			      )
 			      .run();
 
-			    await d1
-			      .prepare(
-			        `CREATE TABLE IF NOT EXISTS webhook_logs (
-			          id TEXT PRIMARY KEY,
-			          webhook_url TEXT NOT NULL,
-			          event_type TEXT NOT NULL,
-			          status_code INTEGER,
-			          response_body TEXT,
-			          attempt_count INTEGER DEFAULT 1,
-			          success INTEGER DEFAULT 0,
-			          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-			        );`,
-			      )
-			      .run();
+				    await d1
+				      .prepare(
+				        `CREATE TABLE IF NOT EXISTS webhook_logs (
+				          id TEXT PRIMARY KEY,
+				          webhook_url TEXT NOT NULL,
+				          event_type TEXT NOT NULL,
+				          status_code INTEGER,
+				          response_body TEXT,
+				          attempt_count INTEGER DEFAULT 1,
+				          success INTEGER DEFAULT 0,
+				          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+				        );`,
+				      )
+				      .run();
+
+					    await d1
+					      .prepare(
+					        `CREATE TABLE IF NOT EXISTS login_attempts (
+					          id TEXT PRIMARY KEY,
+					          identifier TEXT UNIQUE NOT NULL,
+					          attempt_count INTEGER DEFAULT 1,
+					          locked_until DATETIME,
+					          last_attempt DATETIME DEFAULT CURRENT_TIMESTAMP
+					        );`,
+					      )
+					      .run();
+
+					    await d1
+					      .prepare(
+					        `CREATE UNIQUE INDEX IF NOT EXISTS idx_login_attempts_identifier ON login_attempts(identifier);`,
+					      )
+					      .run();
 
 		    try {
       await d1.prepare("ALTER TABLE forms ADD COLUMN user_id TEXT DEFAULT 'admin';").run();
@@ -265,20 +283,29 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
 		      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		    );
 
-		    CREATE TABLE IF NOT EXISTS webhook_logs (
-		      id TEXT PRIMARY KEY,
-		      webhook_url TEXT NOT NULL,
-		      event_type TEXT NOT NULL,
-		      status_code INTEGER,
-		      response_body TEXT,
-		      attempt_count INTEGER DEFAULT 1,
-		      success INTEGER DEFAULT 0,
-		      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		    );
+			    CREATE TABLE IF NOT EXISTS webhook_logs (
+			      id TEXT PRIMARY KEY,
+			      webhook_url TEXT NOT NULL,
+			      event_type TEXT NOT NULL,
+			      status_code INTEGER,
+			      response_body TEXT,
+			      attempt_count INTEGER DEFAULT 1,
+			      success INTEGER DEFAULT 0,
+			      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			    );
 
-	    CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
-    CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at);
-    CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+				    CREATE TABLE IF NOT EXISTS login_attempts (
+				      id TEXT PRIMARY KEY,
+				      identifier TEXT UNIQUE NOT NULL,
+				      attempt_count INTEGER DEFAULT 1,
+				      locked_until DATETIME,
+				      last_attempt DATETIME DEFAULT CURRENT_TIMESTAMP
+				    );
+
+			    CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
+		    CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON submissions(created_at);
+		    CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+		    CREATE UNIQUE INDEX IF NOT EXISTS idx_login_attempts_identifier ON login_attempts(identifier);
   `);
 
   try {

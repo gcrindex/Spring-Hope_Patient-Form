@@ -5564,9 +5564,13 @@
 	          userEl.textContent = isSuperAdmin ? "Administrator" : (email || "Akun Bisnis");
 	          userEl.title = email;
 	        }
+        const isStaff = (_serverAuth.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim() === "staff";
+
         if (roleEl) {
           if (isSuperAdmin) {
             roleEl.innerHTML = '<span style="color:#94a3b8; font-size:12px; font-weight:500;">Administrator</span>';
+          } else if (isStaff) {
+            roleEl.innerHTML = '<span style="color:#c084fc; font-weight:800; font-size:11px;">🛡 Staff / Reviewer</span>';
           } else if (baseTier === "enterprise") {
             roleEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:4px; color:#f59e0b; font-weight:700; font-size:11px;">✦ Enterprise Custom</span>';
           } else if (baseTier === "business") {
@@ -6767,7 +6771,13 @@
           } else {
             btn.innerHTML = _authMode === "register" ? "Daftar & Masuk" : "Sign In";
             btn.disabled = false;
-            toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
+            if (res.status === 429) {
+              const retrySec = data.retryAfter || 900;
+              const mins = Math.ceil(retrySec / 60);
+              toast(data.message || `Terlalu banyak percobaan gagal. Silakan coba lagi dalam ${mins} menit.`, "error");
+            } else {
+              toast(data.message || "Email atau password yang Anda masukkan salah.", "error");
+            }
           }
         } catch (err) {
           console.error("Auth action failed", err);
@@ -6856,6 +6866,8 @@
           }
         }
 
+        const isStaff = (_serverAuth?.user?.role || localStorage.getItem("pf_admin_role") || "").toLowerCase().trim() === "staff";
+
         $("#stats-row").innerHTML = `
         <div class="stat-card"><div class="label">${t("totalForms")}</div><div class="value">${total}</div><div class="sub">${currentAdminLang === "id" ? "Form & Soal Unlimited" : t("allFormsLabel")}</div></div>
         <div class="stat-card"><div class="label">${t("publishedForms")}</div><div class="value">${published}</div><div class="sub">${t("liveLabel")}</div></div>
@@ -6892,7 +6904,7 @@
             <button class="action-btn" onclick="navigate('#/submissions/${x.id}')">${t("submissions")} (${count})</button>
             ${isPublished ? `<button class="action-btn" onclick="copyLink('${x.id}')">${t("btnCopyLink")}</button>` : ""}
             ${!isPublished ? `<button class="action-btn publish" onclick="publishForm('${x.id}')">${t("btnPublish")}</button>` : ""}
-            <button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>
+            ${isStaff ? "" : `<button class="action-btn delete" onclick="confirmDelete('${x.id}',this)">${t("btnDelete")}</button>`}
           </td>
         </tr>`;
           })

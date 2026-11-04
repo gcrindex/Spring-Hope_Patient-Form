@@ -4,6 +4,7 @@ import {
   createAdmin,
   getBusinessInviteSecret,
   hashPassword,
+  revokeAllUserSessions,
 } from "../lib/auth";
 import { dbExecute, dbQuery, dbQueryOne } from "../lib/db";
 
@@ -179,8 +180,41 @@ export const Route = createFileRoute("/api/admin/users")({
             });
           }
 
+          if (body.action === "update-role") {
+            const { userId, role } = body;
+            const cleanRole = role === "staff" ? "staff" : "admin";
+            if (!userId) {
+              return Response.json(
+                { success: false, error: "INVALID_INPUT", message: "ID pengguna wajib diisi." },
+                { status: 400 },
+              );
+            }
+
+            // Cannot demote primary superadmin
+            const target = await dbQueryOne<{ email: string }>("SELECT email FROM admins WHERE id = ?", [userId]);
+            if (target && (target.email === "admin@gmail.com" || target.email === "admin@9forms.com" || target.email === "superadmin@9forms.com")) {
+              return Response.json(
+                { success: false, error: "FORBIDDEN", message: "Hak akses Super Administrator utama tidak dapat diubah." },
+                { status: 403 },
+              );
+            }
+
+            await dbExecute("UPDATE admins SET role = ?, updated_at = datetime('now') WHERE id = ?", [
+              cleanRole,
+              userId,
+            ]);
+
+            // Revoke active sessions so permission changes take effect immediately
+            await revokeAllUserSessions(userId);
+
+            return Response.json({
+              success: true,
+              message: `Hak akses pengguna berhasil diperbarui menjadi ${cleanRole.toUpperCase()}!`,
+            });
+          }
+
           if (body.action === "create-user") {
-            const { email, password, planTier } = body;
+            const { email, password, planTier, role } = body;
             if (!email || !password || password.length < 6) {
               return Response.json(
                 {
@@ -205,12 +239,14 @@ export const Route = createFileRoute("/api/admin/users")({
               ? planTier.trim().toLowerCase()
               : "business_monthly";
 
+            const cleanRole = role === "staff" ? "staff" : "admin";
+
             const passwordHash = await hashPassword(password);
-            const newId = await createAdmin(cleanEmail, passwordHash, "admin", cleanTier);
+            const newId = await createAdmin(cleanEmail, passwordHash, cleanRole, cleanTier);
 
             return Response.json({
               success: true,
-              message: `Akun baru ${cleanEmail} dengan paket ${cleanTier.toUpperCase()} berhasil dibuat!`,
+              message: `Akun baru ${cleanEmail} (${cleanRole.toUpperCase()}) berhasil dibuat!`,
               userId: newId,
             });
           }

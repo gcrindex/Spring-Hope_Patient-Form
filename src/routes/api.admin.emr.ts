@@ -22,6 +22,17 @@ export const Route = createFileRoute("/api/admin/emr")({
             );
           }
 
+          if (user.role === "staff") {
+            return Response.json(
+              {
+                success: false,
+                error: "FORBIDDEN",
+                message: "Hak akses ditolak. Konfigurasi EMR hanya untuk Administrator.",
+              },
+              { status: 403 },
+            );
+          }
+
           // Fetch EMR config
           const row = await dbQueryOne<{ value_encrypted: string; updated_at: string }>(
             "SELECT value_encrypted, updated_at FROM system_settings WHERE key = 'emr_webhook_config'",
@@ -101,6 +112,18 @@ export const Route = createFileRoute("/api/admin/emr")({
           }
 
           const action = String(body.action || "update-config");
+
+          // Restrict config mutations and test ping from staff
+          if ((action === "update-config" || action === "test-ping") && user.role === "staff") {
+            return Response.json(
+              {
+                success: false,
+                error: "FORBIDDEN",
+                message: "Hak akses ditolak. Pengaturan Webhook EMR hanya untuk Administrator.",
+              },
+              { status: 403 },
+            );
+          }
 
           // ACTION 1: UPDATE CONFIG
           if (action === "update-config") {

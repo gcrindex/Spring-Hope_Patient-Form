@@ -1,12 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  checkBruteForceLockout,
+  cleanupExpiredAuthRecords,
   createAdmin,
   createSession,
   createSessionCookieHeader,
+  getClientIp,
   hashPassword,
+  recordFailedLogin,
+  recordSuccessfulLogin,
   verifyPassword,
 } from "../lib/auth";
-import { dbExecute, dbQueryOne } from "../lib/db";
+import { dbQueryOne } from "../lib/db";
 
 const MASTER_ADMIN_EMAILS = [
   "admin@gmail.com",
@@ -65,6 +70,28 @@ export const Route = createFileRoute("/api/admin/login")({
           }
 
           const email = rawEmail.toLowerCase();
+          const clientIp = getClientIp(request);
+
+          // 1. Dual-Key Brute Force Check (IP + Email)
+          const lockoutCheck = await checkBruteForceLockout(clientIp, email);
+          if (lockoutCheck.locked) {
+            return Response.json(
+              {
+                success: false,
+                error: "TOO_MANY_REQUESTS",
+                message: lockoutCheck.reason || "Terlalu banyak percobaan login gagal. Silakan coba lagi nanti.",
+                retryAfter: lockoutCheck.retryAfterSeconds,
+              },
+              {
+                status: 429,
+                headers: {
+                  "Retry-After": String(lockoutCheck.retryAfterSeconds),
+                  "Cache-Control": "no-store",
+                },
+              },
+            );
+          }
+
           const isMaster = MASTER_ADMIN_EMAILS.includes(email);
 
           // Query admin from DB
@@ -90,11 +117,30 @@ export const Route = createFileRoute("/api/admin/login")({
                 plan_tier: "business",
               };
             } else {
+              const failStatus = await recordFailedLogin(clientIp, email);
+              if (failStatus.locked) {
+                return Response.json(
+                  {
+                    success: false,
+                    error: "ACCOUNT_LOCKED",
+                    message: "Terlalu banyak percobaan login gagal. Akun/IP dikunci sementara selama 15 menit.",
+                    retryAfter: failStatus.retryAfterSeconds,
+                  },
+                  {
+                    status: 429,
+                    headers: {
+                      "Retry-After": String(failStatus.retryAfterSeconds),
+                      "Cache-Control": "no-store",
+                    },
+                  },
+                );
+              }
               return Response.json(
                 {
                   success: false,
                   error: "INVALID_CREDENTIALS",
-                  message: "Email atau password yang Anda masukkan salah.",
+                  message: `Email atau password yang Anda masukkan salah. Sisa percobaan: ${failStatus.remainingAttempts}.`,
+                  remainingAttempts: failStatus.remainingAttempts,
                 },
                 { status: 401 },
               );
@@ -104,20 +150,42 @@ export const Route = createFileRoute("/api/admin/login")({
           const isValid = await verifyPassword(password, admin.password_hash);
 
           if (!isValid) {
+            const failStatus = await recordFailedLogin(clientIp, email);
+            if (failStatus.locked) {
+              return Response.json(
+                {
+                  success: false,
+                  error: "ACCOUNT_LOCKED",
+                  message: "Terlalu banyak percobaan login gagal. Akun/IP dikunci sementara selama 15 menit.",
+                  retryAfter: failStatus.retryAfterSeconds,
+                },
+                {
+                  status: 429,
+                  headers: {
+                    "Retry-After": String(failStatus.retryAfterSeconds),
+                    "Cache-Control": "no-store",
+                  },
+                },
+              );
+            }
             return Response.json(
               {
                 success: false,
                 error: "INVALID_CREDENTIALS",
-                message: "Email atau password yang Anda masukkan salah.",
+                message: `Email atau password yang Anda masukkan salah. Sisa percobaan: ${failStatus.remainingAttempts}.`,
+                remainingAttempts: failStatus.remainingAttempts,
               },
               { status: 401 },
             );
           }
 
+          // 2. Successful Login: Reset attempts counter
+          await recordSuccessfulLogin(clientIp, email);
+          cleanupExpiredAuthRecords().catch(() => {});
+
           // Create server session token (30 days validity)
           const token = await createSession(admin.id);
-          const isHttps = request.url.startsWith("https://");
-          const cookieHeader = createSessionCookieHeader(token, isHttps);
+          const cookieHeader = createSessionCookieHeader(token, request);
 
           return Response.json(
             {
@@ -155,4 +223,3 @@ export const Route = createFileRoute("/api/admin/login")({
     },
   },
 });
-

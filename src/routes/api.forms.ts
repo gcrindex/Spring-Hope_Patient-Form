@@ -124,18 +124,29 @@ export const Route = createFileRoute("/api/forms")({
         }
       },
 
-	      POST: async ({ request }) => {
-	        try {
-	          const user = await authenticateRequest(request);
-	          const body = await request.json().catch(() => null);
-	          if (!body || typeof body !== "object") {
-	            return Response.json(
-	              { success: false, error: "INVALID_BODY", message: "Invalid form data." },
-	              { status: 400 },
-	            );
-	          }
+		      POST: async ({ request }) => {
+		        try {
+		          const user = await authenticateRequest(request);
+		          const body = await request.json().catch(() => null);
+		          if (!body || typeof body !== "object") {
+		            return Response.json(
+		              { success: false, error: "INVALID_BODY", message: "Invalid form data." },
+		              { status: 400 },
+		            );
+		          }
 
-	          const isSuperAdmin =
+		          if (user && user.role === "staff") {
+		            return Response.json(
+		              {
+		                success: false,
+		                error: "FORBIDDEN",
+		                message: "Hak akses ditolak. Akun Staff hanya memiliki izin membaca & review, dilarang membuat atau mengubah struktur formulir.",
+		              },
+		              { status: 403 },
+		            );
+		          }
+
+		          const isSuperAdmin =
 	            user &&
 	            (user.role === "superadmin" ||
 	              user.email === "admin@gmail.com" ||
@@ -324,17 +335,28 @@ export const Route = createFileRoute("/api/forms")({
         }
       },
 
-      DELETE: async ({ request }) => {
-        try {
-          const user = await authenticateRequest(request);
-          if (!user) {
-            return Response.json(
-              { success: false, error: "UNAUTHORIZED", message: "Admin authentication required." },
-              { status: 401 },
-            );
-          }
+	      DELETE: async ({ request }) => {
+	        try {
+	          const user = await authenticateRequest(request);
+	          if (!user) {
+	            return Response.json(
+	              { success: false, error: "UNAUTHORIZED", message: "Admin authentication required." },
+	              { status: 401 },
+	            );
+	          }
 
-          const isSuperAdmin =
+	          if (user.role === "staff") {
+	            return Response.json(
+	              {
+	                success: false,
+	                error: "FORBIDDEN",
+	                message: "Hak akses ditolak. Akun Staff hanya memiliki izin membaca & review, dilarang menghapus formulir.",
+	              },
+	              { status: 403 },
+	            );
+	          }
+
+	          const isSuperAdmin =
             user.role === "superadmin" ||
             user.email === "admin@gmail.com" ||
             user.email === "superadmin@9forms.com";

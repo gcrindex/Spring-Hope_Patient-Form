@@ -397,6 +397,17 @@ export const Route = createFileRoute("/api/submissions")({
               );
             }
 
+            if (user.role === "staff") {
+              return Response.json(
+                {
+                  success: false,
+                  error: "FORBIDDEN",
+                  message: "Hak akses ditolak. Akun Staff dilarang melakukan pembersihan massal (purge).",
+                },
+                { status: 403 },
+              );
+            }
+
             const isSuperAdmin =
               user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
@@ -717,6 +728,17 @@ export const Route = createFileRoute("/api/submissions")({
                 message: "Akses ditolak: Wajib autentikasi admin.",
               },
               { status: 401 },
+            );
+          }
+
+          if (user.role === "staff") {
+            return Response.json(
+              {
+                success: false,
+                error: "FORBIDDEN",
+                message: "Hak akses ditolak. Akun Staff hanya memiliki izin membaca & review, dilarang menghapus data pasien.",
+              },
+              { status: 403 },
             );
           }
 
