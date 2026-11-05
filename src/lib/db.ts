@@ -277,13 +277,26 @@ async function getLocalSqlite(): Promise<LocalSqliteLike> {
 	      FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 	    );
 
-		    CREATE TABLE IF NOT EXISTS system_settings (
-		      key TEXT PRIMARY KEY,
-		      value_encrypted TEXT NOT NULL,
-		      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		    );
+			    CREATE TABLE IF NOT EXISTS system_settings (
+			      key TEXT PRIMARY KEY,
+			      value_encrypted TEXT NOT NULL,
+			      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			    );
 
-			    CREATE TABLE IF NOT EXISTS webhook_logs (
+			    CREATE TABLE IF NOT EXISTS transactions (
+			      id TEXT PRIMARY KEY,
+			      order_id TEXT UNIQUE NOT NULL,
+			      payer_email TEXT,
+			      user_id TEXT,
+			      plan_tier TEXT NOT NULL,
+			      amount REAL NOT NULL,
+			      currency TEXT DEFAULT 'USD',
+			      status TEXT DEFAULT 'completed',
+			      paypal_capture_id TEXT,
+			      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			    );
+
+				    CREATE TABLE IF NOT EXISTS webhook_logs (
 			      id TEXT PRIMARY KEY,
 			      webhook_url TEXT NOT NULL,
 			      event_type TEXT NOT NULL,

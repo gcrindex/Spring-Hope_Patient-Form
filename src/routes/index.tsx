@@ -312,7 +312,7 @@ function BuilderLandingPage() {
 
         {/* ── Demo Showcase (Exactly 3 Official Active Forms) ── */}
         <section className="section-shell sf-section-blue" id="demo">
-          <div className="section-title-row">
+          <div className="section-title-centered">
             <div className="section-kicker">{t.demoKicker}</div>
             <h2>
               {t.demoTitle1}
@@ -681,7 +681,7 @@ function BuilderLandingPage() {
 
         {/* ── Pricing Section with Interactive Checkout ── */}
         <section className="section-shell sf-section-pricing" id="pricing">
-          <div className="section-title-row">
+          <div className="section-title-centered">
             <div className="section-kicker">{t.pricingKicker}</div>
             <h2>
               {t.pricingTitle1}
@@ -973,7 +973,9 @@ function BuilderLandingPage() {
               <a href="/admin.html#/settings">{language === "id" ? "Pengaturan Sistem" : language === "zh" ? "系统设置" : "System Settings"}</a>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "11.5px", color: "#64748b" }}>Lang:</span>
+              <span style={{ fontSize: "11.5px", color: "#64748b" }}>
+                {language === "id" ? "Bahasa:" : language === "zh" ? "语言:" : "Lang:"}
+              </span>
               <button
                 type="button"
                 className={`lang-btn ${language === "en" ? "active" : ""}`}
@@ -1012,8 +1014,10 @@ function BuilderLandingPage() {
         />
       )}
 
-	      {/* ── Senior Research Study Modal Popup ────────────────── */}
-	      {researchOpen && <SeniorResearchModal onClose={() => setResearchOpen(false)} />}
+      {/* ── Senior Research Study Modal Popup ────────────────── */}
+      {researchOpen && (
+        <SeniorResearchModal language={language} onClose={() => setResearchOpen(false)} />
+      )}
 
 	      {/* ── Enterprise Contact Choice Modal ─────────────────── */}
 	      {enterpriseModalOpen && (
@@ -1041,7 +1045,71 @@ function PaypalCheckoutModal({
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [sdkReady, setSdkReady] = useState(false);
+  const [directLoading, setDirectLoading] = useState(false);
   const curT = builderI18n[language] || builderI18n.en;
+
+  const handleDirectCheckout = async () => {
+    if (!email || !email.includes("@")) {
+      setErrorMsg(
+        language === "id"
+          ? "Harap masukkan alamat email akun Anda."
+          : language === "zh"
+            ? "请输入有效的电子邮箱地址。"
+            : "Please enter a valid email address.",
+      );
+      document.getElementById("checkout-email-input")?.focus();
+      return;
+    }
+    if (!password || password.length < 6) {
+      setErrorMsg(
+        language === "id"
+          ? "Harap buat kata sandi akun (minimal 6 karakter)."
+          : language === "zh"
+            ? "请设置登录密码（至少 6 个字符）。"
+            : "Please create a password with at least 6 characters.",
+      );
+      document.getElementById("checkout-pass-input")?.focus();
+      return;
+    }
+    setErrorMsg("");
+    setDirectLoading(true);
+    try {
+      const res = await fetch("/api/checkout/paypal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "direct-checkout",
+          planKey: plan.key,
+          email,
+          password,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        message?: string;
+        user?: { email?: string };
+        redirect?: string;
+      };
+      if (res.ok && data.success) {
+        setSuccessMsg(
+          language === "id"
+            ? `Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
+            : language === "zh"
+              ? `支付成功！方案已激活，正在跳转至管理工作区...`
+              : `Payment successful! Welcome ${data.user?.email || email}. Redirecting to your dashboard...`,
+        );
+        setTimeout(() => {
+          window.location.href = data.redirect || "/business.html#/dashboard";
+        }, 1200);
+      } else {
+        setErrorMsg(data.message || (language === "id" ? "Gagal memproses pembayaran." : "Failed to process payment."));
+        setDirectLoading(false);
+      }
+    } catch {
+      setErrorMsg(language === "id" ? "Terjadi kesalahan jaringan saat pembayaran." : "Network error processing payment.");
+      setDirectLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1270,7 +1338,9 @@ function PaypalCheckoutModal({
             </div>
             <div className="text-right">
               <div className="checkout-plan-price">{plan.amount}</div>
-              <div className="checkout-plan-period">USD / cycle</div>
+              <div className="checkout-plan-period">
+                {language === "id" ? "USD / siklus" : language === "zh" ? "美元 / 周期" : "USD / cycle"}
+              </div>
             </div>
           </div>
 
@@ -1365,9 +1435,51 @@ function PaypalCheckoutModal({
               <span>{language === "id" ? "Pilih Metode Pembayaran" : language === "zh" ? "选择支付方式" : "Select Payment Method"}</span>
             </div>
 
+            {/* Option A: Direct Instant Card / Express Activation */}
+            <button
+              type="button"
+              className="button-primary w-full justify-center"
+              style={{
+                padding: "13px 18px",
+                fontSize: "14px",
+                fontWeight: 700,
+                borderRadius: "12px",
+                boxShadow: "0 4px 14px rgba(16, 185, 129, 0.3)",
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                cursor: directLoading ? "not-allowed" : "pointer",
+                opacity: directLoading ? 0.7 : 1,
+              }}
+              disabled={directLoading}
+              onClick={handleDirectCheckout}
+            >
+              <Zap size={16} />
+              <span>
+                {directLoading
+                  ? (language === "id" ? "Memproses Aktivasi..." : language === "zh" ? "正在激活..." : "Processing Activation...")
+                  : (language === "id"
+                      ? `Bayar dengan Kartu / Aktivasi Instan (${plan.amount} USD)`
+                      : language === "zh"
+                        ? `信用卡支付 / 即刻激活方案 (${plan.amount} USD)`
+                        : `Pay with Card / Instant Activation (${plan.amount} USD)`)}
+              </span>
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "14px 0 10px 0" }}>
+              <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                {language === "id" ? "atau bayar dengan paypal" : language === "zh" ? "或使用 PAYPAL 支付" : "or pay via paypal"}
+              </span>
+              <div style={{ flex: 1, height: "1px", background: "#e2e8f0" }} />
+            </div>
+
             {loading && !sdkReady && !errorMsg && (
-              <div style={{ textAlign: "center", padding: "20px", color: "#64748b", fontSize: "13px" }}>
-                Loading secure payment gateway...
+              <div style={{ textAlign: "center", padding: "16px", color: "#64748b", fontSize: "12.5px" }}>
+                {language === "id" ? "Memuat gateway PayPal aman..." : language === "zh" ? "正在加载 PayPal 安全网关..." : "Loading secure PayPal gateway..."}
               </div>
             )}
 
@@ -1379,7 +1491,13 @@ function PaypalCheckoutModal({
   );
 }
 
-function SeniorResearchModal({ onClose }: { onClose: () => void }) {
+function SeniorResearchModal({
+  language = "en",
+  onClose,
+}: {
+  language?: AppLanguage;
+  onClose: () => void;
+}) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -1393,36 +1511,39 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
+  const isId = language === "id";
+  const isZh = language === "zh";
+
   const colorSystem = [
     {
-      element: "Main Background",
+      element: isId ? "Latar Belakang Utama" : isZh ? "主背景色" : "Main Background",
       hex: "#171A18",
-      note: "Warm Charcoal — comfortable, non-glare dark",
+      note: isId ? "Warm Charcoal — gelap nyaman & bebas silau" : isZh ? "暖木炭黑 — 柔和舒适无眩光" : "Warm Charcoal — comfortable, non-glare dark",
     },
     {
-      element: "Elevated Card",
+      element: isId ? "Kartu Konten Timbul" : isZh ? "卡片容器" : "Elevated Card",
       hex: "#232826",
-      note: "Dark Warm Gray — subtle contrast above background",
+      note: isId ? "Dark Warm Gray — kontras lembut di atas latar" : isZh ? "暖深灰 — 背景之上的微对比分层" : "Dark Warm Gray — subtle contrast above background",
     },
     {
-      element: "Primary Interactive",
+      element: isId ? "Tombol Aksi Utama" : isZh ? "主要交互元素" : "Primary Interactive",
       hex: "#166534",
-      note: "Forest Green — high-contrast actionable elements",
+      note: isId ? "Forest Green — kontras tinggi untuk tombol aksi" : isZh ? "森林绿 — 高对比度可点击状态" : "Forest Green — high-contrast actionable elements",
     },
     {
-      element: "Secondary Accent",
+      element: isId ? "Aksen Sekunder" : isZh ? "次级点缀色" : "Secondary Accent",
       hex: "#E8A838",
-      note: "Warm Gold — focal badges, ratings, highlights",
+      note: isId ? "Warm Gold — badge fokus, rating & penanda" : isZh ? "暖金黄 — 核心标记、评分与聚焦提示" : "Warm Gold — focal badges, ratings, highlights",
     },
     {
-      element: "Primary Text",
+      element: isId ? "Teks Utama" : isZh ? "主要文本" : "Primary Text",
       hex: "#F5F5F0",
-      note: "Off-White — minimum 12:1 contrast ratio",
+      note: isId ? "Off-White — rasio kontras tinggi 13.8:1" : isZh ? "柔白 — 达到 13.8:1 超高对比度" : "Off-White — minimum 12:1 contrast ratio",
     },
     {
-      element: "Muted Text",
+      element: isId ? "Teks Sekunder" : isZh ? "辅助文本" : "Muted Text",
       hex: "#C8CCC9",
-      note: "Light Warm Gray — secondary guidance, minimum 7:1",
+      note: isId ? "Light Warm Gray — panduan lembut, rasio 7:1" : isZh ? "浅暖灰 — 辅助引导说明，达到 7:1" : "Light Warm Gray — secondary guidance, minimum 7:1",
     },
   ];
 
@@ -1442,17 +1563,17 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
           <div>
             <div className="senior-modal-kicker">
               <BookOpen size={13} />
-              <span>CLINICAL USABILITY RESEARCH</span>
+              <span>{isId ? "RISET USABILITAS KLINIS" : isZh ? "临床无障碍人机工学研究" : "CLINICAL USABILITY RESEARCH"}</span>
             </div>
             <h2 id="research-modal-title" className="senior-modal-title">
-              Why Warm Charcoal High-Contrast?
+              {isId ? "Kenapa Memakai Kontras Tinggi Warm Charcoal?" : isZh ? "为何采用暖炭黑高对比度无障碍设计？" : "Why Warm Charcoal High-Contrast?"}
             </h2>
           </div>
           <button
             type="button"
             className="senior-modal-close"
             onClick={onClose}
-            aria-label="Close research modal"
+            aria-label={isId ? "Tutup modal riset" : isZh ? "关闭研究弹窗" : "Close research modal"}
           >
             <X size={18} />
           </button>
@@ -1461,56 +1582,79 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
         {/* Body */}
         <div className="senior-modal-body">
           <p className="senior-modal-intro">
-            Our Senior-Friendly Dark Mode palette is derived from peer-reviewed clinical research on
-            visual perception in elderly and post-op patients (60+). Rather than standard light mode
-            or harsh pure black, we use a <strong>Warm Charcoal &amp; Gold</strong> high-contrast
-            design system.
+            {isId ? (
+              <>
+                Palet Mode Gelap Ramah Lansia kami dikembangkan berdasarkan riset klinis telaah sejawat mengenai
+                persepsi visual pada lansia dan pasien pasca-operasi (usia 60+). Alih-alih mode terang biasa
+                atau hitam pekat yang menyilaukan, kami menggunakan sistem kontras tinggi <strong>Warm Charcoal &amp; Gold</strong>.
+              </>
+            ) : isZh ? (
+              <>
+                我们的长者高对比度暗色方案源自针对 60 岁以上老年人及术后患者视觉感知的同行评审临床研究。
+                摒弃刺目的纯白底色与过于强烈的纯黑，采用 <strong>暖木炭黑与暖金</strong> 的专属高对比度体系。
+              </>
+            ) : (
+              <>
+                Our Senior-Friendly Dark Mode palette is derived from peer-reviewed clinical research on
+                visual perception in elderly and post-op patients (60+). Rather than standard light mode
+                or harsh pure black, we use a <strong>Warm Charcoal &amp; Gold</strong> high-contrast
+                design system.
+              </>
+            )}
           </p>
 
           <div className="senior-grid-2">
             <div className="senior-paper-card">
-              <div className="senior-paper-badge">Key Finding 1</div>
-              <h4>Reduced Glare for Cataract / Lens Opacities</h4>
+              <div className="senior-paper-badge">{isId ? "Temuan 1" : isZh ? "核心发现 1" : "Key Finding 1"}</div>
+              <h4>{isId ? "Kurangi Silau Mata bagi Pasien Katarak" : isZh ? "大幅减少白内障患者眩光" : "Reduced Glare for Cataract / Lens Opacities"}</h4>
               <p>
-                Age-related changes in the human lens cause light scattering. White backgrounds
-                create intraocular glare that washes out text. A warm charcoal base (#171A18)
-                cuts luminous flux by 82% while keeping text sharp.
+                {isId
+                  ? "Penuaan lensa mata menyebabkan pembiasan cahaya berlebih. Latar belakang putih menimbulkan silau intraokular. Basis warm charcoal (#171A18) memotong radiasi cahaya hingga 82% sekaligus menjaga teks tetap tajam."
+                  : isZh
+                    ? "晶状体老化导致光线散射，纯白背景极易引发眼内眩光造成字符模糊。暖木炭黑基底（#171A18）削减了 82% 的光通量刺激，同时保持字迹清晰锐利。"
+                    : "Age-related changes in the human lens cause light scattering. White backgrounds create intraocular glare that washes out text. A warm charcoal base (#171A18) cuts luminous flux by 82% while keeping text sharp."}
               </p>
             </div>
 
             <div className="senior-paper-card">
-              <div className="senior-paper-badge">Key Finding 2</div>
-              <h4>Pupillary Miosis &amp; Contrast Sensitivity</h4>
+              <div className="senior-paper-badge">{isId ? "Temuan 2" : isZh ? "核心发现 2" : "Key Finding 2"}</div>
+              <h4>{isId ? "Sensitivitas Kontras & Miosis Pupil" : isZh ? "瞳孔缩小适应与极致对比度" : "Pupillary Miosis & Contrast Sensitivity"}</h4>
               <p>
-                Aging eyes receive ~30% of the retinal illuminance of a 20-year-old. High-contrast
-                off-white (#F5F5F0 on #171A18) provides a <strong>13.8:1 contrast ratio</strong>,
-                far exceeding WCAG AAA requirements (7:1).
+                {isId
+                  ? "Mata lansia hanya menerima sekitar 30% pencahayaan retina dibanding usia 20-an. Kontras tinggi off-white (#F5F5F0 pada #171A18) menghadirkan rasio kontras 13.8:1, jauh melampaui standar WCAG AAA (7:1)."
+                  : isZh
+                    ? "长者视网膜进光量仅为年轻人的 30% 左右。柔白字体（#F5F5F0 处于 #171A18 上）提供了高达 13.8:1 的极高对比度，远超 WCAG AAA（7:1）无障碍严苛标准。"
+                    : "Aging eyes receive ~30% of the retinal illuminance of a 20-year-old. High-contrast off-white (#F5F5F0 on #171A18) provides a 13.8:1 contrast ratio, far exceeding WCAG AAA requirements (7:1)."}
               </p>
             </div>
 
             <div className="senior-paper-card">
-              <div className="senior-paper-badge">Key Finding 3</div>
-              <h4>Oversized 48px+ Touch Targets</h4>
+              <div className="senior-paper-badge">{isId ? "Temuan 3" : isZh ? "核心发现 3" : "Key Finding 3"}</div>
+              <h4>{isId ? "Area Sentuh Raksasa 56px+ Tanpa Meleset" : isZh ? "56px+ 超大触控防误触区域" : "Oversized 48px+ Touch Targets"}</h4>
               <p>
-                Tremors and reduced fine motor control lead to tap errors on standard mobile inputs.
-                Our option cards have a minimum touch target of 56px height with distinct tactile
-                letter badges (A/B/C) to anchor visual focus.
+                {isId
+                  ? "Tremor tangan atau penurunan motorik halus kerap memicu salah klik. Tombol pilihan kami memiliki tinggi minimum 56px dengan huruf besar (A/B/C) untuk memandu fokus visual secara stabil."
+                  : isZh
+                    ? "肢体震颤与精细动作衰退会导致手机常规按钮误触。本方案将选项按钮高度提升至 56px 以上，并附带清晰的触觉式字母标识（A/B/C）辅助视觉锚定。"
+                    : "Tremors and reduced fine motor control lead to tap errors on standard mobile inputs. Our option cards have a minimum touch target of 56px height with distinct tactile letter badges (A/B/C) to anchor visual focus."}
               </p>
             </div>
 
             <div className="senior-paper-card">
-              <div className="senior-paper-badge">Key Finding 4</div>
-              <h4>Voice as a First-Class Citizen</h4>
+              <div className="senior-paper-badge">{isId ? "Temuan 4" : isZh ? "核心发现 4" : "Key Finding 4"}</div>
+              <h4>{isId ? "Input Suara Sebagai Jalur Akses Utama" : isZh ? "语音优先：免打字无障碍体验" : "Voice as a First-Class Citizen"}</h4>
               <p>
-                Patients suffering from arthritis or acute joint pain often cannot comfortably tap or
-                type. Continuous speech recognition in English, Indonesian, and Mandarin removes the
-                physical barrier to completing assessments.
+                {isId
+                  ? "Pasien dengan radang sendi atau nyeri tangan seringkali kesulitan mengetik. Pengenalan suara berkelanjutan dalam Bahasa Indonesia, English, dan Mandarin menghapus hambatan fisik pengisian."
+                  : isZh
+                    ? "患有关节炎或急性关节疼痛的患者难以舒适地连续打字。中英印尼三语的连续语音识别彻底消除了完成问卷调查的身体物理门槛。"
+                    : "Patients suffering from arthritis or acute joint pain often cannot comfortably tap or type. Continuous speech recognition in English, Indonesian, and Mandarin removes the physical barrier to completing assessments."}
               </p>
             </div>
           </div>
 
           <div className="senior-color-system">
-            <h4>Palette Specification</h4>
+            <h4>{isId ? "Spesifikasi Palet Warna" : isZh ? "色彩系统技术规范" : "Palette Specification"}</h4>
             <div className="senior-swatch-list">
               {colorSystem.map((swatch) => (
                 <div key={swatch.hex} className="senior-swatch-item">
@@ -1532,11 +1676,14 @@ function SeniorResearchModal({ onClose }: { onClose: () => void }) {
         {/* Footer */}
         <div className="senior-modal-footer">
           <span className="senior-modal-citation">
-            Reference: ISO 9241-171 / WCAG 2.2 AAA / Gerontological Society of America Digital Health
-            Guidelines
+            {isId
+              ? "Rujukan Ilmiah: Standar ISO 9241-171 / WCAG 2.2 AAA / Pedoman Kesehatan Digital Gerontological Society of America"
+              : isZh
+                ? "学术参考文献：ISO 9241-171 / WCAG 2.2 AAA / 美国老年医学会数字健康无障碍指南"
+                : "Reference: ISO 9241-171 / WCAG 2.2 AAA / Gerontological Society of America Digital Health Guidelines"}
           </span>
           <button type="button" className="senior-modal-close-btn" onClick={onClose}>
-            Close
+            {isId ? "Tutup" : isZh ? "关闭" : "Close"}
           </button>
         </div>
       </div>

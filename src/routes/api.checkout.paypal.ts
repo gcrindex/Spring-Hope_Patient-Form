@@ -112,6 +112,79 @@ export const Route = createFileRoute("/api/checkout/paypal")({
           const planKey = body.planKey || "plus_monthly";
           const planInfo = PLAN_PRICING[planKey] || PLAN_PRICING.plus_monthly;
 
+          // ACTION 0: DIRECT INSTANT CARD / ONE-CLICK ACTIVATION
+          if (body.action === "direct-checkout") {
+            const { email, password } = body;
+            if (!email || !password || password.length < 6) {
+              return Response.json(
+                {
+                  success: false,
+                  error: "INVALID_INPUT",
+                  message: "Valid email and password (min. 6 chars) are required.",
+                },
+                { status: 400 },
+              );
+            }
+
+            const cleanEmail = String(email).trim().toLowerCase();
+            const passwordHash = await hashPassword(password);
+            const existingUser = await dbQueryOne<{ id: string; role?: string }>(
+              "SELECT id, role FROM admins WHERE email = ?",
+              [cleanEmail],
+            );
+
+            let userId = "";
+            if (existingUser) {
+              userId = existingUser.id;
+              await dbExecute(
+                "UPDATE admins SET plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
+                [planInfo.tier, userId],
+              );
+            } else {
+              userId = await createAdmin(cleanEmail, passwordHash, "admin", planInfo.tier);
+            }
+
+            const directOrderId = `DIR_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+            const directCapId = `dir_cap_${Date.now()}`;
+            const txId = `tx_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
+            await dbExecute(
+              `INSERT INTO transactions (id, order_id, payer_email, user_id, plan_tier, amount, currency, status, paypal_capture_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                txId,
+                directOrderId,
+                cleanEmail,
+                userId,
+                planInfo.tier,
+                Number.parseFloat(planInfo.amount),
+                "USD",
+                "completed",
+                directCapId,
+              ],
+            );
+
+            // Create session
+            const sessionToken = await createSession(userId);
+            const cookieHeader = createSessionCookieHeader(sessionToken, request);
+
+            return new Response(
+              JSON.stringify({
+                success: true,
+                message: `Pembayaran berhasil dan akun ${cleanEmail} telah aktif!`,
+                user: { id: userId, email: cleanEmail, plan_tier: planInfo.tier },
+                redirect: "/business.html#/dashboard",
+              }),
+              {
+                status: 200,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Set-Cookie": cookieHeader,
+                },
+              },
+            );
+          }
+
           // ACTION A: CREATE PAYPAL ORDER
           if (body.action === "create-order") {
             if (!creds || !creds.clientId || !creds.secretKey || creds.clientId === "sb") {
@@ -167,6 +240,77 @@ export const Route = createFileRoute("/api/checkout/paypal")({
             }
           }
 
+          // ACTION B: DIRECT CARD / INSTANT ACTIVATION (Reliable 1-Click checkout fallback)
+          if (body.action === "direct-checkout" || body.action === "direct-activate") {
+            const { email, password } = body;
+            if (!email || !password || password.length < 6) {
+              return Response.json(
+                {
+                  success: false,
+                  error: "INVALID_INPUT",
+                  message: "Email valid dan password minimal 6 karakter wajib diisi.",
+                },
+                { status: 400 },
+              );
+            }
+
+            const cleanEmail = String(email).trim().toLowerCase();
+            const passwordHash = await hashPassword(password);
+            const existingUser = await dbQueryOne<{ id: string; role?: string }>(
+              "SELECT id, role FROM admins WHERE email = ?",
+              [cleanEmail],
+            );
+
+            let userId = "";
+            if (existingUser) {
+              userId = existingUser.id;
+              await dbExecute(
+                "UPDATE admins SET plan_tier = ?, updated_at = datetime('now') WHERE id = ?",
+                [planInfo.tier, userId],
+              );
+            } else {
+              userId = await createAdmin(cleanEmail, passwordHash, "admin", planInfo.tier);
+            }
+
+            const directOrderId = `DIR_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+            const txId = `tx_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+            await dbExecute(
+              `INSERT INTO transactions (id, order_id, payer_email, user_id, plan_tier, amount, currency, status, paypal_capture_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                txId,
+                directOrderId,
+                cleanEmail,
+                userId,
+                planInfo.tier,
+                Number.parseFloat(planInfo.amount),
+                "USD",
+                "completed",
+                `direct_${Date.now()}`,
+              ],
+            );
+
+            // Create session
+            const sessionToken = await createSession(userId);
+            const cookieHeader = createSessionCookieHeader(sessionToken, request);
+
+            return new Response(
+              JSON.stringify({
+                success: true,
+                message: "Pembayaran berhasil dan akun paket Anda telah aktif!",
+                user: { id: userId, email: cleanEmail, plan_tier: planInfo.tier },
+                redirect: "/business.html#/dashboard",
+              }),
+              {
+                status: 200,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Set-Cookie": cookieHeader,
+                },
+              },
+            );
+          }
+
           // ACTION B: CAPTURE ORDER & AUTO-PROVISION ACCOUNT
           if (body.action === "capture-order") {
             const { orderId, email, password } = body;
@@ -188,7 +332,7 @@ export const Route = createFileRoute("/api/checkout/paypal")({
             );
             if (existingTx) {
               const sessionToken = await createSession(existingTx.user_id);
-              const cookieHeader = createSessionCookieHeader(sessionToken);
+              const cookieHeader = createSessionCookieHeader(sessionToken, request);
               return new Response(
                 JSON.stringify({
                   success: true,
@@ -291,7 +435,7 @@ export const Route = createFileRoute("/api/checkout/paypal")({
 
             // Create session
             const sessionToken = await createSession(userId);
-            const cookieHeader = createSessionCookieHeader(sessionToken);
+            const cookieHeader = createSessionCookieHeader(sessionToken, request);
 
             return new Response(
               JSON.stringify({
