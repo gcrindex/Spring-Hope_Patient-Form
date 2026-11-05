@@ -14,18 +14,19 @@ export const Route = createFileRoute("/api/admin/users")({
       GET: async ({ request }) => {
         try {
           const user = await authenticateRequest(request);
-          const isSuperAdmin =
+          const isAuthorizedAdmin =
             user &&
-            (user.role === "superadmin" ||
+            (user.role === "admin" ||
+              user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
               user.email === "superadmin@9forms.com");
 
-          if (!user || !isSuperAdmin) {
+          if (!user || !isAuthorizedAdmin) {
             return Response.json(
               {
                 success: false,
                 error: "FORBIDDEN",
-                message: "Akses ditolak. Khusus Super Administrator.",
+                message: "Akses ditolak. Khusus Administrator.",
               },
               { status: 403 },
             );
@@ -121,18 +122,19 @@ export const Route = createFileRoute("/api/admin/users")({
       POST: async ({ request }) => {
         try {
           const user = await authenticateRequest(request);
-          const isSuperAdmin =
+          const isAuthorizedAdmin =
             user &&
-            (user.role === "superadmin" ||
+            (user.role === "admin" ||
+              user.role === "superadmin" ||
               user.email === "admin@gmail.com" ||
               user.email === "superadmin@9forms.com");
 
-          if (!user || !isSuperAdmin) {
+          if (!user || !isAuthorizedAdmin) {
             return Response.json(
               {
                 success: false,
                 error: "FORBIDDEN",
-                message: "Akses ditolak. Khusus Super Administrator.",
+                message: "Akses ditolak. Khusus Administrator.",
               },
               { status: 403 },
             );

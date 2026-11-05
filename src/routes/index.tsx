@@ -1091,6 +1091,13 @@ function PaypalCheckoutModal({
         redirect?: string;
       };
       if (res.ok && data.success) {
+        try {
+          localStorage.setItem("pf_loggedin", "1");
+          sessionStorage.setItem("pf_loggedin", "1");
+          localStorage.setItem("pf_admin_email", data.user?.email || email);
+          localStorage.setItem("pf_admin_tier", plan.key);
+          document.cookie = "pf_loggedin=1; path=/; max-age=2592000; SameSite=Lax";
+        } catch {}
         setSuccessMsg(
           language === "id"
             ? `Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
@@ -1266,6 +1273,13 @@ function PaypalCheckoutModal({
               user?: { email: string };
             };
             if (res.ok && d.success) {
+              try {
+                localStorage.setItem("pf_loggedin", "1");
+                sessionStorage.setItem("pf_loggedin", "1");
+                localStorage.setItem("pf_admin_email", d.user?.email || email);
+                localStorage.setItem("pf_admin_tier", plan.key);
+                document.cookie = "pf_loggedin=1; path=/; max-age=2592000; SameSite=Lax";
+              } catch {}
               setSuccessMsg(
                 language === "id"
                   ? `Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`

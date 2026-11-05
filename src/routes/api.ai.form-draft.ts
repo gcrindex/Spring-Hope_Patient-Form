@@ -102,6 +102,21 @@ export const Route = createFileRoute("/api/ai/form-draft")({
           );
         }
 
+        // Support both direct prompt input and full conversation messages
+        if (
+          body &&
+          typeof body === "object" &&
+          "prompt" in body &&
+          typeof (body as { prompt?: unknown }).prompt === "string" &&
+          !("messages" in body)
+        ) {
+          const directPrompt = (body as { prompt: string }).prompt;
+          body = {
+            mode: "chat",
+            messages: [{ role: "user", content: directPrompt }],
+          };
+        }
+
         const parsed = aiConversationSchema.safeParse(body);
         if (!parsed.success) {
           return json(
