@@ -19,7 +19,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PlatformMark } from "../components/brand";
 import { LanguageSwitcher } from "../components/language-switcher";
 import {
@@ -1046,7 +1046,12 @@ function PaypalCheckoutModal({
   const [successMsg, setSuccessMsg] = useState("");
   const [sdkReady, setSdkReady] = useState(false);
   const [directLoading, setDirectLoading] = useState(false);
+  const credsRef = useRef({ email: "", password: "" });
   const curT = builderI18n[language] || builderI18n.en;
+
+  useEffect(() => {
+    credsRef.current = { email, password };
+  }, [email, password]);
 
   const handleDirectCheckout = async () => {
     if (!email || !email.includes("@")) {
@@ -1209,7 +1214,9 @@ function PaypalCheckoutModal({
           height: 44,
         },
         onClick: (_data: unknown, actions: { reject: () => Promise<void>; resolve: () => Promise<void> }) => {
-          if (!email || !email.includes("@")) {
+          const currentEmail = (document.getElementById("checkout-email-input") as HTMLInputElement)?.value || credsRef.current.email;
+          const currentPass = (document.getElementById("checkout-pass-input") as HTMLInputElement)?.value || credsRef.current.password;
+          if (!currentEmail || !currentEmail.includes("@")) {
             setErrorMsg(
               language === "id"
                 ? "Harap masukkan alamat email akun Anda."
@@ -1221,7 +1228,7 @@ function PaypalCheckoutModal({
             if (input) input.focus();
             return actions.reject();
           }
-          if (!password || password.length < 6) {
+          if (!currentPass || currentPass.length < 6) {
             setErrorMsg(
               language === "id"
                 ? "Harap buat kata sandi akun (minimal 6 karakter)."
@@ -1238,12 +1245,14 @@ function PaypalCheckoutModal({
         },
         createOrder: async () => {
           setErrorMsg("");
+          const currentEmail = (document.getElementById("checkout-email-input") as HTMLInputElement)?.value || credsRef.current.email;
           const res = await fetch("/api/checkout/paypal", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               action: "create-order",
               planKey: plan.key,
+              email: currentEmail,
             }),
           });
           const d = (await res.json().catch(() => ({}))) as { success?: boolean; orderId?: string; message?: string };
@@ -1256,6 +1265,8 @@ function PaypalCheckoutModal({
         onApprove: async (data: { orderID: string }) => {
           setLoading(true);
           try {
+            const currentEmail = (document.getElementById("checkout-email-input") as HTMLInputElement)?.value || credsRef.current.email;
+            const currentPass = (document.getElementById("checkout-pass-input") as HTMLInputElement)?.value || credsRef.current.password;
             const res = await fetch("/api/checkout/paypal", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1263,8 +1274,8 @@ function PaypalCheckoutModal({
                 action: "capture-order",
                 orderId: data.orderID,
                 planKey: plan.key,
-                email,
-                password,
+                email: currentEmail,
+                password: currentPass,
               }),
             });
             const d = (await res.json().catch(() => ({}))) as {
@@ -1276,7 +1287,7 @@ function PaypalCheckoutModal({
               try {
                 localStorage.setItem("pf_loggedin", "1");
                 sessionStorage.setItem("pf_loggedin", "1");
-                localStorage.setItem("pf_admin_email", d.user?.email || email);
+                localStorage.setItem("pf_admin_email", d.user?.email || currentEmail);
                 localStorage.setItem("pf_admin_tier", plan.key);
                 document.cookie = "pf_loggedin=1; path=/; max-age=2592000; SameSite=Lax";
               } catch {}
@@ -1285,7 +1296,7 @@ function PaypalCheckoutModal({
                   ? `Pembayaran berhasil! Akun Anda aktif. Mengalihkan ke dasbor...`
                   : language === "zh"
                     ? `支付成功！方案已激活，正在跳转至管理工作区...`
-                    : `Payment successful! Welcome ${d.user?.email || email}. Redirecting to your dashboard...`,
+                    : `Payment successful! Welcome ${d.user?.email || currentEmail}. Redirecting to your dashboard...`,
               );
               setTimeout(() => {
                 window.location.href = "/business.html#/dashboard";
@@ -1311,7 +1322,7 @@ function PaypalCheckoutModal({
         },
       })
       .render("#paypal-button-render-box");
-  }, [sdkReady, email, password, plan.key, curT, language]);
+  }, [sdkReady, plan.key, plan.amount, language]);
 
   return (
     <div
